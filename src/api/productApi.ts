@@ -24,6 +24,7 @@ export interface Product {
   name: string;
   description: string;
   image: string;
+  glassJarImage: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -52,7 +53,7 @@ interface ProductResponse {
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
-    "http://localhost:5000/api",
+    "https://guiltfree-cravings-backend.onrender.com/api",
 
   headers: {
     "Content-Type": "application/json",

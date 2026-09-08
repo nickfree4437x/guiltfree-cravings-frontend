@@ -1,21 +1,24 @@
-import { Outlet } from "react-router-dom";
-import Navbar from "../components/landing/Navbar";
+import { Outlet, useLocation } from "react-router-dom";
+
+import Navbar from "../components/landing/navbar/Navbar";
 import Footer from "../components/landing/Footer";
 
 function MainLayout() {
-  return (
-    <div className="min-h-screen bg-[#fffaf5] text-slate-900">
-      {/* Navbar */}
-      <Navbar />
+  const location = useLocation();
 
-      {/* Page Content */}
+  // Transparent navbar only on landing page
+  const isHomePage = location.pathname === "/";
+
+  return (
+    <>
+      <Navbar isHomePage={isHomePage} />
+
       <main>
         <Outlet />
       </main>
 
-      {/* Footer */}
       <Footer />
-    </div>
+    </>
   );
 }
 

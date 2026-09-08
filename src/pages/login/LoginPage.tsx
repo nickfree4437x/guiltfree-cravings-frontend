@@ -6,12 +6,34 @@ import {
 import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import {
-  sendOtp,
-  verifyOtp,
-} from "../../api/authApi";
+import { verifyOtp } from "../../api/authApi";
 
 import { useAuthStore } from "../../store/authStore";
+
+import {
+  initializeMsg91Widget,
+  sendMsg91Otp,
+  verifyMsg91Otp,
+  retryMsg91Otp,
+} from "../../utils/msg91Otp";
+
+/*
+ * =========================================================
+ * LOGIN CONFIGURATION
+ * =========================================================
+ */
+
+/*
+ * MSG91 widget is currently configured
+ * for a 4-digit OTP.
+ *
+ * Keep this value in one place so that
+ * validation, input length and UI text
+ * never get out of sync.
+ */
+const OTP_LENGTH = 4;
+
+const OTP_RESEND_COUNTDOWN = 60;
 
 /*
  * =========================================================
@@ -20,6 +42,263 @@ import { useAuthStore } from "../../store/authStore";
  */
 
 type LoginStep = "phone" | "otp";
+
+/*
+ * =========================================================
+ * MSG91 ACCESS TOKEN EXTRACTION
+ * =========================================================
+ */
+
+/*
+ * =========================================================
+ * MSG91 ACCESS TOKEN EXTRACTION
+ * =========================================================
+ */
+
+const extractMsg91AccessToken = (
+  response: unknown
+): string => {
+  /*
+   * -------------------------------------------------------
+   * Response itself is a string
+   * -------------------------------------------------------
+   */
+
+  if (typeof response === "string") {
+    return response.trim();
+  }
+
+  /*
+   * -------------------------------------------------------
+   * Invalid response
+   * -------------------------------------------------------
+   */
+
+  if (
+    !response ||
+    typeof response !== "object"
+  ) {
+    return "";
+  }
+
+  const data =
+    response as Record<string, unknown>;
+
+  /*
+   * -------------------------------------------------------
+   * Direct access-token fields
+   * -------------------------------------------------------
+   */
+
+  const directToken =
+    data.accessToken ??
+    data["access-token"] ??
+    data.access_token ??
+    data.token;
+
+  if (
+    typeof directToken === "string" &&
+    directToken.trim()
+  ) {
+    return directToken.trim();
+  }
+
+  /*
+   * -------------------------------------------------------
+   * MSG91 Web SDK success response
+   *
+   * MSG91 can return the generated access token
+   * inside the "message" field.
+   * -------------------------------------------------------
+   */
+
+  if (
+    typeof data.message === "string" &&
+    data.message.trim()
+  ) {
+    return data.message.trim();
+  }
+
+  /*
+   * -------------------------------------------------------
+   * Nested "data" response
+   * -------------------------------------------------------
+   */
+
+  if (
+    data.data &&
+    typeof data.data === "object"
+  ) {
+    const nestedData =
+      data.data as Record<string, unknown>;
+
+    const nestedToken =
+      nestedData.accessToken ??
+      nestedData["access-token"] ??
+      nestedData.access_token ??
+      nestedData.token;
+
+    if (
+      typeof nestedToken === "string" &&
+      nestedToken.trim()
+    ) {
+      return nestedToken.trim();
+    }
+
+    /*
+     * Token may also be inside nested message.
+     */
+
+    if (
+      typeof nestedData.message === "string" &&
+      nestedData.message.trim()
+    ) {
+      return nestedData.message.trim();
+    }
+  }
+
+  /*
+   * -------------------------------------------------------
+   * Nested "response" object
+   * -------------------------------------------------------
+   */
+
+  if (
+    data.response &&
+    typeof data.response === "object"
+  ) {
+    const nestedResponse =
+      data.response as Record<string, unknown>;
+
+    const nestedToken =
+      nestedResponse.accessToken ??
+      nestedResponse["access-token"] ??
+      nestedResponse.access_token ??
+      nestedResponse.token;
+
+    if (
+      typeof nestedToken === "string" &&
+      nestedToken.trim()
+    ) {
+      return nestedToken.trim();
+    }
+
+    /*
+     * Token may also be inside nested message.
+     */
+
+    if (
+      typeof nestedResponse.message ===
+        "string" &&
+      nestedResponse.message.trim()
+    ) {
+      return nestedResponse.message.trim();
+    }
+  }
+
+  return "";
+};
+
+/*
+ * =========================================================
+ * MSG91 ERROR MESSAGE
+ * =========================================================
+ */
+
+const getMsg91ErrorMessage = (
+  error: unknown
+): string => {
+  if (
+    error instanceof Error &&
+    error.message
+  ) {
+    return error.message;
+  }
+
+  if (
+    error &&
+    typeof error === "object"
+  ) {
+    const errorData =
+      error as Record<string, unknown>;
+
+    /*
+     * Direct error message.
+     */
+
+    if (
+      typeof errorData.message === "string" &&
+      errorData.message.trim()
+    ) {
+      return errorData.message;
+    }
+
+    if (
+      typeof errorData.error === "string" &&
+      errorData.error.trim()
+    ) {
+      return errorData.error;
+    }
+
+    if (
+      typeof errorData.msg === "string" &&
+      errorData.msg.trim()
+    ) {
+      return errorData.msg;
+    }
+
+    /*
+     * Axios-style response error.
+     */
+
+    const response =
+      errorData.response;
+
+    if (
+      response &&
+      typeof response === "object"
+    ) {
+      const responseData =
+        response as Record<string, unknown>;
+
+      const data =
+        responseData.data;
+
+      if (
+        data &&
+        typeof data === "object"
+      ) {
+        const nestedData =
+          data as Record<string, unknown>;
+
+        if (
+          typeof nestedData.message ===
+            "string" &&
+          nestedData.message.trim()
+        ) {
+          return nestedData.message;
+        }
+
+        if (
+          typeof nestedData.error ===
+            "string" &&
+          nestedData.error.trim()
+        ) {
+          return nestedData.error;
+        }
+
+        if (
+          typeof nestedData.msg === "string" &&
+          nestedData.msg.trim()
+        ) {
+          return nestedData.msg;
+        }
+      }
+    }
+  }
+
+  return "Unable to process OTP. Please try again.";
+};
 
 /*
  * =========================================================
@@ -54,6 +333,15 @@ function LoginPage() {
     useState("");
 
   const [otp, setOtp] =
+    useState("");
+
+  /*
+   * =======================================================
+   * MSG91 REQUEST ID
+   * =======================================================
+   */
+
+  const [msg91ReqId, setMsg91ReqId] =
     useState("");
 
   /*
@@ -100,6 +388,21 @@ function LoginPage() {
 
   const otpInputRef =
     useRef<HTMLInputElement | null>(null);
+
+  /*
+   * =======================================================
+   * INITIALIZE MSG91 WIDGET
+   * =======================================================
+   */
+
+  useEffect(() => {
+    initializeMsg91Widget().catch((error) => {
+      console.error(
+        "Failed to initialize MSG91 widget:",
+        error
+      );
+    });
+  }, []);
 
   /*
    * =======================================================
@@ -153,9 +456,13 @@ function LoginPage() {
 
   useEffect(() => {
     if (step === "otp") {
-      window.setTimeout(() => {
+      const timer = window.setTimeout(() => {
         otpInputRef.current?.focus();
       }, 100);
+
+      return () => {
+        window.clearTimeout(timer);
+      };
     }
   }, [step]);
 
@@ -180,11 +487,24 @@ function LoginPage() {
      * maximum 10 digits.
      */
 
-    setPhone(
-      digitsOnly.slice(0, 10)
-    );
+    const nextPhone =
+      digitsOnly.slice(0, 10);
+
+    setPhone(nextPhone);
+
+    /*
+     * If phone changes, the previous
+     * MSG91 request ID is no longer valid.
+     */
+
+    setMsg91ReqId("");
+
+    setOtp("");
+
+    setCountdown(0);
 
     setErrorMessage("");
+
     setSuccessMessage("");
   };
 
@@ -197,14 +517,26 @@ function LoginPage() {
   const handleOtpChange = (
     value: string
   ) => {
+    /*
+     * Only allow numeric OTP digits.
+     */
+
     const digitsOnly =
       value.replace(/\D/g, "");
 
+    /*
+     * MSG91 is configured for 4 digits.
+     */
+
     setOtp(
-      digitsOnly.slice(0, 6)
+      digitsOnly.slice(
+        0,
+        OTP_LENGTH
+      )
     );
 
     setErrorMessage("");
+
     setSuccessMessage("");
   };
 
@@ -245,7 +577,12 @@ function LoginPage() {
   ) => {
     event.preventDefault();
 
+    if (isSendingOtp) {
+      return;
+    }
+
     setErrorMessage("");
+
     setSuccessMessage("");
 
     if (!validatePhone()) {
@@ -256,11 +593,52 @@ function LoginPage() {
       setIsSendingOtp(true);
 
       /*
-       * Backend receives the 10-digit phone number.
+       * Clear previous OTP session data.
        */
 
-      const data =
-        await sendOtp(phone);
+      setOtp("");
+
+      setMsg91ReqId("");
+
+      /*
+       * Send OTP through MSG91.
+       *
+       * MSG91 utility handles:
+       * - +91 country code
+       * - widget initialization
+       * - OTP sending
+       * - reqId extraction
+       */
+
+      const result =
+        await sendMsg91Otp(phone);
+
+      /*
+       * MSG91 currently returns the
+       * request ID inside the response
+       * message field.
+       *
+       * msg91Otp.ts extracts that value
+       * and exposes it as result.reqId.
+       */
+
+      if (!result.reqId) {
+        throw new Error(
+          "MSG91 did not return a request ID. Please try again."
+        );
+      }
+
+      /*
+       * Store MSG91 request ID.
+       *
+       * This is required later for:
+       * - verifyOtp()
+       * - retryOtp()
+       */
+
+      setMsg91ReqId(
+        result.reqId
+      );
 
       /*
        * Move to OTP step.
@@ -269,38 +647,28 @@ function LoginPage() {
       setStep("otp");
 
       /*
-       * Reset OTP.
+       * Start resend timer.
        */
 
-      setOtp("");
+      setCountdown(
+        OTP_RESEND_COUNTDOWN
+      );
 
       /*
-       * Start 60 second resend timer.
-       */
-
-      setCountdown(60);
-
-      /*
-       * Show backend message if available.
+       * Show success message.
        */
 
       setSuccessMessage(
-        data?.expiresAt
-          ? "OTP sent successfully. Please check your mobile."
-          : "OTP sent successfully. Please check your mobile."
+        "OTP sent successfully. Please check your mobile."
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         "Failed to send OTP:",
         error
       );
 
-      const message =
-        error?.response?.data?.message;
-
       setErrorMessage(
-        message ||
-          "Unable to send OTP right now. Please try again."
+        getMsg91ErrorMessage(error)
       );
     } finally {
       setIsSendingOtp(false);
@@ -318,7 +686,12 @@ function LoginPage() {
   ) => {
     event.preventDefault();
 
+    if (isVerifyingOtp) {
+      return;
+    }
+
     setErrorMessage("");
+
     setSuccessMessage("");
 
     /*
@@ -333,9 +706,30 @@ function LoginPage() {
       return;
     }
 
-    if (!/^\d{6}$/.test(otp)) {
+    /*
+     * MSG91 widget is configured for
+     * a 4-digit OTP.
+     */
+
+    if (
+      !new RegExp(
+        `^\\d{${OTP_LENGTH}}$`
+      ).test(otp)
+    ) {
       setErrorMessage(
-        "Please enter the 6-digit OTP."
+        `Please enter the ${OTP_LENGTH}-digit OTP.`
+      );
+
+      return;
+    }
+
+    /*
+     * MSG91 request ID must exist.
+     */
+
+    if (!msg91ReqId) {
+      setErrorMessage(
+        "Your OTP session has expired. Please request a new OTP."
       );
 
       return;
@@ -345,18 +739,64 @@ function LoginPage() {
       setIsVerifyingOtp(true);
 
       /*
-       * Verify OTP with backend.
+       * ===================================================
+       * STEP 1
+       * Verify OTP directly with MSG91.
+       * ===================================================
        */
 
-      const data =
-        await verifyOtp(
-          phone,
-          otp
+      const msg91Result =
+        await verifyMsg91Otp(
+          otp,
+          msg91ReqId
         );
 
       /*
-       * Store token + authenticated
-       * user inside Zustand and localStorage.
+       * ===================================================
+       * STEP 2
+       * Extract MSG91 access token.
+       * ===================================================
+       */
+
+      const accessToken =
+        extractMsg91AccessToken(
+          msg91Result
+        );
+
+      if (!accessToken) {
+        console.error(
+          "MSG91 verification response did not contain an access token:",
+          msg91Result
+        );
+
+        throw new Error(
+          "MSG91 verification succeeded, but no access token was returned."
+        );
+      }
+
+      /*
+       * ===================================================
+       * STEP 3
+       * Send MSG91 access token to our backend.
+       *
+       * Backend will:
+       * - verify token with MSG91
+       * - find/create user
+       * - mark user verified
+       * - generate GuiltFree JWT
+       * ===================================================
+       */
+
+      const data = await verifyOtp(
+        phone,
+        accessToken
+      );
+
+      /*
+       * ===================================================
+       * STEP 4
+       * Store GuiltFree JWT + user in Zustand.
+       * ===================================================
        */
 
       login(
@@ -365,25 +805,35 @@ function LoginPage() {
       );
 
       /*
+       * ===================================================
+       * STEP 5
        * Redirect after successful login.
+       * ===================================================
        */
 
       navigate("/", {
         replace: true,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         "Failed to verify OTP:",
         error
       );
 
-      const message =
-        error?.response?.data?.message;
-
       setErrorMessage(
-        message ||
-          "Invalid or expired OTP. Please try again."
+        getMsg91ErrorMessage(error)
       );
+
+      /*
+       * Clear OTP input after failed verification.
+       */
+
+      setOtp("");
+
+      /*
+       * Keep the current MSG91 request ID
+       * so the user can retry the OTP.
+       */
     } finally {
       setIsVerifyingOtp(false);
     }
@@ -398,42 +848,89 @@ function LoginPage() {
   const handleResendOtp = async () => {
     if (
       countdown > 0 ||
-      isSendingOtp
+      isSendingOtp ||
+      isVerifyingOtp
     ) {
       return;
     }
 
+    /*
+     * A request ID is required for MSG91 retry.
+     */
+
+    if (!msg91ReqId) {
+      setErrorMessage(
+        "Your OTP session has expired. Please change your number and try again."
+      );
+
+      return;
+    }
+
     setErrorMessage("");
+
     setSuccessMessage("");
 
     try {
       setIsSendingOtp(true);
 
-      await sendOtp(phone);
+      /*
+       * Retry OTP through MSG91.
+       *
+       * msg91Otp.ts uses SMS channel "11".
+       */
+
+      const result =
+        await retryMsg91Otp(
+          msg91ReqId
+        );
+
+      /*
+       * If MSG91 returns a new request ID,
+       * update it.
+       *
+       * Otherwise retain the existing
+       * request ID.
+       */
+
+      if (result.reqId) {
+        setMsg91ReqId(
+          result.reqId
+        );
+      }
+
+      /*
+       * Clear old OTP.
+       */
 
       setOtp("");
 
-      setCountdown(60);
+      /*
+       * Restart resend timer.
+       */
+
+      setCountdown(
+        OTP_RESEND_COUNTDOWN
+      );
 
       setSuccessMessage(
         "A new OTP has been sent to your mobile."
       );
 
+      /*
+       * Focus OTP input again.
+       */
+
       window.setTimeout(() => {
         otpInputRef.current?.focus();
       }, 100);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         "Failed to resend OTP:",
         error
       );
 
-      const message =
-        error?.response?.data?.message;
-
       setErrorMessage(
-        message ||
-          "Unable to resend OTP right now. Please try again."
+        getMsg91ErrorMessage(error)
       );
     } finally {
       setIsSendingOtp(false);
@@ -447,9 +944,18 @@ function LoginPage() {
    */
 
   const handleChangePhone = () => {
+    if (
+      isSendingOtp ||
+      isVerifyingOtp
+    ) {
+      return;
+    }
+
     setStep("phone");
 
     setOtp("");
+
+    setMsg91ReqId("");
 
     setCountdown(0);
 
@@ -476,9 +982,7 @@ function LoginPage() {
 
   return (
     <main className="min-h-screen bg-[#fffaf5] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-
       <div className="mx-auto flex min-h-[calc(100vh-152px)] max-w-md items-center justify-center">
-
         <section className="w-full">
 
           {/* =================================================
@@ -500,7 +1004,7 @@ function LoginPage() {
             <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-slate-500 sm:text-base">
               {step === "phone"
                 ? "Login securely using your mobile number and OTP."
-                : `We've sent a 6-digit OTP to +91 ${phone}.`}
+                : `We've sent a ${OTP_LENGTH}-digit OTP to +91 ${phone}.`}
             </p>
 
           </div>
@@ -699,8 +1203,8 @@ function LoginPage() {
                         event.target.value
                       )
                     }
-                    placeholder="Enter 6-digit OTP"
-                    maxLength={6}
+                    placeholder={`Enter ${OTP_LENGTH}-digit OTP`}
+                    maxLength={OTP_LENGTH}
                     disabled={isVerifyingOtp}
                     className="mt-2 w-full rounded-2xl border border-[#d9c7b7] bg-white px-4 py-4 text-center text-lg font-bold tracking-[0.45em] text-slate-900 outline-none transition placeholder:text-sm placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus:border-[#8b542f] focus:ring-2 focus:ring-[#f3e4d3] disabled:cursor-not-allowed disabled:bg-slate-50"
                   />
@@ -711,7 +1215,7 @@ function LoginPage() {
                   type="submit"
                   disabled={
                     isVerifyingOtp ||
-                    otp.length !== 6
+                    otp.length !== OTP_LENGTH
                   }
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#8b542f] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#754527] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                 >
@@ -741,7 +1245,8 @@ function LoginPage() {
                       handleChangePhone
                     }
                     disabled={
-                      isVerifyingOtp
+                      isVerifyingOtp ||
+                      isSendingOtp
                     }
                     className="text-xs font-semibold text-slate-500 transition hover:text-[#8b542f] disabled:cursor-not-allowed disabled:opacity-50"
                   >
@@ -750,7 +1255,8 @@ function LoginPage() {
 
                   {countdown > 0 ? (
                     <p className="text-xs text-slate-400">
-                      Resend OTP in{" "}
+                      Resend OTP{" "}
+                      in{" "}
                       <span className="font-semibold text-slate-600">
                         {countdown}s
                       </span>
@@ -802,9 +1308,7 @@ function LoginPage() {
           </div>
 
         </section>
-
       </div>
-
     </main>
   );
 }

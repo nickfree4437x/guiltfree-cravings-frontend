@@ -16,23 +16,6 @@ export interface AuthUser {
 
 /*
  * =========================================================
- * SEND OTP RESPONSE
- * =========================================================
- */
-
-interface SendOtpResponse {
-  success: boolean;
-  message: string;
-
-  data: {
-    userId: number;
-    phone: string;
-    expiresAt: string;
-  };
-}
-
-/*
- * =========================================================
  * VERIFY OTP RESPONSE
  * =========================================================
  */
@@ -73,7 +56,7 @@ interface UpdateProfileResponse {
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
-    "http://localhost:5000/api",
+    "https://guiltfree-cravings-backend.onrender.com/api",
 
   headers: {
     "Content-Type": "application/json",
@@ -82,40 +65,34 @@ const api = axios.create({
 
 /*
  * =========================================================
- * SEND OTP
+ * VERIFY MSG91 OTP
  * =========================================================
- */
-
-export const sendOtp = async (
-  phone: string
-): Promise<SendOtpResponse["data"]> => {
-  const response =
-    await api.post<SendOtpResponse>(
-      "/auth/send-otp",
-      {
-        phone,
-      }
-    );
-
-  return response.data.data;
-};
-
-/*
- * =========================================================
- * VERIFY OTP
- * =========================================================
+ *
+ * The OTP itself is verified by MSG91 Web SDK.
+ *
+ * After successful MSG91 verification,
+ * frontend receives an MSG91 access token.
+ *
+ * That access token is sent to our backend.
+ *
+ * Backend:
+ * MSG91 access-token verification
+ *        ↓
+ * User find/create
+ *        ↓
+ * GuiltFree JWT
  */
 
 export const verifyOtp = async (
   phone: string,
-  otp: string
+  accessToken: string
 ): Promise<VerifyOtpResponse["data"]> => {
   const response =
     await api.post<VerifyOtpResponse>(
       "/auth/verify-otp",
       {
         phone,
-        otp,
+        accessToken,
       }
     );
 
@@ -126,8 +103,6 @@ export const verifyOtp = async (
  * =========================================================
  * UPDATE MY PROFILE
  * =========================================================
- *
- * Authenticated API
  *
  * PATCH /api/users/me
  *

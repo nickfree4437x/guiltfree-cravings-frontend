@@ -11,6 +11,12 @@ export interface CartItem {
   quantity: number;
 }
 
+interface PendingCartItem {
+  product: Product;
+  variant: ProductVariant;
+  quantity: number;
+}
+
 interface CartState {
   items: CartItem[];
 
@@ -35,21 +41,32 @@ interface CartState {
 
   getCartItemCount: () => number;
   getCartTotal: () => number;
+
+  setPendingCartItem: (
+    product: Product,
+    variant: ProductVariant,
+    quantity: number
+  ) => void;
+
+  getPendingCartItem: () => PendingCartItem | null;
+
+  clearPendingCartItem: () => void;
+
+  addPendingCartItem: () => void;
 }
 
-/*
- * =========================================================
- * CART STORAGE
- * =========================================================
- */
+/* =========================================================
+   CART STORAGE
+========================================================= */
 
 const CART_STORAGE_KEY = "guiltfree_cart";
 
-/*
- * =========================================================
- * LOAD CART FROM LOCAL STORAGE
- * =========================================================
- */
+const PENDING_CART_STORAGE_KEY =
+  "guiltfree_pending_cart_item";
+
+/* =========================================================
+   LOAD CART
+========================================================= */
 
 const getStoredCart = (): CartItem[] => {
   try {
@@ -63,13 +80,6 @@ const getStoredCart = (): CartItem[] => {
     const parsedCart = JSON.parse(
       storedCart
     ) as CartItem[];
-
-    /*
-     * Basic validation
-     *
-     * Corrupted localStorage data should
-     * never break the cart application.
-     */
 
     if (!Array.isArray(parsedCart)) {
       return [];
@@ -95,13 +105,13 @@ const getStoredCart = (): CartItem[] => {
   }
 };
 
-/*
- * =========================================================
- * SAVE CART TO LOCAL STORAGE
- * =========================================================
- */
+/* =========================================================
+   SAVE CART
+========================================================= */
 
-const saveCart = (items: CartItem[]) => {
+const saveCart = (
+  items: CartItem[]
+) => {
   try {
     localStorage.setItem(
       CART_STORAGE_KEY,
@@ -115,152 +125,184 @@ const saveCart = (items: CartItem[]) => {
   }
 };
 
-/*
- * =========================================================
- * INITIAL CART
- * =========================================================
- */
+/* =========================================================
+   LOAD PENDING CART ITEM
+========================================================= */
 
-const storedCart = getStoredCart();
+const getStoredPendingCartItem =
+  (): PendingCartItem | null => {
+    try {
+      const storedItem =
+        localStorage.getItem(
+          PENDING_CART_STORAGE_KEY
+        );
 
-/*
- * =========================================================
- * CART STORE
- * =========================================================
- */
-
-export const useCartStore = create<CartState>(
-  (set, get) => ({
-    /*
-     * =====================================================
-     * INITIAL STATE
-     * =====================================================
-     */
-
-    items: storedCart,
-
-    /*
-     * =====================================================
-     * ADD TO CART
-     * =====================================================
-     *
-     * Same product + same variant
-     * = increase quantity
-     *
-     * Same product + different variant
-     * = separate cart item
-     */
-
-    addToCart: (
-      product,
-      variant,
-      quantity = 1
-    ) => {
-      if (quantity <= 0) {
-        return;
+      if (!storedItem) {
+        return null;
       }
 
-      set((state) => {
-        const existingItem =
-          state.items.find(
-            (item) =>
-              item.product.id === product.id &&
-              item.variant.id === variant.id
-          );
+      const parsedItem =
+        JSON.parse(
+          storedItem
+        ) as PendingCartItem;
 
-        let updatedItems: CartItem[];
+      if (
+        !parsedItem ||
+        !parsedItem.product ||
+        typeof parsedItem.product.id !== "number" ||
+        !parsedItem.variant ||
+        typeof parsedItem.variant.id !== "number" ||
+        typeof parsedItem.quantity !== "number" ||
+        parsedItem.quantity <= 0
+      ) {
+        return null;
+      }
 
-        if (existingItem) {
-          updatedItems = state.items.map(
-            (item) =>
-              item.product.id === product.id &&
-              item.variant.id === variant.id
-                ? {
-                    ...item,
-                    quantity:
-                      item.quantity + quantity,
-                  }
-                : item
-          );
-        } else {
-          updatedItems = [
-            ...state.items,
-            {
-              product,
-              variant,
-              quantity,
-            },
-          ];
+      return parsedItem;
+    } catch (error) {
+      console.error(
+        "Failed to load pending cart item:",
+        error
+      );
+
+      return null;
+    }
+  };
+
+/* =========================================================
+   SAVE PENDING CART ITEM
+========================================================= */
+
+const savePendingCartItem = (
+  item: PendingCartItem
+) => {
+  try {
+    localStorage.setItem(
+      PENDING_CART_STORAGE_KEY,
+      JSON.stringify(item)
+    );
+  } catch (error) {
+    console.error(
+      "Failed to save pending cart item:",
+      error
+    );
+  }
+};
+
+/* =========================================================
+   CLEAR PENDING CART ITEM
+========================================================= */
+
+const removePendingCartItem = () => {
+  try {
+    localStorage.removeItem(
+      PENDING_CART_STORAGE_KEY
+    );
+  } catch (error) {
+    console.error(
+      "Failed to clear pending cart item:",
+      error
+    );
+  }
+};
+
+/* =========================================================
+   INITIAL CART
+========================================================= */
+
+const storedCart =
+  getStoredCart();
+
+/* =========================================================
+   CART STORE
+========================================================= */
+
+export const useCartStore =
+  create<CartState>(
+    (set, get) => ({
+      /* =====================================================
+         INITIAL STATE
+      ===================================================== */
+
+      items: storedCart,
+
+      /* =====================================================
+         ADD TO CART
+      ===================================================== */
+
+      addToCart: (
+        product,
+        variant,
+        quantity = 1
+      ) => {
+        if (quantity <= 0) {
+          return;
         }
 
-        /*
-         * Persist updated cart
-         */
+        set((state) => {
+          const existingItem =
+            state.items.find(
+              (item) =>
+                item.product.id ===
+                  product.id &&
+                item.variant.id ===
+                  variant.id
+            );
 
-        saveCart(updatedItems);
+          let updatedItems: CartItem[];
 
-        return {
-          items: updatedItems,
-        };
-      });
-    },
+          if (existingItem) {
+            updatedItems =
+              state.items.map(
+                (item) =>
+                  item.product.id ===
+                    product.id &&
+                  item.variant.id ===
+                    variant.id
+                    ? {
+                        ...item,
+                        quantity:
+                          item.quantity +
+                          quantity,
+                      }
+                    : item
+              );
+          } else {
+            updatedItems = [
+              ...state.items,
+              {
+                product,
+                variant,
+                quantity,
+              },
+            ];
+          }
 
-    /*
-     * =====================================================
-     * REMOVE FROM CART
-     * =====================================================
-     */
+          saveCart(updatedItems);
 
-    removeFromCart: (
-      productId,
-      variantId
-    ) => {
-      set((state) => {
-        const updatedItems =
-          state.items.filter(
-            (item) =>
-              !(
-                item.product.id === productId &&
-                item.variant.id === variantId
-              )
-          );
+          return {
+            items: updatedItems,
+          };
+        });
+      },
 
-        /*
-         * Persist updated cart
-         */
+      /* =====================================================
+         REMOVE FROM CART
+      ===================================================== */
 
-        saveCart(updatedItems);
-
-        return {
-          items: updatedItems,
-        };
-      });
-    },
-
-    /*
-     * =====================================================
-     * UPDATE QUANTITY
-     * =====================================================
-     */
-
-    updateQuantity: (
-      productId,
-      variantId,
-      quantity
-    ) => {
-      /*
-       * Quantity 0 or below
-       * = remove item
-       */
-
-      if (quantity <= 0) {
+      removeFromCart: (
+        productId,
+        variantId
+      ) => {
         set((state) => {
           const updatedItems =
             state.items.filter(
               (item) =>
                 !(
-                  item.product.id === productId &&
-                  item.variant.id === variantId
+                  item.product.id ===
+                    productId &&
+                  item.variant.id ===
+                    variantId
                 )
             );
 
@@ -270,97 +312,165 @@ export const useCartStore = create<CartState>(
             items: updatedItems,
           };
         });
+      },
 
-        return;
-      }
+      /* =====================================================
+         UPDATE QUANTITY
+      ===================================================== */
 
-      set((state) => {
-        const updatedItems =
-          state.items.map((item) =>
-            item.product.id === productId &&
-            item.variant.id === variantId
-              ? {
-                  ...item,
-                  quantity,
-                }
-              : item
+      updateQuantity: (
+        productId,
+        variantId,
+        quantity
+      ) => {
+        if (quantity <= 0) {
+          set((state) => {
+            const updatedItems =
+              state.items.filter(
+                (item) =>
+                  !(
+                    item.product.id ===
+                      productId &&
+                    item.variant.id ===
+                      variantId
+                  )
+              );
+
+            saveCart(updatedItems);
+
+            return {
+              items: updatedItems,
+            };
+          });
+
+          return;
+        }
+
+        set((state) => {
+          const updatedItems =
+            state.items.map(
+              (item) =>
+                item.product.id ===
+                  productId &&
+                item.variant.id ===
+                  variantId
+                  ? {
+                      ...item,
+                      quantity,
+                    }
+                  : item
+            );
+
+          saveCart(updatedItems);
+
+          return {
+            items: updatedItems,
+          };
+        });
+      },
+
+      /* =====================================================
+         CLEAR CART
+      ===================================================== */
+
+      clearCart: () => {
+        try {
+          localStorage.removeItem(
+            CART_STORAGE_KEY
           );
+        } catch (error) {
+          console.error(
+            "Failed to clear cart from localStorage:",
+            error
+          );
+        }
 
-        /*
-         * Persist updated cart
-         */
+        set({
+          items: [],
+        });
+      },
 
-        saveCart(updatedItems);
+      /* =====================================================
+         CART ITEM COUNT
+      ===================================================== */
 
-        return {
-          items: updatedItems,
-        };
-      });
-    },
-
-    /*
-     * =====================================================
-     * CLEAR CART
-     * =====================================================
-     *
-     * Used after successful order creation/payment flow
-     * according to the existing checkout implementation.
-     */
-
-    clearCart: () => {
-      try {
-        localStorage.removeItem(
-          CART_STORAGE_KEY
+      getCartItemCount: () => {
+        return get().items.reduce(
+          (total, item) =>
+            total + item.quantity,
+          0
         );
-      } catch (error) {
-        console.error(
-          "Failed to clear cart from localStorage:",
-          error
+      },
+
+      /* =====================================================
+         CART TOTAL
+      ===================================================== */
+
+      getCartTotal: () => {
+        return get().items.reduce(
+          (total, item) =>
+            total +
+            item.variant.price *
+              item.quantity,
+          0
         );
-      }
+      },
 
-      set({
-        items: [],
-      });
-    },
+      /* =====================================================
+         SET PENDING CART ITEM
+      ===================================================== */
 
-    /*
-     * =====================================================
-     * CART ITEM COUNT
-     * =====================================================
-     *
-     * Example:
-     *
-     * 250g × 2
-     * 500g × 1
-     *
-     * count = 3
-     */
+      setPendingCartItem: (
+        product,
+        variant,
+        quantity
+      ) => {
+        if (quantity <= 0) {
+          return;
+        }
 
-    getCartItemCount: () => {
-      return get().items.reduce(
-        (total, item) =>
-          total + item.quantity,
-        0
-      );
-    },
+        savePendingCartItem({
+          product,
+          variant,
+          quantity,
+        });
+      },
 
-    /*
-     * =====================================================
-     * CART TOTAL
-     * =====================================================
-     *
-     * variant.price × quantity
-     */
+      /* =====================================================
+         GET PENDING CART ITEM
+      ===================================================== */
 
-    getCartTotal: () => {
-      return get().items.reduce(
-        (total, item) =>
-          total +
-          item.variant.price *
-            item.quantity,
-        0
-      );
-    },
-  })
-);
+      getPendingCartItem: () => {
+        return getStoredPendingCartItem();
+      },
+
+      /* =====================================================
+         CLEAR PENDING CART ITEM
+      ===================================================== */
+
+      clearPendingCartItem: () => {
+        removePendingCartItem();
+      },
+
+      /* =====================================================
+         ADD PENDING ITEM AFTER LOGIN
+      ===================================================== */
+
+      addPendingCartItem: () => {
+        const pendingItem =
+          getStoredPendingCartItem();
+
+        if (!pendingItem) {
+          return;
+        }
+
+        get().addToCart(
+          pendingItem.product,
+          pendingItem.variant,
+          pendingItem.quantity
+        );
+
+        removePendingCartItem();
+      },
+    })
+  );

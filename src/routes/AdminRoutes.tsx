@@ -11,6 +11,7 @@ import AdminOrdersPage from "../pages/admin/orders/AdminOrdersPage";
 import AdminCustomersPage from "../pages/admin/users/AdminCustomersPage";
 import AdminPaymentsPage from "../pages/admin/payments/AdminPaymentsPage";
 import AdminAnalyticsPage from "../pages/admin/analytics/AdminAnalyticsPage";
+import AdminOffers from "../pages/admin/offers/AdminOffersPage";
 import AdminSettingsPage from "../pages/admin/settings/AdminSettingsPage";
 
 import AdminLayout from "../pages/admin/layout/AdminLayout";
@@ -88,6 +89,11 @@ function AdminRoutes() {
           <Route
             path="analytics"
             element={<AdminAnalyticsPage />}
+          />
+
+          <Route
+            path="offers"
+            element={<AdminOffers />}
           />
 
           {/* =================================================

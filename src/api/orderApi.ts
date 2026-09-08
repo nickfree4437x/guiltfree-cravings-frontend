@@ -17,9 +17,27 @@ export interface CreateOrderCustomer {
   email: string;
 }
 
+/*
+ * =========================================================
+ * CREATE ORDER PAYLOAD
+ * =========================================================
+ *
+ * offerCode is optional.
+ *
+ * If customer has applied an offer during checkout,
+ * the offer code will be sent to the backend.
+ *
+ * IMPORTANT:
+ * Backend must re-validate the offer and calculate
+ * the final discount. Frontend discount values are
+ * never trusted for order creation.
+ */
+
 export interface CreateOrderPayload {
   customer: CreateOrderCustomer;
   items: CreateOrderItem[];
+
+  offerCode?: string | null;
 }
 
 export interface OrderItem {
@@ -51,6 +69,12 @@ export type PaymentStatus =
   | "FAILED"
   | "REFUNDED";
 
+/*
+ * =========================================================
+ * ORDER
+ * =========================================================
+ */
+
 export interface Order {
   id: number;
   orderNumber: string;
@@ -61,7 +85,24 @@ export interface Order {
   customerPhone: string;
   customerEmail: string | null;
 
+  /*
+   * Original order subtotal before offer discount.
+   */
   subtotal: number;
+
+  /*
+   * Discount applied to the order.
+   */
+  discountAmount?: number;
+
+  /*
+   * Applied offer code, if any.
+   */
+  offerCode?: string | null;
+
+  /*
+   * Final payable order amount.
+   */
   totalAmount: number;
 
   orderStatus: OrderStatus;
@@ -105,7 +146,7 @@ interface OrderResponse {
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
-    "http://localhost:5000/api",
+    "https://guiltfree-cravings-backend.onrender.com/api",
 
   headers: {
     "Content-Type": "application/json",
@@ -122,7 +163,9 @@ const AUTH_TOKEN_KEY = "guiltfree_auth_token";
 
 const getAuthToken = (): string | null => {
   try {
-    return localStorage.getItem(AUTH_TOKEN_KEY);
+    return localStorage.getItem(
+      AUTH_TOKEN_KEY
+    );
   } catch {
     return null;
   }
@@ -145,7 +188,8 @@ api.interceptors.request.use(
     const token = getAuthToken();
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization =
+        `Bearer ${token}`;
     }
 
     return config;
@@ -159,6 +203,24 @@ api.interceptors.request.use(
  * =========================================================
  * CREATE ORDER
  * =========================================================
+ *
+ * The backend remains responsible for:
+ *
+ * - validating products
+ * - validating variants
+ * - calculating prices
+ * - calculating subtotal
+ * - validating the offer
+ * - calculating discount
+ * - calculating final total
+ * - creating the order
+ *
+ * Frontend only sends:
+ *
+ * - customer details
+ * - product/variant IDs
+ * - quantities
+ * - optional offer code
  */
 
 export const createOrder = async (
@@ -183,7 +245,9 @@ export const getMyOrders = async (): Promise<
   Order[]
 > => {
   const response =
-    await api.get<OrdersResponse>("/orders");
+    await api.get<OrdersResponse>(
+      "/orders"
+    );
 
   return response.data.data;
 };
@@ -204,5 +268,11 @@ export const getOrderById = async (
 
   return response.data.data;
 };
+
+/*
+ * =========================================================
+ * DEFAULT EXPORT
+ * =========================================================
+ */
 
 export default api;

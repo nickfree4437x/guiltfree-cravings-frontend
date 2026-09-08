@@ -1,8 +1,10 @@
+// src/api/adminDashboardApi.ts
+
 import axios from "axios";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  "http://localhost:5000/api";
+  "https://guiltfree-cravings-backend.onrender.com/api";
 
 export interface AdminDashboardStats {
   totalProducts: number;
@@ -33,12 +35,21 @@ export interface AdminRecentOrder {
   createdAt: string;
 }
 
+export interface AdminTopSellingProduct {
+  productId: number;
+  productName: string;
+  image: string;
+  unitsSold: number;
+  revenue: number;
+}
+
 interface AdminDashboardResponse {
   success: boolean;
   message?: string;
   data: {
     stats: AdminDashboardStats;
     recentOrders: AdminRecentOrder[];
+    topSellingProducts: AdminTopSellingProduct[];
   };
 }
 

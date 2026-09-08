@@ -12,6 +12,8 @@ import OrderSuccessPage from "../pages/order-success/OrderSuccessPage";
 import MyOrdersPage from "../pages/my-orders/MyOrdersPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import LoginPage from "../pages/login/LoginPage";
+import WishlistPage from "../pages/wishlist/WishlistPage";
+import CouponsPage from "../pages/coupons/CouponsPage";
 
 const AppRoutes = () => {
   return (
@@ -80,6 +82,16 @@ const AppRoutes = () => {
         <Route
           path="/login"
           element={<LoginPage />}
+        />
+
+        <Route
+          path="/wishlist"
+          element={<WishlistPage />}
+        />
+
+        <Route
+          path="/coupons"
+          element={<CouponsPage />}
         />
 
       </Route>

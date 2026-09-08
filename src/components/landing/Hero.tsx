@@ -4,182 +4,145 @@ function Hero() {
   return (
     <section
       id="home"
-      className="min-h-[calc(100vh-76px)] bg-[#fffaf5]"
+      className="relative min-h-[90vh] sm:min-h-[95vh] lg:min-h-screen w-full overflow-hidden bg-[#2f2f2f]"
     >
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-        <div className="grid min-h-[calc(100vh-76px)] items-center gap-6 py-10 md:gap-8 md:py-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8 lg:py-14">
+      {/* =========================================================
+          BACKGROUND IMAGE with Overlay
+      ========================================================= */}
 
-          {/* =====================================================
-              LEFT CONTENT
-          ===================================================== */}
-          <div className="order-2 max-w-xl lg:order-1 lg:pl-4">
-  
-          {/* Brand Eyebrow */}
-          <div className="mb-2 flex items-center gap-3">
-            <span className="h-px w-8 bg-[#8b542f]" />
-            <p className="text-xs uppercase tracking-[0.24em] text-[#8b542f]">
-              GuiltFree Cravings
-            </p>
-            <span className="h-px w-8 bg-[#8b542f]" />
-          </div>
+      <div
+        className="absolute inset-0 z-0 h-full w-full bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${img})`,
+        }}
+      />
 
-          {/* Main Heading */}
-          <h1 className="text-4xl font-bold leading-[1.08] tracking-[-0.035em] text-slate-900 sm:text-5xl lg:text-[3.5rem]">
-            Your Cravings.
-            <br />
-            <span className="text-[#8b542f]">Made Better.</span>
-            <br />
-            <span className="font-serif font-normal italic text-slate-800">
-              Made with love.
-            </span>
-          </h1>
+      {/* Dark Overlay - responsive opacity */}
+      <div className="absolute inset-0 z-10 bg-black/50 sm:bg-black/45 md:bg-black/40 lg:bg-black/35" />
 
-          {/* Description */}
-          <p className="mt-5 max-w-lg text-base leading-relaxed text-slate-600 sm:text-md">
-            Indulge in delicious homemade treats crafted with thoughtfully
-            selected ingredients, comforting flavours, and a whole lot of love.
-            <span className="font-medium text-slate-800">
-              {" "}Because your everyday cravings deserve something better.
-            </span>
-          </p>
+      {/* =========================================================
+          CONTENT - Fully Centered
+      ========================================================= */}
 
-          {/* CTA Buttons */}
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            {/* Primary CTA */}
-            <a
-              href="#products"
-              className="group inline-flex items-center gap-3 rounded-full bg-[#8b542f] px-7 py-3.5 text-sm text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#754527] hover:shadow-md"
-            >
-              Explore Our Collection
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 group-hover:translate-x-0.5">
-                <svg viewBox="0 0 20 20" fill="none" className="h-3.5 w-3.5" aria-hidden="true">
-                  <path
-                    d="M4 10h11M11 6l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-            </a>
+      <div className="relative z-20 mx-auto flex min-h-[90vh] sm:min-h-[95vh] lg:min-h-screen w-full max-w-7xl flex-col items-center justify-center px-5 sm:px-8 md:px-12 lg:px-16 py-12 sm:py-16 md:py-20 text-center">
+        
 
-            {/* Secondary CTA */}
-            <a
-              href="#about"
-              className="group inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-6 py-3.5 text-sm text-slate-700 transition-all duration-200 hover:border-[#d8b99a] hover:bg-white hover:text-[#8b542f]"
-            >
-              Our Story
-              <span className="transition-transform duration-200 group-hover:translate-x-1">
-                →
-              </span>
-            </a>
-          </div>
+        {/* =====================================================
+            HEADING
+        ===================================================== */}
 
-          {/* Brand Authority Section */}
-          <div className="mt-10 border-t border-[#e8ddd3] pt-7">
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Why GuiltFree Cravings
-            </p>
+        <h1 className="mt-5 text-[26px] sm:text-[30px] md:text-[40px] font-bold tracking-wide mb-2 leading-snug md:whitespace-nowrap text-white">
+          Wholesome Goodness,
+          Irresistible Taste  
+        </h1>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-              {/* Authority Item 1 */}
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f3e4d3] text-[#8b542f]">
-                  <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
-                    <path
-                      d="M10 3.5 12 7l3.8.6-2.7 2.7.6 3.8-3.7-1.8-3.7 1.8.6-3.8-2.7-2.7L8 7l2-3.5Z"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-800">Thoughtfully Made</p>
-                  <p className="text-[11px] text-slate-500">Quality ingredients</p>
-                </div>
-              </div>
+        {/* =====================================================
+            DESCRIPTION
+        ===================================================== */}
 
-              {/* Authority Item 2 */}
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f3e4d3] text-[#8b542f]">
-                  <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
-                    <path
-                      d="M10 16.5s-5.5-3.2-5.5-7.1A3.4 3.4 0 0 1 10 7.2a3.4 3.4 0 0 1 5.5 2.2c0 3.9-5.5 7.1-5.5 7.1Z"
-                      stroke="currentColor"
-                      strokeWidth="1.4"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-800">Homemade Goodness</p>
-                  <p className="text-[11px] text-slate-500">Made with care</p>
-                </div>
-              </div>
+        <p className="mt-3 sm:mt-4 md:mt-5 max-w-xl sm:max-w-2xl text-[12px] md:text-[14px] font-[350] leading-relaxed sm:leading-relaxed text-white">
+          Delicious homemade treats crafted with thoughtfully selected ingredients, comforting
+          flavours, and a whole lot of love, made to bring a little more joy to every craving.
+        </p>
 
-              {/* Authority Item 3 */}
-              <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f3e4d3] text-[#8b542f]">
-                  <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
-                    <path
-                      d="M5 10.5 8.2 14 15 6.5"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-800">Made for You</p>
-                  <p className="text-[11px] text-slate-500">Fresh & delicious</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* =====================================================
+            BUTTONS
+        ===================================================== */}
 
+        <div className="mt-5 sm:mt-6 md:mt-7 lg:mt-8 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 md:gap-4">
+          
+          {/* Primary CTA */}
+          <a
+            href="#products"
+            className="inline-flex items-center gap-2 sm:gap-3 rounded-full bg-[#8b542f] px-5 sm:px-7 md:px-9 py-2 sm:py-2.5 md:py-3 text-[12px] md:text-[13px] text-white shadow-sm transition-all duration-300 hover:bg-[#754527]"
+          >
+            Explore Collection
+          </a>
+          
+          {/* Secondary CTA */}
+          <a
+            href="#about"
+            className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-sm px-4 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-[12px] md:text-[13px] text-white transition-all duration-300 hover:bg-white/20"
+          >
+            Discover Story
+          </a>
+          
         </div>
 
+        {/* =====================================================
+            TRUST BADGES
+        ===================================================== */}
 
-          {/* =====================================================
-              RIGHT IMAGE
+        <div className="mt-6 sm:mt-7 md:mt-8 lg:mt-10 flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 md:gap-x-8 lg:gap-x-10 gap-y-2 sm:gap-y-3 border-t border-white/15 pt-5 sm:pt-6 md:pt-7">
+          
+          {/* 1. Quality Ingredients */}
+          {/* <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5">
+            <span className="flex h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-[#8b542f]/40 backdrop-blur-sm text-[10px] sm:text-[12px] md:text-[14px] text-white">
+              ✓
+            </span>
+            <span className="text-[10px] xs:text-[11px] sm:text-[12px] md:text-[13px] text-white/80 whitespace-nowrap">
+              Quality Ingredients
+            </span>
+          </div> */}
+          
+          {/* 2. Homemade Goodness */}
+          {/* <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5">
+            <span className="flex h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-[#8b542f]/40 backdrop-blur-sm text-[10px] sm:text-[12px] md:text-[14px] text-white">
+              ✓
+            </span>
+            <span className="text-[10px] xs:text-[11px] sm:text-[12px] md:text-[13px] text-white/80 whitespace-nowrap">
+              Homemade Goodness
+            </span>
+          </div> */}
+          
+          {/* 3. Made with Care */}
+          {/* <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5">
+            <span className="flex h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 items-center justify-center rounded-full bg-[#8b542f]/40 backdrop-blur-sm text-[10px] sm:text-[12px] md:text-[14px] text-white">
+              ✓
+            </span>
+            <span className="text-[10px] xs:text-[11px] sm:text-[12px] md:text-[13px] text-white/80 whitespace-nowrap">
+              Made with Care
+            </span>
+          </div> */}
+          
+        </div>
+
+        {/* =====================================================
+              SCROLL INDICATOR
           ===================================================== */}
-          <div className="order-1 flex justify-center lg:order-2 lg:justify-end">
 
-            <div className="relative w-full max-w-[600px]">
-
-              {/* Background Blob */}
-              <div className="absolute -right-6 top-1/2 h-[88%] w-[88%] -translate-y-1/2 rounded-full bg-[#f2dfcc]" />
-
-              <div className="relative">
-
-                {/* Main Image */}
-                <div className="overflow-hidden rounded-lg shadow-[0_20px_50px_rgba(94,55,25,0.12)]">
-                  <img
-                    src={img}
-                    alt="Delicious homemade laddoos"
-                    className="h-[360px] w-full object-cover sm:h-[430px] lg:h-[520px]"
-                  />
-                </div>
-
-                {/* Side Text */}
-                <div className="absolute -left-7 top-1/2 hidden -translate-y-1/2 -rotate-90 lg:block">
-                  <span className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.4em] text-[#8b542f]">
-                    GuiltFree Cravings
-                  </span>
-                </div>
-
-                {/* Badge */}
-                <div className="absolute bottom-5 right-5 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-sm font-bold text-[#8b542f] shadow-lg backdrop-blur-sm">
-                  01
-                </div>
-
-              </div>
+          <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center">
+            <div className="relative flex h-9 w-6 items-start justify-center rounded-full border-2 border-white/40 p-1.5">
+              <span
+                className="h-1.5 w-1.5 rounded-full bg-white/70"
+                style={{
+                  animation: "mouseScroll 1.8s ease-in-out infinite",
+                }}
+              />
             </div>
+
+            <style>
+              {`
+                @keyframes mouseScroll {
+                  0% {
+                    transform: translateY(0);
+                    opacity: 0;
+                  }
+                  20% {
+                    opacity: 1;
+                  }
+                  80% {
+                    opacity: 1;
+                  }
+                  100% {
+                    transform: translateY(12px);
+                    opacity: 0;
+                  }
+                }
+              `}
+            </style>
           </div>
 
-        </div>
       </div>
     </section>
   );

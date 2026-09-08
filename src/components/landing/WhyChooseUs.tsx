@@ -1,72 +1,105 @@
+import {
+  Heart,
+  Home,
+  Leaf,
+  Star,
+  Utensils,
+} from "lucide-react";
+
 function WhyChooseUs() {
   const benefits = [
     {
       title: "Quality Ingredients",
       description:
         "Thoughtfully selected ingredients to create delicious treats you can enjoy with confidence.",
-      icon: "🌿",
+      icon: Leaf,
+      bgColor: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+      borderColor: "border-emerald-200",
     },
     {
       title: "Made with Care",
       description:
         "Every treat is prepared with attention to detail, care, and a passion for great taste.",
-      icon: "❤️",
+      icon: Heart,
+      bgColor: "bg-rose-50",
+      iconColor: "text-rose-500",
+      borderColor: "border-rose-200",
     },
     {
       title: "Delicious Taste",
       description:
         "Because choosing a better treat should never mean compromising on flavour.",
-      icon: "✨",
+      icon: Star,  // ✅ Changed from Sparkles to Star
+      bgColor: "bg-amber-50",
+      iconColor: "text-amber-500",
+      borderColor: "border-amber-200",
     },
     {
       title: "Homemade Goodness",
       description:
         "The warmth and comfort of homemade goodness, made for everyday cravings and special moments.",
-      icon: "🏠",
+      icon: Home,
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-500",
+      borderColor: "border-blue-200",
     },
   ];
 
   return (
-    <section className="bg-[#fffaf5] px-6 py-20 sm:py-24 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-
+    <section className="bg-[#fffaf5] px-5 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8" id="why-choose">
+      <div className="mx-auto max-w-6xl">
         {/* Section Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b542f]">
-            Why Choose Us?
-          </span>
-
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-            Good Food,
-            <span className="text-[#8b542f]"> Thoughtfully Made.</span>
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#f8eee4] px-4 py-1.5">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[#8b542f]">
+              Why Choose Us
+            </span>
+          </div>
+          
+          <h2 className="mt-2 text-[18px] sm:text-[22px] md:text-[28px] font-semibold leading-tight tracking-wide text-[#2c2c2c]">
+            Good Food, Thoughtfully Made
           </h2>
-
-          <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
+          
+          <p className="mt-2 mx-auto max-w-xl text-[12px] md:text-[14.5px] font-[350] leading-relaxed text-slate-500">
             We put care into every detail so you can simply enjoy every
             delicious bite.
           </p>
         </div>
 
         {/* Benefits */}
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map((benefit) => (
-            <div
-              key={benefit.title}
-              className="group rounded-3xl border border-[#eadfd3] bg-white p-7 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f3e4d3] text-2xl transition duration-300 group-hover:scale-110">
-                {benefit.icon}
+        <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-gray-200 bg-[#eadfd3] sm:grid-cols-2 lg:mt-12 lg:grid-cols-4 mb-14">
+          {benefits.map((benefit, index) => {
+            const Icon = benefit.icon;
+
+            return (
+              <div
+                key={benefit.title}
+                className="group relative bg-white px-6 py-8 text-center transition-all duration-300 sm:px-7 sm:py-9 lg:min-h-[285px] lg:px-6"
+              >
+                {/* Icon with Different Colors */}
+                <div className={`relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${benefit.borderColor} ${benefit.bgColor} ${benefit.iconColor} transition-all duration-300`}>
+                  <Icon
+                    size={23}
+                    strokeWidth={1.7}
+                    className="transition-transform"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="relative">
+                  <h3 className="mt-6 text-[16px] font-semibold tracking-tight text-slate-900">
+                    {benefit.title}
+                  </h3>
+
+                  <p className="mx-auto mt-3 max-w-[230px] text-[12px] font-[350] leading-5 text-slate-500 sm:text-[14px]">
+                    {benefit.description}
+                  </p>
+                </div>
+
               </div>
-
-              <h3 className="mt-5 text-lg font-bold text-slate-900">
-                {benefit.title}
-              </h3>
-
-              <p className="mt-3 text-sm leading-6 text-slate-500">
-                {benefit.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
       </div>

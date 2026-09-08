@@ -1,19 +1,19 @@
+// src/pages/admin/layout/AdminLayout.tsx
+
 import {
-  NavLink,
   Outlet,
+  useLocation,
   useNavigate,
 } from "react-router-dom";
 
 import { useAdminAuthStore } from "../../../store/adminAuthStore";
 
 import AdminSidebar from "../../../components/admin/sidebar/AdminSidebar";
+import AdminHeader from "../../../components/admin/header/AdminHeader";
 
 function AdminLayout() {
   const navigate = useNavigate();
-
-  const admin = useAdminAuthStore(
-    (state) => state.admin
-  );
+  const location = useLocation();
 
   const logout = useAdminAuthStore(
     (state) => state.logout
@@ -35,49 +35,85 @@ function AdminLayout() {
 
   /*
    * =========================================================
-   * MOBILE NAVIGATION
+   * PAGE TITLE
    * =========================================================
-   *
-   * Desktop navigation is handled by AdminSidebar.
-   *
-   * Mobile navigation is kept here because the desktop
-   * sidebar is hidden on smaller screens.
    */
 
-  const mobileNavigation = [
-    {
-      label: "Dashboard",
-      path: "/admin/dashboard",
-    },
-    {
-      label: "Products",
-      path: "/admin/products",
-    },
-    {
-      label: "Orders",
-      path: "/admin/orders",
-    },
-    {
-      label: "Customers",
-      path: "/admin/users",
-    },
-    {
-      label: "Inventory",
-      path: "/admin/inventory",
-    },
-    {
-      label: "Payments",
-      path: "/admin/payments",
-    },
-    {
-      label: "Analytics",
-      path: "/admin/analytics",
-    },
-    {
-      label: "Settings",
-      path: "/admin/settings",
-    },
-  ];
+  const getPageTitle = () => {
+    const pathname = location.pathname;
+
+    if (pathname === "/admin/dashboard") {
+      return {
+        title: "Dashboard",
+        description:
+          "Overview of your store and recent activity.",
+      };
+    }
+
+    if (pathname.startsWith("/admin/products")) {
+      return {
+        title: "Products",
+        description:
+          "Manage your products and product variants.",
+      };
+    }
+
+    if (pathname.startsWith("/admin/orders")) {
+      return {
+        title: "Orders",
+        description:
+          "View and manage customer orders.",
+      };
+    }
+
+    if (pathname.startsWith("/admin/users")) {
+      return {
+        title: "Customers",
+        description:
+          "Manage your customers and their activity.",
+      };
+    }
+
+    if (pathname.startsWith("/admin/offers")) {
+      return {
+        title: "Offers",
+        description:
+          "Create and manage offers for your customers.",
+      };
+    }
+
+    if (pathname.startsWith("/admin/payments")) {
+      return {
+        title: "Payments",
+        description:
+          "Monitor payments and transaction activity.",
+      };
+    }
+
+    if (pathname.startsWith("/admin/analytics")) {
+      return {
+        title: "Analytics",
+        description:
+          "Track store performance and business insights.",
+      };
+    }
+
+    if (pathname.startsWith("/admin/settings")) {
+      return {
+        title: "Settings",
+        description:
+          "Manage your admin and store settings.",
+      };
+    }
+
+    return {
+      title: "Admin Panel",
+      description:
+        "Manage your GuiltFree Cravings store.",
+    };
+  };
+
+  const page = getPageTitle();
 
   return (
     <div className="min-h-screen bg-[#fffaf5]">
@@ -87,7 +123,11 @@ function AdminLayout() {
             DESKTOP SIDEBAR
         ===================================================== */}
 
-        <AdminSidebar />
+        <div className="hidden lg:block">
+          <div className="sticky top-0 h-screen">
+            <AdminSidebar />
+          </div>
+        </div>
 
         {/* =====================================================
             MAIN APPLICATION AREA
@@ -96,94 +136,46 @@ function AdminLayout() {
         <div className="min-w-0 flex-1">
 
           {/* ===================================================
-              MOBILE HEADER
+              TOP HEADER
           =================================================== */}
 
-          <header className="border-b border-[#eadfd3] bg-white lg:hidden">
+          <AdminHeader
+            title={page.title}
+            description={page.description}
+            onLogout={handleLogout}
+          />
 
-            {/* HEADER TOP */}
+          {/* ===================================================
+              MOBILE BRAND / NAV BAR
+          =================================================== */}
 
-            <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div className="border-b border-[#eadfd3] bg-white px-5 py-3 lg:hidden">
+            <div className="flex items-center justify-between gap-4">
 
               <div className="min-w-0">
-
-                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8b542f]">
+                <p className="truncate text-xs font-bold uppercase tracking-[0.18em] text-[#8b542f]">
                   GuiltFree Cravings
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f3e4d3] text-xs font-bold text-[#8b542f]">
+                  A
                 </span>
 
-                <p className="mt-0.5 truncate text-base font-bold text-slate-900">
-                  Admin Panel
-                </p>
-
+                <span className="max-w-[120px] truncate text-xs font-semibold text-slate-700">
+                  Administrator
+                </span>
               </div>
 
-              {/* ADMIN INFO */}
-
-              <div className="hidden min-w-0 sm:block">
-                <p className="truncate text-right text-xs font-semibold text-slate-800">
-                  {admin?.name || "Administrator"}
-                </p>
-
-                <p className="mt-0.5 truncate text-right text-[11px] text-slate-400">
-                  {admin?.email ||
-                    admin?.phone ||
-                    "Admin Account"}
-                </p>
-              </div>
-
-              {/* LOGOUT */}
-
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="shrink-0 rounded-xl border border-[#eadfd3] bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-100"
-              >
-                Logout
-              </button>
-
             </div>
-
-            {/* =================================================
-                MOBILE NAVIGATION
-            ================================================= */}
-
-            <div className="border-t border-[#eadfd3] px-5 py-3">
-
-              <nav
-                className="flex gap-2 overflow-x-auto pb-1"
-                aria-label="Admin navigation"
-              >
-
-                {mobileNavigation.map(
-                  (item) => (
-                    <NavLink
-                      key={item.path}
-                      to={item.path}
-                      className={({ isActive }) =>
-                        [
-                          "shrink-0 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-xs font-semibold transition",
-                          isActive
-                            ? "bg-[#8b542f] text-white shadow-sm"
-                            : "bg-[#fffaf5] text-slate-600 hover:bg-[#fff3e8] hover:text-[#8b542f]",
-                        ].join(" ")
-                      }
-                    >
-                      {item.label}
-                    </NavLink>
-                  )
-                )}
-
-              </nav>
-
-            </div>
-
-          </header>
+          </div>
 
           {/* ===================================================
               PAGE CONTENT
           =================================================== */}
 
-          <main className="min-h-[calc(100vh-80px)]">
+          <main className="min-h-[calc(100vh-76px)]">
             <Outlet />
           </main>
 

@@ -1,3 +1,5 @@
+// src/pages/admin/payments/AdminPaymentsPage.tsx
+
 import { useMemo, useState } from "react";
 
 /*
@@ -24,73 +26,19 @@ interface Payment {
   createdAt: string;
 }
 
+
 /*
  * =========================================================
- * TEMPORARY PAYMENT DATA
+ * PAYMENT DATA
  * =========================================================
  *
- * This is UI-only data for now.
- * Real payment data will come from the backend/Razorpay
- * integration later.
+ * Real payment data will be connected through the backend
+ * API. No dummy payment records are used here.
+ * =========================================================
  */
 
-const payments: Payment[] = [
-  {
-    id: 1,
-    paymentId: "PAY-10001",
-    orderNumber: "GFC-10001",
-    customerName: "Rahul Sharma",
-    customerPhone: "+91 98765 43210",
-    amount: 1299,
-    status: "PAID",
-    method: "Online",
-    createdAt: "27 Aug 2026, 11:42 AM",
-  },
-  {
-    id: 2,
-    paymentId: "PAY-10002",
-    orderNumber: "GFC-10002",
-    customerName: "Priya Verma",
-    customerPhone: "+91 98123 45678",
-    amount: 899,
-    status: "PENDING",
-    method: "Online",
-    createdAt: "27 Aug 2026, 10:18 AM",
-  },
-  {
-    id: 3,
-    paymentId: "PAY-10003",
-    orderNumber: "GFC-10003",
-    customerName: "Amit Kumar",
-    customerPhone: "+91 97654 32109",
-    amount: 1599,
-    status: "PAID",
-    method: "Online",
-    createdAt: "26 Aug 2026, 06:35 PM",
-  },
-  {
-    id: 4,
-    paymentId: "PAY-10004",
-    orderNumber: "GFC-10004",
-    customerName: "Neha Singh",
-    customerPhone: "+91 99887 66554",
-    amount: 749,
-    status: "FAILED",
-    method: "Online",
-    createdAt: "26 Aug 2026, 04:12 PM",
-  },
-  {
-    id: 5,
-    paymentId: "PAY-10005",
-    orderNumber: "GFC-10005",
-    customerName: "Karan Mehta",
-    customerPhone: "+91 98989 77665",
-    amount: 2199,
-    status: "REFUNDED",
-    method: "Online",
-    createdAt: "25 Aug 2026, 02:46 PM",
-  },
-];
+const payments: Payment[] = [];
+
 
 /*
  * =========================================================
@@ -119,6 +67,7 @@ const getStatusClasses = (
   }
 };
 
+
 /*
  * =========================================================
  * ADMIN PAYMENTS PAGE
@@ -126,11 +75,18 @@ const getStatusClasses = (
  */
 
 function AdminPaymentsPage() {
-  const [statusFilter, setStatusFilter] =
-    useState<"ALL" | PaymentStatus>("ALL");
+  const [
+    statusFilter,
+    setStatusFilter,
+  ] = useState<
+    "ALL" | PaymentStatus
+  >("ALL");
 
-  const [search, setSearch] =
-    useState("");
+  const [
+    search,
+    setSearch,
+  ] = useState("");
+
 
   /*
    * =======================================================
@@ -138,29 +94,34 @@ function AdminPaymentsPage() {
    * =======================================================
    */
 
-  const totalPayments = payments.length;
+  const totalPayments =
+    payments.length;
 
-  const paidPayments = payments.filter(
-    (payment) => payment.status === "PAID"
-  );
+  const paidPayments =
+    payments.filter(
+      (payment) =>
+        payment.status === "PAID"
+    );
 
-  const pendingPayments = payments.filter(
-    (payment) => payment.status === "PENDING"
-  );
+  const pendingPayments =
+    payments.filter(
+      (payment) =>
+        payment.status === "PENDING"
+    );
 
-  const failedPayments = payments.filter(
-    (payment) => payment.status === "FAILED"
-  );
+  const failedPayments =
+    payments.filter(
+      (payment) =>
+        payment.status === "FAILED"
+    );
 
-  // const refundedPayments = payments.filter(
-  //   (payment) => payment.status === "REFUNDED"
-  // );
+  const totalCollected =
+    paidPayments.reduce(
+      (total, payment) =>
+        total + payment.amount,
+      0
+    );
 
-  const totalCollected = paidPayments.reduce(
-    (total, payment) =>
-      total + payment.amount,
-    0
-  );
 
   /*
    * =======================================================
@@ -168,36 +129,54 @@ function AdminPaymentsPage() {
    * =======================================================
    */
 
-  const filteredPayments = useMemo(() => {
-    const normalizedSearch =
-      search.trim().toLowerCase();
+  const filteredPayments =
+    useMemo(() => {
+      const normalizedSearch =
+        search
+          .trim()
+          .toLowerCase();
 
-    return payments.filter((payment) => {
-      const matchesStatus =
-        statusFilter === "ALL" ||
-        payment.status === statusFilter;
+      return payments.filter(
+        (payment) => {
+          const matchesStatus =
+            statusFilter === "ALL" ||
+            payment.status ===
+              statusFilter;
 
-      const matchesSearch =
-        !normalizedSearch ||
-        payment.paymentId
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        payment.orderNumber
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        payment.customerName
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        payment.customerPhone
-          .toLowerCase()
-          .includes(normalizedSearch);
+          const matchesSearch =
+            !normalizedSearch ||
+            payment.paymentId
+              .toLowerCase()
+              .includes(
+                normalizedSearch
+              ) ||
+            payment.orderNumber
+              .toLowerCase()
+              .includes(
+                normalizedSearch
+              ) ||
+            payment.customerName
+              .toLowerCase()
+              .includes(
+                normalizedSearch
+              ) ||
+            payment.customerPhone
+              .toLowerCase()
+              .includes(
+                normalizedSearch
+              );
 
-      return (
-        matchesStatus &&
-        matchesSearch
+          return (
+            matchesStatus &&
+            matchesSearch
+          );
+        }
       );
-    });
-  }, [search, statusFilter]);
+    }, [
+      search,
+      statusFilter,
+    ]);
+
 
   return (
     <div className="min-h-screen bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
@@ -208,34 +187,22 @@ function AdminPaymentsPage() {
             PAGE HEADER
         ================================================= */}
 
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#8b542f]">
+            Payments
+          </span>
 
-          <div>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#8b542f]">
-              Payments
-            </span>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+            Payment Management
+          </h1>
 
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
-              Payment Management
-            </h1>
-
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              View and monitor payment activity,
-              transaction status, and collected amounts.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
-            <p className="text-xs font-semibold text-amber-800">
-              Payment Gateway
-            </p>
-
-            <p className="mt-1 text-xs text-amber-700">
-              Razorpay integration pending
-            </p>
-          </div>
-
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+            View and monitor payment
+            activity, transaction status,
+            and collected amounts.
+          </p>
         </div>
+
 
         {/* =================================================
             SUMMARY CARDS
@@ -259,6 +226,7 @@ function AdminPaymentsPage() {
             </p>
           </div>
 
+
           {/* PAID */}
 
           <div className="rounded-3xl border border-[#eadfd3] bg-white p-5 shadow-sm">
@@ -274,6 +242,7 @@ function AdminPaymentsPage() {
               Successful payments
             </p>
           </div>
+
 
           {/* PENDING */}
 
@@ -291,6 +260,7 @@ function AdminPaymentsPage() {
             </p>
           </div>
 
+
           {/* FAILED */}
 
           <div className="rounded-3xl border border-[#eadfd3] bg-white p-5 shadow-sm">
@@ -307,6 +277,7 @@ function AdminPaymentsPage() {
             </p>
           </div>
 
+
           {/* COLLECTED */}
 
           <div className="rounded-3xl border border-[#eadfd3] bg-white p-5 shadow-sm">
@@ -315,7 +286,10 @@ function AdminPaymentsPage() {
             </p>
 
             <p className="mt-3 text-2xl font-bold text-[#8b542f]">
-              ₹{totalCollected.toLocaleString("en-IN")}
+              ₹
+              {totalCollected.toLocaleString(
+                "en-IN"
+              )}
             </p>
 
             <p className="mt-1 text-xs text-slate-500">
@@ -324,6 +298,7 @@ function AdminPaymentsPage() {
           </div>
 
         </div>
+
 
         {/* =================================================
             PAYMENTS SECTION
@@ -345,9 +320,11 @@ function AdminPaymentsPage() {
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Payment transactions recorded in the system.
+                  Payment transactions
+                  recorded in the system.
                 </p>
               </div>
+
 
               {/* SEARCH */}
 
@@ -357,7 +334,9 @@ function AdminPaymentsPage() {
                   type="search"
                   value={search}
                   onChange={(event) =>
-                    setSearch(event.target.value)
+                    setSearch(
+                      event.target.value
+                    )
                   }
                   placeholder="Search payment..."
                   className="w-full rounded-2xl border border-[#d9c7b7] bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#8b542f] focus:ring-2 focus:ring-[#f3e4d3]"
@@ -366,6 +345,7 @@ function AdminPaymentsPage() {
               </div>
 
             </div>
+
 
             {/* =================================================
                 FILTERS
@@ -381,27 +361,36 @@ function AdminPaymentsPage() {
                   ["FAILED", "Failed"],
                   ["REFUNDED", "Refunded"],
                 ] as const
-              ).map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() =>
-                    setStatusFilter(value)
-                  }
-                  className={[
-                    "whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition",
-                    statusFilter === value
-                      ? "bg-[#8b542f] text-white"
-                      : "bg-[#fffaf5] text-slate-600 hover:bg-[#fff3e8] hover:text-[#8b542f]",
-                  ].join(" ")}
-                >
-                  {label}
-                </button>
-              ))}
+              ).map(
+                ([
+                  value,
+                  label,
+                ]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() =>
+                      setStatusFilter(
+                        value
+                      )
+                    }
+                    className={[
+                      "whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition",
+                      statusFilter ===
+                        value
+                        ? "bg-[#8b542f] text-white"
+                        : "bg-[#fffaf5] text-slate-600 hover:bg-[#fff3e8] hover:text-[#8b542f]",
+                    ].join(" ")}
+                  >
+                    {label}
+                  </button>
+                )
+              )}
 
             </div>
 
           </div>
+
 
           {/* =================================================
               DESKTOP TABLE
@@ -447,67 +436,95 @@ function AdminPaymentsPage() {
 
               </thead>
 
+
               <tbody className="divide-y divide-[#eadfd3]">
 
-                {filteredPayments.map((payment) => (
-                  <tr
-                    key={payment.id}
-                    className="transition hover:bg-[#fffaf5]"
-                  >
+                {filteredPayments.map(
+                  (payment) => (
+                    <tr
+                      key={payment.id}
+                      className="transition hover:bg-[#fffaf5]"
+                    >
 
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-bold text-slate-900">
-                        {payment.paymentId}
-                      </p>
-                    </td>
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-bold text-slate-900">
+                          {
+                            payment.paymentId
+                          }
+                        </p>
+                      </td>
 
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-semibold text-[#8b542f]">
-                        {payment.orderNumber}
-                      </p>
-                    </td>
 
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-semibold text-slate-900">
-                        {payment.customerName}
-                      </p>
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-semibold text-[#8b542f]">
+                          {
+                            payment.orderNumber
+                          }
+                        </p>
+                      </td>
 
-                      <p className="mt-1 text-xs text-slate-500">
-                        {payment.customerPhone}
-                      </p>
-                    </td>
 
-                    <td className="px-6 py-5">
-                      <p className="text-sm font-bold text-slate-900">
-                        ₹{payment.amount.toLocaleString("en-IN")}
-                      </p>
-                    </td>
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-semibold text-slate-900">
+                          {
+                            payment.customerName
+                          }
+                        </p>
 
-                    <td className="px-6 py-5">
-                      <span className="text-sm text-slate-600">
-                        {payment.method}
-                      </span>
-                    </td>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {
+                            payment.customerPhone
+                          }
+                        </p>
+                      </td>
 
-                    <td className="px-6 py-5">
-                      <span
-                        className={[
-                          "inline-flex rounded-full border px-3 py-1 text-[11px] font-bold",
-                          getStatusClasses(payment.status),
-                        ].join(" ")}
-                      >
-                        {payment.status}
-                      </span>
-                    </td>
 
-                    <td className="px-6 py-5">
-                      <span className="text-xs text-slate-500">
-                        {payment.createdAt}
-                      </span>
-                    </td>
+                      <td className="px-6 py-5">
+                        <p className="text-sm font-bold text-slate-900">
+                          ₹
+                          {payment.amount.toLocaleString(
+                            "en-IN"
+                          )}
+                        </p>
+                      </td>
 
-                  </tr>
-                ))}
+
+                      <td className="px-6 py-5">
+                        <span className="text-sm text-slate-600">
+                          {
+                            payment.method
+                          }
+                        </span>
+                      </td>
+
+
+                      <td className="px-6 py-5">
+                        <span
+                          className={[
+                            "inline-flex rounded-full border px-3 py-1 text-[11px] font-bold",
+                            getStatusClasses(
+                              payment.status
+                            ),
+                          ].join(" ")}
+                        >
+                          {
+                            payment.status
+                          }
+                        </span>
+                      </td>
+
+
+                      <td className="px-6 py-5">
+                        <span className="text-xs text-slate-500">
+                          {
+                            payment.createdAt
+                          }
+                        </span>
+                      </td>
+
+                    </tr>
+                  )
+                )}
 
               </tbody>
 
@@ -515,98 +532,124 @@ function AdminPaymentsPage() {
 
           </div>
 
+
           {/* =================================================
               MOBILE PAYMENT CARDS
           ================================================= */}
 
           <div className="divide-y divide-[#eadfd3] lg:hidden">
 
-            {filteredPayments.map((payment) => (
-              <div
-                key={payment.id}
-                className="p-5"
-              >
+            {filteredPayments.map(
+              (payment) => (
+                <div
+                  key={payment.id}
+                  className="p-5"
+                >
 
-                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-4">
 
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">
-                      {payment.paymentId}
-                    </p>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">
+                        {
+                          payment.paymentId
+                        }
+                      </p>
 
-                    <p className="mt-1 text-xs font-semibold text-[#8b542f]">
-                      {payment.orderNumber}
-                    </p>
+                      <p className="mt-1 text-xs font-semibold text-[#8b542f]">
+                        {
+                          payment.orderNumber
+                        }
+                      </p>
+                    </div>
+
+                    <span
+                      className={[
+                        "shrink-0 rounded-full border px-3 py-1 text-[10px] font-bold",
+                        getStatusClasses(
+                          payment.status
+                        ),
+                      ].join(" ")}
+                    >
+                      {
+                        payment.status
+                      }
+                    </span>
+
                   </div>
 
-                  <span
-                    className={[
-                      "shrink-0 rounded-full border px-3 py-1 text-[10px] font-bold",
-                      getStatusClasses(payment.status),
-                    ].join(" ")}
-                  >
-                    {payment.status}
-                  </span>
+
+                  <div className="mt-4 grid grid-cols-2 gap-4">
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Customer
+                      </p>
+
+                      <p className="mt-1 text-sm font-semibold text-slate-800">
+                        {
+                          payment.customerName
+                        }
+                      </p>
+                    </div>
+
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Amount
+                      </p>
+
+                      <p className="mt-1 text-sm font-bold text-slate-900">
+                        ₹
+                        {payment.amount.toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
+                    </div>
+
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Method
+                      </p>
+
+                      <p className="mt-1 text-sm text-slate-600">
+                        {
+                          payment.method
+                        }
+                      </p>
+                    </div>
+
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Date
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-500">
+                        {
+                          payment.createdAt
+                        }
+                      </p>
+                    </div>
+
+                  </div>
 
                 </div>
-
-                <div className="mt-4 grid grid-cols-2 gap-4">
-
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Customer
-                    </p>
-
-                    <p className="mt-1 text-sm font-semibold text-slate-800">
-                      {payment.customerName}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Amount
-                    </p>
-
-                    <p className="mt-1 text-sm font-bold text-slate-900">
-                      ₹{payment.amount.toLocaleString("en-IN")}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Method
-                    </p>
-
-                    <p className="mt-1 text-sm text-slate-600">
-                      {payment.method}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Date
-                    </p>
-
-                    <p className="mt-1 text-xs text-slate-500">
-                      {payment.createdAt}
-                    </p>
-                  </div>
-
-                </div>
-
-              </div>
-            ))}
+              )
+            )}
 
           </div>
+
 
           {/* =================================================
               EMPTY STATE
           ================================================= */}
 
-          {filteredPayments.length === 0 && (
+          {filteredPayments.length ===
+            0 && (
             <div className="px-6 py-16 text-center">
 
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#fff3e8] text-xl text-[#8b542f]">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#fff3e8] text-xl font-semibold text-[#8b542f]">
                 ₹
               </div>
 
@@ -615,44 +658,15 @@ function AdminPaymentsPage() {
               </h3>
 
               <p className="mt-2 text-sm text-slate-500">
-                Try changing the search or payment status
-                filter.
+                Payment transactions will
+                appear here once payment
+                data is available.
               </p>
 
             </div>
           )}
 
         </section>
-
-        {/* =================================================
-            INTEGRATION NOTE
-        ================================================= */}
-
-        <div className="mt-6 rounded-3xl border border-[#eadfd3] bg-white p-5 shadow-sm sm:p-6">
-
-          <div className="flex items-start gap-4">
-
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff3e8] font-bold text-[#8b542f]">
-              i
-            </div>
-
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">
-                Payment Gateway Integration
-              </h3>
-
-              <p className="mt-1 text-xs leading-5 text-slate-500">
-                Payment records are currently displayed using
-                temporary admin data. Once the Razorpay
-                credentials and payment integration are
-                available, this section will be connected to
-                actual transaction data.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
 
       </div>
     </div>

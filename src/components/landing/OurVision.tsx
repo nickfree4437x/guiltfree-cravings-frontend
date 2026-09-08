@@ -1,70 +1,116 @@
+import { ChefHat, BadgeCheck, HeartHandshake } from "lucide-react";
+
 function OurVision() {
+  const visionPoints = [
+    {
+      number: "01",
+      title: "Taste",
+      description:
+        "Delicious flavours that make every craving worth giving in to.",
+      icon: ChefHat,
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-500",
+    },
+    {
+      number: "02",
+      title: "Quality",
+      description:
+        "Thoughtfully selected ingredients chosen with care and confidence.",
+      icon: BadgeCheck,
+      bgColor: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+    },
+    {
+      number: "03",
+      title: "Thoughtfulness",
+      description:
+        "Every treat made with attention, warmth, and a genuine love for good food.",
+      icon: HeartHandshake,
+      bgColor: "bg-rose-50",
+      iconColor: "text-rose-500",
+    },
+  ];
+
   return (
     <section
       id="vision"
-      className="bg-white px-6 py-20 sm:py-24 lg:px-8"
+      className="bg-white px-5 py-4 sm:py-6 lg:py-8"
     >
-      <div className="mx-auto max-w-7xl">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-
-          {/* Content */}
-          <div className="max-w-xl">
-            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b542f]">
+      <div className="mx-auto max-w-6xl">
+        
+        {/* =====================================================
+            SECTION HEADER
+        ===================================================== */}
+        
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#f8eee4] px-4 py-1.5">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[#8b542f]">
               Our Vision
             </span>
-
-            <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-              Making every craving
-              <span className="block text-[#8b542f]">
-                feel a little better.
-              </span>
-            </h2>
-
-            <p className="mt-6 text-base leading-7 text-slate-600 sm:text-lg">
-              We envision a world where enjoying something sweet does not
-              have to come with unnecessary compromise. Guilt Free Cravings
-              aims to bring together delicious taste, thoughtful ingredients,
-              and the warmth of homemade goodness.
-            </p>
-
-            <p className="mt-4 text-base leading-7 text-slate-600">
-              Our goal is simple — create treats that people genuinely love
-              and can feel good about sharing with the people who matter.
-            </p>
-
-            <div className="mt-8 flex items-center gap-4">
-              <div className="h-px w-12 bg-[#8b542f]" />
-
-              <span className="text-sm font-semibold text-slate-700">
-                Taste • Quality • Thoughtfulness
-              </span>
-            </div>
           </div>
-
-          {/* Visual */}
-          <div className="relative">
-            <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full bg-[#f3e4d3]" />
-
-            <div className="relative overflow-hidden rounded-[2rem]">
-              <img
-                src="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=1000&q=80"
-                alt="Thoughtfully prepared sweet treats"
-                className="h-[380px] w-full object-cover sm:h-[480px]"
-              />
-            </div>
-
-            <div className="absolute -bottom-5 left-5 rounded-2xl bg-white px-6 py-4 shadow-xl sm:left-8">
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
-                Our Promise
-              </p>
-
-              <p className="mt-1 text-lg font-bold text-[#8b542f]">
-                Made to be enjoyed.
-              </p>
-            </div>
-          </div>
-
+          
+          <h2 className="mt-2 text-[18px] sm:text-[22px] md:text-[28px] font-semibold leading-tight tracking-wide text-[#2c2c2c]">
+            Making every craving feel a little better
+          </h2>
+          
+          <p className="mt-2 mx-auto max-w-xl text-[12px] md:text-[14.5px] font-[350] leading-relaxed text-slate-500">
+            We envision a world where enjoying something sweet does not have
+            to come with unnecessary compromise.
+          </p>
         </div>
+        
+        {/* =====================================================
+            VISION POINTS - Refined Layout
+        ===================================================== */}
+        
+        <div className="mt-14 sm:mt-16 grid md:grid-cols-3 gap-6 sm:gap-8">
+          {visionPoints.map((point, index) => {
+            const Icon = point.icon;
+            
+            return (
+              <div key={point.number} className="text-center group">
+                
+                {/* Icon Circle with Different Colors */}
+                <div className="relative flex justify-center">
+                  <div className={`flex h-20 w-20 items-center justify-center rounded-full ${point.bgColor} ${point.iconColor} transition-all duration-500`}>
+                    <Icon size={28} strokeWidth={1.6} />
+                  </div>
+                </div>
+                
+                {/* Content */}
+                <div className="mt-6">
+                  <h3 className="text-xl sm:text-2xl font-bold text-slate-900 transition-colors duration-300">
+                    {point.title}
+                  </h3>
+                  <p className="mt-2 text-[12px] md:text-[15px] font-[350] leading-relaxed text-slate-500 group-hover:text-slate-600 transition-colors duration-300">
+                    {point.description}
+                  </p>
+                </div>
+              
+              </div>
+            );
+          })}
+        </div>
+        
+        {/* =====================================================
+            BOTTOM QUOTE
+        ===================================================== */}
+        
+        <div className="mx-auto mt-6 sm:mt-8 max-w-2xl text-center">
+          
+          {/* Divider */}
+          <div className="flex items-center justify-center gap-4">
+            <span className="h-px w-12 bg-[#d8c6b5]"></span>
+            <span className="h-2 w-2 rounded-full bg-[#8b542f]"></span>
+            <span className="h-px w-12 bg-[#d8c6b5]"></span>
+          </div>
+          
+          <p className="mt-4 font-serif text-[14px] sm:text-[20px] font-medium italic leading-relaxed text-[#8b542f]">
+            "Better choices should never mean less enjoyment."
+          </p>
+          
+        </div>
+        
       </div>
     </section>
   );

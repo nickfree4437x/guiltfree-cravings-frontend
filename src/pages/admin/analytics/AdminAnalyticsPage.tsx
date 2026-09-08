@@ -1,3 +1,5 @@
+// src/pages/admin/analytics/AdminAnalyticsPage.tsx
+
 import { useMemo, useState } from "react";
 
 /*
@@ -12,79 +14,54 @@ type AnalyticsPeriod =
   | "90D"
   | "1Y";
 
+interface SalesData {
+  day: string;
+  sales: number;
+  orders: number;
+}
+
+interface TopProduct {
+  name: string;
+  orders: number;
+  revenue: number;
+}
+
+
 /*
  * =========================================================
- * TEMPORARY ANALYTICS DATA
+ * ANALYTICS DATA
  * =========================================================
  *
- * UI purpose ke liye temporary data.
- * Later backend se actual analytics data aayega.
+ * Real analytics data will be connected through the
+ * backend API.
+ *
+ * No dummy analytics records are used here.
+ * =========================================================
  */
 
-const salesData = {
-  "7D": [
-    { day: "Mon", sales: 4200, orders: 8 },
-    { day: "Tue", sales: 5800, orders: 11 },
-    { day: "Wed", sales: 4900, orders: 9 },
-    { day: "Thu", sales: 7200, orders: 14 },
-    { day: "Fri", sales: 6800, orders: 12 },
-    { day: "Sat", sales: 9100, orders: 18 },
-    { day: "Sun", sales: 8400, orders: 16 },
-  ],
-
-  "30D": [
-    { day: "Week 1", sales: 28400, orders: 48 },
-    { day: "Week 2", sales: 32600, orders: 55 },
-    { day: "Week 3", sales: 39100, orders: 63 },
-    { day: "Week 4", sales: 45200, orders: 71 },
-  ],
-
-  "90D": [
-    { day: "Month 1", sales: 98500, orders: 164 },
-    { day: "Month 2", sales: 124800, orders: 201 },
-    { day: "Month 3", sales: 148600, orders: 238 },
-  ],
-
-  "1Y": [
-    { day: "Jan", sales: 84500, orders: 138 },
-    { day: "Feb", sales: 91200, orders: 149 },
-    { day: "Mar", sales: 104500, orders: 171 },
-    { day: "Apr", sales: 112800, orders: 184 },
-    { day: "May", sales: 128400, orders: 205 },
-    { day: "Jun", sales: 136900, orders: 219 },
-    { day: "Jul", sales: 149800, orders: 237 },
-    { day: "Aug", sales: 158600, orders: 251 },
-  ],
+const salesData: Record<
+  AnalyticsPeriod,
+  SalesData[]
+> = {
+  "7D": [],
+  "30D": [],
+  "90D": [],
+  "1Y": [],
 };
+
 
 /*
  * =========================================================
  * TOP PRODUCTS
  * =========================================================
+ *
+ * Real product performance data will come from
+ * the backend analytics API.
+ * =========================================================
  */
 
-const topProducts = [
-  {
-    name: "Dark Chocolate Cookies",
-    orders: 84,
-    revenue: 42840,
-  },
-  {
-    name: "Almond Butter",
-    orders: 71,
-    revenue: 35500,
-  },
-  {
-    name: "Protein Brownies",
-    orders: 63,
-    revenue: 31500,
-  },
-  {
-    name: "Granola Bites",
-    orders: 48,
-    revenue: 21600,
-  },
-];
+const topProducts: TopProduct[] = [];
+
 
 /*
  * =========================================================
@@ -93,8 +70,11 @@ const topProducts = [
  */
 
 function AdminAnalyticsPage() {
-  const [period, setPeriod] =
-    useState<AnalyticsPeriod>("30D");
+  const [
+    period,
+    setPeriod,
+  ] = useState<AnalyticsPeriod>("30D");
+
 
   /*
    * =======================================================
@@ -102,7 +82,9 @@ function AdminAnalyticsPage() {
    * =======================================================
    */
 
-  const currentData = salesData[period];
+  const currentData =
+    salesData[period];
+
 
   /*
    * =======================================================
@@ -110,38 +92,49 @@ function AdminAnalyticsPage() {
    * =======================================================
    */
 
-  const totalRevenue = useMemo(
-    () =>
-      currentData.reduce(
-        (total, item) =>
-          total + item.sales,
-        0
-      ),
-    [currentData]
-  );
+  const totalRevenue =
+    useMemo(
+      () =>
+        currentData.reduce(
+          (total, item) =>
+            total + item.sales,
+          0
+        ),
+      [currentData]
+    );
 
-  const totalOrders = useMemo(
-    () =>
-      currentData.reduce(
-        (total, item) =>
-          total + item.orders,
-        0
-      ),
-    [currentData]
-  );
+
+  const totalOrders =
+    useMemo(
+      () =>
+        currentData.reduce(
+          (total, item) =>
+            total + item.orders,
+          0
+        ),
+      [currentData]
+    );
+
 
   const averageOrderValue =
     totalOrders > 0
       ? Math.round(
-          totalRevenue / totalOrders
+          totalRevenue /
+            totalOrders
         )
       : 0;
 
-  const highestSales = Math.max(
-    ...currentData.map(
-      (item) => item.sales
-    )
-  );
+
+  const highestSales =
+    currentData.length > 0
+      ? Math.max(
+          ...currentData.map(
+            (item) =>
+              item.sales
+          )
+        )
+      : 0;
+
 
   /*
    * =======================================================
@@ -149,11 +142,29 @@ function AdminAnalyticsPage() {
    * =======================================================
    */
 
-  const maxSales = Math.max(
-    ...currentData.map(
-      (item) => item.sales
-    )
-  );
+  const maxSales =
+    currentData.length > 0
+      ? Math.max(
+          ...currentData.map(
+            (item) =>
+              item.sales
+          )
+        )
+      : 0;
+
+
+  /*
+   * =======================================================
+   * HAS ANALYTICS DATA
+   * =======================================================
+   */
+
+  const hasSalesData =
+    currentData.length > 0;
+
+  const hasTopProducts =
+    topProducts.length > 0;
+
 
   return (
     <div className="min-h-screen bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
@@ -167,6 +178,7 @@ function AdminAnalyticsPage() {
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
 
           <div>
+
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#8b542f]">
               Analytics
             </span>
@@ -176,12 +188,18 @@ function AdminAnalyticsPage() {
             </h1>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Monitor sales, orders, revenue and product
-              performance from your admin panel.
+              Monitor sales, orders,
+              revenue and product
+              performance from your
+              admin panel.
             </p>
+
           </div>
 
-          {/* PERIOD FILTER */}
+
+          {/* =================================================
+              PERIOD FILTER
+          ================================================= */}
 
           <div className="flex rounded-2xl border border-[#eadfd3] bg-white p-1.5 shadow-sm">
 
@@ -192,28 +210,36 @@ function AdminAnalyticsPage() {
                 ["90D", "90 Days"],
                 ["1Y", "1 Year"],
               ] as const
-            ).map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() =>
-                  setPeriod(value)
-                }
-                className={[
-                  "rounded-xl px-3 py-2 text-xs font-semibold transition sm:px-4",
-                  period === value
-                    ? "bg-[#8b542f] text-white"
-                    : "text-slate-500 hover:bg-[#fffaf5] hover:text-[#8b542f]",
-                ].join(" ")}
-                title={label}
-              >
-                {value}
-              </button>
-            ))}
+            ).map(
+              ([
+                value,
+                label,
+              ]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() =>
+                    setPeriod(
+                      value
+                    )
+                  }
+                  className={[
+                    "rounded-xl px-3 py-2 text-xs font-semibold transition sm:px-4",
+                    period === value
+                      ? "bg-[#8b542f] text-white"
+                      : "text-slate-500 hover:bg-[#fffaf5] hover:text-[#8b542f]",
+                  ].join(" ")}
+                  title={label}
+                >
+                  {value}
+                </button>
+              )
+            )}
 
           </div>
 
         </div>
+
 
         {/* =================================================
             KPI CARDS
@@ -238,14 +264,18 @@ function AdminAnalyticsPage() {
             </div>
 
             <p className="mt-4 text-2xl font-bold text-slate-900">
-              ₹{totalRevenue.toLocaleString("en-IN")}
+              ₹
+              {totalRevenue.toLocaleString(
+                "en-IN"
+              )}
             </p>
 
-            <p className="mt-1 text-xs font-medium text-green-600">
-              +12.8% compared to previous period
+            <p className="mt-1 text-xs text-slate-500">
+              No data available
             </p>
 
           </div>
+
 
           {/* ORDERS */}
 
@@ -267,11 +297,12 @@ function AdminAnalyticsPage() {
               {totalOrders}
             </p>
 
-            <p className="mt-1 text-xs font-medium text-green-600">
-              +9.4% compared to previous period
+            <p className="mt-1 text-xs text-slate-500">
+              No data available
             </p>
 
           </div>
+
 
           {/* AOV */}
 
@@ -290,16 +321,20 @@ function AdminAnalyticsPage() {
             </div>
 
             <p className="mt-4 text-2xl font-bold text-slate-900">
-              ₹{averageOrderValue.toLocaleString("en-IN")}
+              ₹
+              {averageOrderValue.toLocaleString(
+                "en-IN"
+              )}
             </p>
 
-            <p className="mt-1 text-xs font-medium text-green-600">
-              +4.7% average order value
+            <p className="mt-1 text-xs text-slate-500">
+              Based on available orders
             </p>
 
           </div>
 
-          {/* BEST SALES */}
+
+          {/* PEAK SALES */}
 
           <div className="rounded-3xl border border-[#eadfd3] bg-white p-5 shadow-sm">
 
@@ -316,7 +351,10 @@ function AdminAnalyticsPage() {
             </div>
 
             <p className="mt-4 text-2xl font-bold text-slate-900">
-              ₹{highestSales.toLocaleString("en-IN")}
+              ₹
+              {highestSales.toLocaleString(
+                "en-IN"
+              )}
             </p>
 
             <p className="mt-1 text-xs text-slate-500">
@@ -327,100 +365,150 @@ function AdminAnalyticsPage() {
 
         </div>
 
+
         {/* =================================================
             SALES + ORDER OVERVIEW
         ================================================= */}
 
         <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_360px]">
 
-          {/* SALES CHART */}
+          {/* =================================================
+              SALES CHART
+          ================================================= */}
 
           <section className="rounded-3xl border border-[#eadfd3] bg-white p-5 shadow-sm sm:p-6">
 
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
 
               <div>
+
                 <h2 className="text-lg font-bold text-slate-900">
                   Sales Overview
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Revenue performance for the selected period.
+                  Revenue performance for
+                  the selected period.
                 </p>
+
               </div>
 
+
               <div className="rounded-xl bg-[#fffaf5] px-3 py-2">
+
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   Total
                 </p>
 
                 <p className="mt-1 text-sm font-bold text-[#8b542f]">
-                  ₹{totalRevenue.toLocaleString("en-IN")}
+                  ₹
+                  {totalRevenue.toLocaleString(
+                    "en-IN"
+                  )}
                 </p>
+
               </div>
 
             </div>
 
-            {/* CHART */}
+
+            {/* =================================================
+                CHART
+            ================================================= */}
 
             <div className="mt-8">
 
-              <div className="flex h-64 items-end gap-3 sm:gap-5">
+              {hasSalesData ? (
 
-                {currentData.map(
-                  (item) => {
-                    const height =
-                      maxSales > 0
-                        ? Math.max(
-                            (item.sales /
-                              maxSales) *
-                              100,
-                            8
-                          )
-                        : 8;
+                <div className="flex h-64 items-end gap-3 sm:gap-5">
 
-                    return (
-                      <div
-                        key={item.day}
-                        className="group flex h-full flex-1 flex-col items-center justify-end"
-                      >
+                  {currentData.map(
+                    (item) => {
 
-                        {/* TOOLTIP */}
+                      const height =
+                        maxSales > 0
+                          ? Math.max(
+                              (item.sales /
+                                maxSales) *
+                                100,
+                              8
+                            )
+                          : 8;
 
-                        <div className="mb-2 rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-semibold text-white opacity-0 transition group-hover:opacity-100">
-                          ₹
-                          {item.sales.toLocaleString(
-                            "en-IN"
-                          )}
-                        </div>
-
-                        {/* BAR */}
-
+                      return (
                         <div
-                          className="w-full max-w-14 rounded-t-xl bg-[#8b542f] transition-all duration-300 group-hover:bg-[#6f4226]"
-                          style={{
-                            height: `${height}%`,
-                          }}
-                        />
+                          key={
+                            item.day
+                          }
+                          className="group flex h-full flex-1 flex-col items-center justify-end"
+                        >
 
-                        {/* LABEL */}
+                          {/* TOOLTIP */}
 
-                        <p className="mt-3 text-[10px] font-semibold text-slate-400 sm:text-xs">
-                          {item.day}
-                        </p>
+                          <div className="mb-2 rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-semibold text-white opacity-0 transition group-hover:opacity-100">
+                            ₹
+                            {item.sales.toLocaleString(
+                              "en-IN"
+                            )}
+                          </div>
 
-                      </div>
-                    );
-                  }
-                )}
 
-              </div>
+                          {/* BAR */}
+
+                          <div
+                            className="w-full max-w-14 rounded-t-xl bg-[#8b542f] transition-all duration-300 group-hover:bg-[#6f4226]"
+                            style={{
+                              height: `${height}%`,
+                            }}
+                          />
+
+
+                          {/* LABEL */}
+
+                          <p className="mt-3 text-[10px] font-semibold text-slate-400 sm:text-xs">
+                            {
+                              item.day
+                            }
+                          </p>
+
+                        </div>
+                      );
+                    }
+                  )}
+
+                </div>
+
+              ) : (
+
+                <div className="flex h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-[#eadfd3] bg-[#fffaf5] px-6 text-center">
+
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-lg font-bold text-[#8b542f] shadow-sm">
+                    ₹
+                  </div>
+
+                  <h3 className="mt-4 text-sm font-bold text-slate-900">
+                    No sales data available
+                  </h3>
+
+                  <p className="mt-1 max-w-sm text-xs leading-5 text-slate-500">
+                    Sales performance
+                    will appear here
+                    once analytics data
+                    is available.
+                  </p>
+
+                </div>
+
+              )}
 
             </div>
 
           </section>
 
-          {/* ORDER SUMMARY */}
+
+          {/* =================================================
+              ORDER SUMMARY
+          ================================================= */}
 
           <section className="rounded-3xl border border-[#eadfd3] bg-white p-5 shadow-sm sm:p-6">
 
@@ -431,6 +519,7 @@ function AdminAnalyticsPage() {
             <p className="mt-1 text-sm text-slate-500">
               Current order performance.
             </p>
+
 
             <div className="mt-7 space-y-5">
 
@@ -444,8 +533,8 @@ function AdminAnalyticsPage() {
                     Completed
                   </span>
 
-                  <span className="text-sm font-bold text-green-700">
-                    68%
+                  <span className="text-sm font-bold text-slate-500">
+                    0%
                   </span>
 
                 </div>
@@ -455,13 +544,14 @@ function AdminAnalyticsPage() {
                   <div
                     className="h-full rounded-full bg-green-500"
                     style={{
-                      width: "68%",
+                      width: "0%",
                     }}
                   />
 
                 </div>
 
               </div>
+
 
               {/* PROCESSING */}
 
@@ -473,8 +563,8 @@ function AdminAnalyticsPage() {
                     Processing
                   </span>
 
-                  <span className="text-sm font-bold text-blue-700">
-                    18%
+                  <span className="text-sm font-bold text-slate-500">
+                    0%
                   </span>
 
                 </div>
@@ -484,13 +574,14 @@ function AdminAnalyticsPage() {
                   <div
                     className="h-full rounded-full bg-blue-500"
                     style={{
-                      width: "18%",
+                      width: "0%",
                     }}
                   />
 
                 </div>
 
               </div>
+
 
               {/* PENDING */}
 
@@ -502,8 +593,8 @@ function AdminAnalyticsPage() {
                     Pending
                   </span>
 
-                  <span className="text-sm font-bold text-amber-700">
-                    9%
+                  <span className="text-sm font-bold text-slate-500">
+                    0%
                   </span>
 
                 </div>
@@ -513,13 +604,14 @@ function AdminAnalyticsPage() {
                   <div
                     className="h-full rounded-full bg-amber-500"
                     style={{
-                      width: "9%",
+                      width: "0%",
                     }}
                   />
 
                 </div>
 
               </div>
+
 
               {/* CANCELLED */}
 
@@ -531,8 +623,8 @@ function AdminAnalyticsPage() {
                     Cancelled
                   </span>
 
-                  <span className="text-sm font-bold text-red-700">
-                    5%
+                  <span className="text-sm font-bold text-slate-500">
+                    0%
                   </span>
 
                 </div>
@@ -542,7 +634,7 @@ function AdminAnalyticsPage() {
                   <div
                     className="h-full rounded-full bg-red-500"
                     style={{
-                      width: "5%",
+                      width: "0%",
                     }}
                   />
 
@@ -555,6 +647,7 @@ function AdminAnalyticsPage() {
           </section>
 
         </div>
+
 
         {/* =================================================
             TOP PRODUCTS
@@ -569,64 +662,104 @@ function AdminAnalyticsPage() {
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Products generating the most sales.
+              Products generating the most
+              sales.
             </p>
 
           </div>
 
-          <div className="divide-y divide-[#eadfd3]">
 
-            {topProducts.map(
-              (product, index) => (
-                <div
-                  key={product.name}
-                  className="flex items-center gap-4 px-5 py-5 sm:px-6"
-                >
+          {hasTopProducts ? (
 
-                  {/* RANK */}
+            <div className="divide-y divide-[#eadfd3]">
 
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#fff3e8] text-sm font-bold text-[#8b542f]">
-                    {index + 1}
+              {topProducts.map(
+                (
+                  product,
+                  index
+                ) => (
+                  <div
+                    key={
+                      product.name
+                    }
+                    className="flex items-center gap-4 px-5 py-5 sm:px-6"
+                  >
+
+                    {/* RANK */}
+
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#fff3e8] text-sm font-bold text-[#8b542f]">
+                      {index + 1}
+                    </div>
+
+
+                    {/* PRODUCT */}
+
+                    <div className="min-w-0 flex-1">
+
+                      <p className="truncate text-sm font-bold text-slate-900">
+                        {
+                          product.name
+                        }
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-500">
+                        {
+                          product.orders
+                        }{" "}
+                        orders
+                      </p>
+
+                    </div>
+
+
+                    {/* REVENUE */}
+
+                    <div className="text-right">
+
+                      <p className="text-sm font-bold text-slate-900">
+                        ₹
+                        {product.revenue.toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
+
+                      <p className="mt-1 text-[10px] text-slate-400">
+                        Revenue
+                      </p>
+
+                    </div>
+
                   </div>
+                )
+              )}
 
-                  {/* PRODUCT */}
+            </div>
 
-                  <div className="min-w-0 flex-1">
+          ) : (
 
-                    <p className="truncate text-sm font-bold text-slate-900">
-                      {product.name}
-                    </p>
+            <div className="px-6 py-14 text-center">
 
-                    <p className="mt-1 text-xs text-slate-500">
-                      {product.orders} orders
-                    </p>
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#fff3e8] text-sm font-bold text-[#8b542f]">
+                #
+              </div>
 
-                  </div>
+              <h3 className="mt-4 text-sm font-bold text-slate-900">
+                No product data available
+              </h3>
 
-                  {/* REVENUE */}
+              <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-slate-500">
+                Product performance
+                will appear here once
+                analytics data is
+                available.
+              </p>
 
-                  <div className="text-right">
+            </div>
 
-                    <p className="text-sm font-bold text-slate-900">
-                      ₹
-                      {product.revenue.toLocaleString(
-                        "en-IN"
-                      )}
-                    </p>
-
-                    <p className="mt-1 text-[10px] text-slate-400">
-                      Revenue
-                    </p>
-
-                  </div>
-
-                </div>
-              )
-            )}
-
-          </div>
+          )}
 
         </section>
+
 
         {/* =================================================
             NOTE
@@ -647,10 +780,11 @@ function AdminAnalyticsPage() {
               </h3>
 
               <p className="mt-1 text-xs leading-5 text-slate-500">
-                Analytics on this page is currently
-                presentation data. It will be connected
-                with actual order and payment records once
-                the admin analytics API is implemented.
+                Analytics will be connected
+                with actual order and
+                payment records once the
+                admin analytics API is
+                implemented.
               </p>
 
             </div>

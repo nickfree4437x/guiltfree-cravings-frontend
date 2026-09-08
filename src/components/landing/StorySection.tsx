@@ -1,153 +1,186 @@
 function OurStory() {
+  const ingredients = [
+    {
+      number: "01",
+      title: "Sattu",
+      description:
+        "For natural energy and the goodness of a trusted Indian staple.",
+    },
+    {
+      number: "02",
+      title: "Dates",
+      description:
+        "For clean, honest sweetness straight from nature.",
+    },
+    {
+      number: "03",
+      title: "Desi Ghee",
+      description:
+        "Because good fats were never meant to be the villain.",
+    },
+    {
+      number: "04",
+      title: "Jaggery",
+      description:
+        "Because sweetness doesn't need to be reinvented it just needs to be chosen thoughtfully.",
+    },
+  ];
+
   return (
     <section
       id="our-story"
-      className="bg-white px-6 py-20 sm:py-24 lg:px-8 lg:py-28"
+      className="bg-gray-50 px-5 py-4 sm:py-6 lg:py-8"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-6xl">
 
         {/* =====================================================
-            SECTION INTRO
+            SECTION HEADER
         ===================================================== */}
-        <div className="grid gap-10 lg:grid-cols-[0.32fr_0.68fr] lg:gap-20">
 
-          {/* Left Label */}
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8b542f]">
+        <div className="mx-auto max-w-2xl text-center mb-8">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#f8eee4] px-4 py-1.5">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-[#8b542f]">
               Our Story
             </span>
-
-            <div className="mt-5 hidden h-px w-16 bg-[#d8c5b4] lg:block" />
-
-            <p className="mt-5 max-w-xs text-sm leading-6 text-slate-500 lg:mt-8">
-              A simpler way of making sweets — rooted in tradition,
-              made for today.
-            </p>
           </div>
+          
+          <h2 className="mt-2 text-[18px] sm:text-[22px] md:text-[28px] font-semibold leading-tight tracking-wide text-[#2c2c2c]">
+            Made with love, Eaten with joy
+          </h2>
+          
+          <p className="mt-2 mx-auto max-w-xl text-[12px] md:text-[14.5px] font-[350] leading-relaxed text-slate-500">
+            A simpler way of making sweets rooted in tradition,
+            made for today.         
+            </p>
+        </div>
 
+        {/* =====================================================
+            STORY INTRO
+        ===================================================== */}
 
-          {/* Right Intro */}
-          <div className="max-w-3xl">
+        {/* =====================================================
+          WHERE IT STARTED - Card Style
+      ===================================================== */}
 
-            <h2 className="text-4xl font-bold leading-[1.08] tracking-tight text-slate-900 sm:text-5xl lg:text-[3.6rem]">
-              We didn't reinvent
-              <span className="block font-serif font-normal italic text-[#8b542f]">
-                the sweet.
+      <div className="grid overflow-hidden rounded-md border border-[#e8ddd3] bg-white shadow-sm lg:grid-cols-[0.25fr_0.75fr]">
+
+        {/* Label */}
+        <div className="border-b border-[#e8ddd3] bg-[#f8f1eb] px-6 py-6 sm:px-8 lg:border-b-0 lg:border-r lg:px-10 lg:py-10">
+
+          <span className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-[#8b542f]">
+            Where It Started
+          </span>
+
+          <p className="mt-2 text-[12px] md:text-[14px] font-[350] leading-relaxed text-slate-600">
+            Rooted in tradition, made for today.
+          </p>
+
+        </div>
+
+        {/* Content */}
+        <div className="px-6 py-4 sm:px-8 sm:py-6 lg:px-10 lg:py-6">
+
+          <p className="max-w-3xl text-[12px] md:text-[15px] font-[350] leading-relaxed sm:leading-6 text-slate-700">
+            Every great sweet in India was invented before refined
+            sugar existed. Somewhere along the way, we forgot that
+            and let "healthy" and "delicious" become enemies instead
+            of the same word.
+          </p>
+
+          <p className="mt-4 text-[14px] md:text-[16px] font-semibold leading-relaxed sm:leading-8 text-slate-900">
+            We didn't invent anything new. We just stopped cutting
+            corners.
+          </p>
+
+        </div>
+
+      </div>
+
+        {/* =====================================================
+            WHAT GOES IN - Ingredients Grid
+        ===================================================== */}
+
+        <div className="border-y border-[#e8ddd3]">
+
+          <div className="grid lg:grid-cols-[0.7fr_1.3fr]">
+
+            {/* Section Introduction */}
+            <div className="border-b border-[#e8ddd3] px-0 py-8 lg:border-b-0 lg:border-r lg:px-8 lg:py-12 lg:pl-0">
+
+              <span className="text-[10px] md:text-[11px] font-[350] uppercase tracking-[0.2em] text-[#b99a80]">
+                What Goes In
               </span>
-              We just stopped cutting corners.
-            </h2>
 
-          </div>
+              <h3 className="mt-3 max-w-xs text-[18px] md:text-[26px] font-semibold leading-tight text-slate-900">
+                Ingredients chosen with intention.
+              </h3>
 
-        </div>
-
-
-        {/* =====================================================
-            STORY CONTENT
-        ===================================================== */}
-        <div className="mt-16 grid gap-10 border-t border-[#e7ddd5] pt-12 lg:mt-20 lg:grid-cols-2 lg:gap-20">
-
-          {/* Story Part 1 */}
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8b542f]">
-              Where It Started
-            </span>
-
-            <p className="mt-5 text-base leading-8 text-slate-600 sm:text-lg sm:leading-9">
-              Every great sweet in India was invented before refined sugar
-              existed. Somewhere along the way, we forgot that — and let
-              "healthy" and "delicious" become enemies instead of the same
-              word.
-            </p>
-
-            <p className="mt-6 text-base leading-8 text-slate-600 sm:text-lg sm:leading-9">
-              We didn't invent anything new. We just stopped cutting
-              corners.
-            </p>
-          </div>
-
-
-          {/* Story Part 2 */}
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8b542f]">
-              What Goes In
-            </span>
-
-            <div className="mt-5 space-y-5">
-
-              <div>
-                <h3 className="font-semibold text-slate-900">
-                  Sattu
-                </h3>
-
-                <p className="mt-1 text-sm leading-6 text-slate-600 sm:text-base">
-                  For natural energy and the goodness of a trusted
-                  Indian staple.
-                </p>
-              </div>
-
-
-              <div>
-                <h3 className="font-semibold text-slate-900">
-                  Dates
-                </h3>
-
-                <p className="mt-1 text-sm leading-6 text-slate-600 sm:text-base">
-                  For clean, honest sweetness straight from nature.
-                </p>
-              </div>
-
-
-              <div>
-                <h3 className="font-semibold text-slate-900">
-                  Desi Ghee
-                </h3>
-
-                <p className="mt-1 text-sm leading-6 text-slate-600 sm:text-base">
-                  Because good fats were never meant to be the villain.
-                </p>
-              </div>
-
-
-              <div>
-                <h3 className="font-semibold text-slate-900">
-                  Jaggery
-                </h3>
-
-                <p className="mt-1 text-sm leading-6 text-slate-600 sm:text-base">
-                  Because sweetness doesn't need to be reinvented —
-                  it just needs to be chosen thoughtfully.
-                </p>
-              </div>
+              <p className="mt-3 max-w-sm text-[12px] md:text-[15px] font-[350] leading-relaxed text-slate-500">
+                Simple ingredients, familiar flavours and nothing
+                unnecessary.
+              </p>
 
             </div>
 
-          </div>
+            {/* Ingredients Grid */}
+            <div className="grid sm:grid-cols-2">
 
+              {ingredients.map((ingredient, index) => (
+                <div
+                  key={ingredient.number}
+                  className={`
+                    px-0 py-6 sm:px-6 sm:py-8
+                    ${index === 1 ? "sm:border-l border-[#e8ddd3]" : ""}
+                    ${index === 2 || index === 3 ? "border-t border-[#e8ddd3]" : ""}
+                    ${index === 3 ? "sm:border-l" : ""}
+                    ${index === 2 ? "sm:border-t-0" : ""}
+                  `}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] tracking-[0.2em] text-[#b99a80]">
+                      {ingredient.number}
+                    </span>
+                  </div>
+
+                  <h4 className="mt-2 text-lg sm:text-xl font-semibold text-slate-900">
+                    {ingredient.title}
+                  </h4>
+
+                  <p className="mt-1 text-[12px] md:text-[14.5px] font-[350] leading-relaxed text-slate-500">
+                    {ingredient.description}
+                  </p>
+                </div>
+              ))}
+
+            </div>
+          </div>
         </div>
 
-
         {/* =====================================================
-            HOMEMADE PHILOSOPHY
+            MADE AT HOME - Card
         ===================================================== */}
-        <div className="mt-16 rounded-3xl bg-[#fffaf5] px-6 py-10 sm:px-10 sm:py-12 lg:mt-20 lg:px-14">
 
-          <div className="grid items-start gap-8 lg:grid-cols-[auto_1fr] lg:gap-12">
+        <div className="mt-6 sm:mt-8">
 
-            {/* Quote Mark */}
-            <div className="font-serif text-6xl leading-none text-[#d8c0aa]">
-              “
-            </div>
+          <div className="grid overflow-hidden rounded-md border border-[#e8ddd3] bg-white shadow-sm lg:grid-cols-[0.25fr_0.75fr]">
 
+            {/* Label */}
+            <div className="border-b border-[#e8ddd3] bg-[#f8f1eb] px-6 py-6 sm:px-8 lg:border-b-0 lg:border-r lg:px-10 lg:py-10">
 
-            {/* Content */}
-            <div className="max-w-3xl">
-
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b542f]">
+              <span className="text-[10px] md:text-[11px] font-[350] uppercase tracking-[0.2em] text-[#8b542f]">
                 Made At Home
               </span>
 
-              <p className="mt-5 text-lg leading-8 text-slate-700 sm:text-xl sm:leading-9">
+              <p className="mt-1 text-[12px] md:text-[14.5px] font-[350] leading-relaxed text-slate-500">
+                Homemade by choice, not by accident.
+              </p>
+
+            </div>
+
+            {/* Quote */}
+            <div className="px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-10">
+
+              <p className="max-w-3xl text-[12px] md:text-[14.5px] font-[350] leading-relaxed sm:leading-6 text-slate-700">
                 Every laddoo starts in a home kitchen. Rolled by hand.
                 Tasted before it's ever packed. Nothing goes in that we
                 wouldn't hand to our own kids, our own parents, our own
@@ -157,45 +190,6 @@ function OurStory() {
             </div>
 
           </div>
-
-        </div>
-
-
-        {/* =====================================================
-            SMALL ON PURPOSE
-        ===================================================== */}
-        <div className="mt-16 grid items-center gap-8 lg:grid-cols-[1fr_auto] lg:gap-16">
-
-          <div className="max-w-2xl">
-
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b542f]">
-              Small By Choice
-            </span>
-
-            <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg sm:leading-9">
-              We're small on purpose — four recipes, made fresh, not
-              mass-produced. That's not a limitation.
-              <span className="font-semibold text-slate-900">
-                {" "}That's the whole point.
-              </span>
-            </p>
-
-          </div>
-
-
-          {/* Recipe Count */}
-          <div className="flex h-28 w-28 shrink-0 flex-col items-center justify-center rounded-full border border-[#d9c7b7] bg-[#fffaf5]">
-
-            <span className="text-3xl font-bold text-[#8b542f]">
-              04
-            </span>
-
-            <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-              Recipes
-            </span>
-
-          </div>
-
         </div>
 
       </div>

@@ -53,20 +53,20 @@ const getOrderStatusClasses = (
 ) => {
   switch (status) {
     case "CONFIRMED":
-      return "bg-blue-100 text-blue-700";
+      return "bg-blue-50 text-blue-700 border border-blue-100";
 
     case "PROCESSING":
-      return "bg-purple-100 text-purple-700";
+      return "bg-purple-50 text-purple-700 border border-purple-100";
 
     case "COMPLETED":
-      return "bg-green-100 text-green-700";
+      return "bg-green-50 text-green-700 border border-green-100";
 
     case "CANCELLED":
-      return "bg-red-100 text-red-700";
+      return "bg-red-50 text-red-700 border border-red-100";
 
     case "PENDING":
     default:
-      return "bg-amber-100 text-amber-700";
+      return "bg-amber-50 text-amber-700 border border-amber-100";
   }
 };
 
@@ -81,17 +81,17 @@ const getPaymentStatusClasses = (
 ) => {
   switch (status) {
     case "PAID":
-      return "bg-green-100 text-green-700";
+      return "bg-green-50 text-green-700 border border-green-100";
 
     case "FAILED":
-      return "bg-red-100 text-red-700";
+      return "bg-red-50 text-red-700 border border-red-100";
 
     case "REFUNDED":
-      return "bg-blue-100 text-blue-700";
+      return "bg-blue-50 text-blue-700 border border-blue-100";
 
     case "PENDING":
     default:
-      return "bg-amber-100 text-amber-700";
+      return "bg-amber-50 text-amber-700 border border-amber-100";
   }
 };
 
@@ -104,9 +104,7 @@ const getPaymentStatusClasses = (
 function MyOrdersPage() {
   const navigate = useNavigate();
 
-  const [orders, setOrders] = useState<Order[]>(
-    []
-  );
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const [isLoading, setIsLoading] =
     useState(true);
@@ -159,29 +157,28 @@ function MyOrdersPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-[#fffaf5] px-6 py-12 sm:py-16 lg:px-8">
-        <div className="mx-auto max-w-5xl">
+      <main className="min-h-screen bg-[#fffaf5]">
+
+        <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 sm:pb-24 sm:pt-10 lg:px-8 lg:pt-16">
 
           {/* Header */}
 
-          <div>
-            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b542f]">
-              Your Account
-            </span>
+          <div className="text-center">
 
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            <h1 className="mt-1.5 text-[18px] md:text-[24px] fon-bold tracking-tight text-slate-900">
               My Orders
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
-              View and track all your orders in one
-              place.
+            <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-[15px]">
+              View your previous orders, check their
+              current status, and keep track of everything
+              you've purchased from us.
             </p>
           </div>
 
           {/* Loading */}
 
-          <div className="mt-10 rounded-3xl border border-[#eadfd3] bg-white p-10 text-center shadow-sm">
+          <div className="mx-auto mt-10 max-w-5xl border border-[#eadfd3] bg-white p-10 text-center shadow-sm sm:p-12">
 
             <div
               className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#eadfd3] border-t-[#8b542f]"
@@ -207,33 +204,40 @@ function MyOrdersPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#fffaf5] px-6 py-12 sm:py-16 lg:px-8">
-        <div className="mx-auto max-w-5xl">
+      <main className="min-h-screen bg-[#fffaf5]">
+
+        <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 sm:pb-24 sm:pt-10 lg:px-8 lg:pt-12">
 
           {/* Header */}
 
-          <div>
-            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b542f]">
+          <div className="text-center">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8b542f] sm:text-xs">
               Your Account
             </span>
 
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            <h1 className="mt-1.5 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
               My Orders
             </h1>
+
+            <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-[15px]">
+              View your previous orders, check their
+              current status, and keep track of everything
+              you've purchased from us.
+            </p>
           </div>
 
-          {/* Error Card */}
+          {/* Error */}
 
-          <div className="mt-10 rounded-3xl border border-red-200 bg-white p-8 text-center shadow-sm sm:p-10">
+          <div className="mx-auto mt-10 max-w-3xl border border-red-200 bg-white px-6 py-10 text-center shadow-sm sm:px-10">
 
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
 
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.7"
-                className="h-8 w-8 text-red-500"
+                className="h-7 w-7 text-red-500"
                 aria-hidden="true"
               >
                 <path
@@ -245,7 +249,7 @@ function MyOrdersPage() {
 
             </div>
 
-            <h2 className="mt-6 text-xl font-bold text-slate-900">
+            <h2 className="mt-5 text-xl font-semibold text-slate-900">
               Something went wrong
             </h2>
 
@@ -258,7 +262,7 @@ function MyOrdersPage() {
               onClick={() => {
                 void loadOrders();
               }}
-              className="mt-6 inline-flex rounded-full bg-[#8b542f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
+              className="mt-6 inline-flex h-10 items-center justify-center rounded-md bg-[#8b542f] px-6 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#744324] hover:shadow-[0_8px_20px_rgba(117,69,39,0.14)] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
             >
               Try Again
             </button>
@@ -278,38 +282,40 @@ function MyOrdersPage() {
 
   if (orders.length === 0) {
     return (
-      <main className="min-h-screen bg-[#fffaf5] px-6 py-12 sm:py-16 lg:px-8">
-        <div className="mx-auto max-w-5xl">
+      <main className="min-h-screen bg-[#fffaf5]">
+
+        <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 sm:pb-24 sm:pt-10 lg:px-8 lg:pt-12">
 
           {/* Header */}
 
-          <div>
-            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b542f]">
+          <div className="text-center">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8b542f] sm:text-xs">
               Your Account
             </span>
 
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            <h1 className="mt-1.5 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
               My Orders
             </h1>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
-              View and track all your orders in one
-              place.
+            <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-[15px]">
+              View your previous orders, check their
+              current status, and keep track of everything
+              you've purchased from us.
             </p>
           </div>
 
           {/* Empty State */}
 
-          <div className="mt-10 rounded-3xl border border-[#eadfd3] bg-white px-6 py-12 text-center shadow-sm sm:px-10 sm:py-16">
+          <div className="mx-auto mt-10 max-w-3xl border border-[#eadfd3] bg-white px-6 py-12 text-center shadow-sm sm:px-10 sm:py-14">
 
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3e4d3]">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#f3e4d3] text-[#8b542f]">
 
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.7"
-                className="h-9 w-9 text-[#8b542f]"
+                className="h-8 w-8"
                 aria-hidden="true"
               >
                 <path
@@ -321,19 +327,19 @@ function MyOrdersPage() {
 
             </div>
 
-            <h2 className="mt-7 text-2xl font-bold text-slate-900">
+            <h2 className="mt-6 text-2xl font-semibold tracking-tight text-slate-900">
               No Orders Yet
             </h2>
 
-            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
-              You haven't placed any orders yet.
-              Explore our products and place your first
-              order.
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-[15px]">
+              You haven't placed any orders yet. Explore
+              our homemade treats and find something
+              you'd love to enjoy.
             </p>
 
             <Link
               to="/#products"
-              className="mt-7 inline-flex rounded-full bg-[#8b542f] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
+              className="mt-7 inline-flex h-10 items-center justify-center rounded-md bg-[#8b542f] px-7 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#744324] hover:shadow-[0_8px_20px_rgba(117,69,39,0.14)] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
             >
               Start Shopping
             </Link>
@@ -352,67 +358,67 @@ function MyOrdersPage() {
    */
 
   return (
-    <main className="min-h-screen bg-[#fffaf5] px-6 py-12 sm:py-16 lg:px-8">
-      <div className="mx-auto max-w-5xl">
+    <main className="min-h-screen bg-[#fffaf5]">
+
+      <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:px-8 lg:pt-24">
 
         {/* =================================================
             PAGE HEADER
         ================================================= */}
 
-        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+        <div className="text-center">
+          <h1 className="mt-1.5 text-[18px] md:text-[24px] font-bold tracking-tight text-slate-900 sm:text-3xl">
+            My Orders
+          </h1>
 
-          <div>
+          <p className="mx-auto mt-2 max-w-2xl text-[12px] md:sm:text-[15px] font-[350] leading-6 text-slate-500">
+            View your previous orders, check their current
+            status, and keep track of everything you've
+            purchased from us.
+          </p>
 
-            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b542f]">
-              Your Account
+        </div>
+
+        {/* =================================================
+            ORDER TOOLBAR
+        ================================================= */}
+
+        <div className="mx-auto mt-9 flex max-w-5xl flex-col gap-4 pb-5 sm:flex-row sm:items-center sm:justify-between">
+
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+
+            <span>
+              {orders.length}{" "}
+              {orders.length === 1
+                ? "order"
+                : "orders"}
             </span>
 
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              My Orders
-            </h1>
+            <span
+              className="text-slate-300"
+              aria-hidden="true"
+            >
+              •
+            </span>
 
-            <p className="mt-2 text-sm leading-6 text-slate-500 sm:text-base">
-              View and track all your orders in one
-              place.
-            </p>
+            <button
+              type="button"
+              onClick={() => {
+                void loadOrders();
+              }}
+              className=" text-[#8b542f] transition-colors hover:text-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
+            >
+              Refresh
+            </button>
 
           </div>
 
           <Link
             to="/#products"
-            className="inline-flex w-fit items-center rounded-full border border-[#8b542f] bg-white px-5 py-2.5 text-sm font-semibold text-[#8b542f] transition hover:bg-[#8b542f] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
+            className="group inline-flex h-9 w-fit items-center gap-2 rounded-lg border border-[#d9c7b7] bg-white px-4 text-xs text-[#8b542f] transition-all duration-200 hover:bg-[#f5eadf] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
           >
-            Continue Shopping
+            <span>Continue Shopping</span>
           </Link>
-
-        </div>
-
-        {/* =================================================
-            ORDER COUNT
-        ================================================= */}
-
-        <div className="mt-8 flex items-center gap-2 text-sm text-slate-500">
-
-          <span>
-            {orders.length}{" "}
-            {orders.length === 1
-              ? "order"
-              : "orders"}
-          </span>
-
-          <span className="text-slate-300">
-            •
-          </span>
-
-          <button
-            type="button"
-            onClick={() => {
-              void loadOrders();
-            }}
-            className="font-semibold text-[#8b542f] transition hover:text-[#744324]"
-          >
-            Refresh
-          </button>
 
         </div>
 
@@ -420,7 +426,7 @@ function MyOrdersPage() {
             ORDERS
         ================================================= */}
 
-        <div className="mt-6 space-y-5">
+        <div className="mx-auto mt-0 max-w-5xl space-y-5">
 
           {orders.map((order) => {
 
@@ -434,131 +440,132 @@ function MyOrdersPage() {
             return (
               <article
                 key={order.id}
-                className="rounded-3xl border border-[#eadfd3] bg-white p-6 shadow-sm transition hover:shadow-md sm:p-7"
+                className="overflow-hidden rounded-lg border border-[#eadfd3] bg-white shadow-sm transition-shadow"
               >
 
                 {/* =================================================
-                    ORDER TOP
+                    ORDER HEADER
                 ================================================= */}
 
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                <div className="p-5 sm:p-6">
 
-                  {/* Order Information */}
+                  <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
 
-                  <div className="min-w-0">
+                    {/* Order Information */}
 
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                      Order Number
-                    </p>
+                    <div className="min-w-0">
 
-                    <h2 className="mt-2 break-all text-lg font-bold text-slate-900 sm:text-xl">
-                      {order.orderNumber}
-                    </h2>
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">
+                        Order Number
+                      </p>
 
-                    <p className="mt-2 text-xs text-slate-500 sm:text-sm">
-                      Placed on{" "}
-                      {formatOrderDate(
-                        order.createdAt
-                      )}
-                    </p>
+                      <h2 className="mt-1 break-all text-[18px] md:text-[20px] font-semibold tracking-tight text-slate-900">
+                        {order.orderNumber}
+                      </h2>
 
-                  </div>
+                      <p className="mt-1 text-xs font-[350] text-slate-500 sm:text-sm">
+                        Placed on{" "}
+                        {formatOrderDate(
+                          order.createdAt
+                        )}
+                      </p>
 
-                  {/* Status */}
+                    </div>
 
-                  <div className="flex flex-wrap gap-2">
+                    {/* Status */}
 
-                    <span
-                      className={`rounded-full px-3.5 py-1.5 text-xs font-semibold capitalize ${getOrderStatusClasses(
-                        order.orderStatus
-                      )}`}
-                    >
-                      Order:{" "}
-                      {formatOrderStatus(
-                        order.orderStatus
-                      )}
-                    </span>
+                    <div className="flex flex-wrap gap-2">
 
-                    <span
-                      className={`rounded-full px-3.5 py-1.5 text-xs font-semibold capitalize ${getPaymentStatusClasses(
-                        order.paymentStatus
-                      )}`}
-                    >
-                      Payment:{" "}
-                      {formatPaymentStatus(
-                        order.paymentStatus
-                      )}
-                    </span>
+                      <span
+                        className={`rounded-full px-3 py-1.5 text-[10px] font-[350] capitalize ${getOrderStatusClasses(
+                          order.orderStatus
+                        )}`}
+                      >
+                        Order:{" "}
+                        {formatOrderStatus(
+                          order.orderStatus
+                        )}
+                      </span>
 
-                  </div>
+                      <span
+                        className={`rounded-full px-3 py-1.5 text-[10px] font-[350] capitalize ${getPaymentStatusClasses(
+                          order.paymentStatus
+                        )}`}
+                      >
+                        Payment:{" "}
+                        {formatPaymentStatus(
+                          order.paymentStatus
+                        )}
+                      </span>
 
-                </div>
-
-                <div className="my-6 h-px bg-[#eadfd3]" />
-
-                {/* =================================================
-                    ORDER DETAILS
-                ================================================= */}
-
-                <div className="grid gap-4 sm:grid-cols-3">
-
-                  {/* Items */}
-
-                  <div className="rounded-2xl bg-[#fffaf5] p-4">
-
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Items
-                    </p>
-
-                    <p className="mt-2 text-sm font-bold text-slate-800">
-                      {totalItems}{" "}
-                      {totalItems === 1
-                        ? "Item"
-                        : "Items"}
-                    </p>
-
-                  </div>
-
-                  {/* Customer */}
-
-                  <div className="rounded-2xl bg-[#fffaf5] p-4">
-
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Customer
-                    </p>
-
-                    <p className="mt-2 truncate text-sm font-bold text-slate-800">
-                      {order.customerName}
-                    </p>
-
-                  </div>
-
-                  {/* Total */}
-
-                  <div className="rounded-2xl bg-[#fffaf5] p-4">
-
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Total
-                    </p>
-
-                    <p className="mt-2 text-lg font-bold text-[#8b542f]">
-                      ₹{order.totalAmount}
-                    </p>
+                    </div>
 
                   </div>
 
                 </div>
 
                 {/* =================================================
-                    ORDER ITEMS PREVIEW
+                    ORDER SUMMARY
                 ================================================= */}
 
-                <div className="mt-6">
+                <div className="border-y border-[#eadfd3] bg-[#fdfbf8] px-5 py-4 sm:px-6">
 
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Products
-                  </p>
+                  <div className="grid gap-4 sm:grid-cols-3">
 
+                    {/* Items */}
+
+                    <div className="sm:border-r sm:border-[#eadfd3] sm:pr-4">
+
+                      <p className="text-[10px] uppercase tracking-[0.12em] text-slate-400">
+                        Items
+                      </p>
+
+                      <p className="mt-1 text-sm font-semibold text-slate-800">
+                        {totalItems}{" "}
+                        {totalItems === 1
+                          ? "Item"
+                          : "Items"}
+                      </p>
+
+                    </div>
+
+                    {/* Customer */}
+
+                    <div className="sm:border-r sm:border-[#eadfd3] sm:px-4">
+
+                      <p className="text-[10px] uppercase tracking-[0.12em] text-slate-400">
+                        Customer
+                      </p>
+
+                      <p className="mt-1 truncate text-sm font-semibold text-slate-800">
+                        {order.customerName}
+                      </p>
+
+                    </div>
+
+                    {/* Total */}
+
+                    <div className="sm:pl-4">
+
+                      <p className="text-[10px] uppercase tracking-[0.12em] text-slate-400">
+                        Total
+                      </p>
+
+                      <p className="mt-1 text-base font-semibold text-[#8b542f]">
+                        ₹{order.totalAmount}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* =================================================
+                    ORDER ITEMS
+                ================================================= */}
+
+                <div className="px-5 py-5 sm:px-6 sm:py-6">
                   <div className="mt-3 space-y-2">
 
                     {order.items
@@ -566,12 +573,12 @@ function MyOrdersPage() {
                       .map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between gap-4 rounded-xl border border-[#eadfd3] px-4 py-3"
+                          className="flex items-center justify-between rounded-lg gap-4 border border-[#eadfd3] bg-white px-4 py-3"
                         >
 
                           <div className="min-w-0">
 
-                            <p className="truncate text-sm font-semibold text-slate-800">
+                            <p className="truncate text-sm font-medium text-slate-800">
                               {item.productName}
                             </p>
 
@@ -608,14 +615,14 @@ function MyOrdersPage() {
                 </div>
 
                 {/* =================================================
-                    FOOTER
+                    ORDER FOOTER
                 ================================================= */}
 
-                <div className="mt-6 flex flex-col gap-3 border-t border-[#eadfd3] pt-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-4 border-t border-[#eadfd3] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
 
                   <p className="text-xs leading-5 text-slate-400">
                     Payment status:{" "}
-                    <span className="font-semibold capitalize text-slate-500">
+                    <span className="capitalize text-slate-500">
                       {formatPaymentStatus(
                         order.paymentStatus
                       )}
@@ -629,15 +636,9 @@ function MyOrdersPage() {
                         `/orders/${order.id}`
                       )
                     }
-                    className="inline-flex items-center justify-center rounded-full bg-[#8b542f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
+                    className="group inline-flex h-9 items-center justify-center rounded-md bg-[#8b542f] px-5 text-xs text-white transition-all duration-200 hover:bg-[#744324] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
                   >
-                    View Order
-                    <span
-                      className="ml-2"
-                      aria-hidden="true"
-                    >
-                      →
-                    </span>
+                    <span>View Order</span>
                   </button>
 
                 </div>

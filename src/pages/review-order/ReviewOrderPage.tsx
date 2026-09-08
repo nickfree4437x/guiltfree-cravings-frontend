@@ -10,10 +10,22 @@ import {
 } from "react-router-dom";
 
 import type { CartItem } from "../../store/cartStore";
+
 import { useCartStore } from "../../store/cartStore";
 import { useAuthStore } from "../../store/authStore";
 
 import { createOrder } from "../../api/orderApi";
+import {
+  validateOffer,
+  type ValidateOfferResponse,
+} from "../../api/offerApi";
+
+import ReviewCheckoutHeader from "../../components/review/ReviewCheckoutHeader";
+import ReviewCustomerInfo from "../../components/review/ReviewCustomerInfo";
+import ReviewOrderItems from "../../components/review/ReviewOrderItems";
+import ReviewOrderSummary from "../../components/review/ReviewOrderSummary";
+import ReviewMissingCustomer from "../../components/review/ReviewMissingCustomer";
+import ReviewEmptyCart from "../../components/review/ReviewEmptyCart";
 
 /*
  * =========================================================
@@ -61,6 +73,24 @@ function ReviewOrderPage() {
 
   /*
    * =======================================================
+   * OFFER STATE
+   * =======================================================
+   */
+
+  const [offerCode, setOfferCode] =
+    useState("");
+
+  const [appliedOffer, setAppliedOffer] =
+    useState<ValidateOfferResponse | null>(null);
+
+  const [offerError, setOfferError] =
+    useState("");
+
+  const [isApplyingOffer, setIsApplyingOffer] =
+    useState(false);
+
+  /*
+   * =======================================================
    * CART
    * =======================================================
    */
@@ -97,6 +127,17 @@ function ReviewOrderPage() {
 
   /*
    * =======================================================
+   * LOCATION STATE
+   * =======================================================
+   */
+
+  const locationState =
+    location.state as
+      | ReviewLocationState
+      | null;
+
+  /*
+   * =======================================================
    * CUSTOMER DETAILS
    * =======================================================
    *
@@ -105,12 +146,8 @@ function ReviewOrderPage() {
    *
    * Fallback:
    * Authenticated user.
+   * =======================================================
    */
-
-  const locationState =
-    location.state as
-      | ReviewLocationState
-      | null;
 
   const customer =
     locationState?.customer ??
@@ -138,6 +175,16 @@ function ReviewOrderPage() {
 
   /*
    * =======================================================
+   * FINAL REVIEW TOTAL
+   * =======================================================
+   */
+
+  const finalTotal =
+    appliedOffer?.totalAmount ??
+    cartTotal;
+
+  /*
+   * =======================================================
    * CUSTOMER DETAILS VALIDATION
    * =======================================================
    */
@@ -153,6 +200,12 @@ function ReviewOrderPage() {
     const email =
       customer.email.trim();
 
+    /*
+     * -----------------------------------------------------
+     * FULL NAME
+     * -----------------------------------------------------
+     */
+
     if (fullName.length < 2) {
       setOrderError(
         "Please enter a valid full name."
@@ -160,6 +213,12 @@ function ReviewOrderPage() {
 
       return false;
     }
+
+    /*
+     * -----------------------------------------------------
+     * EMAIL
+     * -----------------------------------------------------
+     */
 
     if (!email) {
       setOrderError(
@@ -185,11 +244,101 @@ function ReviewOrderPage() {
 
   /*
    * =======================================================
+   * APPLY OFFER
+   * =======================================================
+   */
+
+  const handleApplyOffer = async () => {
+    if (isApplyingOffer) {
+      return;
+    }
+
+    const trimmedCode =
+      offerCode.trim().toUpperCase();
+
+    if (!trimmedCode) {
+      setOfferError(
+        "Please enter an offer code."
+      );
+
+      return;
+    }
+
+    if (cartTotal <= 0) {
+      setOfferError(
+        "Your cart total must be greater than ₹0."
+      );
+
+      return;
+    }
+
+    setOfferError("");
+    setOrderError("");
+    setIsApplyingOffer(true);
+
+    try {
+      const result =
+        await validateOffer(
+          trimmedCode,
+          cartTotal
+        );
+
+      setAppliedOffer(result);
+
+      /*
+       * Keep the normalized code returned
+       * by the backend.
+       */
+
+      setOfferCode(
+        result.offer.code
+      );
+    } catch (error: any) {
+      console.error(
+        "Validate offer error:",
+        error
+      );
+
+      setAppliedOffer(null);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to apply this offer. Please try again.";
+
+      setOfferError(message);
+    } finally {
+      setIsApplyingOffer(false);
+    }
+  };
+
+  /*
+   * =======================================================
+   * REMOVE OFFER
+   * =======================================================
+   */
+
+  const handleRemoveOffer = () => {
+    if (isCreatingOrder) {
+      return;
+    }
+
+    setAppliedOffer(null);
+    setOfferError("");
+    setOfferCode("");
+  };
+
+  /*
+   * =======================================================
    * EDIT CUSTOMER DETAILS
    * =======================================================
    */
 
   const handleEditDetails = () => {
+    if (isCreatingOrder) {
+      return;
+    }
+
     navigate("/checkout", {
       state: {
         customer,
@@ -201,25 +350,13 @@ function ReviewOrderPage() {
    * =======================================================
    * PROCEED TO PAYMENT
    * =======================================================
-   *
-   * Flow:
-   *
-   * Review Order
-   *      ↓
-   * Create Order API
-   *      ↓
-   * Backend validates products/prices
-   *      ↓
-   * Order created
-   *      ↓
-   * Payment Page
-   *
-   * Razorpay will be connected later.
    */
 
   const handleProceedToPayment = async () => {
     /*
-     * Prevent double click / duplicate orders
+     * -----------------------------------------------------
+     * PREVENT DUPLICATE ORDER CREATION
+     * -----------------------------------------------------
      */
 
     if (isCreatingOrder) {
@@ -227,12 +364,15 @@ function ReviewOrderPage() {
     }
 
     /*
-     * =====================================================
+     * -----------------------------------------------------
      * AUTH CHECK
-     * =====================================================
+     * -----------------------------------------------------
      */
 
-    if (!isAuthenticated || !user) {
+    if (
+      !isAuthenticated ||
+      !user
+    ) {
       navigate("/cart", {
         replace: true,
       });
@@ -241,9 +381,9 @@ function ReviewOrderPage() {
     }
 
     /*
-     * =====================================================
+     * -----------------------------------------------------
      * CART CHECK
-     * =====================================================
+     * -----------------------------------------------------
      */
 
     if (items.length === 0) {
@@ -255,9 +395,9 @@ function ReviewOrderPage() {
     }
 
     /*
-     * =====================================================
+     * -----------------------------------------------------
      * CUSTOMER CHECK
-     * =====================================================
+     * -----------------------------------------------------
      */
 
     setOrderError("");
@@ -270,25 +410,41 @@ function ReviewOrderPage() {
     }
 
     /*
-     * =====================================================
+     * -----------------------------------------------------
+     * OFFER SAFETY CHECK
+     * -----------------------------------------------------
+     *
+     * If user has entered an offer code but it has not
+     * been successfully validated, do not continue.
+     * -----------------------------------------------------
+     */
+
+    if (
+      offerCode.trim() &&
+      !appliedOffer
+    ) {
+      setOfferError(
+        "Please apply the offer code before continuing."
+      );
+
+      return;
+    }
+
+    /*
+     * -----------------------------------------------------
      * PREPARE ORDER ITEMS
-     * =====================================================
+     * -----------------------------------------------------
      *
-     * IMPORTANT:
+     * Only product/variant IDs + quantity are sent.
      *
-     * We send only:
+     * Backend remains responsible for:
      *
-     * productId
-     * variantId
-     * quantity
-     *
-     * We DO NOT send:
-     *
-     * price
-     * subtotal
-     * total
-     *
-     * Backend calculates those values from DB.
+     * - product price
+     * - variant price
+     * - subtotal
+     * - discount
+     * - final total
+     * -----------------------------------------------------
      */
 
     const orderItems = items.map(
@@ -300,46 +456,54 @@ function ReviewOrderPage() {
     );
 
     /*
-     * =====================================================
+     * -----------------------------------------------------
      * CREATE ORDER
-     * =====================================================
+     * -----------------------------------------------------
      */
 
     try {
       setIsCreatingOrder(true);
 
-      const order = await createOrder({
-        customer: {
-          name: customer!.fullName.trim(),
-          email: customer!.email
-            .trim()
-            .toLowerCase(),
-        },
+      const order =
+        await createOrder({
+          customer: {
+            name:
+              customer!.fullName.trim(),
 
-        items: orderItems,
-      });
+            email:
+              customer!.email
+                .trim()
+                .toLowerCase(),
+          },
+
+          items: orderItems,
+        });
 
       /*
-       * ===================================================
-       * ORDER CREATED SUCCESSFULLY
-       * ===================================================
-       *
-       * Pass the complete backend order to PaymentPage.
-       *
-       * Razorpay integration will use this later.
+       * ---------------------------------------------------
+       * ORDER CREATED
+       * ---------------------------------------------------
        */
 
       navigate("/payment", {
         state: {
           order,
           customer,
+
+          /*
+           * Keep the validated offer available for the
+           * payment flow until backend order integration
+           * is completed.
+           */
+
+          appliedOffer,
         },
       });
     } catch (error: any) {
       /*
-       * ===================================================
+       * ---------------------------------------------------
        * API ERROR
-       * ===================================================
+       * ---------------------------------------------------
        */
 
       console.error(
@@ -366,33 +530,7 @@ function ReviewOrderPage() {
 
   if (!customer) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#fffaf5] px-6">
-        <div className="text-center">
-
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3e4d3]">
-            <span className="text-2xl font-bold text-[#8b542f]">
-              !
-            </span>
-          </div>
-
-          <h1 className="mt-7 text-3xl font-bold text-slate-900 sm:text-4xl">
-            Checkout Information Missing
-          </h1>
-
-          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
-            Please complete your checkout information
-            before reviewing your order.
-          </p>
-
-          <Link
-            to="/checkout"
-            className="mt-7 inline-flex rounded-full bg-[#8b542f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
-          >
-            Back to Checkout
-          </Link>
-
-        </div>
-      </main>
+      <ReviewMissingCustomer />
     );
   }
 
@@ -404,44 +542,7 @@ function ReviewOrderPage() {
 
   if (items.length === 0) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#fffaf5] px-6">
-        <div className="text-center">
-
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3e4d3]">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              className="h-9 w-9 text-[#8b542f]"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 3h2l.4 2m0 0L7 15h10l3-10H5.4ZM7 15l-1 2h12M9 20h.01M17 20h.01"
-              />
-            </svg>
-          </div>
-
-          <h1 className="mt-7 text-3xl font-bold text-slate-900 sm:text-4xl">
-            Your Cart is Empty
-          </h1>
-
-          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
-            There are no products available to
-            review.
-          </p>
-
-          <Link
-            to="/#products"
-            className="mt-7 inline-flex rounded-full bg-[#8b542f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
-          >
-            Explore Products
-          </Link>
-
-        </div>
-      </main>
+      <ReviewEmptyCart />
     );
   }
 
@@ -452,52 +553,24 @@ function ReviewOrderPage() {
    */
 
   return (
-    <main className="min-h-screen bg-[#fffaf5] px-6 py-12 sm:py-16 lg:px-8">
+    <main className="min-h-screen bg-[#fffaf5] px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
       <div className="mx-auto max-w-7xl">
 
-        {/* ===================================================
-            BACK TO CHECKOUT
-        =================================================== */}
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
-        <button
-          type="button"
-          onClick={handleEditDetails}
-          disabled={isCreatingOrder}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-[#8b542f] transition hover:text-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <span aria-hidden="true">
-            ←
-          </span>
+        <ReviewCheckoutHeader
+          isCreatingOrder={
+            isCreatingOrder
+          }
+        />
 
-          Back to Checkout
-        </button>
-
-        {/* ===================================================
-            PAGE HEADER
-        =================================================== */}
-
-        <div className="mt-8">
-
-          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#8b542f]">
-            Final Review
-          </span>
-
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Review Your Order
-          </h1>
-
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
-            Please review your details and selected
-            products before continuing to payment.
-          </p>
-
-        </div>
-
-        {/* ===================================================
+        {/* =================================================
             REVIEW LAYOUT
-        =================================================== */}
+        ================================================= */}
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_380px] lg:items-start">
+        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
 
           {/* =================================================
               LEFT CONTENT
@@ -505,184 +578,190 @@ function ReviewOrderPage() {
 
           <div className="space-y-8">
 
-            {/* =================================================
+            {/* ===============================================
                 CUSTOMER INFORMATION
-            ================================================= */}
+            =============================================== */}
 
-            <section className="rounded-3xl border border-[#eadfd3] bg-white p-6 shadow-sm sm:p-8">
+            <ReviewCustomerInfo
+              customer={customer}
+              isCreatingOrder={
+                isCreatingOrder
+              }
+              onEdit={
+                handleEditDetails
+              }
+            />
 
-              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-
-                <div>
-
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Customer Information
-                  </h2>
-
-                  <p className="mt-1 text-sm text-slate-500">
-                    Details saved during checkout.
-                  </p>
-
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleEditDetails}
-                  disabled={isCreatingOrder}
-                  className="w-fit rounded-full border border-[#8b542f] px-5 py-2 text-xs font-semibold text-[#8b542f] transition hover:bg-[#8b542f] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Edit Details
-                </button>
-
-              </div>
-
-              <div className="mt-7 grid gap-4 sm:grid-cols-2">
-
-                {/* Full Name */}
-
-                <div className="rounded-2xl border border-[#eadfd3] bg-[#fffaf5] p-4">
-
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Full Name
-                  </p>
-
-                  <p className="mt-2 break-words text-sm font-semibold text-slate-800">
-                    {customer.fullName}
-                  </p>
-
-                </div>
-
-                {/* Phone */}
-
-                <div className="rounded-2xl border border-[#eadfd3] bg-[#fffaf5] p-4">
-
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Mobile Number
-                  </p>
-
-                  <p className="mt-2 break-words text-sm font-semibold text-slate-800">
-                    +91 {customer.phone}
-                  </p>
-
-                </div>
-
-                {/* Email */}
-
-                <div className="rounded-2xl border border-[#eadfd3] bg-[#fffaf5] p-4 sm:col-span-2">
-
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                    Email Address
-                  </p>
-
-                  <p className="mt-2 break-words text-sm font-semibold text-slate-800">
-                    {customer.email}
-                  </p>
-
-                </div>
-
-              </div>
-
-            </section>
-
-            {/* =================================================
+            {/* ===============================================
                 ORDER ITEMS
-            ================================================= */}
+            =============================================== */}
 
-            <section className="rounded-3xl border border-[#eadfd3] bg-white p-6 shadow-sm sm:p-8">
+            <ReviewOrderItems
+              items={items}
+              totalItems={totalItems}
+            />
 
+            {/* ===============================================
+                OFFER / COUPON
+            =============================================== */}
+
+            <section
+              className="rounded-2xl border border-[#eadfd3] bg-white p-5 shadow-[0_10px_30px_rgba(117,69,39,0.04)] sm:p-6"
+              aria-label="Offer code"
+            >
               <div>
-
-                <h2 className="text-xl font-bold text-slate-900">
-                  Your Items
-                </h2>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  {totalItems}{" "}
-                  {totalItems === 1
-                    ? "item"
-                    : "items"}{" "}
-                  in your order.
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8b542f]">
+                  Offers & Savings
                 </p>
 
+                <h2 className="mt-2 text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">
+                  Have an offer code?
+                </h2>
+
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  Apply your available offer before
+                  proceeding to payment.
+                </p>
               </div>
 
-              <div className="mt-7 divide-y divide-[#eadfd3]">
+              {!appliedOffer ? (
+                <div className="mt-5">
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <input
+                      type="text"
+                      value={offerCode}
+                      onChange={(event) => {
+                        setOfferCode(
+                          event.target.value
+                            .toUpperCase()
+                        );
 
-                {items.map(
-                  (
-                    item: CartItem
-                  ) => {
+                        setOfferError("");
+                      }}
+                      onKeyDown={(event) => {
+                        if (
+                          event.key === "Enter"
+                        ) {
+                          event.preventDefault();
+                          handleApplyOffer();
+                        }
+                      }}
+                      placeholder="Enter offer code"
+                      disabled={
+                        isApplyingOffer ||
+                        isCreatingOrder
+                      }
+                      className="min-w-0 flex-1 rounded-xl border border-[#e5d8cc] bg-[#fffaf5] px-4 py-3 text-sm font-medium uppercase tracking-[0.04em] text-slate-900 outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400 focus:border-[#8b542f] focus:ring-2 focus:ring-[#8b542f]/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    />
 
-                    const itemTotal =
-                      item.variant.price *
-                      item.quantity;
+                    <button
+                      type="button"
+                      onClick={
+                        handleApplyOffer
+                      }
+                      disabled={
+                        isApplyingOffer ||
+                        isCreatingOrder
+                      }
+                      className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#8b542f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#744324] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {isApplyingOffer
+                        ? "Applying..."
+                        : "Apply Offer"}
+                    </button>
+                  </div>
 
-                    const variantLabel =
-                      `${item.variant.quantity}${item.variant.unit}`;
+                  {offerError && (
+                    <p
+                      className="mt-3 text-sm font-medium text-red-600"
+                      role="alert"
+                    >
+                      {offerError}
+                    </p>
+                  )}
 
-                    return (
-                      <div
-                        key={`${item.product.id}-${item.variant.id}`}
-                        className="flex gap-4 py-5 first:pt-0 last:pb-0"
-                      >
+                  <Link
+                    to="/coupons"
+                    className="mt-4 inline-flex text-sm font-medium text-[#8b542f] transition hover:text-[#744324]"
+                  >
+                    View available offers →
+                  </Link>
+                </div>
+              ) : (
+                <div className="mt-5 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+                        Offer Applied
+                      </p>
 
-                        {/* Product Image */}
+                      <div className="mt-1 flex flex-wrap items-center gap-2">
+                        <span className="rounded-md bg-white px-2.5 py-1 text-sm font-bold tracking-wide text-slate-900 ring-1 ring-emerald-100">
+                          {appliedOffer.offer.code}
+                        </span>
 
-                        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-[#f5eadf] sm:h-24 sm:w-24">
-
-                          <img
-                            src={item.product.image}
-                            alt={item.product.name}
-                            loading="lazy"
-                            className="h-full w-full object-cover"
-                          />
-
-                        </div>
-
-                        {/* Product Information */}
-
-                        <div className="min-w-0 flex-1">
-
-                          <h3 className="text-sm font-bold text-slate-900 sm:text-base">
-                            {item.product.name}
-                          </h3>
-
-                          <div className="mt-2 flex flex-wrap items-center gap-2">
-
-                            <span className="rounded-full bg-[#f3e4d3] px-2.5 py-1 text-xs font-semibold text-[#8b542f]">
-                              {variantLabel}
-                            </span>
-
-                            <span className="text-xs capitalize text-slate-400">
-                              {item.variant.packaging}
-                            </span>
-
-                          </div>
-
-                          <p className="mt-2 text-xs text-slate-500 sm:text-sm">
-                            ₹{item.variant.price} ×{" "}
-                            {item.quantity}
-                          </p>
-
-                        </div>
-
-                        {/* Item Total */}
-
-                        <div className="shrink-0 text-right">
-
-                          <p className="text-sm font-bold text-[#8b542f] sm:text-base">
-                            ₹{itemTotal}
-                          </p>
-
-                        </div>
-
+                        <span className="text-sm font-medium text-slate-700">
+                          {appliedOffer.offer.name}
+                        </span>
                       </div>
-                    );
-                  }
-                )}
+                    </div>
 
-              </div>
+                    <button
+                      type="button"
+                      onClick={
+                        handleRemoveOffer
+                      }
+                      disabled={
+                        isCreatingOrder
+                      }
+                      className="shrink-0 text-left text-sm font-semibold text-red-600 transition hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50 sm:text-right"
+                    >
+                      Remove
+                    </button>
+                  </div>
 
+                  <div className="mt-4 grid gap-3 border-t border-emerald-100 pt-4 sm:grid-cols-3">
+                    <div>
+                      <p className="text-xs text-slate-500">
+                        Subtotal
+                      </p>
+
+                      <p className="mt-1 text-sm font-semibold text-slate-900">
+                        ₹
+                        {appliedOffer.subtotal.toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-500">
+                        You save
+                      </p>
+
+                      <p className="mt-1 text-sm font-semibold text-emerald-700">
+                        - ₹
+                        {appliedOffer.discountAmount.toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-slate-500">
+                        Offer total
+                      </p>
+
+                      <p className="mt-1 text-sm font-semibold text-slate-900">
+                        ₹
+                        {appliedOffer.totalAmount.toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </section>
 
           </div>
@@ -691,138 +770,57 @@ function ReviewOrderPage() {
               RIGHT ORDER SUMMARY
           ================================================= */}
 
-          <aside className="lg:sticky lg:top-24">
+          <aside className="min-w-0 lg:sticky lg:top-24">
 
-            <div className="rounded-3xl border border-[#eadfd3] bg-white p-6 shadow-sm sm:p-7">
+            <ReviewOrderSummary
+              totalItems={totalItems}
+              cartTotal={finalTotal}
+              orderError={orderError}
+              isCreatingOrder={
+                isCreatingOrder
+              }
+              onProceedToPayment={
+                handleProceedToPayment
+              }
+            />
 
-              <h2 className="text-xl font-bold text-slate-900">
-                Order Summary
-              </h2>
+            {/* ===============================================
+                DISCOUNT SUMMARY
+            =============================================== */}
 
-              <div className="mt-6 space-y-4">
-
-                {/* Items */}
-
-                <div className="flex items-center justify-between text-sm">
-
-                  <span className="text-slate-500">
-                    Items
+            {appliedOffer && (
+              <div className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-slate-600">
+                    Offer discount
                   </span>
 
-                  <span className="font-medium text-slate-800">
-                    {totalItems}
+                  <span className="text-sm font-semibold text-emerald-700">
+                    - ₹
+                    {appliedOffer.discountAmount.toLocaleString(
+                      "en-IN"
+                    )}
                   </span>
-
                 </div>
 
-                {/* Subtotal */}
-
-                <div className="flex items-center justify-between text-sm">
-
-                  <span className="text-slate-500">
-                    Subtotal
+                <div className="mt-3 flex items-center justify-between border-t border-emerald-100 pt-3">
+                  <span className="text-sm font-semibold text-slate-900">
+                    Final total
                   </span>
 
-                  <span className="font-semibold text-slate-900">
-                    ₹{cartTotal}
+                  <span className="text-lg font-bold text-slate-900">
+                    ₹
+                    {finalTotal.toLocaleString(
+                      "en-IN"
+                    )}
                   </span>
-
                 </div>
-
               </div>
-
-              <div className="my-6 h-px bg-[#eadfd3]" />
-
-              {/* Total */}
-
-              <div className="flex items-center justify-between">
-
-                <span className="text-base font-bold text-slate-900">
-                  Total
-                </span>
-
-                <span className="text-2xl font-bold text-[#8b542f]">
-                  ₹{cartTotal}
-                </span>
-
-              </div>
-
-              {/* =================================================
-                  ORDER ERROR
-              ================================================= */}
-
-              {orderError && (
-                <div
-                  className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4"
-                  role="alert"
-                >
-                  <p className="text-sm font-medium leading-5 text-red-700">
-                    {orderError}
-                  </p>
-                </div>
-              )}
-
-              {/* =================================================
-                  PROCEED TO PAYMENT
-              ================================================= */}
-
-              <button
-                type="button"
-                onClick={
-                  handleProceedToPayment
-                }
-                disabled={isCreatingOrder}
-                className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-[#8b542f] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isCreatingOrder ? (
-                  <>
-                    <span
-                      className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
-                      aria-hidden="true"
-                    />
-
-                    Creating Order...
-                  </>
-                ) : (
-                  "Proceed to Payment"
-                )}
-              </button>
-
-              {/* =================================================
-                  PAYMENT NOTICE
-              ================================================= */}
-
-              <div className="mt-4 rounded-2xl bg-[#fffaf5] p-4">
-
-                <p className="text-center text-xs leading-5 text-slate-500">
-                  Your order will be created first.
-                  Payment will be completed on the
-                  next step.
-                </p>
-
-              </div>
-
-              {/* =================================================
-                  BACK TO CART
-              ================================================= */}
-
-              <Link
-                to="/cart"
-                className={`mt-4 block text-center text-xs font-semibold text-[#8b542f] transition hover:text-[#744324] ${
-                  isCreatingOrder
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }`}
-              >
-                ← Return to Cart
-              </Link>
-
-            </div>
+            )}
 
           </aside>
 
         </div>
-
       </div>
     </main>
   );
