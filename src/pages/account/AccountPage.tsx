@@ -61,6 +61,15 @@ function AccountPage() {
 
   /*
    * =========================================================
+   * USER DISPLAY NAME
+   * =========================================================
+   */
+
+  const displayName =
+    user.name?.trim() || "My Account";
+
+  /*
+   * =========================================================
    * RENDER
    * =========================================================
    */
@@ -93,7 +102,7 @@ function AccountPage() {
             aria-label="Account navigation"
           >
             <AccountSidebar
-              name={user.name}
+              name={displayName}
               email={user.email}
               phone={user.phone}
               onLogout={handleLogout}
@@ -124,7 +133,7 @@ function AccountPage() {
 
           <a
             href="/#products"
-            className="group inline-flex items-center gap-2 text-sm hover:underline text-[#8b542f] transition-colors duration-200 hover:text-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
+            className="group inline-flex items-center gap-2 text-sm text-[#8b542f] transition-colors duration-200 hover:text-[#744324] hover:underline focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
           >
             <span
               aria-hidden="true"

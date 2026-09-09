@@ -13,12 +13,6 @@ import {
   updateMyProfile,
 } from "../../api/authApi";
 
-import {
-  validateOffer,
-  type Offer,
-  type ValidateOfferResponse,
-} from "../../api/offerApi";
-
 import CheckoutHeader from "../../components/checkout/CheckoutHeader";
 import CheckoutCustomerForm from "../../components/checkout/CheckoutCustomerForm";
 import CheckoutOrderSummary from "../../components/checkout/CheckoutOrderSummary";
@@ -100,17 +94,8 @@ function CheckoutPage() {
      OFFER STATE
   ========================================================= */
 
-  const [couponCode, setCouponCode] =
-    useState("");
-
-  const [appliedOffer, setAppliedOffer] =
-    useState<ValidateOfferResponse | null>(null);
-
-  const [isApplyingOffer, setIsApplyingOffer] =
-    useState(false);
-
-  const [offerError, setOfferError] =
-    useState("");
+  const [appliedOffer] =
+    useState<import("../../api/offerApi").ValidateOfferResponse | null>(null);
 
   const cartTotal = getCartTotal();
 
@@ -188,102 +173,6 @@ function CheckoutPage() {
     }));
 
     setSubmitError("");
-  };
-
-  /* =========================================================
-     APPLY OFFER
-  ========================================================= */
-
-  const handleApplyOffer = async () => {
-    const code = couponCode.trim();
-
-    if (!code) {
-      setOfferError(
-        "Please enter a coupon code."
-      );
-
-      return;
-    }
-
-    if (isApplyingOffer) {
-      return;
-    }
-
-    if (appliedOffer) {
-      return;
-    }
-
-    setOfferError("");
-    setIsApplyingOffer(true);
-
-    try {
-      /*
-       * Backend validates:
-       *
-       * - offer exists
-       * - offer is active
-       * - offer dates
-       * - customer eligibility
-       * - minimum order
-       * - usage limits
-       * - discount amount
-       */
-
-      const result = await validateOffer(
-        code,
-        cartTotal
-      );
-
-      setAppliedOffer(result);
-
-      setCouponCode(result.offer.code);
-
-      setOfferError("");
-    } catch (error: any) {
-      console.error(
-        "Failed to apply offer:",
-        error
-      );
-
-      const apiMessage =
-        error?.response?.data?.message ||
-        error?.message;
-
-      setAppliedOffer(null);
-
-      setOfferError(
-        apiMessage ||
-          "Unable to apply this offer. Please check the code and try again."
-      );
-    } finally {
-      setIsApplyingOffer(false);
-    }
-  };
-
-  /* =========================================================
-     REMOVE OFFER
-  ========================================================= */
-
-  const handleRemoveOffer = () => {
-    setAppliedOffer(null);
-    setCouponCode("");
-    setOfferError("");
-  };
-
-  /* =========================================================
-     COUPON INPUT KEY DOWN
-  ========================================================= */
-
-  const handleCouponKeyDown = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key !== "Enter") {
-      return;
-    }
-
-    event.preventDefault();
-
-    handleApplyOffer();
   };
 
   /* =========================================================

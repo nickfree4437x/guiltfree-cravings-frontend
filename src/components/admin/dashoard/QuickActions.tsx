@@ -1,5 +1,4 @@
 import {
-  ArrowUpRight,
   Gift,
   PackagePlus,
   ShoppingBag,

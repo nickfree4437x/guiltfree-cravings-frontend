@@ -3,7 +3,6 @@ import {
   Home,
   Leaf,
   Star,
-  Utensils,
 } from "lucide-react";
 
 function WhyChooseUs() {
@@ -30,7 +29,7 @@ function WhyChooseUs() {
       title: "Delicious Taste",
       description:
         "Because choosing a better treat should never mean compromising on flavour.",
-      icon: Star,  // ✅ Changed from Sparkles to Star
+      icon: Star,
       bgColor: "bg-amber-50",
       iconColor: "text-amber-500",
       borderColor: "border-amber-200",
@@ -47,7 +46,10 @@ function WhyChooseUs() {
   ];
 
   return (
-    <section className="bg-[#fffaf5] px-5 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8" id="why-choose">
+    <section
+      className="bg-[#fffaf5] px-5 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8"
+      id="why-choose"
+    >
       <div className="mx-auto max-w-6xl">
         {/* Section Header */}
         <div className="mx-auto max-w-2xl text-center">
@@ -56,20 +58,20 @@ function WhyChooseUs() {
               Why Choose Us
             </span>
           </div>
-          
-          <h2 className="mt-2 text-[18px] sm:text-[22px] md:text-[28px] font-semibold leading-tight tracking-wide text-[#2c2c2c]">
+
+          <h2 className="mt-2 text-[18px] font-semibold leading-tight tracking-wide text-[#2c2c2c] sm:text-[22px] md:text-[28px]">
             Good Food, Thoughtfully Made
           </h2>
-          
-          <p className="mt-2 mx-auto max-w-xl text-[12px] md:text-[14.5px] font-[350] leading-relaxed text-slate-500">
+
+          <p className="mx-auto mt-2 max-w-xl text-[12px] font-[350] leading-relaxed text-slate-500 md:text-[14.5px]">
             We put care into every detail so you can simply enjoy every
             delicious bite.
           </p>
         </div>
 
         {/* Benefits */}
-        <div className="mt-8 grid gap-px overflow-hidden rounded-md border border-gray-200 bg-[#eadfd3] sm:grid-cols-2 lg:mt-12 lg:grid-cols-4 mb-14">
-          {benefits.map((benefit, index) => {
+        <div className="mb-14 mt-8 grid gap-px overflow-hidden rounded-md border border-gray-200 bg-[#eadfd3] sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
+          {benefits.map((benefit) => {
             const Icon = benefit.icon;
 
             return (
@@ -78,7 +80,9 @@ function WhyChooseUs() {
                 className="group relative bg-white px-6 py-8 text-center transition-all duration-300 sm:px-7 sm:py-9 lg:min-h-[285px] lg:px-6"
               >
                 {/* Icon with Different Colors */}
-                <div className={`relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${benefit.borderColor} ${benefit.bgColor} ${benefit.iconColor} transition-all duration-300`}>
+                <div
+                  className={`relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${benefit.borderColor} ${benefit.bgColor} ${benefit.iconColor} transition-all duration-300`}
+                >
                   <Icon
                     size={23}
                     strokeWidth={1.7}
@@ -96,12 +100,10 @@ function WhyChooseUs() {
                     {benefit.description}
                   </p>
                 </div>
-
               </div>
             );
           })}
         </div>
-
       </div>
     </section>
   );

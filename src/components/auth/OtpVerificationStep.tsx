@@ -1,6 +1,5 @@
 import {
   ArrowLeft,
-  ArrowRight,
   RefreshCw,
 } from "lucide-react";
 
@@ -24,7 +23,6 @@ interface OtpVerificationStepProps {
 }
 
 function OtpVerificationStep({
-  phone,
   otp,
   loading,
   resendCountdown,
@@ -35,9 +33,6 @@ function OtpVerificationStep({
   onBackToPhone,
   onKeyDown,
 }: OtpVerificationStepProps) {
-  const isValidOtp =
-    new RegExp(`^\\d{${OTP_LENGTH}}$`).test(otp);
-
   return (
     <div className="mt-8">
       {/* =====================================================

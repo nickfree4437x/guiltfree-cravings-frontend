@@ -18,7 +18,6 @@ function AdminSettingsPage() {
     (state) => state.admin
   );
 
-
   /*
    * =========================================================
    * NOTIFICATIONS
@@ -40,35 +39,6 @@ function AdminSettingsPage() {
     setCustomerNotifications,
   ] = useState(false);
 
-
-  /*
-   * =========================================================
-   * SAVE STATE
-   * =========================================================
-   */
-
-  const [saved, setSaved] =
-    useState(false);
-
-
-  /*
-   * =========================================================
-   * SAVE SETTINGS
-   * =========================================================
-   *
-   * Actual settings API baad mein connect
-   * ki ja sakti hai.
-   */
-
-  const handleSave = () => {
-    setSaved(true);
-
-    window.setTimeout(() => {
-      setSaved(false);
-    }, 2500);
-  };
-
-
   return (
     <div className="min-h-screen bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
       <div className="mx-auto max-w-6xl">
@@ -78,7 +48,6 @@ function AdminSettingsPage() {
         ================================================= */}
 
         <AdminSettingsHeader />
-
 
         {/* =================================================
             SETTINGS CONTENT
@@ -94,13 +63,11 @@ function AdminSettingsPage() {
             admin={admin}
           />
 
-
           {/* =================================================
               CHANGE PASSWORD
           ================================================= */}
 
           <ChangePasswordSection />
-
 
           {/* =================================================
               NOTIFICATIONS

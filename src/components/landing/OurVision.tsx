@@ -64,7 +64,7 @@ function OurVision() {
         ===================================================== */}
         
         <div className="mt-14 sm:mt-16 grid md:grid-cols-3 gap-6 sm:gap-8">
-          {visionPoints.map((point, index) => {
+          {visionPoints.map((point) => {
             const Icon = point.icon;
             
             return (

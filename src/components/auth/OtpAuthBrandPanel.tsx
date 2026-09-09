@@ -1,5 +1,3 @@
-import { Heart, Leaf, Sparkles } from "lucide-react";
-
 import heroImage from "../../assets/hero_image.png";
 
 function OtpAuthBrandPanel() {
@@ -23,14 +21,12 @@ function OtpAuthBrandPanel() {
         {/* BRAND */}
 
         <div>
-
           <div className="mt-12 max-w-sm">
-
-            <h2 className="mt-4 text-[18px] md:text-[28px] font-semibold leading-[1.08] tracking-tight text-white">
+            <h2 className="mt-4 text-[18px] font-semibold leading-[1.08] tracking-tight text-white md:text-[28px]">
               Login
             </h2>
 
-            <p className="mt-4 max-w-xs text-[12px] md:text-[14.5px] font-[350] leading-5 text-white/75">
+            <p className="mt-4 max-w-xs text-[12px] font-[350] leading-5 text-white/75 md:text-[14.5px]">
               Sign in securely with your mobile number to continue your shopping journey
             </p>
           </div>
@@ -47,7 +43,7 @@ function OtpAuthBrandPanel() {
             <img
               src={heroImage}
               alt="GuiltFree Cravings wholesome products"
-              className="mx-auto max-h-[280px] w-full object-contain rounded-lg drop-shadow-[0_25px_30px_rgba(0,0,0,0.18)]"
+              className="mx-auto max-h-[280px] w-full rounded-lg object-contain drop-shadow-[0_25px_30px_rgba(0,0,0,0.18)]"
             />
           </div>
         </div>

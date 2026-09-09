@@ -1,22 +1,10 @@
-import { useNavigate } from "react-router-dom";
-
 interface ReviewCheckoutHeaderProps {
   isCreatingOrder: boolean;
 }
 
 function ReviewCheckoutHeader({
-  isCreatingOrder,
+  isCreatingOrder: _isCreatingOrder,
 }: ReviewCheckoutHeaderProps) {
-  const navigate = useNavigate();
-
-  const handleBack = () => {
-    if (isCreatingOrder) {
-      return;
-    }
-
-    navigate("/checkout");
-  };
-
   return (
     <>
       {/* ===================================================
@@ -24,7 +12,6 @@ function ReviewCheckoutHeader({
       =================================================== */}
 
       <div className="mt-12 text-center sm:mt-14">
-
         <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
           Review Your Order
         </h1>

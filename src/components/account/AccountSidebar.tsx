@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 interface AccountSidebarProps {
-  name: string;
+  name: string | null | undefined;
   email: string | null | undefined;
   phone: string;
   onLogout: () => void;
@@ -165,7 +165,7 @@ function AccountSidebar({
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M20 12a2 2 0 0 0 0-4V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v3a2 2 0 0 0 0 4v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3a2 2 0 0 0 0-4Z"
+              d="M20 12a2 2 0 0 0 0-4V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v3a2 2 0 0 0 0 4v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3a2 2 0 0 0-1-4Z"
             />
 
             <path

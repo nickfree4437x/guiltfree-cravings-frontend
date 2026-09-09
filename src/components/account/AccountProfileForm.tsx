@@ -29,7 +29,7 @@ interface UpdateProfileResponse {
 interface AccountProfileFormProps {
   user: {
     id: number;
-    name: string;
+    name: string | null;
     phone: string;
     email: string | null;
     isVerified: boolean;

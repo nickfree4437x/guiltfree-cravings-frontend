@@ -4,10 +4,7 @@ import {
   useState,
 } from "react";
 
-import {
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useCartStore } from "../../../store/cartStore";
 import { useAuthStore } from "../../../store/authStore";
@@ -19,9 +16,12 @@ import MobileMenu from "./MobileMenu";
 
 import type { NavLink } from "./DesktopNavigation";
 
-function Navbar() {
+interface NavbarProps {
+  isHomePage: boolean;
+}
+
+function Navbar({ isHomePage }: NavbarProps) {
   const navigate = useNavigate();
-  const location = useLocation();
 
   /*
    * =========================================================
@@ -80,17 +80,6 @@ function Navbar() {
   const logout = useAuthStore(
     (state) => state.logout
   );
-
-  /*
-   * =========================================================
-   * HOME PAGE CHECK
-   *
-   * Transparent navbar is allowed ONLY on "/"
-   * =========================================================
-   */
-
-  const isHomePage =
-    location.pathname === "/";
 
   /*
    * =========================================================

@@ -135,14 +135,14 @@ export const initializeMsg91Widget =
 
       exposeMethods: true,
 
-      success: (data) => {
+      success: (data: Msg91OtpResponse) => {
         console.log(
           "MSG91 WIDGET SUCCESS:",
           data
         );
       },
 
-      failure: (error) => {
+      failure: (error: unknown) => {
         console.error(
           "MSG91 WIDGET FAILURE:",
           error
@@ -151,7 +151,9 @@ export const initializeMsg91Widget =
     };
 
     window.initSendOTP(
-      configuration
+      configuration as Parameters<
+        NonNullable<typeof window.initSendOTP>
+      >[0]
     );
 
     widgetInitialized = true;
@@ -190,6 +192,7 @@ const extractReqId = (
   // -----------------------------------------
   // Direct reqId fields
   // -----------------------------------------
+
   const directReqId =
     object.reqId ??
     object.reqid ??
@@ -209,6 +212,7 @@ const extractReqId = (
   // MSG91 Web SDK:
   // reqId is returned inside "message"
   // -----------------------------------------
+
   if (
     typeof object.message === "string" &&
     object.message.trim()
@@ -219,6 +223,7 @@ const extractReqId = (
   // -----------------------------------------
   // Nested response/data
   // -----------------------------------------
+
   const nestedObjects = [
     object.data,
     object.response,
@@ -251,6 +256,7 @@ const extractReqId = (
     }
 
     // MSG91 may also put it in message
+
     if (
       typeof nested.message === "string" &&
       nested.message.trim()

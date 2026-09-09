@@ -18,8 +18,6 @@ interface AccountDropdownProps {
 }
 
 function AccountDropdown({
-  user,
-  displayName,
   userInitial,
   isOpen,
   onToggle,
@@ -38,18 +36,6 @@ function AccountDropdown({
   const dropdownClasses = isLight
     ? "border-white/20 bg-transparent backdrop-blur-md"
     : "border-slate-200 bg-white";
-
-  const accountHeaderClasses = isLight
-    ? "bg-white/10"
-    : "bg-[#fffaf5]";
-
-  const accountNameClasses = isLight
-    ? "text-white"
-    : "text-[#2f2f2f]";
-
-  const accountEmailClasses = isLight
-    ? "text-white/70"
-    : "text-slate-500";
 
   const linkClasses = isLight
     ? "text-white hover:bg-white/10 hover:text-white"
@@ -258,7 +244,7 @@ function AccountDropdown({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v1a2.5 2.5 0 0 1-2 2.45v1.1a2.5 2.5 0 0 1 2 2.45v1A2.5 2.5 0 0 1 17.5 18h-11A2.5 2.5 0 0 1 4 15.5v-1a2.5 2.5 0 0 1 2-2.45v-1.1a2.5 2.5 0 0 1-2-2.45v-1Z"
+                  d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v1a2.5 2.5 0 0 1-2 2.45v1.1a2.5 2.5 0 0 1 2 2.45v1A2.5 2.5 0 0 1 17.5 18h-11A2.5 2.5 0 0 1 4 15.5v-1a2.5 2.5 0 0 1 2-2.45v-1.1A2.5 2.5 0 0 1 4 8.5v-1Z"
                 />
 
                 <path

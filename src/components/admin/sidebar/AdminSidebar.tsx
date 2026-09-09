@@ -1,5 +1,3 @@
-// src/components/admin/AdminSidebar.tsx
-
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -24,7 +22,6 @@ interface NavItem {
 function AdminSidebar() {
   const navigate = useNavigate();
 
-  const admin = useAdminAuthStore((state) => state.admin);
   const logout = useAdminAuthStore((state) => state.logout);
 
   const handleLogout = () => {

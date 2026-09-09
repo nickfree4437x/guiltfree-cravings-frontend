@@ -54,7 +54,7 @@ function OurPromise() {
         
         <div className="mt-8 sm:mt-10 lg:mt-12">
           <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
-            {promises.map((promise, index) => (
+            {promises.map((promise) => (
               <div
                 key={promise.number}
                 className="group relative bg-white rounded-md p-6 sm:p-8 shadow-sm transition-all duration-500 border border-gray-200] hover:border-[#8b542f]/20"

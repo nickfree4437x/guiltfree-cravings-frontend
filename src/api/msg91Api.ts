@@ -41,13 +41,13 @@ interface Msg91WidgetConfiguration {
   widgetId: string;
   tokenAuth: string;
   identifier?: string;
-  exposeMethods: boolean;
+  exposeMethods?: boolean;
   captchaRenderId?: string;
   success?: (data: unknown) => void;
   failure?: (error: unknown) => void;
 }
 
-interface Msg91Window extends Window {
+interface Msg91Window {
   initSendOTP?: (
     configuration: Msg91WidgetConfiguration
   ) => void;
@@ -99,7 +99,7 @@ const MSG91_WIDGET_SCRIPT =
 ============================================================ */
 
 const msg91Window =
-  window as Msg91Window;
+  window as unknown as Msg91Window;
 
 /* ============================================================
    INTERNAL STATE

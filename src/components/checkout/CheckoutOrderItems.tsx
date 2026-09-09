@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import type { CartItem } from "../../store/cartStore";
 
 interface CheckoutOrderItemsProps {
@@ -11,9 +9,6 @@ const INITIAL_VISIBLE_ITEMS = 2;
 function CheckoutOrderItems({
   items = [],
 }: CheckoutOrderItemsProps) {
-  const [isExpanded, setIsExpanded] =
-    useState(false);
-
   /*
    * =========================================================
    * SAFE ITEMS
@@ -26,27 +21,14 @@ function CheckoutOrderItems({
 
   /*
    * =========================================================
-   * EXPAND / COLLAPSE
+   * VISIBLE ITEMS
    * =========================================================
    */
 
-  const hasMoreItems =
-    safeItems.length >
-    INITIAL_VISIBLE_ITEMS;
-
-  const visibleItems = isExpanded
-    ? safeItems
-    : safeItems.slice(
-        0,
-        INITIAL_VISIBLE_ITEMS
-      );
-
-  const hiddenItemCount =
-    Math.max(
-      safeItems.length -
-        INITIAL_VISIBLE_ITEMS,
-      0
-    );
+  const visibleItems = safeItems.slice(
+    0,
+    INITIAL_VISIBLE_ITEMS
+  );
 
   /*
    * =========================================================

@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 function CartHeader() {
   return (
     <div className="mb-8 sm:mt-14">

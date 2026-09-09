@@ -30,8 +30,6 @@ export const PasswordRequirements = ({ password }: PasswordRequirementsProps) =>
     },
   ], [password]);
 
-  const allValid = requirements.every((req) => req.valid);
-
   return (
     <div className="rounded-xl border border-[#eadfd3] bg-[#fffaf5] px-4 py-4">
       <div className="flex items-center gap-2">

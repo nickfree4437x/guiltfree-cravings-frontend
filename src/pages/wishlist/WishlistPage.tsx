@@ -1,4 +1,4 @@
-import { Heart, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useWishlistStore } from "../../store/wishlistStore";
