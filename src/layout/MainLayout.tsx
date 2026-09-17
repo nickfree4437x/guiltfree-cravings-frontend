@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 
 import Navbar from "../components/landing/navbar/Navbar";
-import Footer from "../components/landing/Footer";
+// import Footer from "../components/landing/Footer";
 
 function MainLayout() {
   const location = useLocation();
@@ -17,7 +17,7 @@ function MainLayout() {
         <Outlet />
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

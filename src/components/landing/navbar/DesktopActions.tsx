@@ -40,7 +40,7 @@ function DesktopActions({
   const isLight = variant === "light";
 
   return (
-    <div className="hidden items-center gap-3 lg:flex">
+    <div className="hidden items-center gap-2.5 lg:flex">
       {/* =======================================================
           ACCOUNT / LOGIN
       ======================================================= */}
@@ -60,15 +60,20 @@ function DesktopActions({
         <Link
           to="/login"
           className={`
-            rounded-3xl
-            px-4
-            py-2
-            text-[12px]
+            inline-flex
+            h-9
+            items-center
+            justify-center
+            rounded-full
+            border
+            px-5
+            text-[13px]
             transition-all
             duration-200
-            ${isLight 
-              ? "border border-white/30 bg-transparent text-white hover:border-white/50" 
-              : "border border-[#8b542f]/30 bg-white text-[#8b542f] hover:bg-[#8b542f]/5"
+            ${
+              isLight
+                ? "border-white/30 bg-white/10 text-white backdrop-blur-sm hover:border-white/50 hover:bg-white/15"
+                : "border-[#B5697A]/25 bg-white text-[#B5697A] hover:bg-[#B5697A]/5"
             }
           `}
         >
@@ -83,6 +88,7 @@ function DesktopActions({
       <Link
         to="/cart"
         className={`
+          group
           relative
           flex
           h-10
@@ -90,11 +96,14 @@ function DesktopActions({
           items-center
           justify-center
           rounded-full
+          border
           transition-all
           duration-200
-          ${isLight 
-            ? "border border-white/30 bg-transparent text-white hover:border-white/50" 
-            : "border border-slate-200 bg-white text-slate-700 hover:border-[#8b542f]/30 hover:bg-[#8b542f]/5 hover:text-[#8b542f]"
+          active:scale-95
+          ${
+            isLight
+              ? "border-white/30 bg-white/10 text-white backdrop-blur-sm hover:border-white/50 hover:bg-white/15"
+              : "border-slate-200 bg-white text-slate-700 hover:border-[#B5697A]/40 hover:bg-[#B5697A]/5 hover:text-[#B5697A]"
           }
         `}
         aria-label={`Shopping cart with ${cartItemCount} items`}
@@ -104,7 +113,13 @@ function DesktopActions({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
-          className="h-[19px] w-[19px] transition-transform duration-200 group-hover:scale-105"
+          className="
+            h-[18px]
+            w-[18px]
+            transition-transform
+            duration-200
+            group-hover:scale-105
+          "
           aria-hidden="true"
         >
           <path
@@ -121,18 +136,20 @@ function DesktopActions({
               -right-1.5
               -top-1.5
               flex
-              min-h-[19px]
-              min-w-[19px]
+              min-h-[18px]
+              min-w-[18px]
               items-center
               justify-center
               rounded-full
               px-1
               text-[9px]
+              font-semibold
               leading-none
               shadow-sm
-              ${isLight 
-                ? "bg-[#f5d6b3] text-[#2f2f2f]" 
-                : "bg-[#8b542f] text-white"
+              ${
+                isLight
+                  ? "bg-white text-[#B5697A]"
+                  : "bg-[#B5697A] text-white"
               }
             `}
           >

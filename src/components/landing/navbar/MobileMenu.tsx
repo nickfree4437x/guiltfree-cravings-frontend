@@ -1,10 +1,5 @@
-import {
-  useState,
-} from "react";
-
-import {
-  Link,
-} from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import type { NavLink } from "./DesktopNavigation";
 
@@ -27,7 +22,7 @@ interface MobileMenuProps {
   onClose: () => void;
   onLogout: () => void;
 
-  variant?: "dark" | "light"; // New prop
+  variant?: "dark" | "light";
 }
 
 function MobileMenu({
@@ -39,8 +34,15 @@ function MobileMenu({
   userInitial,
   onClose,
   onLogout,
-  variant = "dark", // Default dark
+  variant = "dark",
 }: MobileMenuProps) {
+  /*
+   * =========================================================
+   * BRAND COLOR
+   * =========================================================
+   */
+
+  // const PRIMARY_COLOR = "#B5697A";
 
   /*
    * =========================================================
@@ -48,10 +50,8 @@ function MobileMenu({
    * =========================================================
    */
 
-  const [
-    isAccountExpanded,
-    setIsAccountExpanded,
-  ] = useState(false);
+  const [isAccountExpanded, setIsAccountExpanded] =
+    useState(false);
 
   const isLight = variant === "light";
 
@@ -99,58 +99,99 @@ function MobileMenu({
     return null;
   }
 
+  /*
+   * =========================================================
+   * RENDER
+   * =========================================================
+   */
+
   return (
     <div
       className={`
-        border-t py-2 lg:hidden
-        ${isLight 
-          ? "border-white/10 bg-white/5 backdrop-blur-md" 
-          : "border-slate-100"
+        border-t
+        py-3
+        lg:hidden
+        ${
+          isLight
+            ? "border-white/10 bg-black/10 backdrop-blur-xl"
+            : "border-slate-100 bg-white"
         }
       `}
     >
-
       {/* =====================================================
           MAIN NAVIGATION
       ===================================================== */}
 
-      <div>
+      <nav
+        aria-label="Mobile navigation"
+        className="space-y-1"
+      >
         {navLinks.map((link) => (
           <Link
             key={link.label}
             to={link.to}
             onClick={handleClose}
             className={`
-              block rounded-xl px-4 py-1.5 text-[12px] transition
-              ${isLight 
-                ? "text-white/80 hover:text-white hover:bg-white/10" 
-                : "text-slate-700 hover:text-[#8b542f] hover:bg-white"
+              group
+              flex
+              items-center
+              justify-between
+              rounded-xl
+              px-4
+              py-3
+              text-[13px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                isLight
+                  ? "text-white/85 hover:bg-white/10 hover:text-white"
+                  : "text-slate-700 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
               }
             `}
           >
-            {link.label}
+            <span>{link.label}</span>
+
+            <span
+              className={`
+                text-[15px]
+                transition-transform
+                duration-200
+                group-hover:translate-x-0.5
+                ${
+                  isLight
+                    ? "text-white/40"
+                    : "text-slate-300"
+                }
+              `}
+              aria-hidden="true"
+            >
+              →
+            </span>
           </Link>
         ))}
-      </div>
+      </nav>
 
       {/* =====================================================
-          MOBILE ACCOUNT
+          ACCOUNT SECTION
       ===================================================== */}
 
       {isAuthenticated ? (
-
         <div
           className={`
-            mt-1 rounded-md border p-0
-            ${isLight 
-              ? "border-white/20 bg-white/10 backdrop-blur-sm" 
-              : "border-[#eadfd3] bg-white"
+            mt-3
+            overflow-hidden
+            rounded-2xl
+            border
+            ${
+              isLight
+                ? "border-white/15 bg-white/5"
+                : "border-[#B5697A]/15 bg-[#B5697A]/[0.035]"
             }
           `}
         >
-
           {/* =================================================
-              ACCOUNT HEADER / TOGGLE
+              ACCOUNT HEADER
           ================================================= */}
 
           <button
@@ -159,58 +200,107 @@ function MobileMenu({
             aria-expanded={isAccountExpanded}
             aria-controls="mobile-account-links"
             className={`
-              flex w-full items-center justify-between rounded-xl px-4 py-2 text-left transition
-              ${isLight 
-                ? "bg-white/5 hover:bg-white/15" 
-                : "bg-[#fffaf5] hover:bg-[#fdf4eb]"
+              flex
+              w-full
+              items-center
+              justify-between
+              px-4
+              py-3
+              text-left
+              transition-all
+              duration-200
+              ${
+                isLight
+                  ? "hover:bg-white/10"
+                  : "hover:bg-[#B5697A]/5"
               }
             `}
           >
-
-            {/* User */}
+            {/* USER INFO */}
 
             <div className="flex min-w-0 items-center gap-3">
-
               {/* Avatar */}
 
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#8b542f] text-[12px] font-semibold text-white">
+              <span
+                className="
+                  flex
+                  h-9
+                  w-9
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#B5697A]
+                  text-[12px]
+                  font-semibold
+                  text-white
+                  shadow-sm
+                "
+              >
                 {userInitial}
               </span>
 
-              {/* User Details */}
+              {/* Details */}
 
               <div className="min-w-0">
-
-                <p className={`
-                  truncate text-sm font-semibold
-                  ${isLight ? "text-white" : "text-[#2f2f2f]"}
-                `}>
+                <p
+                  className={`
+                    truncate
+                    text-[13px]
+                    font-semibold
+                    ${
+                      isLight
+                        ? "text-white"
+                        : "text-slate-800"
+                    }
+                  `}
+                >
                   {displayName}
                 </p>
 
-                <p className={`
-                  truncate text-[11px] font-light
-                  ${isLight ? "text-white/60" : "text-slate-500"}
-                `}>
+                <p
+                  className={`
+                    mt-0.5
+                    truncate
+                    text-[11px]
+                    ${
+                      isLight
+                        ? "text-white/50"
+                        : "text-slate-500"
+                    }
+                  `}
+                >
                   {user?.email ||
                     user?.phone ||
                     ""}
                 </p>
-
               </div>
-
             </div>
 
-            {/* Expand / Collapse Icon */}
+            {/* Chevron */}
 
             <span
               className={`
-                ml-3 flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-transform duration-200
-                ${isLight 
-                  ? "bg-white/10 text-white/60" 
-                  : "bg-white text-slate-500"
+                ml-3
+                flex
+                h-8
+                w-8
+                shrink-0
+                items-center
+                justify-center
+                rounded-full
+                transition-all
+                duration-200
+                ${
+                  isLight
+                    ? "bg-white/10 text-white/60"
+                    : "bg-white text-slate-400 shadow-sm"
                 }
-                ${isAccountExpanded ? "rotate-180" : ""}
+                ${
+                  isAccountExpanded
+                    ? "rotate-180"
+                    : ""
+                }
               `}
               aria-hidden="true"
             >
@@ -228,7 +318,6 @@ function MobileMenu({
                 />
               </svg>
             </span>
-
           </button>
 
           {/* =================================================
@@ -237,294 +326,341 @@ function MobileMenu({
 
           <div
             id="mobile-account-links"
-            className={`grid transition-all duration-200 ease-in-out ${
-              isAccountExpanded
-                ? "mt-1 grid-rows-[1fr] opacity-100"
-                : "grid-rows-[0fr] opacity-0"
-            }`}
+            className={`
+              grid
+              transition-all
+              duration-200
+              ease-in-out
+              ${
+                isAccountExpanded
+                  ? "grid-rows-[1fr] opacity-100"
+                  : "grid-rows-[0fr] opacity-0"
+              }
+            `}
           >
-
-            <div className="min-h-0 overflow-hidden">
-
-              {/* =================================================
-                  PROFILE
-              ================================================= */}
+            <div className="min-h-0 overflow-hidden px-2 pb-2">
+              {/* PROFILE */}
 
               <Link
                 to="/profile"
                 onClick={handleClose}
                 className={`
-                  flex items-center justify-between rounded-xl px-4 py-2.5 text-[12px] transition
-                  ${isLight 
-                    ? "text-white/70 hover:text-white hover:bg-white/10" 
-                    : "text-slate-700 hover:text-[#8b542f] hover:bg-[#fffaf5]"
+                  flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  px-3
+                  py-2.5
+                  text-[12px]
+                  font-medium
+                  transition-all
+                  ${
+                    isLight
+                      ? "text-white/70 hover:bg-white/10 hover:text-white"
+                      : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
                   }
                 `}
               >
-
-                <span className="flex items-center gap-3">
-
-                  <span className={`
-                    flex h-6 w-6 items-center justify-center rounded-lg
-                    ${isLight 
-                      ? "bg-white/10 text-white/50" 
-                      : "bg-slate-100 text-slate-500"
+                <span
+                  className={`
+                    flex
+                    h-7
+                    w-7
+                    items-center
+                    justify-center
+                    rounded-lg
+                    ${
+                      isLight
+                        ? "bg-white/10 text-white/50"
+                        : "bg-[#B5697A]/10 text-[#B5697A]"
                     }
-                  `}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      className="h-3 w-3"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M20 21a8 8 0 0 0-16 0"
-                      />
+                  `}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    className="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M20 21a8 8 0 0 0-16 0"
+                    />
 
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
-                      />
-                    </svg>
-                  </span>
-
-                  <span>
-                    My Profile
-                  </span>
-
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+                    />
+                  </svg>
                 </span>
+
+                My Profile
               </Link>
 
-              {/* =================================================
-                  ORDERS
-              ================================================= */}
+              {/* ORDERS */}
 
               <Link
                 to="/orders"
                 onClick={handleClose}
                 className={`
-                  flex items-center justify-between rounded-xl px-4 py-2.5 text-[12px] transition
-                  ${isLight 
-                    ? "text-white/70 hover:text-white hover:bg-white/10" 
-                    : "text-slate-700 hover:text-[#8b542f] hover:bg-[#fffaf5]"
+                  flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  px-3
+                  py-2.5
+                  text-[12px]
+                  font-medium
+                  transition-all
+                  ${
+                    isLight
+                      ? "text-white/70 hover:bg-white/10 hover:text-white"
+                      : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
                   }
                 `}
               >
-
-                <span className="flex items-center gap-3">
-
-                  <span className={`
-                    flex h-6 w-6 items-center justify-center rounded-lg
-                    ${isLight 
-                      ? "bg-white/10 text-white/50" 
-                      : "bg-slate-100 text-slate-500"
+                <span
+                  className={`
+                    flex
+                    h-7
+                    w-7
+                    items-center
+                    justify-center
+                    rounded-lg
+                    ${
+                      isLight
+                        ? "bg-white/10 text-white/50"
+                        : "bg-[#B5697A]/10 text-[#B5697A]"
                     }
-                  `}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      className="h-3 w-3"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 3h12v18H6z"
-                      />
+                  `}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    className="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 3h12v18H6z"
+                    />
 
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 7h6M9 11h6M9 15h4"
-                      />
-                    </svg>
-                  </span>
-
-                  <span>
-                    My Orders
-                  </span>
-
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 7h6M9 11h6M9 15h4"
+                    />
+                  </svg>
                 </span>
+
+                My Orders
               </Link>
 
-              {/* =================================================
-                  WISHLIST
-              ================================================= */}
+              {/* WISHLIST */}
 
               <Link
                 to="/wishlist"
                 onClick={handleClose}
                 className={`
-                  flex items-center justify-between rounded-xl px-4 py-2.5 text-[12px] transition
-                  ${isLight 
-                    ? "text-white/70 hover:text-white hover:bg-white/10" 
-                    : "text-slate-700 hover:text-[#8b542f] hover:bg-[#fffaf5]"
+                  flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  px-3
+                  py-2.5
+                  text-[12px]
+                  font-medium
+                  transition-all
+                  ${
+                    isLight
+                      ? "text-white/70 hover:bg-white/10 hover:text-white"
+                      : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
                   }
                 `}
               >
-
-                <span className="flex items-center gap-3">
-
-                  <span className={`
-                    flex h-6 w-6 items-center justify-center rounded-lg
-                    ${isLight 
-                      ? "bg-white/10 text-white/50" 
-                      : "bg-slate-100 text-slate-500"
+                <span
+                  className={`
+                    flex
+                    h-7
+                    w-7
+                    items-center
+                    justify-center
+                    rounded-lg
+                    ${
+                      isLight
+                        ? "bg-white/10 text-white/50"
+                        : "bg-[#B5697A]/10 text-[#B5697A]"
                     }
-                  `}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      className="h-3 w-3"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M20.84 8.61a5.5 5.5 0 0 0-9.54-3.77L12 6l.7-1.16a5.5 5.5 0 0 0-9.54 3.77c0 3.62 3.45 6.32 8.84 10.39 5.39-4.07 8.84-6.77 8.84-10.39Z"
-                      />
-                    </svg>
-                  </span>
-
-                  <span>
-                    Wishlist
-                  </span>
-
+                  `}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    className="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M20.84 8.61a5.5 5.5 0 0 0-9.54-3.77L12 6l.7-1.16a5.5 5.5 0 0 0-9.54 3.77c0 3.62 3.45 6.32 8.84 10.39 5.39-4.07 8.84-6.77 8.84-10.39Z"
+                    />
+                  </svg>
                 </span>
+
+                Wishlist
               </Link>
 
-              {/* =================================================
-                  COUPONS
-              ================================================= */}
+              {/* COUPONS */}
 
               <Link
                 to="/coupons"
                 onClick={handleClose}
                 className={`
-                  flex items-center justify-between rounded-xl px-4 py-2.5 text-[12px] transition
-                  ${isLight 
-                    ? "text-white/70 hover:text-white hover:bg-white/10" 
-                    : "text-slate-700 hover:text-[#8b542f] hover:bg-[#fffaf5]"
+                  flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  px-3
+                  py-2.5
+                  text-[12px]
+                  font-medium
+                  transition-all
+                  ${
+                    isLight
+                      ? "text-white/70 hover:bg-white/10 hover:text-white"
+                      : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
                   }
                 `}
               >
-
-                <span className="flex items-center gap-3">
-
-                  <span className={`
-                    flex h-6 w-6 items-center justify-center rounded-lg
-                    ${isLight 
-                      ? "bg-white/10 text-white/50" 
-                      : "bg-slate-100 text-slate-500"
+                <span
+                  className={`
+                    flex
+                    h-7
+                    w-7
+                    items-center
+                    justify-center
+                    rounded-lg
+                    ${
+                      isLight
+                        ? "bg-white/10 text-white/50"
+                        : "bg-[#B5697A]/10 text-[#B5697A]"
                     }
-                  `}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      className="h-3 w-3"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M20 12a2 2 0 0 1-2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H8a2 2 0 0 1-2-2 2 2 0 0 0 0-4 2 2 0 0 1-2-2 2 2 0 0 1 2-2 2 2 0 0 0 0-4 2 2 0 0 1 2-2h8a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1 2 2Z"
-                      />
+                  `}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    className="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M20 12a2 2 0 0 1-2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H8a2 2 0 0 1-2-2 2 2 0 0 0 0-4 2 2 0 0 1 2-2 2 2 0 0 1 2-2 2 2 0 0 0-2-2 2 2 0 0 1 2-2h8a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1 2 2Z"
+                    />
 
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 9h6M9 15h4"
-                      />
-                    </svg>
-                  </span>
-
-                  <span>
-                    Coupons
-                  </span>
-
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 9h6M9 15h4"
+                    />
+                  </svg>
                 </span>
+
+                Coupons
               </Link>
 
-              {/* =================================================
-                  DIVIDER
-              ================================================= */}
+              {/* DIVIDER */}
 
-              <div className={`
-                my-1 border-t
-                ${isLight ? "border-white/10" : "border-slate-100"}
-              `} />
+              <div
+                className={`
+                  my-1.5
+                  border-t
+                  ${
+                    isLight
+                      ? "border-white/10"
+                      : "border-slate-100"
+                  }
+                `}
+              />
 
-              {/* =================================================
-                  LOGOUT
-              ================================================= */}
+              {/* LOGOUT */}
 
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center justify-between rounded-xl px-4 py-2 text-left text-[12px] text-red-400 transition hover:bg-red-500/10"
+                className="
+                  flex
+                  w-full
+                  items-center
+                  gap-3
+                  rounded-xl
+                  px-3
+                  py-2.5
+                  text-left
+                  text-[12px]
+                  font-medium
+                  text-red-500
+                  transition-all
+                  hover:bg-red-50
+                "
               >
+                <span
+                  className="
+                    flex
+                    h-7
+                    w-7
+                    items-center
+                    justify-center
+                    rounded-lg
+                    bg-red-50
+                  "
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    className="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10 17l5-5-5-5"
+                    />
 
-                <span className="flex items-center gap-3">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12H3"
+                    />
 
-                  <span className={`
-                    flex h-6 w-6 items-center justify-center rounded-lg
-                    ${isLight ? "bg-red-500/10" : "bg-red-50"}
-                  `}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      className="h-3 w-3"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M10 17l5-5-5-5"
-                      />
-
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 12H3"
-                      />
-
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 19V5a2 2 0 0 0-2-2h-6"
-                      />
-                    </svg>
-                  </span>
-
-                  <span>
-                    Logout
-                  </span>
-
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 19V5a2 2 0 0 0-2-2h-6"
+                    />
+                  </svg>
                 </span>
 
+                Logout
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       ) : (
-
         /* =====================================================
            MOBILE LOGIN
         ===================================================== */
@@ -532,19 +668,27 @@ function MobileMenu({
         <Link
           to="/login"
           onClick={handleClose}
-          className={`
-            mt-2 block rounded-full px-5 py-2 text-center text-[12px] transition
-            ${isLight 
-              ? "border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20" 
-              : "border border-[#8b542f]/30 bg-white text-[#8b542f] hover:bg-[#8b542f]/5"
-            }
-          `}
+          className="
+            mt-3
+            block
+            rounded-xl
+            bg-[#B5697A]
+            px-5
+            py-3
+            text-center
+            text-[13px]
+            font-semibold
+            text-white
+            shadow-sm
+            transition-all
+            duration-200
+            hover:bg-[#a85f70]
+            active:scale-[0.99]
+          "
         >
           Login
         </Link>
-
       )}
-
     </div>
   );
 }

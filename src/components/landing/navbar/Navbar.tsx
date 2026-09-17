@@ -4,6 +4,8 @@ import {
   useState,
 } from "react";
 
+import type { CSSProperties } from "react";
+
 import { useNavigate } from "react-router-dom";
 
 import { useCartStore } from "../../../store/cartStore";
@@ -13,6 +15,7 @@ import NavbarLogo from "./NavbarLogo";
 import DesktopNavigation from "./DesktopNavigation";
 import DesktopActions from "./DesktopActions";
 import MobileMenu from "./MobileMenu";
+import MobileBottomNavigation from "./bottom-navbar/MobileBottomNavigation";
 
 import type { NavLink } from "./DesktopNavigation";
 
@@ -20,8 +23,18 @@ interface NavbarProps {
   isHomePage: boolean;
 }
 
-function Navbar({ isHomePage }: NavbarProps) {
+function Navbar({
+  isHomePage: _isHomePage,
+}: NavbarProps) {
   const navigate = useNavigate();
+
+  /*
+   * =========================================================
+   * BRAND COLORS
+   * =========================================================
+   */
+
+  const PRIMARY_COLOR = "#B5697A";
 
   /*
    * =========================================================
@@ -33,9 +46,6 @@ function Navbar({ isHomePage }: NavbarProps) {
     useState(false);
 
   const [isAccountOpen, setIsAccountOpen] =
-    useState(false);
-
-  const [isScrolled, setIsScrolled] =
     useState(false);
 
   /*
@@ -83,49 +93,6 @@ function Navbar({ isHomePage }: NavbarProps) {
 
   /*
    * =========================================================
-   * SCROLL DETECTION
-   *
-   * Only relevant for the landing page.
-   * =========================================================
-   */
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    handleScroll();
-
-    window.addEventListener(
-      "scroll",
-      handleScroll,
-      { passive: true }
-    );
-
-    return () => {
-      window.removeEventListener(
-        "scroll",
-        handleScroll
-      );
-    };
-  }, []);
-
-  /*
-   * =========================================================
-   * RESET SCROLL STATE WHEN ROUTE CHANGES
-   *
-   * Every non-home route should start with a white navbar.
-   * =========================================================
-   */
-
-  useEffect(() => {
-    if (!isHomePage) {
-      setIsScrolled(true);
-    }
-  }, [isHomePage]);
-
-  /*
-   * =========================================================
    * CLOSE MOBILE MENU
    * =========================================================
    */
@@ -161,7 +128,7 @@ function Navbar({ isHomePage }: NavbarProps) {
 
   /*
    * =========================================================
-   * CLOSE ACCOUNT DROPDOWN ON OUTSIDE CLICK
+   * CLOSE ACCOUNT ON OUTSIDE CLICK
    * =========================================================
    */
 
@@ -194,7 +161,7 @@ function Navbar({ isHomePage }: NavbarProps) {
 
   /*
    * =========================================================
-   * CLOSE ACCOUNT DROPDOWN WITH ESCAPE
+   * CLOSE ACCOUNT WITH ESCAPE
    * =========================================================
    */
 
@@ -251,7 +218,7 @@ function Navbar({ isHomePage }: NavbarProps) {
 
   /*
    * =========================================================
-   * USER DISPLAY NAME
+   * USER DISPLAY
    * =========================================================
    */
 
@@ -267,24 +234,27 @@ function Navbar({ isHomePage }: NavbarProps) {
 
   /*
    * =========================================================
-   * NAVBAR THEME
+   * NAVBAR VARIANT
    *
-   * HOME:
-   *   Top     → transparent + white content
-   *   Scroll  → white + dark content
-   *
-   * OTHER ROUTES:
-   *   Always → white + dark content
+   * Navbar is always solid.
    * =========================================================
    */
 
-  const isTransparentNavbar =
-    isHomePage && !isScrolled;
+  const navbarVariant = "dark";
 
-  const navbarVariant =
-    isTransparentNavbar
-      ? "light"
-      : "dark";
+  /*
+   * =========================================================
+   * MOBILE MORE BUTTON
+   *
+   * Opens the existing MobileMenu.
+   * =========================================================
+   */
+
+  const handleMoreClick = () => {
+    setIsMenuOpen(
+      (current) => !current
+    );
+  };
 
   /*
    * =========================================================
@@ -293,241 +263,307 @@ function Navbar({ isHomePage }: NavbarProps) {
    */
 
   return (
-    <nav
-      className={`
-        fixed
-        left-0
-        top-0
-        z-50
-        w-full
-        transition-all
-        duration-300
-        ${
-          isTransparentNavbar
-            ? "bg-transparent"
-            : "bg-white/95 shadow-sm backdrop-blur-md"
-        }
-      `}
-    >
+    <>
       {/* =====================================================
-          NAVBAR CONTAINER
+          TOP NAVBAR
       ===================================================== */}
 
-      <div className="mx-auto max-w-7xl px-3 sm:px-5 lg:px-8">
-
+      <nav
+        className="
+          fixed
+          left-0
+          top-0
+          z-40
+          w-full
+          border-b
+          border-slate-100
+          bg-white/95
+          shadow-[0_4px_24px_rgba(0,0,0,0.06)]
+          backdrop-blur-xl
+        "
+        style={
+          {
+            "--primary-color": PRIMARY_COLOR,
+          } as CSSProperties
+        }
+      >
         {/* ===================================================
-            MAIN NAVBAR
+            NAVBAR CONTAINER
         =================================================== */}
 
-        <div className="flex h-[68px] items-center justify-between">
-
+        <div
+          className="
+            mx-auto
+            w-full
+            max-w-7xl
+            px-4
+            sm:px-6
+            lg:px-8
+          "
+        >
           {/* =================================================
-              LEFT — LOGO
-          ================================================= */}
-
-          <NavbarLogo
-            onClick={closeMenu}
-            variant={navbarVariant}
-          />
-
-          {/* =================================================
-              CENTER — DESKTOP NAVIGATION
-          ================================================= */}
-
-          <DesktopNavigation
-            navLinks={navLinks}
-            onNavigate={closeMenu}
-            variant={navbarVariant}
-          />
-
-          {/* =================================================
-              RIGHT — DESKTOP ACTIONS
+              MAIN NAVBAR
           ================================================= */}
 
           <div
-            ref={accountRef}
-            className="contents"
+            className="
+              flex
+              h-[60px]
+              items-center
+              justify-between
+              gap-6
+              lg:h-[64px]
+            "
           >
-            <DesktopActions
-              cartItemCount={cartItemCount}
+            {/* =================================================
+                LEFT — LOGO
+            ================================================= */}
+
+            <div className="shrink-0">
+              <NavbarLogo
+                onClick={closeMenu}
+                variant={navbarVariant}
+              />
+            </div>
+
+            {/* =================================================
+                CENTER — DESKTOP NAVIGATION
+            ================================================= */}
+
+            <div className="hidden flex-1 justify-center lg:flex">
+              <DesktopNavigation
+                navLinks={navLinks}
+                onNavigate={closeMenu}
+                variant={navbarVariant}
+              />
+            </div>
+
+            {/* =================================================
+                RIGHT — DESKTOP ACTIONS
+            ================================================= */}
+
+            <div
+              ref={accountRef}
+              className="hidden shrink-0 lg:block"
+            >
+              <DesktopActions
+                cartItemCount={cartItemCount}
+                isAuthenticated={
+                  isAuthenticated
+                }
+                user={user}
+                displayName={displayName}
+                userInitial={userInitial}
+                isAccountOpen={
+                  isAccountOpen
+                }
+                onAccountToggle={() =>
+                  setIsAccountOpen(
+                    (current) =>
+                      !current
+                  )
+                }
+                onAccountClose={
+                  closeAccount
+                }
+                onLogout={handleLogout}
+                variant={navbarVariant}
+              />
+            </div>
+
+            {/* =================================================
+                MOBILE TOP ACTIONS
+            ================================================= */}
+
+            <div
+              className="
+                flex
+                items-center
+                gap-2
+                lg:hidden
+              "
+            >
+              {/* =============================================
+                  MOBILE CART
+              ============================================= */}
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate("/cart")
+                }
+                className="
+                  relative
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-slate-200
+                  bg-white
+                  text-slate-800
+                  transition-all
+                  duration-200
+                  hover:border-[#B5697A]/30
+                  hover:text-[#B5697A]
+                  active:scale-95
+                "
+                aria-label={`Shopping cart with ${cartItemCount} items`}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  className="h-[19px] w-[19px]"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 3h2l.4 2m0 0L7 15h10l3-10H5.4ZM7 15l-1 2h12M9 20h.01M17 20h.01"
+                  />
+                </svg>
+
+                {cartItemCount > 0 && (
+                  <span
+                    className="
+                      absolute
+                      -right-1
+                      -top-1
+                      flex
+                      min-h-[18px]
+                      min-w-[18px]
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-[#B5697A]
+                      px-1
+                      text-[9px]
+                      font-bold
+                      leading-none
+                      text-white
+                      shadow-sm
+                    "
+                  >
+                    {cartItemCount > 99
+                      ? "99+"
+                      : cartItemCount}
+                  </span>
+                )}
+              </button>
+
+              {/* =============================================
+                  MOBILE MENU BUTTON
+              ============================================= */}
+
+              <button
+                type="button"
+                onClick={() =>
+                  setIsMenuOpen(
+                    (current) =>
+                      !current
+                  )
+                }
+                className="
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-slate-200
+                  bg-white
+                  text-slate-800
+                  transition-all
+                  duration-200
+                  hover:border-[#B5697A]/30
+                  hover:text-[#B5697A]
+                  active:scale-95
+                "
+                aria-label={
+                  isMenuOpen
+                    ? "Close menu"
+                    : "Open menu"
+                }
+                aria-expanded={
+                  isMenuOpen
+                }
+                aria-controls="mobile-navigation"
+              >
+                {isMenuOpen ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-[19px] w-[19px]"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 6l12 12M18 6L6 18"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="h-[19px] w-[19px]"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 7h16M4 12h16M4 17h16"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* =================================================
+              EXISTING MOBILE MENU
+          ================================================= */}
+
+          <div id="mobile-navigation">
+            <MobileMenu
+              isOpen={isMenuOpen}
+              navLinks={navLinks}
               isAuthenticated={
                 isAuthenticated
               }
               user={user}
               displayName={displayName}
               userInitial={userInitial}
-              isAccountOpen={
-                isAccountOpen
-              }
-              onAccountToggle={() =>
-                setIsAccountOpen(
-                  (current) =>
-                    !current
-                )
-              }
-              onAccountClose={
-                closeAccount
-              }
+              onClose={closeMenu}
               onLogout={handleLogout}
               variant={navbarVariant}
             />
           </div>
-
-          {/* =================================================
-              MOBILE ACTIONS
-          ================================================= */}
-
-          <div className="flex items-center gap-1.5 lg:hidden">
-
-            {/* =================================================
-                MOBILE CART
-            ================================================= */}
-
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/cart")
-              }
-              className={`
-                relative
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-full
-                border
-                transition-all
-                duration-300
-                ${
-                  isTransparentNavbar
-                    ? "border-white/20 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
-                    : "border-slate-200 bg-white text-slate-800 hover:bg-slate-50"
-                }
-              `}
-              aria-label={`Shopping cart with ${cartItemCount} items`}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                className="h-[18px] w-[18px]"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 3h2l.4 2m0 0L7 15h10l3-10H5.4ZM7 15l-1 2h12M9 20h.01M17 20h.01"
-                />
-              </svg>
-
-              {cartItemCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#f5d6b3] px-1 text-[9px] font-bold leading-none text-[#2f2f2f]">
-                  {cartItemCount > 99
-                    ? "99+"
-                    : cartItemCount}
-                </span>
-              )}
-            </button>
-
-            {/* =================================================
-                MOBILE MENU BUTTON
-            ================================================= */}
-
-            <button
-              type="button"
-              onClick={() =>
-                setIsMenuOpen(
-                  (current) =>
-                    !current
-                )
-              }
-              className={`
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-full
-                border
-                transition-all
-                duration-300
-                ${
-                  isTransparentNavbar
-                    ? "border-white/20 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
-                    : "border-slate-200 bg-white text-slate-800 hover:bg-slate-50"
-                }
-              `}
-              aria-label={
-                isMenuOpen
-                  ? "Close menu"
-                  : "Open menu"
-              }
-              aria-expanded={
-                isMenuOpen
-              }
-              aria-controls="mobile-navigation"
-            >
-              {isMenuOpen ? (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-[18px] w-[18px]"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 6l12 12M18 6L6 18"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-[18px] w-[18px]"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 7h16M4 12h16M4 17h16"
-                  />
-                </svg>
-              )}
-            </button>
-
-          </div>
-
         </div>
+      </nav>
 
-        {/* =====================================================
-            MOBILE MENU
-        ===================================================== */}
+      {/* =====================================================
+          MOBILE BOTTOM NAVIGATION
 
-        <div id="mobile-navigation">
-          <MobileMenu
-            isOpen={isMenuOpen}
-            navLinks={navLinks}
-            isAuthenticated={
-              isAuthenticated
-            }
-            user={user}
-            displayName={displayName}
-            userInitial={userInitial}
-            onClose={closeMenu}
-            onLogout={handleLogout}
-            variant={navbarVariant}
-          />
-        </div>
+          IMPORTANT:
+          This is OUTSIDE the top <nav>.
+          Therefore fixed bottom-0 is relative
+          to the viewport, not the navbar.
+      ===================================================== */}
 
-      </div>
-    </nav>
+      <MobileBottomNavigation
+        onMoreClick={handleMoreClick}
+      />
+    </>
   );
 }
 

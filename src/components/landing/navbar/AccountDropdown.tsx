@@ -27,39 +27,8 @@ function AccountDropdown({
 }: AccountDropdownProps) {
   const isLight = variant === "light";
 
-  /*
-   * =========================================================
-   * THEME CLASSES
-   * =========================================================
-   */
-
-  const dropdownClasses = isLight
-    ? "border-white/20 bg-transparent backdrop-blur-md"
-    : "border-slate-200 bg-white";
-
-  const linkClasses = isLight
-    ? "text-white hover:bg-white/10 hover:text-white"
-    : "text-[#2f2f2f] hover:bg-[#fffaf5] hover:text-[#8b542f]";
-
-  const iconClasses = isLight
-    ? "bg-white/10 text-white"
-    : "bg-slate-100 text-[#2f2f2f]";
-
-  const dividerClasses = isLight
-    ? "border-white/10"
-    : "border-slate-100";
-
-  const logoutClasses = isLight
-    ? "text-white hover:bg-white/10"
-    : "text-red-600 hover:bg-red-50";
-
-  const logoutIconClasses = isLight
-    ? "bg-white/10 text-white"
-    : "bg-red-50 text-red-600";
-
   return (
     <div className="relative">
-
       {/* =====================================================
           ACCOUNT TOGGLE
       ===================================================== */}
@@ -67,36 +36,79 @@ function AccountDropdown({
       <button
         type="button"
         onClick={onToggle}
-        className={`flex items-center gap-2 rounded-full border px-3 py-2 transition-all duration-300 ${
-          isLight
-            ? "border-white/25 bg-white/10 text-white backdrop-blur-sm hover:border-white/40 hover:bg-white/20"
-            : "border-slate-200 bg-white text-[#2f2f2f] hover:border-[#8b542f]/30 hover:bg-[#8b542f]/5 hover:text-[#8b542f]"
-        }`}
+        className={`
+          flex
+          h-10
+          items-center
+          gap-2
+          rounded-full
+          border
+          px-2
+          pr-3
+          transition-all
+          duration-200
+          active:scale-[0.98]
+          ${
+            isLight
+              ? "border-white/25 bg-white/10 text-white backdrop-blur-sm hover:border-white/40 hover:bg-white/15"
+              : "border-slate-200 bg-white text-slate-700 hover:border-[#B5697A]/35 hover:bg-[#B5697A]/5 hover:text-[#B5697A]"
+          }
+        `}
         aria-haspopup="menu"
         aria-expanded={isOpen}
       >
+        {/* AVATAR */}
 
-        {/* =================================================
-            AVATAR
-        ================================================= */}
-
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#8b542f] text-xs font-bold text-white">
+        <span
+          className="
+            flex
+            h-7
+            w-7
+            items-center
+            justify-center
+            rounded-full
+            bg-[#B5697A]
+            text-[11px]
+            font-semibold
+            text-white
+            shadow-sm
+          "
+        >
           {userInitial}
         </span>
 
+        {/* ACCOUNT LABEL */}
 
-        {/* =================================================
-            CHEVRON
-        ================================================= */}
+        <span
+          className={`
+            hidden
+            text-[12px]
+            font-medium
+            xl:block
+            ${
+              isLight
+                ? "text-white/90"
+                : "text-slate-700"
+            }
+          `}
+        >
+          Account
+        </span>
+
+        {/* CHEVRON */}
 
         <svg
           viewBox="0 0 20 20"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.7"
-          className={`h-3 w-3 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`
+            h-3.5
+            w-3.5
+            transition-transform
+            duration-200
+            ${isOpen ? "rotate-180" : ""}
+          `}
           aria-hidden="true"
         >
           <path
@@ -105,7 +117,6 @@ function AccountDropdown({
             d="m5 7.5 5 5 5-5"
           />
         </svg>
-
       </button>
 
       {/* =====================================================
@@ -114,7 +125,23 @@ function AccountDropdown({
 
       {isOpen && (
         <div
-          className={`absolute right-0 top-[calc(100%+8px)] z-50 w-52 overflow-hidden rounded-xl border p-2 shadow-sm transition-all duration-300 ${dropdownClasses}`}
+          className={`
+            absolute
+            right-0
+            top-[calc(100%+10px)]
+            z-50
+            w-56
+            overflow-hidden
+            rounded-2xl
+            border
+            p-2
+            shadow-[0_12px_35px_rgba(0,0,0,0.10)]
+            ${
+              isLight
+                ? "border-white/20 bg-[#2f2f2f]/95 backdrop-blur-xl"
+                : "border-slate-100 bg-white"
+            }
+          `}
           role="menu"
         >
           {/* =================================================
@@ -124,19 +151,47 @@ function AccountDropdown({
           <Link
             to="/profile"
             onClick={onClose}
-            className={`flex items-center gap-3 rounded-xl bg-transparent px-3 py-2 text-[12px] transition-all duration-200 md:text-[12px] ${linkClasses}`}
+            className={`
+              flex
+              items-center
+              gap-3
+              rounded-xl
+              px-3
+              py-2.5
+              text-[12px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                isLight
+                  ? "text-white/80 hover:bg-white/10 hover:text-white"
+                  : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
+              }
+            `}
             role="menuitem"
           >
-
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${iconClasses}`}
+              className={`
+                flex
+                h-7
+                w-7
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                ${
+                  isLight
+                    ? "bg-white/10 text-white/70"
+                    : "bg-[#B5697A]/10 text-[#B5697A]"
+                }
+              `}
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.7"
-                className="h-3 w-3"
+                className="h-3.5 w-3.5"
                 aria-hidden="true"
               >
                 <path
@@ -148,7 +203,6 @@ function AccountDropdown({
             </span>
 
             <span>My Profile</span>
-
           </Link>
 
           {/* =================================================
@@ -158,19 +212,47 @@ function AccountDropdown({
           <Link
             to="/orders"
             onClick={onClose}
-            className={`flex items-center gap-3 rounded-xl bg-transparent px-3 py-2 text-[12px] transition-all duration-200 md:text-[12px] ${linkClasses}`}
+            className={`
+              flex
+              items-center
+              gap-3
+              rounded-xl
+              px-3
+              py-2.5
+              text-[12px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                isLight
+                  ? "text-white/80 hover:bg-white/10 hover:text-white"
+                  : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
+              }
+            `}
             role="menuitem"
           >
-
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${iconClasses}`}
+              className={`
+                flex
+                h-7
+                w-7
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                ${
+                  isLight
+                    ? "bg-white/10 text-white/70"
+                    : "bg-[#B5697A]/10 text-[#B5697A]"
+                }
+              `}
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.7"
-                className="h-3 w-3"
+                className="h-3.5 w-3.5"
                 aria-hidden="true"
               >
                 <path
@@ -182,7 +264,6 @@ function AccountDropdown({
             </span>
 
             <span>My Orders</span>
-
           </Link>
 
           {/* =================================================
@@ -192,19 +273,47 @@ function AccountDropdown({
           <Link
             to="/wishlist"
             onClick={onClose}
-            className={`flex items-center gap-3 rounded-xl bg-transparent px-3 py-2 text-[12px] transition-all duration-200 md:text-[12px] ${linkClasses}`}
+            className={`
+              flex
+              items-center
+              gap-3
+              rounded-xl
+              px-3
+              py-2.5
+              text-[12px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                isLight
+                  ? "text-white/80 hover:bg-white/10 hover:text-white"
+                  : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
+              }
+            `}
             role="menuitem"
           >
-
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${iconClasses}`}
+              className={`
+                flex
+                h-7
+                w-7
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                ${
+                  isLight
+                    ? "bg-white/10 text-white/70"
+                    : "bg-[#B5697A]/10 text-[#B5697A]"
+                }
+              `}
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.7"
-                className="h-3 w-3"
+                className="h-3.5 w-3.5"
                 aria-hidden="true"
               >
                 <path
@@ -216,7 +325,6 @@ function AccountDropdown({
             </span>
 
             <span>Wishlist</span>
-
           </Link>
 
           {/* =================================================
@@ -226,19 +334,47 @@ function AccountDropdown({
           <Link
             to="/coupons"
             onClick={onClose}
-            className={`flex items-center gap-3 rounded-xl bg-transparent px-3 py-2 text-[12px] transition-all duration-200 md:text-[12px] ${linkClasses}`}
+            className={`
+              flex
+              items-center
+              gap-3
+              rounded-xl
+              px-3
+              py-2.5
+              text-[12px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                isLight
+                  ? "text-white/80 hover:bg-white/10 hover:text-white"
+                  : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
+              }
+            `}
             role="menuitem"
           >
-
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${iconClasses}`}
+              className={`
+                flex
+                h-7
+                w-7
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                ${
+                  isLight
+                    ? "bg-white/10 text-white/70"
+                    : "bg-[#B5697A]/10 text-[#B5697A]"
+                }
+              `}
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.7"
-                className="h-3 w-3"
+                className="h-3.5 w-3.5"
                 aria-hidden="true"
               >
                 <path
@@ -256,7 +392,6 @@ function AccountDropdown({
             </span>
 
             <span>Coupons</span>
-
           </Link>
 
           {/* =================================================
@@ -264,7 +399,15 @@ function AccountDropdown({
           ================================================= */}
 
           <div
-            className={`my-1 border-t ${dividerClasses}`}
+            className={`
+              my-1.5
+              border-t
+              ${
+                isLight
+                  ? "border-white/10"
+                  : "border-slate-100"
+              }
+            `}
           />
 
           {/* =================================================
@@ -274,19 +417,49 @@ function AccountDropdown({
           <button
             type="button"
             onClick={onLogout}
-            className={`flex w-full items-center gap-3 rounded-xl bg-transparent px-3 py-2 text-left text-[12px] transition-all duration-200 md:text-[12px] ${logoutClasses}`}
+            className={`
+              flex
+              w-full
+              items-center
+              gap-3
+              rounded-xl
+              px-3
+              py-2.5
+              text-left
+              text-[12px]
+              font-medium
+              transition-all
+              duration-200
+              ${
+                isLight
+                  ? "text-red-300 hover:bg-red-500/10"
+                  : "text-red-500 hover:bg-red-50"
+              }
+            `}
             role="menuitem"
           >
-
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${logoutIconClasses}`}
+              className={`
+                flex
+                h-7
+                w-7
+                shrink-0
+                items-center
+                justify-center
+                rounded-lg
+                ${
+                  isLight
+                    ? "bg-red-500/10 text-red-300"
+                    : "bg-red-50 text-red-500"
+                }
+              `}
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.7"
-                className="h-3 w-3"
+                className="h-3.5 w-3.5"
                 aria-hidden="true"
               >
                 <path
@@ -298,12 +471,9 @@ function AccountDropdown({
             </span>
 
             <span>Logout</span>
-
           </button>
-
         </div>
       )}
-
     </div>
   );
 }

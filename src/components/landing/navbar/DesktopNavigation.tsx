@@ -28,7 +28,8 @@ function DesktopNavigation({
     if (to.startsWith("/#")) {
       const sectionId = to.replace("/#", "");
 
-      const section = document.getElementById(sectionId);
+      const section =
+        document.getElementById(sectionId);
 
       if (section) {
         event.preventDefault();
@@ -39,7 +40,11 @@ function DesktopNavigation({
         });
 
         // URL hash update
-        window.history.pushState(null, "", `/#${sectionId}`);
+        window.history.pushState(
+          null,
+          "",
+          `/#${sectionId}`
+        );
 
         onNavigate();
         return;
@@ -52,33 +57,67 @@ function DesktopNavigation({
 
   return (
     <div className="hidden items-center lg:flex">
-      <div className="flex items-center gap-1">
-        {navLinks.map((link) => (
-          <Link
-            key={link.label}
-            to={link.to}
-            onClick={(event) => handleNavigation(event, link.to)}
-            className={`
-              whitespace-nowrap
-              rounded-full
-              px-4
-              py-2
-              text-[13px]
-              transition-all
-              duration-200
-              hover:underline
-              xl:px-5
-              ${
-                isLight
-                  ? "text-white hover:text-white"
-                  : "text-slate-600 hover:text-[#8b542f]"
+      <nav
+        aria-label="Primary navigation"
+        className="flex items-center"
+      >
+        <div className="flex items-center gap-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.label}
+              to={link.to}
+              onClick={(event) =>
+                handleNavigation(
+                  event,
+                  link.to
+                )
               }
-            `}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </div>
+              className={`
+                group
+                relative
+                flex
+                items-center
+                whitespace-nowrap
+                rounded-full
+                px-4
+                py-2
+                text-[14px]
+                tracking-[-0.01em]
+                transition-all
+                duration-200
+                xl:px-5
+                ${
+                  isLight
+                    ? "text-white/90 hover:bg-white/10 hover:text-white"
+                    : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
+                }
+              `}
+            >
+              {link.label}
+
+              {/* Subtle active/hover accent */}
+              <span
+                className={`
+                  absolute
+                  bottom-[4px]
+                  left-1/2
+                  -translate-x-1/2
+                  rounded-full
+                  transition-all
+                  duration-200
+                  group-hover:w-5
+                  ${
+                    isLight
+                      ? "bg-white"
+                      : "bg-[#B5697A]"
+                  }
+                `}
+                aria-hidden="true"
+              />
+            </Link>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 }

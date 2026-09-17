@@ -146,7 +146,7 @@ interface OrderResponse {
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
-    "https://guiltfree-cravings-backend.onrender.com/api",
+    "http://localhost:5000/api",
 
   headers: {
     "Content-Type": "application/json",

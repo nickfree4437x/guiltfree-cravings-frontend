@@ -17,32 +17,11 @@ function NavbarLogo({
     <Link
       to="/"
       onClick={onClick}
-      className="group flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3"
+      className="flex shrink-0 items-center gap-2"
       aria-label="GuiltFree Cravings Home"
     >
-      {/* =====================================================
-          LOGO - Pure transparent for light variant
-      ===================================================== */}
-
-      <div
-        className={`
-          flex
-          h-8
-          w-8
-          shrink-0
-          items-center
-          justify-center
-          overflow-hidden
-          rounded-full
-          transition-all
-          sm:h-11
-          sm:w-11
-          ${isLight 
-            ? "border border-white/30 bg-transparent" 
-            : "border border-slate-200 bg-white"
-          }
-        `}
-      >
+      {/* Logo */}
+      <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full">
         <img
           src={logo}
           alt="GuiltFree Cravings"
@@ -50,24 +29,39 @@ function NavbarLogo({
         />
       </div>
 
-      {/* =====================================================
-          BRAND NAME - White for light variant
-      ===================================================== */}
+      {/* Brand */}
+      <div className="flex flex-col justify-center leading-none">
+        <span
+          className={`
+            font-serif
+            text-[16px]
+            font-semibold
+            tracking-[-0.04em]
+            sm:text-[20px]
+            ${
+              isLight
+                ? "text-white"
+                : "text-[#315C3A]"
+            }
+          `}
+        >
+          Guilt<span className="text-amber-600">Free</span> Cravings
+        </span>
 
-      <span
-        className={`
-          whitespace-nowrap
-          text-[18px]
-          md:text-[24px]
-          font-bold
-          leading-none
-          tracking-[-0.02em]
-          transition-colors
-          ${isLight ? "text-white" : "text-[#2f2f2f]"}
-        `}
-      >
-        GuiltFree Cravings
-      </span>
+        <span
+          className="
+            mt-1
+            text-[8px]
+            uppercase
+            tracking-[0.08em]
+            text-[#B5697A]
+            sm:text-[9px]
+            font-[500]
+          "
+        >
+          Laddoo Ordering
+        </span>
+      </div>
     </Link>
   );
 }
