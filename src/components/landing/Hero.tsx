@@ -1,4 +1,4 @@
-import img from "../../assets/hero_image.png";
+import img from "../../assets/hero_image.jpg";
 
 function Hero() {
   return (
@@ -72,9 +72,11 @@ function Hero() {
       />
 
       {/* ================= OVERLAYS ================= */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/80 via-black/55 to-black/25 sm:from-black/75 sm:via-black/50 sm:to-black/20" />
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/65 via-black/20 to-black/20 sm:from-black/60 sm:via-transparent sm:to-black/15" />
-      <div className="absolute inset-0 z-10 bg-black/15 sm:bg-transparent" />
+<div className="absolute inset-0 z-10 bg-gradient-to-r from-black/65 via-black/40 to-black/15 sm:from-black/60 sm:via-black/35 sm:to-black/10" />
+
+<div className="absolute inset-0 z-10 bg-gradient-to-t from-black/45 via-black/15 to-black/5 sm:from-black/40 sm:via-transparent sm:to-black/10" />
+
+<div className="absolute inset-0 z-10 bg-black/10 sm:bg-transparent" />
 
       {/* ================= CONTENT ================= */}
       {/* ✅ FIX: max-w-7xl → max-w-[1280px], aur padding ko reduce kiya
@@ -86,7 +88,7 @@ function Hero() {
           {/* ================= EYEBROW ================= */}
           <div className="anim-fadeUp delay-1 mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-3.5 py-1.5 backdrop-blur-md sm:mb-6">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#E7B5C1]" />
-            <span className="text-[8px] uppercase tracking-[0.2em] text-white/95 sm:text-[10px] sm:tracking-[0.22em]">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-white/95 sm:text-[12px] sm:tracking-[0.22em]">
               Handcrafted with Love
             </span>
           </div>
@@ -96,7 +98,7 @@ function Hero() {
             Wholesome Goodness,
             <br />
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-[#E7B5C1] via-[#D88E9F] to-[#B5697A] bg-clip-text font-normal italic text-transparent">
+              <span className="text-[#E7A1B0] bg-clip-text font-normal italic">
                 Irresistibly Delicious.
               </span>
             </span>
@@ -116,9 +118,8 @@ function Hero() {
 
           {/* ================= DESCRIPTION ================= */}
           <p className="anim-fadeUp delay-3 text-shadow-soft mx-auto mt-4 max-w-[440px] text-[12.5px] leading-[1.5] text-white/90 min-[400px]:text-[13px] sm:mx-0 sm:mt-5 sm:max-w-lg sm:text-[13.5px] sm:leading-[1.85] md:text-[14px]">
-            Delicious homemade treats crafted with thoughtfully selected
-            ingredients, comforting flavours, and a whole lot of love
-            made to bring a little more joy to every craving.
+            Delicious homemade Laddoos crafted with thoughtfully selected ingredients, comforting flavours, 
+            and lots of love made with no refined sugar, no palm oil, and no preservatives.
           </p>
 
           {/* ================= RATING BADGE ================= */}
@@ -180,9 +181,9 @@ function Hero() {
           {/* ================= TRUST BADGES ================= */}
           <div className="anim-fadeUp delay-5 mt-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-2.5 border-t border-white/15 pt-5 sm:mt-9 sm:justify-start sm:gap-x-7 sm:gap-y-3 sm:pt-6">
             {[
-              "Quality Ingredients",
-              "Homemade Goodness",
-              "Made with Care",
+              "No Process Sugar",
+              "No Palm Oil",
+              "No preservatives",
             ].map((label) => (
               <div key={label} className="flex items-center gap-1.5 sm:gap-2">
                 <span className="flex h-[16px] w-[16px] items-center justify-center rounded-full border border-[#B5697A]/40 bg-[#B5697A]/25 backdrop-blur-sm sm:h-[18px] sm:w-[18px]">

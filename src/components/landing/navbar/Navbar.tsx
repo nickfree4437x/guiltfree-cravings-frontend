@@ -23,6 +23,13 @@ interface NavbarProps {
   isHomePage: boolean;
 }
 
+/*
+ * =========================================================
+ * INSTAGRAM LINK
+ * =========================================================
+ */
+const INSTAGRAM_URL = "#";
+
 function Navbar({
   isHomePage: _isHomePage,
 }: NavbarProps) {
@@ -235,8 +242,6 @@ function Navbar({
   /*
    * =========================================================
    * NAVBAR VARIANT
-   *
-   * Navbar is always solid.
    * =========================================================
    */
 
@@ -245,8 +250,6 @@ function Navbar({
   /*
    * =========================================================
    * MOBILE MORE BUTTON
-   *
-   * Opens the existing MobileMenu.
    * =========================================================
    */
 
@@ -255,6 +258,45 @@ function Navbar({
       (current) => !current
     );
   };
+
+  /*
+   * =========================================================
+   * INSTAGRAM ICON (SVG)
+   * =========================================================
+   */
+
+  const InstagramIcon = ({
+    className = "h-[18px] w-[18px]",
+  }: {
+    className?: string;
+  }) => (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect
+        x="2"
+        y="2"
+        width="20"
+        height="20"
+        rx="5"
+        ry="5"
+      />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line
+        x1="17.5"
+        y1="6.5"
+        x2="17.51"
+        y2="6.5"
+      />
+    </svg>
+  );
 
   /*
    * =========================================================
@@ -311,8 +353,10 @@ function Navbar({
               h-[60px]
               items-center
               justify-between
-              gap-6
+              gap-3
+              sm:gap-4
               lg:h-[64px]
+              lg:gap-6
             "
           >
             {/* =================================================
@@ -339,13 +383,69 @@ function Navbar({
             </div>
 
             {/* =================================================
-                RIGHT — DESKTOP ACTIONS
+                RIGHT — DESKTOP ACTIONS + INSTAGRAM
             ================================================= */}
 
             <div
               ref={accountRef}
-              className="hidden shrink-0 lg:block"
+              className="hidden shrink-0 items-center gap-2 lg:flex"
             >
+              {/* =============================================
+                  DESKTOP INSTAGRAM LINK
+              ============================================= */}
+
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Instagram"
+                className="
+                  group
+                  relative
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  overflow-hidden
+                  rounded-full
+                  border
+                  border-slate-200
+                  bg-white
+                  text-slate-700
+                  transition-all
+                  duration-300
+                  hover:border-transparent
+                  hover:text-white
+                  hover:shadow-sm
+                "
+              >
+                <span
+                  aria-hidden="true"
+                  className="
+                    absolute
+                    inset-0
+                    rounded-full
+                    bg-gradient-to-tr
+                    from-[#F58529]
+                    via-[#DD2A7B]
+                    to-[#8134AF]
+                    opacity-0
+                    transition-opacity
+                    duration-300
+                    group-hover:opacity-100
+                  "
+                />
+
+                <span className="relative z-10">
+                  <InstagramIcon className="h-[18px] w-[18px]" />
+                </span>
+              </a>
+
+              {/* =============================================
+                  DESKTOP ACTIONS
+              ============================================= */}
+
               <DesktopActions
                 cartItemCount={cartItemCount}
                 isAuthenticated={
@@ -379,12 +479,64 @@ function Navbar({
               className="
                 flex
                 items-center
-                gap-2
+                gap-1.5
                 lg:hidden
               "
             >
               {/* =============================================
-                  MOBILE CART
+                  MOBILE INSTAGRAM LINK (compact)
+              ============================================= */}
+
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Instagram"
+                className="
+                  group
+                  relative
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  overflow-hidden
+                  rounded-full
+                  border
+                  border-slate-200
+                  bg-white
+                  text-slate-700
+                  transition-all
+                  duration-300
+                  hover:border-transparent
+                  hover:text-white
+                  hover:shadow-sm
+                "
+              >
+                <span
+                  aria-hidden="true"
+                  className="
+                    absolute
+                    inset-0
+                    rounded-full
+                    bg-gradient-to-tr
+                    from-[#F58529]
+                    via-[#DD2A7B]
+                    to-[#8134AF]
+                    opacity-0
+                    transition-opacity
+                    duration-300
+                    group-hover:opacity-100
+                  "
+                />
+
+                <span className="relative z-10">
+                  <InstagramIcon className="h-4 w-4" />
+                </span>
+              </a>
+
+              {/* =============================================
+                  MOBILE CART (compact)
               ============================================= */}
 
               <button
@@ -395,8 +547,8 @@ function Navbar({
                 className="
                   relative
                   flex
-                  h-10
-                  w-10
+                  h-9
+                  w-9
                   items-center
                   justify-center
                   rounded-full
@@ -417,7 +569,7 @@ function Navbar({
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.8"
-                  className="h-[19px] w-[19px]"
+                  className="h-4 w-4"
                   aria-hidden="true"
                 >
                   <path
@@ -434,14 +586,14 @@ function Navbar({
                       -right-1
                       -top-1
                       flex
-                      min-h-[18px]
-                      min-w-[18px]
+                      min-h-[16px]
+                      min-w-[16px]
                       items-center
                       justify-center
                       rounded-full
                       bg-[#B5697A]
                       px-1
-                      text-[9px]
+                      text-[8px]
                       font-bold
                       leading-none
                       text-white
@@ -454,110 +606,29 @@ function Navbar({
                   </span>
                 )}
               </button>
-
-              {/* =============================================
-                  MOBILE MENU BUTTON
-              ============================================= */}
-
-              <button
-                type="button"
-                onClick={() =>
-                  setIsMenuOpen(
-                    (current) =>
-                      !current
-                  )
-                }
-                className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-slate-200
-                  bg-white
-                  text-slate-800
-                  transition-all
-                  duration-200
-                  hover:border-[#B5697A]/30
-                  hover:text-[#B5697A]
-                  active:scale-95
-                "
-                aria-label={
-                  isMenuOpen
-                    ? "Close menu"
-                    : "Open menu"
-                }
-                aria-expanded={
-                  isMenuOpen
-                }
-                aria-controls="mobile-navigation"
-              >
-                {isMenuOpen ? (
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="h-[19px] w-[19px]"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 6l12 12M18 6L6 18"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="h-[19px] w-[19px]"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4 7h16M4 12h16M4 17h16"
-                    />
-                  </svg>
-                )}
-              </button>
             </div>
-          </div>
-
-          {/* =================================================
-              EXISTING MOBILE MENU
-          ================================================= */}
-
-          <div id="mobile-navigation">
-            <MobileMenu
-              isOpen={isMenuOpen}
-              navLinks={navLinks}
-              isAuthenticated={
-                isAuthenticated
-              }
-              user={user}
-              displayName={displayName}
-              userInitial={userInitial}
-              onClose={closeMenu}
-              onLogout={handleLogout}
-              variant={navbarVariant}
-            />
           </div>
         </div>
       </nav>
 
       {/* =====================================================
-          MOBILE BOTTOM NAVIGATION
+          MOBILE SIDEBAR DRAWER
+      ===================================================== */}
 
-          IMPORTANT:
-          This is OUTSIDE the top <nav>.
-          Therefore fixed bottom-0 is relative
-          to the viewport, not the navbar.
+      <MobileMenu
+        isOpen={isMenuOpen}
+        navLinks={navLinks}
+        isAuthenticated={isAuthenticated}
+        user={user}
+        displayName={displayName}
+        userInitial={userInitial}
+        onClose={closeMenu}
+        onLogout={handleLogout}
+        variant={navbarVariant}
+      />
+
+      {/* =====================================================
+          MOBILE BOTTOM NAVIGATION
       ===================================================== */}
 
       <MobileBottomNavigation
