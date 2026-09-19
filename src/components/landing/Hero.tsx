@@ -72,11 +72,9 @@ function Hero() {
       />
 
       {/* ================= OVERLAYS ================= */}
-<div className="absolute inset-0 z-10 bg-gradient-to-r from-black/65 via-black/40 to-black/15 sm:from-black/60 sm:via-black/35 sm:to-black/10" />
-
-<div className="absolute inset-0 z-10 bg-gradient-to-t from-black/45 via-black/15 to-black/5 sm:from-black/40 sm:via-transparent sm:to-black/10" />
-
-<div className="absolute inset-0 z-10 bg-black/10 sm:bg-transparent" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/65 via-black/40 to-black/15 sm:from-black/60 sm:via-black/35 sm:to-black/10" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/45 via-black/15 to-black/5 sm:from-black/40 sm:via-transparent sm:to-black/10" />
+      <div className="absolute inset-0 z-10 bg-black/10 sm:bg-transparent" />
 
       {/* ================= CONTENT ================= */}
       {/* ✅ FIX: max-w-7xl → max-w-[1280px], aur padding ko reduce kiya

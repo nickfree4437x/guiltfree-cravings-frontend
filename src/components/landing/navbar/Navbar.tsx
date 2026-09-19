@@ -412,11 +412,14 @@ function Navbar({
                   border
                   border-slate-200
                   bg-white
-                  text-slate-700
+                  bg-gradient-to-tr
+                  from-[#F58529]
+                  via-[#DD2A7B]
+                  to-[#8134AF]
                   transition-all
                   duration-300
                   hover:border-transparent
-                  hover:text-white
+                text-white
                   hover:shadow-sm
                 "
               >
@@ -433,7 +436,6 @@ function Navbar({
                     opacity-0
                     transition-opacity
                     duration-300
-                    group-hover:opacity-100
                   "
                 />
 
@@ -505,11 +507,14 @@ function Navbar({
                   border
                   border-slate-200
                   bg-white
-                  text-slate-700
+                  bg-gradient-to-tr
+                  from-[#F58529]
+                  via-[#DD2A7B]
+                  to-[#8134AF]
                   transition-all
                   duration-300
                   hover:border-transparent
-                  hover:text-white
+                text-white
                   hover:shadow-sm
                 "
               >
@@ -519,10 +524,6 @@ function Navbar({
                     absolute
                     inset-0
                     rounded-full
-                    bg-gradient-to-tr
-                    from-[#F58529]
-                    via-[#DD2A7B]
-                    to-[#8134AF]
                     opacity-0
                     transition-opacity
                     duration-300

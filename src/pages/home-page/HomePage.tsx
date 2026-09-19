@@ -1,5 +1,5 @@
 import Hero from "../../components/landing/Hero";
-// import About from "../../components/landing/About";
+import About from "../../components/landing/About";
 // import FeaturedProducts from "../../components/landing/FeaturedProducts";
 // import OurVision from "../../components/landing/OurVision";
 // import WhyChooseUs from "../../components/landing/WhyChooseUs";
@@ -12,8 +12,8 @@ function HomePage() {
 
       <main>
         <Hero />
-        {/* <About/>
-        <OurPromise/>
+        <About/>
+        {/* <OurPromise/>
         <FeaturedProducts/>
         <OurStory/>
         <OurVision/>
