@@ -84,7 +84,7 @@ function About() {
 
 
           {/* Heading */}
-          <h2 className="font-serif anim-fadeUp delay-2 font-display text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide mb-2 leading-snug md:whitespace-nowrap text-[#C9788B]">
+          <h2 className="anim-fadeUp delay-2  text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide mb-2 leading-snug md:whitespace-nowrap text-[#C9788B]">
             About GuiltFree{" "}
             Tradition, Made Better.
           </h2>
@@ -171,7 +171,7 @@ function About() {
           {/* ================= HEADING ================= */}
           <div className="relative mx-auto max-w-2xl text-center">
 
-            <h3 className="font-serif anim-fadeUp delay-2 font-display text-[16px] sm:text-[20px] md:text-[22px] font-semibold tracking-wide mb-2 leading-snug md:whitespace-nowrap text-[#2c2c2c]">
+            <h3 className="text-[16px] sm:text-[20px] md:text-[22px] font-semibold tracking-wide mb-2 leading-snug md:whitespace-nowrap text-[#2c2c2c]">
               Wholesome Goodness For Everyone
             </h3>
 

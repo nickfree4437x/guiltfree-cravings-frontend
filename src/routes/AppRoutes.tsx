@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 
 import HomePage from "../pages/home-page/HomePage";
-import ProductDetailsPage from "../pages/product-details/ProductDetailsPage";
 import CartPage from "../pages/cart-page/CartPage";
 import CheckoutPage from "../pages/check-out/CheckoutPage";
 import ReviewOrderPage from "../pages/review-order/ReviewOrderPage";
@@ -28,12 +27,6 @@ const AppRoutes = () => {
         <Route
           path="/"
           element={<HomePage />}
-        />
-
-        {/* Product Details */}
-        <Route
-          path="/products/:id"
-          element={<ProductDetailsPage />}
         />
 
         {/* Cart */}
