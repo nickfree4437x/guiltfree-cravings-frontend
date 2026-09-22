@@ -93,7 +93,7 @@ function OurPromise() {
           />
 
           <div className="grid gap-10 md:grid-cols-3 md:gap-8 lg:gap-12">
-            {promises.map((promise, index) => {
+            {promises.map((promise) => {
               const Icon = promise.icon;
 
               return (
