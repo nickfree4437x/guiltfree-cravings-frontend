@@ -1,7 +1,7 @@
 import type {
   Product,
   ProductVariant,
-} from "../../../api/productApi";
+} from "../../api/productApi";
 
 import PackagingSelector from "./PackagingSelector";
 import ProductVariantSelector from "./ProductVariantSelector";

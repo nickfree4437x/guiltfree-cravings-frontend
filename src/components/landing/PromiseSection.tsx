@@ -1,7 +1,6 @@
 import {
   Leaf,
   ShieldCheck,
-  Sparkles,
   Heart,
   Droplets,
   HandHeart,
@@ -101,7 +100,7 @@ function OurPromise() {
 
           <div className="grid gap-10 md:grid-cols-4 md:gap-8 lg:gap-12">
             {promises.map((promise) => {
-              const Icon = promise.icon;
+              // const Icon = promise.icon;
 
               return (
                 <div

@@ -1,4 +1,4 @@
-import { Sparkles, MessageCircle, Clock, Heart } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 function ContactIntro() {
 

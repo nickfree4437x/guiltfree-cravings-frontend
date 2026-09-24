@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   CheckCircle2,
   Send,
-  ShieldCheck,
   Sparkles,
   ChevronDown,
   AlertCircle,

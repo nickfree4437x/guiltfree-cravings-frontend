@@ -1,4 +1,4 @@
-import type { ProductVariant } from "../../../api/productApi";
+import type { ProductVariant } from "../../api/productApi";
 
 interface ProductVariantSelectorProps {
   variants: ProductVariant[];

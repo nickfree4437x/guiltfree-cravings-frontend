@@ -3,7 +3,6 @@ import {
   MessageCircle,
   Phone,
   ArrowUpRight,
-  Clock,
 } from "lucide-react";
 
 const CONTACT_PHONE = "+91 XXXXX XXXXX";

@@ -1,11 +1,9 @@
 import { useRef, useState } from "react";
 import {
-  Pause,
   Play,
   Flame,
   Hand,
   Package,
-  Sparkles,
 } from "lucide-react";
 
 const DUMMY_VIDEO_URL =

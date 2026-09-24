@@ -1,4 +1,4 @@
-import type { Product } from "../../../api/productApi";
+import type { Product } from "../../api/productApi";
 
 interface ProductDetailsImageProps {
   product: Product;
