@@ -2,13 +2,13 @@ import type { Product } from "../../../../api/productApi";
 
 import ProductGrid from "./ProductGrid";
 
-interface GlassJarCollectionProps {
+interface CardboardBoxCollectionProps {
   products: Product[];
 }
 
-function GlassJarCollection({
+function CardboardBoxCollection({
   products,
-}: GlassJarCollectionProps) {
+}: CardboardBoxCollectionProps) {
   return (
     <section
       className="
@@ -39,7 +39,7 @@ function GlassJarCollection({
             md:text-[28px]
           "
         >
-          Traditional Glass Jars
+          Classic Cardboard Boxes
         </h2>
 
         <p
@@ -54,18 +54,18 @@ function GlassJarCollection({
             md:text-[14px]
           "
         >
-          Beautifully packed in reusable glass jars,
-          keeping the same honest goodness inside.
+          Thoughtfully packed in sturdy cardboard
+          boxes, made for everyday goodness.
         </p>
       </div>
 
-      {/* GLASS JAR PRODUCTS */}
+      {/* CARDBOARD BOX PRODUCTS */}
       <ProductGrid
         products={products}
-        packaging="Glass Jar"
+        packaging="Cardboard Box"
       />
     </section>
   );
 }
 
-export default GlassJarCollection;
+export default CardboardBoxCollection;

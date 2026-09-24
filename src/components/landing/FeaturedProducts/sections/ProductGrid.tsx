@@ -4,7 +4,7 @@ import type { Product } from "../../../../api/productApi";
 
 interface ProductGridProps {
   products: Product[];
-  packaging: "Regular" | "Glass Jar";
+  packaging: "Plastic Box" | "Glass Jar" | "Cardboard Box";
 }
 
 function ProductGrid({
@@ -42,7 +42,9 @@ function ProductGrid({
           key={
             packaging === "Glass Jar"
               ? `glass-jar-${product.id}`
-              : product.id
+              : packaging === "Cardboard Box"
+                ? `cardboard-box-${product.id}`
+                : `plastic-box-${product.id}`
           }
           product={product}
           packaging={packaging}

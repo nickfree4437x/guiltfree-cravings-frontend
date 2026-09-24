@@ -14,7 +14,7 @@ import type {
 
 interface ProductCardPricingProps {
   product: Product;
-  packaging?: "Regular" | "Glass Jar";
+  packaging?: "Plastic Box" | "Glass Jar" | "Cardboard Box";
   onAddToCart: (
     variant: ProductVariant,
     quantity: number
@@ -23,15 +23,33 @@ interface ProductCardPricingProps {
 
 function ProductCardPricing({
   product,
-  packaging = "Regular",
+  packaging = "Plastic Box",
   onAddToCart,
 }: ProductCardPricingProps) {
+  /*
+   * =========================================================
+   * AVAILABLE VARIANTS
+   *
+   * Main product card:
+   * - Plastic Box
+   * - Cardboard Box
+   *
+   * Glass Jar collection:
+   * - Glass Jar only
+   * =========================================================
+   */
   const variants = useMemo(
     () =>
-      product.variants.filter(
-        (variant) =>
-          variant.packaging === packaging
-      ),
+      packaging === "Glass Jar"
+        ? product.variants.filter(
+            (variant) =>
+              variant.packaging === "Glass Jar"
+          )
+        : product.variants.filter(
+            (variant) =>
+              variant.packaging === "Plastic Box" ||
+              variant.packaging === "Cardboard Box"
+          ),
     [product.variants, packaging]
   );
 
@@ -41,61 +59,104 @@ function ProductCardPricing({
     );
 
   const [quantity, setQuantity] = useState(1);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] =
+    useState(false);
 
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const dropdownRef =
+    useRef<HTMLDivElement | null>(null);
 
   const selectedVariant =
     variants.find(
-      (variant) => variant.id === selectedVariantId
-    ) ?? variants[0] ?? null;
+      (variant) =>
+        variant.id === selectedVariantId
+    ) ??
+    variants[0] ??
+    null;
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    setSelectedVariantId(
+      variants[0]?.id ?? null
+    );
+    setQuantity(1);
+    setIsDropdownOpen(false);
+  }, [packaging, product.id, variants]);
+
+  useEffect(() => {
+    const handleClickOutside = (
+      event: MouseEvent
+    ) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(
+          event.target as Node
+        )
       ) {
         setIsDropdownOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
     };
   }, []);
 
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (
+      event: KeyboardEvent
+    ) => {
       if (event.key === "Escape") {
         setIsDropdownOpen(false);
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener(
+      "keydown",
+      handleEscape
+    );
+
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
     };
   }, []);
 
-  const handleVariantChange = (variant: ProductVariant) => {
+  const handleVariantChange = (
+    variant: ProductVariant
+  ) => {
     setSelectedVariantId(variant.id);
     setQuantity(1);
     setIsDropdownOpen(false);
   };
 
   const handleDecrease = () => {
-    setQuantity((current) => Math.max(1, current - 1));
+    setQuantity((current) =>
+      Math.max(1, current - 1)
+    );
   };
 
   const handleIncrease = () => {
-    setQuantity((current) => current + 1);
+    setQuantity(
+      (current) => current + 1
+    );
   };
 
   const handleAddToCart = () => {
     if (!selectedVariant) return;
-    onAddToCart(selectedVariant, quantity);
+
+    onAddToCart(
+      selectedVariant,
+      quantity
+    );
   };
 
   if (variants.length === 0) {
@@ -116,11 +177,17 @@ function ProductCardPricing({
 
         {/* ============= SIZE DROPDOWN ============= */}
         <div>
-
-          <div ref={dropdownRef} className="relative">
+          <div
+            ref={dropdownRef}
+            className="relative"
+          >
             <button
               type="button"
-              onClick={() => setIsDropdownOpen((c) => !c)}
+              onClick={() =>
+                setIsDropdownOpen(
+                  (current) => !current
+                )
+              }
               aria-haspopup="listbox"
               aria-expanded={isDropdownOpen}
               aria-label="Select pack size"
@@ -159,7 +226,11 @@ function ProductCardPricing({
                   h-3.5 w-3.5 flex-shrink-0 text-[#8B7A6C]
                   transition-transform duration-300
                   sm:h-4 sm:w-4
-                  ${isDropdownOpen ? "rotate-180 text-[#B5697A]" : ""}
+                  ${
+                    isDropdownOpen
+                      ? "rotate-180 text-[#B5697A]"
+                      : ""
+                  }
                 `}
                 strokeWidth={2.2}
               />
@@ -177,76 +248,85 @@ function ProductCardPricing({
                   sm:rounded-lg
                 "
               >
-                {variants.map((variant, index) => {
-                  const isSelected =
-                    selectedVariant?.id === variant.id;
+                {variants.map(
+                  (variant, index) => {
+                    const isSelected =
+                      selectedVariant?.id ===
+                      variant.id;
 
-                  return (
-                    <button
-                      key={variant.id}
-                      type="button"
-                      role="option"
-                      aria-selected={isSelected}
-                      onClick={() => handleVariantChange(variant)}
-                      className={`
-                        flex w-full items-center justify-between
-                        gap-2 px-2.5 py-2
-                        text-left
-                        transition-colors duration-200
-                        sm:gap-3 sm:px-3.5 sm:py-2.5
-                        ${
-                          index !== 0
-                            ? "border-t border-[#F5EBE0]"
-                            : ""
-                        }
-                        ${
+                    return (
+                      <button
+                        key={variant.id}
+                        type="button"
+                        role="option"
+                        aria-selected={
                           isSelected
-                            ? "bg-[#FBEEF1]"
-                            : "hover:bg-gray-50"
                         }
-                      `}
-                    >
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <span
-                          className={`
-                            text-[10px] uppercase tracking-wider
-                            sm:text-[11px]
-                            ${
-                              isSelected
-                                ? "text-[#B5697A]"
-                                : "text-[#8B7A6C]"
-                            }
-                          `}
-                        >
-                          {variant.quantity}
-                          {variant.unit}
-                        </span>
+                        onClick={() =>
+                          handleVariantChange(
+                            variant
+                          )
+                        }
+                        className={`
+                          flex w-full items-center justify-between
+                          gap-2 px-2.5 py-2
+                          text-left
+                          transition-colors duration-200
+                          sm:gap-3 sm:px-3.5 sm:py-2.5
+                          ${
+                            index !== 0
+                              ? "border-t border-[#F5EBE0]"
+                              : ""
+                          }
+                          ${
+                            isSelected
+                              ? "bg-[#FBEEF1]"
+                              : "hover:bg-gray-50"
+                          }
+                        `}
+                      >
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <span
+                            className={`
+                              text-[10px] uppercase tracking-wider
+                              sm:text-[11px]
+                              ${
+                                isSelected
+                                  ? "text-[#B5697A]"
+                                  : "text-[#8B7A6C]"
+                              }
+                            `}
+                          >
+                            {variant.quantity}
+                            {variant.unit}
+                          </span>
 
-                        <span
-                          className={`
-                            text-[12px] font-semibold sm:text-[13px]
-                            ${
-                              isSelected
-                                ? "text-[#B5697A]"
-                                : "text-[#1F4A2E]"
-                            }
-                          `}
-                        >
-                          ₹{variant.price}
-                        </span>
-                      </div>
+                          <span
+                            className={`
+                              text-[12px] font-semibold sm:text-[13px]
+                              ${
+                                isSelected
+                                  ? "text-[#B5697A]"
+                                  : "text-[#1F4A2E]"
+                              }
+                            `}
+                          >
+                            ₹{variant.price}
+                          </span>
+                        </div>
 
-                      {isSelected && (
-                        <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#B5697A] sm:h-4 sm:w-4">
-                          <Check
-                            className="h-2 w-2 text-white sm:h-2.5 sm:w-2.5"
-                            strokeWidth={4}
-                          />
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
+                        {isSelected && (
+                          <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#B5697A] sm:h-4 sm:w-4">
+                            <Check
+                              className="h-2 w-2 text-white sm:h-2.5 sm:w-2.5"
+                              strokeWidth={4}
+                            />
+                          </span>
+                        )}
+                      </button>
+                    );
+                  }
+                )}
               </div>
             )}
           </div>
@@ -261,7 +341,7 @@ function ProductCardPricing({
               sm:gap-2
             "
           >
-            {/* Quantity Stepper — mobile pe full width, desktop pe auto */}
+            {/* Quantity Stepper */}
             <div
               className="
                 flex h-7 w-full items-center justify-between overflow-hidden
@@ -288,7 +368,10 @@ function ProductCardPricing({
                   sm:w-8 sm:flex-none
                 "
               >
-                <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={2.5} />
+                <Minus
+                  className="h-3 w-3 sm:h-3.5 sm:w-3.5"
+                  strokeWidth={2.5}
+                />
               </button>
 
               <span
@@ -312,11 +395,14 @@ function ProductCardPricing({
                   sm:w-8 sm:flex-none
                 "
               >
-                <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={2.5} />
+                <Plus
+                  className="h-3 w-3 sm:h-3.5 sm:w-3.5"
+                  strokeWidth={2.5}
+                />
               </button>
             </div>
 
-            {/* Add To Cart — mobile pe full width, desktop pe flex-1 */}
+            {/* Add To Cart */}
             <button
               type="button"
               onClick={handleAddToCart}
@@ -334,18 +420,20 @@ function ProductCardPricing({
               "
             >
               <ShoppingBag
-                className="relative z-10 h-3 w-3 transition-transform duration-300 sm:h-3.5 sm:w-3.5"
+                className="
+                  relative z-10 h-3 w-3
+                  transition-transform duration-300
+                  sm:h-3.5 sm:w-3.5
+                "
                 strokeWidth={2}
               />
 
               <span className="relative z-10 whitespace-nowrap">
                 Add to Cart
               </span>
-
             </button>
           </div>
         )}
-
       </div>
     </div>
   );

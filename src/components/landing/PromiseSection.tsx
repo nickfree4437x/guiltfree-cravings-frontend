@@ -3,8 +3,8 @@ import {
   ShieldCheck,
   Sparkles,
   Heart,
-  Truck,
-  Award,
+  Droplets,
+  HandHeart,
 } from "lucide-react";
 
 function OurPromise() {
@@ -14,29 +14,36 @@ function OurPromise() {
       icon: Leaf,
       title: "No Refined Sugar",
       description:
-        "Only jaggery and dates do the sweetening here pure, natural, and guilt-free.",
+        "We sweeten our laddoos with jaggery or dates never refined sugar.",
     },
     {
       number: "02",
-      icon: ShieldCheck,
-      title: "No Preservatives",
+      icon: Droplets,
+      title: "No Refined Oils.",
       description:
-        "Small batches, made to be eaten fresh, not stored forever. Real food, real simple.",
+        "Desi ghee is the only fat we use in our laddoos no palm oil or refined oils.",
     },
     {
       number: "03",
-      icon: Sparkles,
-      title: "Thoughtfully Sourced",
+      icon: ShieldCheck,
+      title: "No Preservatives",
       description:
-        "Real ghee, real nuts, nothing borrowed from a lab. Just honest, wholesome ingredients.",
+        "Made in small batches, with freshness in mind not a long shelf life.",
+    },
+    {
+      number: "04",
+      icon: HandHeart,
+      title: "Made in Small Batches",
+      description:
+        "Every laddoo is hand-rolled with care, made in small batches and packed fresh.",
     },
   ];
 
   const trustBadges = [
     { icon: Leaf, label: "100% Natural" },
     { icon: Heart, label: "Made with Love" },
-    { icon: Truck, label: "Freshly Baked" },
-    { icon: Award, label: "Trusted Brand" },
+    { icon: Droplets, label: "No Palm Oil" },
+    { icon: ShieldCheck, label: "No Refined Oil" },
   ];
 
   return (
@@ -73,7 +80,7 @@ function OurPromise() {
 
 
           {/* Description */}
-          <p className="mt-4 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
+          <p className="mt-0 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
             We believe you shouldn't have to read the fine print to know
             what's going into something you eat.{" "}
             <span className=" text-[#B5697A]">
@@ -87,12 +94,12 @@ function OurPromise() {
         ========================================================= */}
         <div className="relative mt-6 sm:mt-8 lg:mt-12">
           {/* Horizontal connecting line (desktop) */}
-          <div
+          {/* <div
             aria-hidden="true"
             className="pointer-events-none absolute left-0 right-0 top-[54px] hidden h-px bg-gradient-to-r from-transparent via-[#E8D9C4] to-transparent md:block"
-          />
+          /> */}
 
-          <div className="grid gap-10 md:grid-cols-3 md:gap-8 lg:gap-12">
+          <div className="grid gap-10 md:grid-cols-4 md:gap-8 lg:gap-12">
             {promises.map((promise) => {
               const Icon = promise.icon;
 
@@ -105,12 +112,12 @@ function OurPromise() {
                   <div className="relative flex items-center gap-4 md:flex-col md:items-start">
 
                     {/* Circle with icon */}
-                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-[#EFE3D2] transition-all duration-500 md:mx-auto md:h-16 md:w-16">
+                    {/* <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-[#EFE3D2] transition-all duration-500 md:mx-auto md:h-16 md:w-16">
                       <Icon
                         className="h-6 w-6 text-[#B5697A] transition-transform duration-500 md:h-7 md:w-7"
                         strokeWidth={1.8}
                       />
-                    </div>
+                    </div> */}
 
                     {/* Big number (editorial) */}
                     <div className="md:mt-6 md:text-center md:w-full">
@@ -153,7 +160,7 @@ function OurPromise() {
                   {/* ============ Description ============ */}
                   <p
                     className="
-                      mt-3 max-w-xs text-[13px] leading-[1.5] text-[#7A6A5C]
+                      mt-2 max-w-xs text-[13px] leading-[1.5] text-[#7A6A5C]
                       sm:text-[13.5px] md:mx-auto md:text-center md:text-[14px]
                     "
                   >
@@ -170,7 +177,7 @@ function OurPromise() {
         ========================================================= */}
         <div
           className="
-            mt-14 sm:mt-16
+            mt-8 sm:mt-10
             rounded-xl border border-[#EFE3D2] bg-white/60
             px-5 py-5 backdrop-blur-sm sm:px-8 sm:py-6
           "

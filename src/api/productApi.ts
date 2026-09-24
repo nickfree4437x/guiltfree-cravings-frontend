@@ -25,6 +25,7 @@ export interface Product {
   description: string;
   image: string;
   glassJarImage: string | null;
+  cardboardBoxImage: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -53,7 +54,7 @@ interface ProductResponse {
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
-    "https://guiltfree-cravings-backend.onrender.com/api",
+    "http://localhost:5000/api",
 
   headers: {
     "Content-Type": "application/json",
@@ -67,7 +68,9 @@ const api = axios.create({
 ========================================================= */
 
 export const getProducts = async (): Promise<Product[]> => {
-  const response = await api.get<ProductsResponse>("/products");
+  const response = await api.get<ProductsResponse>(
+    "/products"
+  );
 
   if (!response.data.success) {
     throw new Error("Failed to fetch products.");

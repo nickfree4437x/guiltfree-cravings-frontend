@@ -43,6 +43,11 @@ function FeaturedProducts() {
     void fetchProducts();
   }, []);
 
+  /*
+   * =========================================================
+   * GLASS JAR PRODUCTS
+   * =========================================================
+   */
   const glassJarProducts = products.filter(
     (product) =>
       product.variants.some(
@@ -50,6 +55,20 @@ function FeaturedProducts() {
           variant.packaging === "Glass Jar"
       ) &&
       Boolean(product.glassJarImage)
+  );
+
+  /*
+   * =========================================================
+   * CARDBOARD BOX PRODUCTS
+   * =========================================================
+   */
+  const cardboardBoxProducts = products.filter(
+    (product) =>
+      product.variants.some(
+        (variant) =>
+          variant.packaging === "Cardboard Box"
+      ) &&
+      Boolean(product.cardboardBoxImage)
   );
 
   return (
@@ -63,7 +82,7 @@ function FeaturedProducts() {
         lg:px-12
       "
     >
-      <div className="mx-auto w-full max-w-7xl">
+      <div className="mx-auto w-full max-w-6xl">
 
         {/* SECTION HEADER */}
         <FeaturedProductsHeader />
@@ -76,13 +95,15 @@ function FeaturedProducts() {
           <ProductErrorState message={error} />
         )}
 
-        {/* MAIN PRODUCTS */}
+        {/* =====================================================
+            MAIN PRODUCTS — PLASTIC BOX
+        ===================================================== */}
         {!loading &&
           !error &&
           products.length > 0 && (
             <ProductGrid
               products={products}
-              packaging="Regular"
+              packaging="Plastic Box"
             />
           )}
 
@@ -93,7 +114,73 @@ function FeaturedProducts() {
             <ProductEmptyState />
           )}
 
-        {/* GLASS JAR COLLECTION */}
+        {/* =====================================================
+            CARDBOARD BOX COLLECTION
+        ===================================================== */}
+        {!loading &&
+          !error &&
+          cardboardBoxProducts.length > 0 && (
+            <section
+              className="
+                mt-12
+                border-t border-[#E8E1D8]
+                pt-8
+                sm:mt-14
+                sm:pt-16
+              "
+            >
+              {/* SECTION INTRO */}
+              <div
+                className="
+                  mx-auto max-w-3xl
+                  text-center
+                "
+              >
+                <h2
+                  className="
+                    mb-2
+                    text-[20px]
+                    font-semibold
+                    leading-snug
+                    tracking-wide
+                    text-[#C9788B]
+                    sm:text-[24px]
+                    md:whitespace-nowrap
+                    md:text-[28px]
+                  "
+                >
+                  Classic Cardboard Boxes
+                </h2>
+
+                <p
+                  className="
+                    mx-auto
+                    max-w-[580px]
+                    text-[12.5px]
+                    leading-relaxed
+                    tracking-wide
+                    text-[#2c2c2c]
+                    sm:text-[13.5px]
+                    md:text-[14px]
+                  "
+                >
+                  Thoughtfully packed in
+                  sturdy cardboard boxes,
+                  made for everyday goodness.
+                </p>
+              </div>
+
+              {/* CARDBOARD BOX PRODUCTS */}
+              <ProductGrid
+                products={cardboardBoxProducts}
+                packaging="Cardboard Box"
+              />
+            </section>
+          )}
+
+        {/* =====================================================
+            GLASS JAR COLLECTION — ALWAYS LAST
+        ===================================================== */}
         {!loading &&
           !error &&
           glassJarProducts.length > 0 && (

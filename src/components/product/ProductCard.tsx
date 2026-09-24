@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import type {
   Product,
@@ -10,23 +11,19 @@ import { useCartStore } from "../../store/cartStore";
 
 import OtpAuthModal from "../auth/OtpAuthModal";
 
-import ProductQuickViewModal from "./ProductQuickViewModal";
 import ProductCardImage from "./card/ProductCardImage";
 import ProductCardContent from "./card/ProductCardContent";
 
 interface ProductCardProps {
   product: Product;
-  packaging?: "Regular" | "Glass Jar";
+  packaging?: "Plastic Box" | "Glass Jar" | "Cardboard Box";
 }
 
 function ProductCard({
   product,
-  packaging = "Regular",
+  packaging = "Plastic Box",
 }: ProductCardProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] =
-    useState(false);
-
-  const [isQuickViewOpen, setIsQuickViewOpen] =
     useState(false);
 
   const isAuthenticated = useAuthStore(
@@ -71,17 +68,6 @@ function ProductCard({
     setIsAuthModalOpen(false);
   };
 
-  /* =========================================================
-     QUICK VIEW
-  ========================================================= */
-  const handleQuickViewOpen = () => {
-    setIsQuickViewOpen(true);
-  };
-
-  const handleQuickViewClose = () => {
-    setIsQuickViewOpen(false);
-  };
-
   return (
     <>
       <article
@@ -94,23 +80,12 @@ function ProductCard({
           transition-all duration-500 ease-out
         "
       >
-        {/* ================= IMAGE (clickable → Quick View) ================= */}
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={handleQuickViewOpen}
-          onKeyDown={(event) => {
-            if (
-              event.key === "Enter" ||
-              event.key === " "
-            ) {
-              event.preventDefault();
-              handleQuickViewOpen();
-            }
-          }}
+        {/* ================= IMAGE → PRODUCT DETAILS ================= */}
+        <Link
+          to={`/products/${product.id}`}
           aria-label={`View details for ${product.name}`}
           className="
-            group/image relative cursor-pointer
+            group/image relative block cursor-pointer
             overflow-hidden rounded-t-xl
             focus:outline-none
             focus-visible:ring-2
@@ -127,12 +102,16 @@ function ProductCard({
           <div
             className="
               pointer-events-none absolute inset-0
-              bg-gradient-to-t from-black/25 via-transparent to-transparent
-              opacity-0 transition-opacity duration-500
+              bg-gradient-to-t
+              from-black/25
+              via-transparent
+              to-transparent
+              opacity-0
+              transition-opacity duration-500
               group-hover/image:opacity-100
             "
           />
-        </div>
+        </Link>
 
         {/* ================= CONTENT ================= */}
         <ProductCardContent
@@ -142,15 +121,7 @@ function ProductCard({
         />
       </article>
 
-      {/* ================= MODALS ================= */}
-      {isQuickViewOpen && (
-        <ProductQuickViewModal
-          product={product}
-          packaging={packaging}
-          onClose={handleQuickViewClose}
-        />
-      )}
-
+      {/* ================= AUTH MODAL ================= */}
       {isAuthModalOpen && (
         <OtpAuthModal
           onClose={() => setIsAuthModalOpen(false)}

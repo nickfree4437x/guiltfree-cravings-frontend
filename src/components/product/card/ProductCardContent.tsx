@@ -7,7 +7,7 @@ import ProductCardPricing from "./ProductCardPricing";
 
 interface ProductCardContentProps {
   product: Product;
-  packaging?: "Regular" | "Glass Jar";
+  packaging?: "Plastic Box" | "Glass Jar" | "Cardboard Box";
   onAddToCart: (
     variant: ProductVariant,
     quantity: number
@@ -16,7 +16,7 @@ interface ProductCardContentProps {
 
 function ProductCardContent({
   product,
-  packaging = "Regular",
+  packaging = "Plastic Box",
   onAddToCart,
 }: ProductCardContentProps) {
   return (
@@ -46,7 +46,6 @@ function ProductCardContent({
       </h3>
 
       {/* DESCRIPTION — mobile pe hidden, md+ (desktop) pe visible */}
-      {/* inline `display` hataya — warna `hidden` override ho jata hai */}
       <p
         className="
           hidden md:block

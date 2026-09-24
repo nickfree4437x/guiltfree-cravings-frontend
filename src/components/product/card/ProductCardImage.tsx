@@ -6,12 +6,12 @@ import type { Product } from "../../../api/productApi";
 
 interface ProductCardImageProps {
   product: Product;
-  packaging?: "Regular" | "Glass Jar";
+  packaging?: "Plastic Box" | "Glass Jar" | "Cardboard Box";
 }
 
 function ProductCardImage({
   product,
-  packaging = "Regular",
+  packaging = "Plastic Box",
 }: ProductCardImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   // const [isToggling, setIsToggling] = useState(false);
@@ -33,7 +33,9 @@ function ProductCardImage({
   const image =
     packaging === "Glass Jar"
       ? product.glassJarImage
-      : product.image;
+      : packaging === "Cardboard Box"
+        ? product.cardboardBoxImage
+        : product.image;
 
   /*
    * =========================================================
@@ -157,11 +159,7 @@ function ProductCardImage({
       {/* ===== Image ===== */}
       <img
         src={image}
-        alt={
-          packaging === "Glass Jar"
-            ? `${product.name} Traditional Glass Jar`
-            : product.name
-        }
+        alt={`${product.name} ${packaging}`}
         loading="lazy"
         onLoad={() => setIsLoaded(true)}
         className={`
