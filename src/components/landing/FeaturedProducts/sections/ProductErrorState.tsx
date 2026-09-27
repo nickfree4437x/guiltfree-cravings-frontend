@@ -10,7 +10,7 @@ function ProductErrorState({
       className="
         mx-auto mt-12
         max-w-2xl
-        rounded-2xl
+        rounded-xl
         border border-[#E8E1D8]
         bg-white
         px-6 py-12

@@ -1,6 +1,6 @@
 import {
-  Home,
-  ShoppingBag,
+  House,
+  Store,
   ShoppingCart,
   User,
   MoreHorizontal,
@@ -43,13 +43,13 @@ function MobileBottomNavigation({
   const tabs = [
     {
       label: "Home",
-      icon: Home,
+      icon: House,
       isActive: isHomeActive,
       onClick: handleHome,
     },
     {
       label: "Products",
-      icon: ShoppingBag,
+      icon: Store,
       isActive: isProductsActive,
       onClick: handleProducts,
     },
@@ -90,17 +90,17 @@ function MobileBottomNavigation({
 
       <nav
         className="
-          fixed bottom-0 left-0 right-0 z-[60]
-          bg-[#FBF6EE]
-          shadow-[0_-4px_24px_rgba(139,111,92,0.08)]
-          lg:hidden
+          fixed bottom-0 left-0 right-0 z-[60] lg:hidden
+          border-t border-[#EFE3D2] bg-white/95
+          shadow-[0_-4px_20px_-8px_rgba(139,111,92,0.12)]
+          backdrop-blur-md
         "
         aria-label="Mobile navigation"
         style={{
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        <div className="relative flex h-[64px] w-full items-stretch">
+        <div className="relative flex h-[60px] w-full items-stretch">
 
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -117,43 +117,34 @@ function MobileBottomNavigation({
                   group relative flex min-w-0 flex-1 flex-col
                   items-center justify-center gap-1
                   transition-transform duration-200
+                  active:scale-[0.94]
                 "
               >
-                <span
-                  className={`
-                    absolute left-1/2 top-0 h-[3px] rounded-b-full
-                    transition-all duration-300 ease-out
-                    ${
-                      active
-                        ? "indicator-slide w-8 bg-[#C9788B] opacity-100"
-                        : "w-0 bg-transparent opacity-0"
-                    }
-                  `}
-                  style={{ transform: "translateX(-50%)" }}
-                />
 
+                {/* Icon */}
                 <span className="relative flex items-center justify-center">
                   <Icon
-                    size={20}
-                    strokeWidth={active ? 2.4 : 1.8}
+                    size={18}
+                    strokeWidth={active ? 2.3 : 1.9}
                     className={`
                       relative z-10 transition-colors duration-300
                       ${
                         active
-                          ? "text-[#C9788B]"
-                          : "text-[#A89887] group-hover:text-[#5A4A3F]"
+                          ? "text-[#B5697A]"
+                          : "text-[#6B5B50] group-hover:text-[#B5697A]"
                       }
                     `}
                   />
 
+                  {/* Cart badge */}
                   {tab.badge && tab.badge > 0 && (
                     <span
                       className="
                         badge-pop absolute -top-1.5 -right-2 z-20
                         flex h-[15px] min-w-[15px] items-center justify-center
-                        rounded-full bg-[#C9788B] px-1
+                        rounded-full bg-[#B5697A] px-1
                         text-[9px] font-semibold leading-none text-white
-                        ring-2 ring-[#FBF6EE]
+                        ring-2 ring-white
                       "
                     >
                       {tab.badge > 99 ? "99+" : tab.badge}
@@ -161,14 +152,15 @@ function MobileBottomNavigation({
                   )}
                 </span>
 
+                {/* Label */}
                 <span
                   className={`
                     relative z-10 text-[10px] leading-none
                     transition-colors duration-300
                     ${
                       active
-                        ? " text-[#C9788B]"
-                        : "text-[#A89887]"
+                        ? "font-semibold text-[#B5697A]"
+                        : "font-medium text-[#6B5B50] group-hover:text-[#B5697A]"
                     }
                   `}
                 >
@@ -178,8 +170,10 @@ function MobileBottomNavigation({
             );
           })}
 
-          <span className="my-3 w-px self-center bg-[#EADBC8]" />
+          {/* ================= DIVIDER ================= */}
+          <span className="my-4 w-px self-center bg-[#EFE3D2]" />
 
+          {/* ================= MORE BUTTON ================= */}
           <button
             type="button"
             onClick={onMoreClick}
@@ -195,10 +189,11 @@ function MobileBottomNavigation({
               <MoreHorizontal
                 size={20}
                 strokeWidth={1.9}
-                className="relative z-10 text-[#A89887] transition-colors duration-300 group-hover:text-[#5A4A3F]"
+                className="relative z-10 text-[#6B5B50] transition-colors duration-300 group-hover:text-[#B5697A]"
               />
             </span>
-            <span className="text-[10px] leading-none text-[#A89887]">
+
+            <span className="text-[10px] font-medium leading-none text-[#6B5B50] transition-colors duration-300 group-hover:text-[#B5697A]">
               More
             </span>
           </button>

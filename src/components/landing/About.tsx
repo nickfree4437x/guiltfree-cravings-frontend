@@ -3,185 +3,193 @@ import {
   Leaf,
   ShieldCheck,
   Droplet,
-  BriefcaseBusiness,
-  Coffee,
-  Users,
+  Baby,
+  HeartHandshake,
+  Zap,
 } from "lucide-react";
 
 function About() {
-  const features = [
+  const values = [
     {
       icon: House,
       title: "Made at Home",
       description:
         "Hand-rolled in small batches with genuine care, comfort, and attention to detail.",
-      color: "#C9788B",
-      bg: "#FBEEF1",
     },
     {
       icon: Leaf,
       title: "No Refined Sugar",
       description:
         "Sweetened naturally with raw jaggery and dates instead of refined sugar.",
-      color: "#5A8A5C",
-      bg: "#EDF5ED",
     },
     {
       icon: ShieldCheck,
       title: "No Preservatives",
       description:
         "Freshly made without artificial preservatives or unnecessary additives.",
-      color: "#B58A3D",
-      bg: "#FAF3E3",
     },
     {
       icon: Droplet,
       title: "No Palm Oil",
       description:
         "Made with authentic Desi Ghee and without palm oil or hydrogenated fats.",
-      color: "#4A7A8A",
-      bg: "#EAF2F5",
     },
   ];
 
   const goodnessCards = [
-    {
-      icon: Users,
-      title: "For Growing Kids",
-      description:
-        "A wholesome burst of natural energy for growing minds and active days.",
-    },
-    {
-      icon: BriefcaseBusiness,
-      title: "For Busy Women",
-      description:
-        "A nourishing little break when the day gets long, busy, and demanding.",
-    },
-    {
-      icon: Coffee,
-      title: "For Busy Men",
-      description:
-        "A wholesome bite between meetings, workouts, and everyday moments.",
-    },
-  ];
+  {
+    icon: Baby,
+    label: "FOR KIDS",
+    title: "For Growing Kids",
+    description:
+      "A wholesome burst of natural energy for growing minds and active days.",
+  },
+  {
+    icon: HeartHandshake,
+    label: "FOR WOMEN",
+    title: "For Busy Women",
+    description:
+      "A nourishing little break when the day gets long, busy, and demanding.",
+  },
+  {
+    icon: Zap,
+    label: "FOR MEN",
+    title: "For Busy Men",
+    description:
+      "A wholesome bite between meetings, workouts, and everyday moments.",
+  },
+ ];
 
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-white py-8 md:py-12"
+      className="relative overflow-hidden bg-white pb-10"
     >
-      {/* ================= DECORATIVE BACKGROUND ================= */}
-      <div className="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-[#F5E6D8]/50 blur-[100px]" />
-      <div className="pointer-events-none absolute -right-32 bottom-40 h-80 w-80 rounded-full bg-[#FBEEF1]/60 blur-[110px]" />
 
-      {/* ================= CONTENT WRAPPER — MORE SIDE GAP ================= */}
-      <div className="relative mx-auto w-full max-w-[1360px] px-6 sm:px-10 md:px-14 lg:px-20">
+      {/* =====================================================
+          MAIN CONTAINER
+      ===================================================== */}
 
-        {/* =========================================================
-            ABOUT INTRO
-        ========================================================= */}
-        <div className="mx-auto max-w-3xl text-center">
+      <div className="relative mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-12">
 
+        {/* ===================================================
+            TOP — STORY + VIDEO
+        =================================================== */}
 
-          {/* Heading */}
-          <h2 className="anim-fadeUp delay-2  text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide mb-2 leading-snug md:whitespace-nowrap text-[#C9788B]">
-            About GuiltFree{" "}
-            Tradition, Made Better.
-          </h2>
+        <div className="grid items-center gap-6 py-10 sm:py-24 lg:grid-cols-2 lg:gap-14">
 
-          {/* Divider */}
-          <div className="mx-auto mt-6 flex items-center justify-center gap-2.5">
-            <span className="h-px w-10 bg-[#C9788B]/40 sm:w-12" />
-            <span className="h-px w-2 bg-[#C9788B]/60" />
-            <span className="relative flex items-center justify-center">
-              <span className="absolute h-3 w-3 rotate-45 rounded-[2px] bg-[#E7B5C1]/20" />
-              <span className="relative h-2 w-2 rotate-45 rounded-[1.5px] border border-[#C9788B]/80 bg-[#E7B5C1]/40" />
-            </span>
-            <span className="h-px w-2 bg-[#C9788B]/60" />
-            <span className="h-px w-10 bg-[#C9788B]/40 sm:w-12" />
+          {/* =================================================
+              LEFT CONTENT
+          ================================================= */}
+
+          <div className="text-center lg:px-4">
+
+            {/* Main heading */}
+
+            <h2 className="text-[18px] sm:text-[24px] md:text-[22px] font-[600] text-[#C9788B] tracking-wide leading-snug mb-1">
+              Welcome To Guilt Free Cravings
+            </h2>
+
+            {/* Intro description */}
+
+            <p className="text-gray-800 text-[11px] sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed mb-3 max-w-[320px] sm:max-w-[600px] mx-auto">
+              Homemade laddoos crafted with thoughtfully selected
+              ingredients, comforting flavours, and lots of love.
+            </p>
+
+            {/* =================================================
+                VALUE CONTENT
+            ================================================= */}
+
+            <div className="mx-auto md:mt-7 max-w-[620px] md:space-y-6">
+
+              {values.map((value) => {
+                // const Icon = value.icon;
+
+                return (
+                  <div key={value.title}>
+
+                    {/* Small heading */}
+
+                    <div className="flex items-center justify-center gap-2">
+
+                      <h3 className="text-[#C9788B] font-medium text-[13px] sm:text-[14px] md:text-[15px] mb-1">
+                        {value.title}
+                      </h3>
+                    </div>
+
+                    {/* Description */}
+
+                    <p className="text-gray-800 text-[11px] sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed mb-3 max-w-[320px] sm:max-w-[600px] mx-auto">
+                      {value.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Description */}
-          <p className="mt-4 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
-            Homemade laddoos made with thoughtfully selected ingredients, traditional care, and no 
-            refined sugar, palm oil, or preservatives.
-          </p>
-        </div>
+          {/* =================================================
+              RIGHT — VIDEO
+          ================================================= */}
 
-        {/* =========================================================
-            BRAND VALUES — 4 columns
-        ========================================================= */}
-        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4 lg:gap-5">
-          {features.map((feature) => {
-            const Icon = feature.icon;
+          <div className="relative">
 
-            return (
-              <div
-                key={feature.title}
-                className="
-                  group relative flex flex-col overflow-hidden
-                  rounded-lg border border-gray-200 bg-white
-                  p-6 text-center
-                  transition-all duration-300
-                  sm:p-7
-                "
+            <div className="relative max-w-[340px] sm:max-w-[420px] md:max-w-[500px] h-[230px] sm:h-[360px] md:h-[370px] overflow-hidden border border-[#E8DCCF] bg-[#F5EEE5]">
+
+              <video
+                className="aspect-[4/3] w-full object-cover"
+                controls
+                muted
+                loop
+                playsInline
+                poster="https://placehold.co/1000x750/F5EEE5/1F4A2E?text=GuiltFree+Kitchen"
               >
+                <source
+                  src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+                  type="video/mp4"
+                />
 
-                <div
-                  className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300"
-                  style={{ backgroundColor: feature.bg }}
-                >
-                  <Icon
-                    size={24}
-                    strokeWidth={1.8}
-                    style={{ color: feature.color }}
-                  />
-                </div>
+                Your browser does not support the video tag.
+              </video>
+            </div>
 
-                <h3 className="mt-5 text-[17px] font-semibold leading-tight text-[#1F4A2E] sm:text-[18px]">
-                  {feature.title}
-                </h3>
+            {/* Small caption */}
 
-                <p className="mt-2.5 text-[12.5px] leading-[1.65] text-[#2c2c2c] sm:text-[13px]">
-                  {feature.description}
-                </p>
-              </div>
-            );
-          })}
+            <div className="mt-4 flex items-center justify-center gap-3">
+              <span className="h-px w-8 bg-[#C9788B]/40" />
+
+              <span className="text-[9px] uppercase tracking-[0.2em] text-[#9A8879]">
+                Our small-batch process
+              </span>
+
+              <span className="h-px w-8 bg-[#C9788B]/40" />
+            </div>
+          </div>
         </div>
 
-        {/* =========================================================
-            WHOLESOME GOODNESS — Card-free editorial design
-        ========================================================= */}
-        <div className="relative mt-12 overflow-hidden rounded-lg border border-[#EFE3D2] px-6 py-4 sm:mt-16 sm:px-10 sm:py-6 lg:px-16">
+        {/* ===================================================
+            WHOLESOME GOODNESS
+        =================================================== */}
 
-          {/* Decorative corner blobs */}
-          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#FBEEF1]/60 blur-[90px]" />
-          <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-[#F5E6D8]/50 blur-[90px]" />
+        <div className="relative md:-mt-8  py-0 sm:py-1 lg:py-2">
 
-          {/* Dotted pattern */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-30"
-            style={{
-              backgroundImage: "radial-gradient(circle, #E8D9C4 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
-          />
+          {/* =================================================
+              SECTION HEADING
+          ================================================= */}
 
-          {/* ================= HEADING ================= */}
           <div className="relative mx-auto max-w-2xl text-center">
 
-            <h3 className="text-[16px] sm:text-[20px] md:text-[22px] font-semibold tracking-wide mb-2 leading-snug md:whitespace-nowrap text-[#2c2c2c]">
+            <h3 className="text-[20px] sm:text-[24px] md:text-[22px] font-[550] text-[#C9788B] tracking-wide leading-snug">
               Wholesome Goodness For Everyone
             </h3>
-
-            <p className="text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#7A6A5C]">
-              Honest nourishment made for real-life moments.
-            </p>
           </div>
 
-          {/* ================= CARD-FREE COLUMNS ================= */}
-          <div className="relative mt-6 grid gap-y-12 sm:mt-8 md:grid-cols-3 md:gap-x-0 md:gap-y-0">
+          {/* =================================================
+              GOODNESS CONTENT
+          ================================================= */}
+
+          <div className="relative mt-6 grid md:grid-cols-3">
 
             {goodnessCards.map((card, index) => {
               const Icon = card.icon;
@@ -190,66 +198,42 @@ function About() {
                 <div
                   key={card.title}
                   className={`
-                    group relative px-0 md:px-8 lg:px-10
-                    ${index !== 0 ? "md:border-l md:border-[#E8D9C4]/60" : ""}
+                    px-6 py-2 text-center sm:px-10
+                    ${
+                      index !== 0
+                        ? "mt-2 pt-4 md:mt-0 md:pt-2"
+                        : ""
+                    }
                   `}
                 >
-                  {/* Vertical divider enhancement — glow on hover */}
-                  {index !== 0 && (
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute left-0 top-0 hidden h-full w-px origin-top scale-y-0 bg-gradient-to-b from-transparent via-[#C9788B]/40 to-transparent transition-transform duration-700 group-hover:scale-y-100 md:block"
-                    />
-                  )}
 
-                  {/* Icon — subtle, no box */}
-                  <div className="mt-5 flex items-center gap-3">
+                  {/* Icon */}
+
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F8E8EC] text-[#C9788B]">
                     <Icon
-                      size={16}
-                      strokeWidth={1.9}
-                      className="text-[#C9788B] transition-transform duration-500"
+                      size={21}
+                      strokeWidth={1.7}
                     />
-
-                    <span className="text-[9px] md:text-[10px] uppercase tracking-[0.18em] text-[#8B6F5C]">
-                      {index === 0 ? "For Kids" : index === 1 ? "For Women" : "For Men"}
-                    </span>
                   </div>
 
+
                   {/* Title */}
-                  <h4 className="mt-2 text-[14px] sm:text-[16px] md:text-[18px] font-semibold tracking-wide mb-2 leading-snug md:whitespace-nowrap text-[#2c2c2c]">
+
+                  <h4 className="mt-2 text-[17px] font-semibold text-[#1F4A2E] sm:text-[18px]">
                     {card.title}
                   </h4>
 
                   {/* Description */}
-                  <p className="mt-2 max-w-[280px] text-[13px] leading-relaxed text-[#2c2c2c] sm:text-[13.5px]">
+
+                  <p className="text-gray-800 text-[12px] sm:text-[13px] md:text-[13px] 
+                           leading-relaxed tracking-wide">
                     {card.description}
                   </p>
-
-                  {/* Small arrow link (decorative) */}
-                  <div className="mt-3 flex items-center gap-1 text-[#C9788B]">
-                    <span className="h-px w-6 bg-[#C9788B]/60 transition-all duration-500 group-hover:w-10" />
-                    <svg
-                      className="h-3.5 w-3.5 transition-transform duration-500 group-hover:translate-x-1"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                      />
-                    </svg>
-                  </div>
                 </div>
               );
             })}
           </div>
-
-
         </div>
-
       </div>
     </section>
   );

@@ -33,15 +33,15 @@ function NavbarLogo({
       <div className="flex flex-col justify-center leading-none">
         <span
           className={`
-            font-serif
-            text-[16px]
-            font-semibold
+            
+            text-[15px]
+            font-bold
             tracking-[-0.04em]
-            sm:text-[20px]
+            sm:text-[18px]
             ${
               isLight
                 ? "text-white"
-                : "text-[#315C3A]"
+                : "text-slate-700"
             }
           `}
         >

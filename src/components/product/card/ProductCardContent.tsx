@@ -20,20 +20,19 @@ function ProductCardContent({
   onAddToCart,
 }: ProductCardContentProps) {
   return (
-    <div className="flex flex-1 flex-col p-3 sm:p-5 md:p-6">
+    <div className="flex flex-1 flex-col p-3 sm:p-5 md:p-5">
 
       {/* TITLE */}
       <h3
         className="
+          -mt-3
           text-[12px]
           font-semibold
           leading-[1.25]
           tracking-[-0.01em]
           text-[#1F4A2E]
-          transition-colors duration-300
-          group-hover:text-[#B5697A]
           sm:text-[15px]
-          md:text-[18px]
+          md:text-[17px]
         "
         style={{
           display: "-webkit-box",
@@ -46,7 +45,7 @@ function ProductCardContent({
       </h3>
 
       {/* DESCRIPTION — mobile pe hidden, md+ (desktop) pe visible */}
-      <p
+      {/* <p
         className="
           hidden md:block
           mt-1
@@ -56,7 +55,7 @@ function ProductCardContent({
           md:text-[13px]
         "
         style={{
-          WebkitLineClamp: 2,
+          WebkitLineClamp: 1,
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
           minHeight: "42px",
@@ -64,7 +63,7 @@ function ProductCardContent({
         }}
       >
         {product.description}
-      </p>
+      </p> */}
 
       {/* PRICING */}
       <ProductCardPricing

@@ -13,10 +13,9 @@ function CardboardBoxCollection({
     <section
       className="
         mt-12
-        border-t border-[#E8E1D8]
         pt-8
-        sm:mt-14
-        sm:pt-16
+        sm:mt-6
+        sm:pt-8
       "
     >
       {/* SECTION INTRO */}

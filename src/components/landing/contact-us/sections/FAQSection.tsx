@@ -33,7 +33,8 @@ const faqs: FAQItem[] = [
       "Keep your laddoos sealed and store them according to the storage instructions provided with your order.",
   },
   {
-    question: "What should I do if there is a problem with my order?",
+    question:
+      "What should I do if there is a problem with my order?",
     answer:
       "Use the Order Support form and share your order number along with the issue. Our team can review the details and assist you.",
   },
@@ -49,18 +50,34 @@ function FAQSection() {
   };
 
   return (
-    <div className="relative h-full overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
-
-      {/* Corner glow */}
-      <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#FBEEF1]/50 blur-[70px]" />
-
+    <div
+      className="
+        relative
+        h-full
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#EFE3D2]
+        bg-white
+      "
+    >
       {/* ================= CONTENT ================= */}
       <div className="relative p-5 sm:p-7">
-
         {/* ================= MINI HEADER ================= */}
         <div className="mb-6">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBEEF1]">
+            <span
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-[#FBEEF1]
+              "
+            >
               <HelpCircle
                 className="h-5 w-5 text-[#B5697A]"
                 strokeWidth={2}
@@ -68,10 +85,27 @@ function FAQSection() {
             </span>
 
             <div>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-[#B5697A]">
+              <p
+                className="
+                  text-[10px]
+                  uppercase
+                  tracking-[0.18em]
+                  text-[#B5697A]
+                "
+              >
                 FAQs
               </p>
-              <h3 className="mt-0.5 text-[18px] font-semibold leading-tight text-[#1F4A2E] sm:text-[20px]">
+
+              <h3
+                className="
+                  mt-0.5
+                  text-[16px]
+                  font-semibold
+                  leading-tight
+                  text-[#1F4A2E]
+                  sm:text-[18px]
+                "
+              >
                 Frequently asked questions
               </h3>
             </div>
@@ -93,52 +127,79 @@ function FAQSection() {
             return (
               <div
                 key={faq.question}
-                className={`
-                  group relative overflow-hidden rounded-xl
-                  border transition-all duration-300
-                  ${
-                    isOpen
-                      ? "border-[#B5697A]/40 bg-[#FFFCF7]"
-                      : "border-[#EFE3D2] bg-white hover:bg-[#FFFCF7]"
-                  }
-                `}
+                className="
+                  group
+                  relative
+                  overflow-hidden
+                  rounded-xl
+                  border
+                  border-[#EFE3D2]
+                  bg-white
+                "
               >
-                {/* Question button */}
+                {/* ================= QUESTION ================= */}
                 <button
                   type="button"
                   onClick={() => handleToggle(index)}
                   aria-expanded={isOpen}
-                  className="
-                    flex w-full items-center justify-between
-                    gap-3 px-4 py-3.5 text-left
-                    sm:px-5 sm:py-4
-                  "
+                  className={`
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    gap-3
+                    px-4
+                    py-3
+                    text-left
+                    transition-colors
+                    duration-300
+                    sm:px-5
+                    sm:py-3.5
+                    ${
+                      isOpen
+                        ? "bg-[#FFFCF7]"
+                        : "bg-white hover:bg-[#FFFCF7]"
+                    }
+                  `}
                 >
                   <span
-                    className={`
-                      text-[14px] font-semibold leading-tight
-                      transition-colors duration-300
-                      ${isOpen ? "text-[#B5697A]" : "text-[#1F4A2E] group-hover:text-[#B5697A]"}
-                      sm:text-[15.5px]
-                    `}
+                    className="
+                      pr-4
+                      text-[14px]
+                      text-[#2C2C2C]
+                      sm:text-[16px]
+                    "
                   >
                     {faq.question}
                   </span>
 
                   <ChevronDown
                     className={`
-                      h-4 w-4 shrink-0 transition-all duration-300
-                      ${isOpen ? "rotate-180 text-[#B5697A]" : "text-[#8B7A6C] group-hover:text-[#B5697A]"}
-                      sm:h-[18px] sm:w-[18px]
+                      h-4
+                      w-4
+                      shrink-0
+                      transition-all
+                      duration-300
+                      sm:h-[18px]
+                      sm:w-[18px]
+                      ${
+                        isOpen
+                          ? "rotate-180 text-[#B5697A]"
+                          : "text-[#8B7A6C] group-hover:text-[#B5697A]"
+                      }
                     `}
                     strokeWidth={2.2}
                   />
                 </button>
 
-                {/* Answer */}
+                {/* ================= ANSWER ================= */}
                 <div
                   className={`
-                    grid transition-all duration-300 ease-in-out
+                    grid
+                    bg-white
+                    transition-all
+                    duration-300
+                    ease-in-out
                     ${
                       isOpen
                         ? "grid-rows-[1fr] opacity-100"
@@ -146,8 +207,26 @@ function FAQSection() {
                     }
                   `}
                 >
-                  <div className="min-h-0 overflow-hidden">
-                    <p className="px-4 pb-4 text-[12.5px] leading-[1.5] text-[#2c2c2c] sm:px-5 sm:pb-5 sm:text-[13.5px] sm:leading-[1.5]">
+                  <div
+                    className="
+                      min-h-0
+                      overflow-hidden
+                      bg-white
+                    "
+                  >
+                    <p
+                      className="
+                        bg-white
+                        px-4
+                        pb-4
+                        text-justify
+                        text-[12px]
+                        leading-relaxed
+                        text-gray-700
+                        sm:px-5
+                        sm:text-[13px]
+                      "
+                    >
                       {faq.answer}
                     </p>
                   </div>
@@ -156,7 +235,6 @@ function FAQSection() {
             );
           })}
         </div>
-
       </div>
     </div>
   );

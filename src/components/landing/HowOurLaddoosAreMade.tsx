@@ -1,9 +1,6 @@
 import { useRef, useState } from "react";
 import {
   Play,
-  Flame,
-  Hand,
-  Package,
 } from "lucide-react";
 
 const DUMMY_VIDEO_URL =
@@ -31,28 +28,28 @@ function HowOurLaddoosAreMade() {
     setIsPlaying(false);
   };
 
-  const processSteps = [
-    {
-      icon: Flame,
-      label: "Slow Roasted",
-      sub: "Low flame, deep flavour",
-    },
-    {
-      icon: Hand,
-      label: "Hand Rolled",
-      sub: "Small batch, daily",
-    },
-    {
-      icon: Package,
-      label: "Freshly Packed",
-      sub: "Sealed with care",
-    },
-  ];
+  // const processSteps = [
+  //   {
+  //     icon: Flame,
+  //     label: "Slow Roasted",
+  //     sub: "Low flame, deep flavour",
+  //   },
+  //   {
+  //     icon: Hand,
+  //     label: "Hand Rolled",
+  //     sub: "Small batch, daily",
+  //   },
+  //   {
+  //     icon: Package,
+  //     label: "Freshly Packed",
+  //     sub: "Sealed with care",
+  //   },
+  // ];
 
   return (
     <section
       id="how-our-laddoos-are-made"
-      className="relative overflow-hidden bg-[#FFFCF7] py-6 sm:py-8 md:py-8"
+      className="relative overflow-hidden bg-[#FFF9F5] py-6 sm:py-8 md:py-8"
     >
       {/* ================= STYLES ================= */}
       <style>
@@ -84,19 +81,6 @@ function HowOurLaddoosAreMade() {
         `}
       </style>
 
-      {/* ================= DECORATIVE BACKGROUND ================= */}
-      <div className="pointer-events-none absolute -left-40 top-20 h-80 w-80 rounded-full bg-[#F5E6D8]/50 blur-[110px]" />
-      <div className="pointer-events-none absolute -right-40 bottom-40 h-96 w-96 rounded-full bg-[#FBEEF1]/60 blur-[120px]" />
-
-      {/* Dotted pattern */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.3]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, #E8D9C4 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
 
       <div className="relative mx-auto w-full max-w-[1360px] px-6 sm:px-10 md:px-14 lg:px-20">
 
@@ -126,7 +110,7 @@ function HowOurLaddoosAreMade() {
           </div>
 
           {/* Description */}
-          <p className="mt-4 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
+          <p className="mt-2 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
             Slow-roasted on low heat, warm with{" "}
             <span className="text-[#B5697A]">Desi Ghee</span>
             , hand-rolled with love. Real craft, zero shortcuts.
@@ -136,17 +120,7 @@ function HowOurLaddoosAreMade() {
         {/* =========================================================
             VIDEO CARD — smaller max-width (centered)
         ========================================================= */}
-        <div className="how-fadeUp relative mx-auto mt-10 max-w-[860px] sm:mt-12">
-
-          {/* Corner accents behind card */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -left-4 -top-4 h-24 w-24 rounded-2xl border-l-2 border-t-2 border-[#B5697A]/30"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -bottom-4 -right-4 h-24 w-24 rounded-2xl border-b-2 border-r-2 border-[#B5697A]/30"
-          />
+        <div className="how-fadeUp relative mx-auto mt-8 max-w-[900px] sm:mt-10">
 
           {/* Main card */}
           <div
@@ -204,7 +178,7 @@ function HowOurLaddoosAreMade() {
                   aria-label="Play video"
                   className="
                     group/play absolute left-1/2 top-1/2 z-20
-                    flex h-16 w-16 -translate-x-1/2 -translate-y-1/2
+                    flex h-12 w-12 -translate-x-1/2 -translate-y-1/2
                     items-center justify-center
                     rounded-full
                     border-2 border-white/90
@@ -262,100 +236,8 @@ function HowOurLaddoosAreMade() {
                 </div>
               )}
 
-              {/* Watch hint (only when NOT playing) */}
-              {!isPlaying && (
-                <div
-                  className="
-                    pointer-events-none absolute bottom-20 left-1/2 z-10
-                    -translate-x-1/2 rounded-full
-                    border border-white/20 bg-black/40
-                    px-3.5 py-1.5 backdrop-blur-md
-                    sm:bottom-24
-                  "
-                >
-                  <p className="whitespace-nowrap text-[10px] text-white sm:text-[12px]">
-                    Watch our small-batch hand-rolling process
-                  </p>
-                </div>
-              )}
             </div>
           </div>
-        </div>
-
-        {/* =========================================================
-            PROCESS STEPS
-        ========================================================= */}
-        <div className="mx-auto mt-10 grid max-w-[900px] gap-4 sm:mt-12 sm:grid-cols-3 sm:gap-5">
-
-          {processSteps.map((step, index) => {
-            const Icon = step.icon;
-
-            return (
-              <div
-                key={step.label}
-                className="
-                  group relative overflow-hidden
-                  rounded-xl border border-[#EFE3D2] bg-white/70
-                  px-5 py-5 backdrop-blur-sm
-                  transition-all duration-300
-                  hover:border-[#B5697A]/30
-                  hover:bg-white
-                  sm:px-6 sm:py-6
-                "
-              >
-                {/* Step number watermark */}
-                <span
-                  className="
-                    pointer-events-none absolute -right-0 -top-3
-                    font-serif text-[68px] font-bold leading-none
-                    text-[#B5697A]/[0.06]
-                    transition-colors duration-500
-                    group-hover:text-[#B5697A]/[0.12]
-                    sm:text-[70px]
-                  "
-                >
-                  0{index + 1}
-                </span>
-
-                {/* Icon + label */}
-                <div className="relative flex items-center gap-3.5">
-                  <span
-                    className="
-                      flex h-9 w-9 shrink-0 items-center justify-center
-                      rounded-xl bg-[#FBEEF1]
-                      transition-all duration-500
-                      sm:h-10 sm:w-10
-                    "
-                  >
-                    <Icon
-                      className="h-4 w-4 text-[#B5697A] sm:h-[20px] sm:w-[20px]"
-                      strokeWidth={1.9}
-                    />
-                  </span>
-
-                  <div className="min-w-0">
-                    <p className="text-[15px] font-semibold leading-tight text-[#1F4A2E] sm:text-[14px]">
-                      {step.label}
-                    </p>
-                    <p className="mt-1 text-[11.5px] leading-tight text-[#8B7A6C] sm:text-[12.5px]">
-                      {step.sub}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Bottom accent */}
-                <span
-                  aria-hidden="true"
-                  className="
-                    absolute inset-x-5 bottom-0 h-[2px] origin-left scale-x-0
-                    rounded-t-full bg-[#B5697A]/50
-                    transition-transform duration-500
-                    group-hover:scale-x-100
-                  "
-                />
-              </div>
-            );
-          })}
         </div>
 
 

@@ -1,6 +1,6 @@
 import {
-  Minus,
-  Plus,
+  // Minus,
+  // Plus,
   ShoppingBag,
   Check,
   ChevronDown,
@@ -138,17 +138,17 @@ function ProductCardPricing({
     setIsDropdownOpen(false);
   };
 
-  const handleDecrease = () => {
-    setQuantity((current) =>
-      Math.max(1, current - 1)
-    );
-  };
+  // const handleDecrease = () => {
+  //   setQuantity((current) =>
+  //     Math.max(1, current - 1)
+  //   );
+  // };
 
-  const handleIncrease = () => {
-    setQuantity(
-      (current) => current + 1
-    );
-  };
+  // const handleIncrease = () => {
+  //   setQuantity(
+  //     (current) => current + 1
+  //   );
+  // };
 
   const handleAddToCart = () => {
     if (!selectedVariant) return;
@@ -172,7 +172,7 @@ function ProductCardPricing({
   }
 
   return (
-    <div className="mt-auto pt-2 sm:pt-3">
+    <div className="mt-auto pt-1 sm:pt-1">
       <div className="pt-1 sm:pt-2">
 
         {/* ============= SIZE DROPDOWN ============= */}
@@ -209,7 +209,7 @@ function ProductCardPricing({
                     flex h-6 min-w-[44px] items-center justify-center
                     px-1.5 text-[10px] uppercase tracking-wider
                     text-[#B5697A]
-                    sm:h-7 sm:min-w-[52px] sm:rounded-lg sm:px-2 sm:text-[11px]
+                    sm:h-6.5 sm:min-w-[52px] sm:rounded-lg sm:px-2 sm:text-[11px]
                   "
                 >
                   {selectedVariant?.quantity}
@@ -243,7 +243,7 @@ function ProductCardPricing({
                   absolute left-0 right-0 z-50 mt-1.5
                   overflow-hidden rounded-lg
                   border border-[#EFE3D2] bg-white
-                  shadow-[0_16px_40px_-12px_rgba(139,111,92,0.22)]
+                  shadow-sm
                   animate-[dropdownIn_0.2s_ease-out]
                   sm:rounded-lg
                 "
@@ -281,7 +281,7 @@ function ProductCardPricing({
                           ${
                             isSelected
                               ? "bg-[#FBEEF1]"
-                              : "hover:bg-gray-50"
+                              : ""
                           }
                         `}
                       >
@@ -336,13 +336,13 @@ function ProductCardPricing({
         {selectedVariant && (
           <div
             className="
-              mt-2.5 flex gap-2
-              flex-col sm:mt-4 sm:flex-row sm:items-center
+              mt-2 flex gap-2
+              flex-col sm:mt-3 sm:flex-row sm:items-center
               sm:gap-2
             "
           >
             {/* Quantity Stepper */}
-            <div
+            {/* <div
               className="
                 flex h-7 w-full items-center justify-between overflow-hidden
                 rounded-lg border border-[#EFE3D2]
@@ -400,7 +400,7 @@ function ProductCardPricing({
                   strokeWidth={2.5}
                 />
               </button>
-            </div>
+            </div> */}
 
             {/* Add To Cart */}
             <button
@@ -416,7 +416,7 @@ function ProductCardPricing({
                 hover:bg-[#A55F70]
                 hover:shadow-sm
                 focus:outline-none
-                sm:h-9 sm:w-auto sm:flex-1 sm:gap-2 sm:rounded-xl sm:px-4 sm:text-[12px]
+                sm:h-9 sm:w-auto sm:flex-1 sm:gap-2 sm:rounded-lg sm:px-4 sm:text-[12px]
               "
             >
               <ShoppingBag

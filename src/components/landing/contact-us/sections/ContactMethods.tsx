@@ -15,11 +15,12 @@ function ContactMethods() {
   const methods = [
     {
       id: "whatsapp",
+      number: "01",
       href: whatsappLink,
       external: true,
       icon: MessageCircle,
       label: "WhatsApp",
-      value: "Chat with us",
+      value: "Chat with us directly",
       cta: "Start a chat",
       iconColor: "text-[#3D8B5F]",
       iconBg: "bg-[#E8F5EE]",
@@ -28,6 +29,7 @@ function ContactMethods() {
     },
     {
       id: "phone",
+      number: "02",
       href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`,
       external: false,
       icon: Phone,
@@ -41,6 +43,7 @@ function ContactMethods() {
     },
     {
       id: "email",
+      number: "03",
       href: `mailto:${CONTACT_EMAIL}`,
       external: false,
       icon: Mail,
@@ -55,17 +58,12 @@ function ContactMethods() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-white px-6 pb-4 sm:px-10 sm:pb-6 md:px-14 lg:px-20">
+    <section className="relative overflow-hidden bg-white px-6 pt-8 sm:px-10 md:px-14 lg:px-20">
 
-      {/* Decorative bg */}
-      <div className="pointer-events-none absolute -left-40 top-20 h-80 w-80 rounded-full bg-[#F5E6D8]/50 blur-[110px]" />
-      <div className="pointer-events-none absolute -right-40 bottom-20 h-80 w-80 rounded-full bg-[#FBEEF1]/60 blur-[120px]" />
+      <div className="relative mx-auto max-w-4xl">
 
-      <div className="relative mx-auto max-w-5xl">
-
-        {/* ================= METHODS — 1 ROW ================= */}
-        <div className="grid grid-cols-1 divide-y divide-[#EFE3D2] sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
-
+        {/* ================= METHODS ROWS ================= */}
+        <div className="relative space-y-4">
           {methods.map((method) => {
             const Icon = method.icon;
 
@@ -77,56 +75,66 @@ function ContactMethods() {
                 rel={method.external ? "noopener noreferrer" : undefined}
                 aria-label={method.ariaLabel}
                 className="
-                  group relative flex items-center gap-4
-                  px-0 py-5
-                  sm:flex-col sm:items-start sm:gap-3 sm:px-7 sm:py-8
+                  group relative flex items-center gap-4 rounded-xl
+                  px-4 py-5 border border-gray-200
                   transition-all duration-300
+                bg-white/70
+                  sm:gap-4 sm:px-6 sm:py-6
                 "
               >
-                {/* Icon */}
+
+
+                {/* ============ ICON ============ */}
                 <span
                   className={`
-                    flex h-11 w-11 shrink-0 items-center justify-center
-                    rounded-xl ${method.iconBg} ${method.iconColor}
-                    transition-transform duration-500
+                    flex h-12 w-12 shrink-0 items-center justify-center
+                    rounded-2xl ${method.iconBg} ${method.iconColor}
+                    transition-all duration-500
+                    sm:h-14 sm:w-14
                   `}
                 >
-                  <Icon className="h-5 w-5" strokeWidth={1.9} />
+                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.9} />
                 </span>
 
-                {/* Content */}
-                <div className="min-w-0 flex-1 sm:w-full">
-
-                  {/* Label + arrow */}
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-[14px] font-semibold leading-tight text-[#1F4A2E] sm:text-[16px]">
+                {/* ============ CONTENT ============ */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-[15px] font-semibold leading-tight text-[#1F4A2E] sm:text-[17px]">
                       {method.label}
                     </h3>
 
-                    <ArrowUpRight
-                      className="
-                        h-3.5 w-3.5 shrink-0
-                        transition-transform duration-500
-                        group-hover:translate-x-0.5 group-hover:-translate-y-0.5
-                      "
-                      style={{ color: method.accentColor }}
-                      strokeWidth={2.4}
+                    <span
+                      className="hidden h-1 w-1 rounded-full sm:block"
+                      style={{ backgroundColor: method.accentColor }}
                     />
+
+                    <span className="hidden text-[11px] tracking-[0.12em] text-[#8B7A6C] sm:inline">
+                      {method.cta}
+                    </span>
                   </div>
 
-                  {/* Value */}
-                  <p className="mt-1 break-all text-[12.5px] leading-[1.5] text-[#7A6A5C] sm:text-[13px]">
+                  <p className="mt-1.5 break-all text-[13px] leading-[1.5] text-[#7A6A5C] sm:text-[14px]">
                     {method.value}
                   </p>
-
-                  {/* CTA */}
-                  <p
-                    className="mt-2 hidden text-[11.5px] tracking-wide sm:block"
-                    style={{ color: method.accentColor }}
-                  >
-                    {method.cta}
-                  </p>
                 </div>
+
+                {/* ============ ARROW ============ */}
+                <span
+                  className="
+                    flex h-10 w-10 shrink-0 items-center justify-center
+                    rounded-full border border-[#EFE3D2] bg-white
+                    sm:h-11 sm:w-11
+                  "
+                  style={{
+                    backgroundColor: undefined,
+                  }}
+                >
+                  <ArrowUpRight
+                    className="h-4 w-4 transition-colors duration-500"
+                    style={{ color: method.accentColor }}
+                    strokeWidth={2.2}
+                  />
+                </span>
               </a>
             );
           })}

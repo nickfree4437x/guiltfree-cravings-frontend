@@ -97,7 +97,7 @@ function ProductCardImage({
       <div
         className="
           relative flex h-[140px] items-center justify-center
-          overflow-hidden rounded-t-xl bg-[#F9F5F0] p-3
+          overflow-hidden rounded-xl bg-[#F9F5F0] p-3
           sm:h-[220px] sm:p-5
           md:h-[260px] md:p-6
         "
@@ -131,10 +131,10 @@ function ProductCardImage({
       className="
         group/image relative flex h-[140px]
         items-center justify-center
-        overflow-hidden rounded-t-xl
+        overflow-hidden rounded-md
         bg-white p-3
         sm:h-[220px] sm:p-5
-        md:h-[260px] md:p-6
+        md:h-[200px] md:p-6
       "
     >
       {/* ===== Skeleton shimmer (before load) ===== */}

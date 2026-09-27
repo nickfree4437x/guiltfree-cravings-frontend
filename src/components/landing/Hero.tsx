@@ -4,7 +4,7 @@ function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-[#2f2f2f] sm:min-h-screen"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-[#2f2f2f] sm:min-h-screen md:py-10"
     >
       {/* ================= FONT IMPORT ================= */}
       <style>
@@ -96,7 +96,7 @@ function Hero() {
             Wholesome Goodness,
             <br />
             <span className="relative inline-block">
-              <span className="text-[#E7A1B0] bg-clip-text font-normal italic">
+              <span className="text-[#E7A1B0] bg-clip-text font-normal">
                 Irresistibly Delicious.
               </span>
             </span>

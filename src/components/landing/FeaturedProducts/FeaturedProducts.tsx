@@ -10,12 +10,19 @@ import ProductGrid from "./sections/ProductGrid";
 import ProductSkeletonGrid from "./sections/ProductSkeletonGrid";
 import ProductErrorState from "./sections/ProductErrorState";
 import ProductEmptyState from "./sections/ProductEmptyState";
-import GlassJarCollection from "./sections/GlassJarCollection";
+
+type PackagingType =
+  | "Plastic Box"
+  | "Cardboard Box"
+  | "Glass Jar";
 
 function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [activePackaging, setActivePackaging] =
+    useState<PackagingType>("Plastic Box");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -45,38 +52,47 @@ function FeaturedProducts() {
 
   /*
    * =========================================================
-   * GLASS JAR PRODUCTS
+   * PACKAGING PRODUCTS
    * =========================================================
    */
-  const glassJarProducts = products.filter(
+
+  const filteredProducts = products.filter(
     (product) =>
       product.variants.some(
         (variant) =>
-          variant.packaging === "Glass Jar"
+          variant.packaging === activePackaging
       ) &&
-      Boolean(product.glassJarImage)
+      (activePackaging === "Plastic Box"
+        ? true
+        : activePackaging === "Glass Jar"
+          ? Boolean(product.glassJarImage)
+          : Boolean(product.cardboardBoxImage))
   );
 
-  /*
-   * =========================================================
-   * CARDBOARD BOX PRODUCTS
-   * =========================================================
-   */
-  const cardboardBoxProducts = products.filter(
-    (product) =>
-      product.variants.some(
-        (variant) =>
-          variant.packaging === "Cardboard Box"
-      ) &&
-      Boolean(product.cardboardBoxImage)
-  );
+  const tabs: {
+    label: string;
+    value: PackagingType;
+  }[] = [
+    {
+      label: "Regular",
+      value: "Plastic Box",
+    },
+    {
+      label: "Cardboard Boxes",
+      value: "Cardboard Box",
+    },
+    {
+      label: "Glass Jars",
+      value: "Glass Jar",
+    },
+  ];
 
   return (
     <section
       id="products"
       className="
         overflow-hidden
-        bg-[#FFFCF7]
+        bg-[#FFF9F5]
         px-5 py-6
         sm:px-8 sm:py-8
         lg:px-12
@@ -84,111 +100,120 @@ function FeaturedProducts() {
     >
       <div className="mx-auto w-full max-w-6xl">
 
-        {/* SECTION HEADER */}
+        {/* =====================================================
+            SECTION HEADER
+        ===================================================== */}
+
         <FeaturedProductsHeader />
 
-        {/* LOADING */}
+        {/* =====================================================
+            PACKAGING TABS
+        ===================================================== */}
+
+        {!loading && !error && products.length > 0 && (
+          <div className="mt-6 flex justify-center sm:mt-8">
+            <div
+              className="
+                inline-flex
+                max-w-full
+                items-center
+                gap-1
+                overflow-x-auto
+                rounded-md
+                border
+                border-[#EADBD0]
+                bg-white
+                p-1
+                shadow-sm
+                scrollbar-hide
+              "
+            >
+              {tabs.map((tab) => {
+                const isActive =
+                  activePackaging === tab.value;
+
+                return (
+                  <button
+                    key={tab.value}
+                    type="button"
+                    onClick={() =>
+                      setActivePackaging(tab.value)
+                    }
+                    className={`
+                      shrink-0
+                      rounded-md
+                      px-4
+                      py-1.5
+                      text-[12px]
+                      tracking-wide
+                      transition-all
+                      duration-300
+                      sm:px-6
+                      sm:py-2
+                      sm:text-[13px]
+                      ${
+                        isActive
+                          ? "bg-[#B5697A] text-white shadow-sm"
+                          : "text-[#6F6259] hover:bg-[#F8E8EC] hover:text-[#B5697A]"
+                      }
+                    `}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* =====================================================
+            LOADING
+        ===================================================== */}
+
         {loading && <ProductSkeletonGrid />}
 
-        {/* ERROR */}
+        {/* =====================================================
+            ERROR
+        ===================================================== */}
+
         {!loading && error && (
           <ProductErrorState message={error} />
         )}
 
         {/* =====================================================
-            MAIN PRODUCTS — PLASTIC BOX
+            SELECTED PACKAGING PRODUCTS
         ===================================================== */}
+
         {!loading &&
           !error &&
-          products.length > 0 && (
+          products.length > 0 &&
+          filteredProducts.length > 0 && (
             <ProductGrid
-              products={products}
-              packaging="Plastic Box"
+              products={filteredProducts}
+              packaging={activePackaging}
             />
           )}
 
-        {/* EMPTY */}
+        {/* =====================================================
+            EMPTY STATE
+        ===================================================== */}
+
+        {!loading &&
+          !error &&
+          products.length > 0 &&
+          filteredProducts.length === 0 && (
+            <ProductEmptyState />
+          )}
+
+        {/* =====================================================
+            NO PRODUCTS AT ALL
+        ===================================================== */}
+
         {!loading &&
           !error &&
           products.length === 0 && (
             <ProductEmptyState />
           )}
-
-        {/* =====================================================
-            CARDBOARD BOX COLLECTION
-        ===================================================== */}
-        {!loading &&
-          !error &&
-          cardboardBoxProducts.length > 0 && (
-            <section
-              className="
-                mt-12
-                border-t border-[#E8E1D8]
-                pt-8
-                sm:mt-14
-                sm:pt-16
-              "
-            >
-              {/* SECTION INTRO */}
-              <div
-                className="
-                  mx-auto max-w-3xl
-                  text-center
-                "
-              >
-                <h2
-                  className="
-                    mb-2
-                    text-[20px]
-                    font-semibold
-                    leading-snug
-                    tracking-wide
-                    text-[#C9788B]
-                    sm:text-[24px]
-                    md:whitespace-nowrap
-                    md:text-[28px]
-                  "
-                >
-                  Classic Cardboard Boxes
-                </h2>
-
-                <p
-                  className="
-                    mx-auto
-                    max-w-[580px]
-                    text-[12.5px]
-                    leading-relaxed
-                    tracking-wide
-                    text-[#2c2c2c]
-                    sm:text-[13.5px]
-                    md:text-[14px]
-                  "
-                >
-                  Thoughtfully packed in
-                  sturdy cardboard boxes,
-                  made for everyday goodness.
-                </p>
-              </div>
-
-              {/* CARDBOARD BOX PRODUCTS */}
-              <ProductGrid
-                products={cardboardBoxProducts}
-                packaging="Cardboard Box"
-              />
-            </section>
-          )}
-
-        {/* =====================================================
-            GLASS JAR COLLECTION — ALWAYS LAST
-        ===================================================== */}
-        {!loading &&
-          !error &&
-          glassJarProducts.length > 0 && (
-            <GlassJarCollection
-              products={glassJarProducts}
-            />
-          )}
-
       </div>
     </section>
   );
