@@ -145,7 +145,7 @@ npm install
 
 Create a .env file in the project root:
 
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=https://guiltfree-cravings-backend.onrender.com/api
 
 For production, replace the API URL with the deployed backend API URL.
 
@@ -170,7 +170,7 @@ VITE_API_URL	Base URL of the backend API
 
 Example:
 
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=https://guiltfree-cravings-backend.onrender.com/api
 🧭 Application Routes
 Customer Routes
 Route	Description
