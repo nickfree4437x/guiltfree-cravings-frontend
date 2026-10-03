@@ -31,56 +31,139 @@ function CheckoutCustomerForm({
   onChange,
 }: CheckoutCustomerFormProps) {
   return (
-    <section className="rounded-xl border border-[#eadfd3] bg-white p-6 shadow-sm sm:p-8">
-
+    <section className="w-full">
       {/* =====================================================
           HEADER
       ===================================================== */}
 
-      <div>
-        <h2 className="text-xl font-bold text-slate-900">
-          Customer Information
-        </h2>
+      <div className="">
+        <div className="flex items-start gap-3">
+          <div
+            className="
+              flex
+              h-9
+              w-9
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-[#F8E8EC]
+              text-[#B5697A]
+            "
+            aria-hidden="true"
+          >
+            <span className="text-sm font-semibold">
+              1
+            </span>
+          </div>
 
-        <p className="mt-1 text-sm font-[350] text-slate-500">
-          These details will be used for your
-          order.
-        </p>
+          <div>
+            <h2
+              className="
+                text-[17px]
+                font-semibold
+                tracking-[-0.01em]
+                text-[#2C2C2C]
+                sm:text-[18px]
+              "
+            >
+              Customer Information
+            </h2>
+
+            <p
+              className="
+                text-[11px]
+                leading-relaxed
+                text-slate-500
+                sm:text-xs
+              "
+            >
+              These details will be used for your
+              order.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* =====================================================
           VERIFIED USER
       ===================================================== */}
 
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-3">
-
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-700">
+      <div
+        className="
+          mt-4
+          flex
+          items-start
+          gap-3
+          rounded-xl
+          border
+          border-[#DCEFE5]
+          bg-[#F5FBF8]
+          p-3.5
+        "
+      >
+        <div
+          className="
+            flex
+            h-8
+            w-8
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            bg-[#E3F4EB]
+            text-sm
+            font-bold
+            text-[#3D8B63]
+          "
+        >
           ✓
         </div>
 
-        <div>
-          <p className="text-sm text-green-800">
+        <div className="min-w-0">
+          <p
+            className="
+              text-[12px]
+              text-[#367A58]
+              sm:text-[13px]
+            "
+          >
             Mobile number verified
           </p>
 
-          <p className="mt-1 text-xs leading-5 text-green-700">
+          <p
+            className="
+              text-[11px]
+              leading-5
+              text-[#5D987A]
+            "
+          >
             +91 {phone}
           </p>
         </div>
-
       </div>
 
       {/* =====================================================
           FORM FIELDS
       ===================================================== */}
 
-      <div className="mt-7 space-y-6">
-
+      <div className="mt-5 space-y-5">
         {/* ===================================================
             FULL NAME
         =================================================== */}
 
         <div>
+          <label
+            htmlFor="fullName"
+            className="
+              block
+              text-[12px]
+              text-[#3A3A3A]
+              sm:text-[13px]
+            "
+          >
+            Full name
+          </label>
 
           <input
             id="fullName"
@@ -95,15 +178,22 @@ function CheckoutCustomerForm({
             placeholder="Enter your full name"
             autoComplete="name"
             disabled={isSubmitting}
-            className={`mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-50 ${
+            className={`mt-2 h-11 w-full rounded-xl border bg-white px-3.5 text-[13px] text-[#2C2C2C] outline-none transition-all placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-50 ${
               errors.fullName
                 ? "border-red-400 focus:border-red-400 focus:ring-red-100"
-                : "border-[#d9c7b7] focus:border-[#8b542f] focus:ring-[#f3e4d3]"
+                : "border-[#E6D9DC] focus:border-[#B5697A] focus:ring-[#F8E8EC]"
             }`}
           />
 
           {errors.fullName && (
-            <p className="mt-2 text-xs text-red-600">
+            <p
+              className="
+                mt-1.5
+                text-[11px]
+                leading-5
+                text-red-600
+              "
+            >
               {errors.fullName}
             </p>
           )}
@@ -114,9 +204,19 @@ function CheckoutCustomerForm({
         =================================================== */}
 
         <div>
+          <label
+            htmlFor="phone"
+            className="
+              block
+              text-[12px]
+              text-[#3A3A3A]
+              sm:text-[13px]
+            "
+          >
+            Mobile number
+          </label>
 
           <div className="relative mt-2">
-
             <input
               id="phone"
               type="tel"
@@ -124,29 +224,61 @@ function CheckoutCustomerForm({
               readOnly
               aria-readonly="true"
               autoComplete="tel"
-              className="w-full cursor-not-allowed rounded-lg border border-[#d9c7b7] bg-slate-50 px-4 py-3 pr-12 text-sm text-slate-600 outline-none"
+              className="
+                h-11
+                w-full
+                cursor-not-allowed
+                rounded-xl
+                border
+                border-[#E6D9DC]
+                bg-[#FAF8F8]
+                px-3.5
+                pr-11
+                text-[13px]
+                text-slate-500
+                outline-none
+              "
             />
 
             <span
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-green-600"
+              className="
+                absolute
+                right-3.5
+                top-1/2
+                flex
+                h-5
+                w-5
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                bg-[#E3F4EB]
+                text-[10px]
+                text-[#3D8B63]
+              "
               aria-label="Verified"
             >
               ✓
             </span>
-
           </div>
-
-          <p className="mt-2 text-xs leading-5 text-slate-400">
-            This number was verified using OTP and
-            cannot be changed during checkout.
-          </p>
         </div>
 
         {/* ===================================================
             EMAIL
         =================================================== */}
 
-        <div>
+        <div className="">
+          <label
+            htmlFor="email"
+            className="
+              block
+              text-[12px]
+              text-[#3A3A3A]
+              sm:text-[13px]
+            "
+          >
+            Email address
+          </label>
 
           <input
             id="email"
@@ -161,20 +293,26 @@ function CheckoutCustomerForm({
             placeholder="Enter your email address"
             autoComplete="email"
             disabled={isSubmitting}
-            className={`mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-50 ${
+            className={`mt-2 h-11 w-full rounded-xl border bg-white px-3.5 text-[13px] text-[#2C2C2C] outline-none transition-all placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-50 ${
               errors.email
                 ? "border-red-400 focus:border-red-400 focus:ring-red-100"
-                : "border-[#d9c7b7] focus:border-[#8b542f] focus:ring-[#f3e4d3]"
+                : "border-[#E6D9DC] focus:border-[#B5697A] focus:ring-[#F8E8EC]"
             }`}
           />
 
           {errors.email && (
-            <p className="mt-2 text-xs text-red-600">
+            <p
+              className="
+                mt-1.5
+                text-[11px]
+                leading-5
+                text-red-600
+              "
+            >
               {errors.email}
             </p>
           )}
         </div>
-
       </div>
 
       {/* =====================================================
@@ -184,27 +322,28 @@ function CheckoutCustomerForm({
       {submitError && (
         <div
           role="alert"
-          className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4"
+          className="
+            mt-6
+            rounded-xl
+            border
+            border-red-200
+            bg-red-50
+            px-4
+            py-3
+          "
         >
-          <p className="text-sm leading-6 text-red-700">
+          <p
+            className="
+              text-[11px]
+              leading-5
+              text-red-700
+              sm:text-xs
+            "
+          >
             {submitError}
           </p>
         </div>
       )}
-
-      {/* =====================================================
-          INFORMATION NOTICE
-      ===================================================== */}
-
-      <div className="mt-6 rounded-lg bg-[#fffaf5] p-4">
-        <p className="text-[11px] md:text-[12px] font-[350] leading-5 text-slate-500">
-          Your verified mobile number will be
-          associated with your order. Your email
-          address will be used for order-related
-          communication.
-        </p>
-      </div>
-
     </section>
   );
 }

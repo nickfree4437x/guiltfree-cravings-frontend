@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+
 import {
   LayoutDashboard,
   Package,
@@ -9,6 +10,7 @@ import {
   Settings,
   LogOut,
   Gift,
+  MessageSquareText,
 } from "lucide-react";
 
 import { useAdminAuthStore } from "../../../store/adminAuthStore";
@@ -22,14 +24,18 @@ interface NavItem {
 function AdminSidebar() {
   const navigate = useNavigate();
 
-  const logout = useAdminAuthStore((state) => state.logout);
+  const logout = useAdminAuthStore(
+    (state) => state.logout
+  );
 
   const handleLogout = () => {
     logout();
-    navigate("/admin", { replace: true });
+
+    navigate("/admin", {
+      replace: true,
+    });
   };
 
-  // Navigation items with proper icons
   const navigationItems: NavItem[] = [
     {
       label: "Dashboard",
@@ -62,6 +68,11 @@ function AdminSidebar() {
       icon: <BarChart3 size={20} />,
     },
     {
+      label: "Reviews",
+      path: "/admin/reviews",
+      icon: <MessageSquareText size={20} />,
+    },
+    {
       label: "Offers",
       path: "/admin/offers",
       icon: <Gift size={20} />,
@@ -75,11 +86,16 @@ function AdminSidebar() {
 
   return (
     <aside className="hidden h-screen w-64 shrink-0 border-r border-[#eadfd3] bg-white lg:flex lg:flex-col">
-      {/* Brand Section - Simple */}
+      {/* =====================================================
+          BRAND
+      ===================================================== */}
+
       <div className="border-b border-[#eadfd3] px-6 py-5">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8b542f] text-white">
-            <span className="text-sm font-semibold">GC</span>
+            <span className="text-sm font-semibold">
+              GC
+            </span>
           </div>
 
           <div>
@@ -94,7 +110,10 @@ function AdminSidebar() {
         </div>
       </div>
 
-      {/* Navigation - Clean & Simple */}
+      {/* =====================================================
+          NAVIGATION
+      ===================================================== */}
+
       <nav className="flex-1 overflow-y-auto px-3 py-5">
         <div className="space-y-1">
           {navigationItems.map((item) => (
@@ -103,7 +122,7 @@ function AdminSidebar() {
               to={item.path}
               className={({ isActive }) =>
                 [
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-[450] transition-all duration-200 md:text-[14px]",
+                  "group flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-[450] transition-all duration-200 md:text-[14px]",
                   isActive
                     ? "bg-[#8b542f] text-white"
                     : "text-slate-600 hover:bg-[#f8eee4] hover:text-[#8b542f]",
@@ -113,17 +132,20 @@ function AdminSidebar() {
               {({ isActive }) => (
                 <>
                   <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200 ${
+                    className={[
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
                       isActive
                         ? "text-white"
-                        : "text-slate-400 group-hover:text-[#8b542f]"
-                    }`}
+                        : "text-slate-400 group-hover:text-[#8b542f]",
+                    ].join(" ")}
                     aria-hidden="true"
                   >
                     {item.icon}
                   </span>
 
-                  <span className="flex-1">{item.label}</span>
+                  <span className="flex-1">
+                    {item.label}
+                  </span>
                 </>
               )}
             </NavLink>
@@ -131,14 +153,21 @@ function AdminSidebar() {
         </div>
       </nav>
 
-      {/* Admin Account - Bottom */}
+      {/* =====================================================
+          LOGOUT
+      ===================================================== */}
+
       <div className="mt-auto border-t border-[#eadfd3] bg-white p-4">
         <button
           type="button"
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-lg bg-red-50 px-3 py-2 text-[12px] text-red-500 transition-all duration-200 hover:bg-red-100 hover:text-red-600 md:text-[14.5px]"
         >
-          <LogOut size={16} className="shrink-0" />
+          <LogOut
+            size={16}
+            className="shrink-0"
+          />
+
           <span>Logout</span>
         </button>
       </div>

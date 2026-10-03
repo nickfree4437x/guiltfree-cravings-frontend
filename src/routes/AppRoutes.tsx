@@ -4,9 +4,7 @@ import MainLayout from "../layout/MainLayout";
 
 import HomePage from "../pages/home-page/HomePage";
 import ProductDetailsPage from "../pages/product-details/ProductDetailsPage";
-import CartPage from "../pages/cart-page/CartPage";
 import CheckoutPage from "../pages/check-out/CheckoutPage";
-import ReviewOrderPage from "../pages/review-order/ReviewOrderPage";
 import PaymentPage from "../pages/payment-page/PaymentPage";
 import OrderSuccessPage from "../pages/order-success/OrderSuccessPage";
 import MyOrdersPage from "../pages/my-orders/MyOrdersPage";
@@ -14,6 +12,9 @@ import ProfilePage from "../pages/profile/ProfilePage";
 import LoginPage from "../pages/login/LoginPage";
 import WishlistPage from "../pages/wishlist/WishlistPage";
 import CouponsPage from "../pages/coupons/CouponsPage";
+
+// Account
+import AccountPage from "../components/landing/navbar/AccountPage";
 
 const AppRoutes = () => {
   return (
@@ -36,22 +37,10 @@ const AppRoutes = () => {
           element={<ProductDetailsPage />}
         />
 
-        {/* Cart */}
-        <Route
-          path="/cart"
-          element={<CartPage />}
-        />
-
         {/* Checkout */}
         <Route
           path="/checkout"
           element={<CheckoutPage />}
-        />
-
-        {/* Review Order */}
-        <Route
-          path="/checkout/review"
-          element={<ReviewOrderPage />}
         />
 
         {/* Payment */}
@@ -70,6 +59,12 @@ const AppRoutes = () => {
         <Route
           path="/orders"
           element={<MyOrdersPage />}
+        />
+
+        {/* Account */}
+        <Route
+          path="/account"
+          element={<AccountPage />}
         />
 
         {/* Profile */}

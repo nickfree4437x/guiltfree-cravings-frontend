@@ -21,19 +21,17 @@ function FeaturedProductsHeader() {
       <p
         className="
           mx-auto
-          max-w-[650px]
+          max-w-[600px]
           text-[12.5px]
           leading-relaxed
           tracking-wide
-          text-[#2C2C2C]
+          text-gray-600
           sm:text-[13.5px]
           md:text-[14px]
         "
       >
-        Thoughtfully crafted homemade
-        laddoos with comforting flavours,
-        wholesome ingredients, and a
-        whole lot of love.
+        Homemade laddoos, wholesome ingredients, comforting 
+        flavours, and lots of love ❤️
       </p>
     </div>
   );

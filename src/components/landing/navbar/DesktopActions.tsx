@@ -22,6 +22,9 @@ interface DesktopActionsProps {
   onAccountClose: () => void;
   onLogout: () => void;
 
+  // 👇 ADD THIS
+  onCartClick: () => void;
+
   variant?: "dark" | "light";
 }
 
@@ -35,6 +38,7 @@ function DesktopActions({
   onAccountToggle,
   onAccountClose,
   onLogout,
+  onCartClick, // 👈 ADD THIS
   variant = "dark",
 }: DesktopActionsProps) {
   const isLight = variant === "light";
@@ -85,8 +89,9 @@ function DesktopActions({
           CART
       ======================================================= */}
 
-      <Link
-        to="/cart"
+      <button
+        type="button"
+        onClick={onCartClick}
         className={`
           group
           relative
@@ -156,7 +161,7 @@ function DesktopActions({
             {cartItemCount > 99 ? "99+" : cartItemCount}
           </span>
         )}
-      </Link>
+      </button>
     </div>
   );
 }

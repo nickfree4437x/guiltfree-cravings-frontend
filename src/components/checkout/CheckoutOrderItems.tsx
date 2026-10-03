@@ -37,14 +37,12 @@ function CheckoutOrderItems({
    */
 
   return (
-    <div className="mt-6">
-
+    <div className="w-full">
       {/* =====================================================
           ORDER ITEMS
       ===================================================== */}
 
       <div className="space-y-4">
-
         {visibleItems.map((item) => {
           const itemSubtotal =
             item.variant.price *
@@ -56,22 +54,39 @@ function CheckoutOrderItems({
           return (
             <div
               key={`${item.product.id}-${item.variant.id}`}
-              className="flex gap-3"
+              className="
+                flex
+                min-w-0
+                gap-3
+                rounded-xl
+                border
+                border-[#F3E7E9]
+                bg-[#FFFDFD]
+                p-3
+              "
             >
-
               {/* =================================================
                   PRODUCT IMAGE
               ================================================= */}
 
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-[#f5eadf]">
-
+              <div
+                className="
+                  h-16
+                  w-16
+                  shrink-0
+                  overflow-hidden
+                "
+              >
                 <img
                   src={item.product.image}
                   alt={item.product.name}
                   loading="lazy"
-                  className="h-full w-full object-cover"
+                  className="
+                    h-full
+                    w-full
+                    object-cover
+                  "
                 />
-
               </div>
 
               {/* =================================================
@@ -79,57 +94,132 @@ function CheckoutOrderItems({
               ================================================= */}
 
               <div className="min-w-0 flex-1">
-
-                <p className="line-clamp-2 text-[12] md:text-[14] font-semibold text-slate-800">
+                <p
+                  className="
+                    line-clamp-2
+                    text-[12px]
+                    font-semibold
+                    leading-5
+                    text-[#2C2C2C]
+                    md:text-[13px]
+                  "
+                >
                   {item.product.name}
                 </p>
 
-                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                <div
+                  className="
+                    mt-1
+                    flex
+                    flex-wrap
+                    items-center
+                    gap-x-1.5
+                    gap-y-0.5
+                  "
+                >
+                  {/* Variant */}
 
-                  <span className="text-xs text-[#8b542f]">
+                  <span
+                    className="
+                      text-[10px]
+                      text-[#B5697A]
+                      sm:text-[11px]
+                    "
+                  >
                     {variantLabel}
                   </span>
 
                   <span
-                    className="text-xs text-slate-300"
+                    className="
+                      text-[10px]
+                      text-[#E6D5D9]
+                      sm:text-[11px]
+                    "
                     aria-hidden="true"
                   >
                     •
                   </span>
 
-                  <span className="text-xs font-[350] capitalize text-slate-400">
+                  {/* Packaging */}
+
+                  <span
+                    className="
+                      text-[10px]
+                      font-normal
+                      capitalize
+                      text-slate-400
+                      sm:text-[11px]
+                    "
+                  >
                     {item.variant.packaging}
                   </span>
 
                   <span
-                    className="text-xs text-slate-300"
+                    className="
+                      text-[10px]
+                      text-[#E6D5D9]
+                      sm:text-[11px]
+                    "
                     aria-hidden="true"
                   >
                     •
                   </span>
 
-                  <span className="text-xs font-[350] text-slate-500">
+                  {/* Quantity */}
+
+                  <span
+                    className="
+                      text-[10px]
+                      text-slate-500
+                      sm:text-[11px]
+                    "
+                  >
                     Qty: {item.quantity}
                   </span>
-
                 </div>
-
               </div>
 
               {/* =================================================
                   ITEM SUBTOTAL
               ================================================= */}
 
-              <p className="shrink-0 text-sm font-semibold text-slate-900">
+              <p
+                className="
+                  shrink-0
+                  self-start
+                  pt-0.5
+                  text-[12px]
+                  text-[#2C2C2C]
+                  sm:text-[13px]
+                "
+              >
                 ₹{itemSubtotal}
               </p>
-
             </div>
           );
         })}
-
       </div>
 
+      {/* =====================================================
+          HIDDEN ITEMS INDICATOR
+      ===================================================== */}
+
+      {safeItems.length > INITIAL_VISIBLE_ITEMS && (
+        <p
+          className="
+            mt-3
+            text-center
+            text-[10px]
+            text-[#B5697A]
+          "
+        >
+          + {safeItems.length - INITIAL_VISIBLE_ITEMS} more{" "}
+          {safeItems.length - INITIAL_VISIBLE_ITEMS === 1
+            ? "item"
+            : "items"}{" "}
+          in your cart
+        </p>
+      )}
     </div>
   );
 }

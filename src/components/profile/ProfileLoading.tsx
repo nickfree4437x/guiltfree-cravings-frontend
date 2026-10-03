@@ -17,7 +17,7 @@ function ProfileLoading() {
             aria-hidden="true"
           />
 
-          <p className="mt-5 text-sm font-medium text-slate-600">
+          <p className="mt-5 text-sm text-slate-600">
             Loading your profile...
           </p>
 

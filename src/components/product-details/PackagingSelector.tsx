@@ -13,17 +13,26 @@ function PackagingSelector({
     return null;
   }
 
-  return (
-    <div>
-      <div className="flex items-center justify-between">
-        <h2 className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8B7A6C]">
-          Packaging
-        </h2>
+  const getPackagingLabel = (
+    packaging: string
+  ) => {
+    switch (packaging) {
+      case "Plastic Box":
+        return "Regular";
 
-        <span className="text-[11px] text-[#8B7A6C]">
-          {selectedPackaging}
-        </span>
-      </div>
+      case "Cardboard Box":
+        return "Cardboard Boxes";
+
+      case "Glass Jar":
+        return "Glass Jars";
+
+      default:
+        return packaging;
+    }
+  };
+
+  return (
+    <div className="mt-3">
 
       <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
         {packagings.map((packaging) => {
@@ -34,9 +43,7 @@ function PackagingSelector({
             <button
               key={packaging}
               type="button"
-              onClick={() =>
-                onChange(packaging)
-              }
+              onClick={() => onChange(packaging)}
               aria-pressed={isSelected}
               className={`
                 rounded-xl
@@ -48,14 +55,14 @@ function PackagingSelector({
                 duration-200
                 ${
                   isSelected
-                    ? "border-[#B5697A] bg-[#FBEEF1] shadow-sm"
+                    ? "border-[#B5697A] bg-[#FBEEF1]"
                     : "border-[#EFE3D2] bg-white hover:border-[#D9C7B8] hover:bg-[#FFFCF7]"
                 }
               `}
             >
               <span
                 className={`
-                  block text-xs font-medium
+                  block text-xs
                   ${
                     isSelected
                       ? "text-[#B5697A]"
@@ -63,7 +70,7 @@ function PackagingSelector({
                   }
                 `}
               >
-                {packaging}
+                {getPackagingLabel(packaging)}
               </span>
 
               <span className="mt-1 block text-[10px] text-[#8B7A6C]">

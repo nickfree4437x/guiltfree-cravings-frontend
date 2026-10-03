@@ -12,85 +12,175 @@ function OtpAuthHeader({
   const isPhoneStep = step === "phone";
 
   return (
-    <div>
-      {/* =====================================================
-          EYEBROW
-      ====================================================== */}
-
+    <header className="w-full">
       {/* =====================================================
           TITLE
       ====================================================== */}
 
-      <h1 className="mt-3 text-[16px] md:text-[22px] font-semibold tracking-tight text-[#2c2c2c]">
-        {isPhoneStep
-          ? "Log in for the best experience"
-          : "Log in for the best experience"}
+      <h1
+        className="
+          text-[17px]
+          font-semibold
+          leading-[1.25]
+          tracking-[-0.025em]
+          text-[#2C2C2C]
+          sm:text-[22px]
+        "
+      >
+        Welcome Back, Let’s Get Started
       </h1>
 
-      <p className="mt-2 max-w-md text-[12px] sm:text-[15px] font-[350] leading-6 text-slate-500">
+      {/* =====================================================
+          DESCRIPTION
+      ====================================================== */}
+
+      <p
+        className="
+          mt-0
+          max-w-[400px]
+          text-[12px]
+          leading-relaxed
+          text-gray-500
+          sm:text-[13px]
+          text-center
+        "
+      >
         {isPhoneStep
-          ? "Enter your mobile number to continue to your account."
-          : "Enter the 4-digit code sent to your mobile number."}
-      </p>
+        ? "Enter your mobile number to continue."
+        : "Enter the 4-digit code sent to you."}
+        </p>
 
       {/* =====================================================
           STEP INDICATOR
       ====================================================== */}
 
-      <div className="mt-5 flex items-center gap-3">
+      <div
+        className="
+          mt-5
+          flex
+          items-center
+          justify-center
+        "
+      >
+        {/* ===================================================
+            STEP 1 — MOBILE
+        ==================================================== */}
+
         <div className="flex items-center gap-2">
           <span
-            className={`flex h-6 w-6 items-center justify-center rounded-full text-xs ${
-              isPhoneStep
-                ? "bg-[#8b542f] text-white"
-                : "bg-[#f3e4d3] text-[#8b542f]"
-            }`}
+            className={`
+              flex
+              h-7 w-7
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              text-[10px]
+              transition-all
+              duration-200
+
+              ${
+                isPhoneStep
+                  ? "bg-[#B5697A] text-white"
+                  : "bg-[#F8EDEF] text-[#B5697A]"
+              }
+            `}
           >
-            {isPhoneStep ? "1" : <Check size={14} />}
+            {isPhoneStep ? (
+              "1"
+            ) : (
+              <Check
+                size={13}
+                strokeWidth={2.4}
+              />
+            )}
           </span>
 
           <span
-            className={`text-[12px] sm:text-[13px] font-[350] ${
-              isPhoneStep
-                ? "text-slate-900"
-                : "text-slate-400"
-            }`}
+            className={`
+              text-[11px]
+              transition-colors
+              duration-200
+              sm:text-[12px]
+
+              ${
+                isPhoneStep
+                  ? "text-[#3A3335]"
+                  : "text-[#A69B9E]"
+              }
+            `}
           >
             Mobile
           </span>
         </div>
 
+        {/* ===================================================
+            CONNECTOR
+        ==================================================== */}
+
         <div
-          className={`h-px w-10 transition-colors ${
-            isPhoneStep
-              ? "bg-[#eadfd3]"
-              : "bg-[#8b542f]"
-          }`}
+          className={`
+            mx-3
+            h-px
+            w-9
+            transition-colors
+            duration-200
+            sm:w-11
+
+            ${
+              isPhoneStep
+                ? "bg-[#E9DDE0]"
+                : "bg-[#D7AAB5]"
+            }
+          `}
         />
+
+        {/* ===================================================
+            STEP 2 — VERIFICATION
+        ==================================================== */}
 
         <div className="flex items-center gap-2">
           <span
-            className={`flex h-6 w-6 items-center justify-center rounded-full text-xs ${
-              !isPhoneStep
-                ? "bg-[#8b542f] text-white"
-                : "bg-[#f3e4d3] text-[#8b542f]"
-            }`}
+            className={`
+              flex
+              h-7 w-7
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              text-[10px]
+              transition-all
+              duration-200
+
+              ${
+                !isPhoneStep
+                  ? "bg-[#B5697A] text-white"
+                  : "bg-[#F8EDEF] text-[#B5697A]"
+              }
+            `}
           >
             2
           </span>
 
           <span
-            className={`text-[12px] sm:text-[13px] font-[350] ${
-              !isPhoneStep
-                ? "text-slate-900"
-                : "text-slate-400"
-            }`}
+            className={`
+              text-[11px]
+              transition-colors
+              duration-200
+              sm:text-[12px]
+
+              ${
+                !isPhoneStep
+                  ? "text-[#3A3335]"
+                  : "text-[#A69B9E]"
+              }
+            `}
           >
             Verification
           </span>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
 

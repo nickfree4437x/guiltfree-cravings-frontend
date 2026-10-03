@@ -1,14 +1,23 @@
 function ProfileHeader() {
   return (
-    <div className="text-center mt-16">
-      <h1 className="mt-1.5 text-[18px] md:text-[26px] font-bold tracking-tight text-slate-900">
-        My Profile
+    <div className="mx-auto mt-4 max-w-2xl text-center sm:mt-6">
+
+      {/* Heading */}
+      <h1
+        className="
+          text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide text-[#C9788B] mb-2 leading-snug md:whitespace-nowrap
+        "
+      >
+        My Account
       </h1>
 
-      <p className="mx-auto mt-2 max-w-2xl text-[12px] md:text-[14.5px] font-[350] leading-5 text-slate-500 sm:text-[15px]">
-        Keep your personal information up to date and manage
-        the details connected to your account for a smoother
-        and more convenient shopping experience.
+      {/* Description */}
+      <p
+        className="
+          text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-600
+        "
+      >
+        Manage your details for a smoother and easier shopping experience.
       </p>
     </div>
   );

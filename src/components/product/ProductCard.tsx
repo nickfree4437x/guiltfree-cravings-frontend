@@ -42,34 +42,96 @@ function ProductCard({
     (state) => state.addPendingCartItem
   );
 
+  const openCartDrawer = useCartStore(
+    (state) => state.openCartDrawer
+  );
+
   /* =========================================================
      ADD TO CART
   ========================================================= */
+
   const handleAddToCart = (
     variant: ProductVariant,
     quantity: number
   ) => {
-    if (quantity <= 0) return;
-
-    if (isAuthenticated) {
-      addToCart(product, variant, quantity);
+    if (quantity <= 0) {
       return;
     }
 
-    setPendingCartItem(product, variant, quantity);
+    /* -------------------------------------------------------
+       LOGGED IN
+       Add item directly → open cart drawer
+    ------------------------------------------------------- */
+
+    if (isAuthenticated) {
+      console.log(
+        "1. ADD TO CART CLICKED",
+        {
+          product: product.name,
+          variant: variant.id,
+          quantity,
+        }
+      );
+
+      addToCart(
+        product,
+        variant,
+        quantity
+      );
+
+      console.log(
+        "2. BEFORE OPEN DRAWER"
+      );
+
+      openCartDrawer();
+
+      console.log(
+        "3. AFTER OPEN DRAWER"
+      );
+
+      return;
+    }
+
+    /* -------------------------------------------------------
+       LOGGED OUT
+       Store pending item → open OTP authentication
+    ------------------------------------------------------- */
+
+    setPendingCartItem(
+      product,
+      variant,
+      quantity
+    );
+
     setIsAuthModalOpen(true);
   };
 
   /* =========================================================
      AUTH SUCCESS
   ========================================================= */
+
   const handleAuthSuccess = () => {
+    /*
+      Add the product that was waiting
+      for authentication.
+    */
     addPendingCartItem();
+
+    /*
+      Close authentication modal
+      and open cart drawer.
+    */
     setIsAuthModalOpen(false);
+
+    openCartDrawer();
   };
 
   return (
     <>
+      {/* =====================================================
+          PRODUCT CARD
+      ===================================================== */}
+
       <article
         className="
           group relative flex h-full flex-col
@@ -81,6 +143,7 @@ function ProductCard({
         {/* =====================================================
             IMAGE AREA
         ===================================================== */}
+
         <Link
           to={`/products/${product.id}`}
           aria-label={`View details for ${product.name}`}
@@ -95,6 +158,7 @@ function ProductCard({
           "
         >
           {/* Soft image-area glow */}
+
           <div
             aria-hidden="true"
             className="
@@ -129,6 +193,7 @@ function ProductCard({
           />
 
           {/* Product image */}
+
           <div className="relative z-10">
             <ProductCardImage
               product={product}
@@ -137,6 +202,7 @@ function ProductCard({
           </div>
 
           {/* Subtle bottom fade */}
+
           <div
             aria-hidden="true"
             className="
@@ -151,6 +217,7 @@ function ProductCard({
           />
 
           {/* Hover image treatment */}
+
           <div
             aria-hidden="true"
             className="
@@ -173,7 +240,16 @@ function ProductCard({
         {/* =====================================================
             PRODUCT CONTENT
         ===================================================== */}
-        <div className="relative flex flex-1 flex-col bg-white">
+
+        <div
+          className="
+            relative
+            flex
+            flex-1
+            flex-col
+            bg-white
+          "
+        >
           <ProductCardContent
             product={product}
             packaging={packaging}
@@ -185,10 +261,15 @@ function ProductCard({
       {/* =====================================================
           AUTH MODAL
       ===================================================== */}
+
       {isAuthModalOpen && (
         <OtpAuthModal
-          onClose={() => setIsAuthModalOpen(false)}
-          onSuccess={handleAuthSuccess}
+          onClose={() =>
+            setIsAuthModalOpen(false)
+          }
+          onSuccess={
+            handleAuthSuccess
+          }
         />
       )}
     </>

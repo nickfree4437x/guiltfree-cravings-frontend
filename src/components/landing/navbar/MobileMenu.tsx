@@ -1,11 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
   X,
+  Heart,
 } from "lucide-react";
 
 import type { NavLink } from "./DesktopNavigation";
+import { scrollToSection } from "../../../utils/smoothScroll";
+
+import logo from "../../../assets/logo.jpg";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -26,177 +31,347 @@ function MobileMenu({
   navLinks,
   onClose,
 }: MobileMenuProps) {
-  const [, setIsAccountExpanded] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("");
 
-  /* =========================================================
-     BODY SCROLL LOCK
-  ========================================================= */
-  useEffect(() => {
-    if (isOpen) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [isOpen]);
-
-  /* =========================================================
-     ESCAPE KEY
-  ========================================================= */
+  /* ---------------------------------------------
+   * BODY SCROLL LOCK
+   * --------------------------------------------- */
   useEffect(() => {
     if (!isOpen) return;
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
     };
+  }, [isOpen]);
+
+  /* ---------------------------------------------
+   * ESC KEY
+   * --------------------------------------------- */
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
+  /* ---------------------------------------------
+   * ACTIVE SECTION TRACKING (hash links)
+   * --------------------------------------------- */
+  useEffect(() => {
+    if (!isOpen) return;
 
-  const handleClose = () => {
-    setIsAccountExpanded(false);
-    onClose();
+    const hashLinks = navLinks.filter((l) => l.to.startsWith("#"));
+    if (hashLinks.length === 0) return;
+
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 120;
+      let current = "";
+
+      for (const link of hashLinks) {
+        const id = link.to.substring(1);
+        const el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollPos) {
+          current = link.to;
+        }
+      }
+
+      setActiveSection(current);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isOpen, navLinks]);
+
+  /* ---------------------------------------------
+   * CLOSE
+   * --------------------------------------------- */
+  const handleClose = () => onClose();
+
+  /* ---------------------------------------------
+   * NAVIGATION
+   * --------------------------------------------- */
+  const handleNavigation = (
+    event: MouseEvent<HTMLAnchorElement>,
+    to: string,
+  ) => {
+    if (!to.startsWith("#")) {
+      handleClose();
+      return;
+    }
+
+    event.preventDefault();
+    const targetId = to.substring(1);
+    handleClose();
+
+    window.setTimeout(() => {
+      scrollToSection(targetId);
+    }, 180);
   };
 
-  // const handleLogout = () => {
-  //   setIsAccountExpanded(false);
-  //   onLogout();
-  // };
+  const handleOverlayClick = () => handleClose();
 
+  const handleDrawerClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+  };
 
+  /* ---------------------------------------------
+   * RENDER
+   * --------------------------------------------- */
   return (
     <>
-      <style>
-        {`
-          @keyframes overlayFade {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-          }
-          @keyframes menuFade {
-            from { opacity: 0; transform: translateX(-8px); }
-            to   { opacity: 1; transform: translateX(0); }
-          }
-          .overlay-fade { animation: overlayFade 0.25s ease both; }
-          .menu-fade   { animation: menuFade 0.4s ease both; }
-
-          @media (prefers-reduced-motion: reduce) {
-            .overlay-fade, .menu-fade { animation: none !important; }
-          }
-        `}
-      </style>
-
       {/* ================= OVERLAY ================= */}
       <div
-        onClick={handleClose}
-        aria-hidden="true"
         className={`
-          fixed inset-0 z-[70] lg:hidden
-          bg-black/40 backdrop-blur-[2px]
+          fixed inset-0 z-[999]
+          bg-gradient-to-br from-[#2B1A1F]/40 via-black/20 to-[#2B1A1F]/40
+          backdrop-blur-[4px]
           transition-opacity duration-300
-          ${isOpen ? "overlay-fade opacity-100" : "pointer-events-none opacity-0"}
+          ${
+            isOpen
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-0"
+          }
         `}
+        onClick={handleOverlayClick}
+        aria-hidden={!isOpen}
       />
 
       {/* ================= DRAWER ================= */}
-      <aside
+      <div
         role="dialog"
         aria-modal="true"
-        aria-label="Mobile navigation menu"
+        aria-label="Mobile navigation"
         className={`
-          fixed left-0 top-0 bottom-0 z-[80] lg:hidden
-          flex w-[85%] max-w-[340px] flex-col
+          fixed right-0 top-0 z-[1000]
+          flex h-full w-[88%] max-w-[400px] flex-col
           bg-white
-          shadow-sm
-          transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          shadow-[-24px_0_70px_rgba(90,50,60,0.22)]
+          transition-transform duration-300 ease-out
+          ${isOpen ? "translate-x-0" : "translate-x-full"}
         `}
-        style={{
-          paddingTop: "env(safe-area-inset-top)",
-          paddingBottom: "env(safe-area-inset-bottom)",
-        }}
+        onClick={handleDrawerClick}
+        aria-hidden={!isOpen}
       >
-        {/* ================= HEADER ================= */}
-        <header className="flex items-center justify-between border-b border-[#EFE3D2] px-4 py-4">
+        {/* ---------- HEADER ---------- */}
+        <div
+          className="
+            relative flex h-[84px] shrink-0 items-center justify-between
+            border-b border-[#F0E4D4]
+            bg-gradient-to-r from-white via-[#FFFDFB] to-[#FFFCF7]
+            px-5
+          "
+        >
 
-          {/* Brand */}
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#B5697A] to-[#8F4F60] text-[13px] text-white shadow-sm">
-              G
-            </span>
+          <div className="relative flex items-center gap-3.5">
+            {/* 👇 LOGO — circular for JPG */}
+            <div className="relative shrink-0">
+              <img
+                src={logo}
+                alt="GuiltFree Cravings"
+                className="
+                  h-10 w-10 rounded-full object-cover
+                "
+                draggable={false}
+              />
+            </div>
+
             <div>
-              <p className="text-[14px] font-semibold leading-tight text-[#1F4A2E]">
+              <p
+                className="
+                  text-[10px]
+                  tracking-[0.2em] text-[#A59485]
+                "
+              >
                 GuiltFree
               </p>
-              <p className="text-[9.5px] uppercase tracking-wide text-[#B5697A]">
-                Laddoo Ordering
-              </p>
+              <h2
+                className="
+                  -mt-0.5 text-[16px] font-bold leading-tight
+                  tracking-tight text-[#B5697A]
+                "
+              >
+                Cravings
+              </h2>
             </div>
           </div>
 
-          {/* Close */}
           <button
             type="button"
             onClick={handleClose}
             aria-label="Close menu"
             className="
-              flex h-8 w-8 items-center justify-center rounded-full
-              border border-[#EFE3D2] bg-white text-[#5A4A3F]
+              group relative flex h-8 w-8 items-center justify-center
+              rounded-full border border-[#EFE3D2]
+              bg-[#FFFCF7] text-[#6F6259]
               transition-all duration-200
-              hover:border-[#B5697A]/40 hover:bg-[#FBEEF1] hover:text-[#B5697A]
+              hover:border-[#B5697A] hover:bg-[#FBEEF1]
+              hover:text-[#B5697A]
+              active:scale-95
             "
           >
-            <X className="h-4 w-4" strokeWidth={2.2} />
+            <X
+              size={16}
+              strokeWidth={1.9}
+              className="transition-transform duration-300 group-hover:rotate-90"
+            />
           </button>
-        </header>
+        </div>
 
-        {/* ================= SCROLLABLE CONTENT ================= */}
-        <div className="flex-1 overflow-y-auto px-3 py-3">
-
-          {/* ============ MAIN NAV ============ */}
-          <nav aria-label="Mobile navigation" className="space-y-1">
+        {/* ---------- SCROLLABLE BODY ---------- */}
+        <div
+          className="
+            mobile-menu-scroll
+            flex-1 overflow-y-auto px-4 py-3
+          "
+        >
+          {/* NAV LINKS */}
+          <div className="space-y-1">
             {navLinks.map((link, index) => {
-              // const Icon = getNavIcon(link.label);
+              const isActive = activeSection === link.to;
 
               return (
                 <Link
                   key={link.label}
                   to={link.to}
-                  onClick={handleClose}
-                  style={{ animationDelay: `${index * 0.04}s` }}
-                  className="
-                    menu-fade group flex items-center gap-2 rounded-xl
-                    px-3 py-2.5
-                    text-[13.5px] text-[#3A2D24]
-                    transition-all duration-200 hover:underline
-                    hover:bg-white hover:text-[#B5697A] hover:shadow-sm
-                  "
+                  onClick={(event) => handleNavigation(event, link.to)}
+                  style={{
+                    transitionDelay: isOpen
+                      ? `${80 + index * 40}ms`
+                      : "0ms",
+                  }}
+                  className={`
+                    group relative flex min-h-[45px] items-center justify-between
+                    overflow-hidden rounded-xl border px-4
+                    text-[14px]
+                    transition-all duration-300
+                    ${
+                      isActive
+                        ? "border-[#F0D7DD] bg-[#FBEEF1] text-[#B5697A] shadow-sm"
+                        : "border-transparent text-[#5E5148] hover:border-[#F0D7DD] hover:bg-[#FBEEF1] hover:text-[#B5697A]"
+                    }
+                    ${
+                      isOpen
+                        ? "translate-x-0 opacity-100"
+                        : "translate-x-3 opacity-0"
+                    }
+                  `}
                 >
 
-                  <span className="flex-1">{link.label}</span>
+                  <span className="flex items-center gap-2.5 pl-1">
+                    {link.label}
+                  </span>
 
                   <ArrowRight
+                    size={16}
+                    strokeWidth={1.9}
                     className="
-                      h-3.5 w-3.5 text-[#3A2D24]
+                      -translate-x-1 opacity-0
                       transition-all duration-200
-                      group-hover:translate-x-0.5 group-hover:text-[#B5697A]
+                      group-hover:translate-x-0 group-hover:opacity-100
                     "
-                    strokeWidth={2.2}
                   />
                 </Link>
               );
             })}
-          </nav>
+          </div>
 
+          {/* ---------- USER INFO (if logged in) ---------- */}
+          {/* {user && (
+            <div
+              className="
+                mt-6 rounded-2xl border border-[#F0E4D4]
+                bg-white p-4
+                shadow-[0_2px_12px_rgba(181,105,122,0.06)]
+              "
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="
+                    flex h-11 w-11 shrink-0 items-center justify-center
+                    rounded-full
+                    bg-gradient-to-br from-[#FBEEF1] to-[#F5DCE2]
+                    text-[15px] font-bold text-[#B5697A]
+                    ring-1 ring-[#F0D7DD]
+                  "
+                >
+                  {userInitial}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-[#4A3F38]">
+                    {displayName}
+                  </p>
+                  {user.email && (
+                    <p className="mt-0.5 truncate text-[11px] text-[#8B7A6C]">
+                      {user.email}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )} */}
         </div>
 
-        {/* ================= FOOTER ================= */}
-        <footer className="border-t border-[#EFE3D2] px-4 py-2.5 text-center">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[#A89887]">
-            GuiltFree Cravings
-          </p>
-        </footer>
-      </aside>
+        {/* ---------- FOOTER (tagline only) ---------- */}
+        <div
+          className="
+            shrink-0 border-t border-[#F0E4D4]
+            bg-gradient-to-t from-white to-[#FFFCF7]
+            px-5 py-4
+          "
+        >
+          <div
+            className="
+              relative overflow-hidden
+              rounded-xl border border-[#F0E4D4]
+              bg-gradient-to-br from-[#FBEEF1] to-[#FDF6F8]
+              px-4 py-3 text-center
+            "
+          >
+            {/* tiny heart accent */}
+            <Heart
+              size={12}
+              strokeWidth={2}
+              className="
+                mx-auto mb-1 text-[#B5697A]
+                fill-[#B5697A]/20
+              "
+            />
+
+            <p className="text-xs text-[#B5697A]">
+              Wholesome goodness,
+            </p>
+            <p className="mt-0 text-[10px] leading-5 text-[#8B7A6C]">
+              made with love for every craving.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------- CUSTOM SCROLLBAR (drawer only) ---------- */}
+      <style>{`
+        .mobile-menu-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .mobile-menu-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .mobile-menu-scroll::-webkit-scrollbar-thumb {
+          background: #F0D7DD;
+          border-radius: 999px;
+        }
+        .mobile-menu-scroll::-webkit-scrollbar-thumb:hover {
+          background: #E5C2CB;
+        }
+      `}</style>
     </>
   );
 }

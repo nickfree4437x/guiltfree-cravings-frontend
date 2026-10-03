@@ -47,7 +47,6 @@ function AccountDropdown({
           pr-3
           transition-all
           duration-200
-          active:scale-[0.98]
           ${
             isLight
               ? "border-white/25 bg-white/10 text-white backdrop-blur-sm hover:border-white/40 hover:bg-white/15"
@@ -71,29 +70,11 @@ function AccountDropdown({
             text-[11px]
             font-semibold
             text-white
-            shadow-sm
           "
         >
           {userInitial}
         </span>
 
-        {/* ACCOUNT LABEL */}
-
-        <span
-          className={`
-            hidden
-            text-[12px]
-            font-medium
-            xl:block
-            ${
-              isLight
-                ? "text-white/90"
-                : "text-slate-700"
-            }
-          `}
-        >
-          Account
-        </span>
 
         {/* CHEVRON */}
 
@@ -132,10 +113,10 @@ function AccountDropdown({
             z-50
             w-56
             overflow-hidden
-            rounded-2xl
+            rounded-xl
             border
             p-2
-            shadow-[0_12px_35px_rgba(0,0,0,0.10)]
+            shadow-md
             ${
               isLight
                 ? "border-white/20 bg-[#2f2f2f]/95 backdrop-blur-xl"
@@ -157,9 +138,8 @@ function AccountDropdown({
               gap-3
               rounded-xl
               px-3
-              py-2.5
+              py-2
               text-[12px]
-              font-medium
               transition-all
               duration-200
               ${
@@ -173,8 +153,8 @@ function AccountDropdown({
             <span
               className={`
                 flex
-                h-7
-                w-7
+                h-6
+                w-6
                 shrink-0
                 items-center
                 justify-center
@@ -218,9 +198,8 @@ function AccountDropdown({
               gap-3
               rounded-xl
               px-3
-              py-2.5
+              py-2
               text-[12px]
-              font-medium
               transition-all
               duration-200
               ${
@@ -234,8 +213,8 @@ function AccountDropdown({
             <span
               className={`
                 flex
-                h-7
-                w-7
+                h-6
+                w-6
                 shrink-0
                 items-center
                 justify-center
@@ -270,7 +249,7 @@ function AccountDropdown({
               WISHLIST
           ================================================= */}
 
-          <Link
+          {/* <Link
             to="/wishlist"
             onClick={onClose}
             className={`
@@ -279,7 +258,7 @@ function AccountDropdown({
               gap-3
               rounded-xl
               px-3
-              py-2.5
+              py-2
               text-[12px]
               font-medium
               transition-all
@@ -325,7 +304,7 @@ function AccountDropdown({
             </span>
 
             <span>Wishlist</span>
-          </Link>
+          </Link> */}
 
           {/* =================================================
               COUPONS
@@ -340,9 +319,8 @@ function AccountDropdown({
               gap-3
               rounded-xl
               px-3
-              py-2.5
+              py-2
               text-[12px]
-              font-medium
               transition-all
               duration-200
               ${
@@ -356,8 +334,8 @@ function AccountDropdown({
             <span
               className={`
                 flex
-                h-7
-                w-7
+                h-6
+                w-6
                 shrink-0
                 items-center
                 justify-center
@@ -424,16 +402,15 @@ function AccountDropdown({
               gap-3
               rounded-xl
               px-3
-              py-2.5
+              py-2
               text-left
               text-[12px]
-              font-medium
               transition-all
               duration-200
               ${
                 isLight
                   ? "text-red-300 hover:bg-red-500/10"
-                  : "text-red-500 hover:bg-red-50"
+                  : "text-red-500 bg-red-50 hover:bg-red-100"
               }
             `}
             role="menuitem"
@@ -441,8 +418,8 @@ function AccountDropdown({
             <span
               className={`
                 flex
-                h-7
-                w-7
+                h-6
+                w-6
                 shrink-0
                 items-center
                 justify-center

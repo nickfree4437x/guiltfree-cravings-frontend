@@ -16,18 +16,15 @@ function ProductQuantitySelector({
 }: ProductQuantitySelectorProps) {
   return (
     <div>
-      <h2 className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8B7A6C]">
-        Quantity
-      </h2>
 
       <div
         className="
-          mt-3
+          mt-0
           inline-flex
-          h-11
+          h-8
           items-center
           overflow-hidden
-          rounded-xl
+          rounded-2xl
           border
           border-[#EFE3D2]
           bg-white
@@ -43,7 +40,7 @@ function ProductQuantitySelector({
           disabled={quantity <= 1}
           aria-label="Decrease quantity"
           className="
-            flex h-full w-11
+            flex h-full w-8
             items-center justify-center
             text-[#8B7A6C]
             transition-colors
@@ -54,7 +51,7 @@ function ProductQuantitySelector({
           "
         >
           <Minus
-            className="h-4 w-4"
+            className="h-3 w-3"
             strokeWidth={2.2}
           />
         </button>
@@ -66,7 +63,7 @@ function ProductQuantitySelector({
             items-center justify-center
             border-x
             border-[#EFE3D2]
-            text-sm
+            text-[10px] md:text-[12px]
             font-semibold
             text-[#1F4A2E]
           "
@@ -81,7 +78,7 @@ function ProductQuantitySelector({
           }
           aria-label="Increase quantity"
           className="
-            flex h-full w-11
+            flex h-full w-8
             items-center justify-center
             text-[#8B7A6C]
             transition-colors
@@ -90,7 +87,7 @@ function ProductQuantitySelector({
           "
         >
           <Plus
-            className="h-4 w-4"
+            className="h-3 w-3"
             strokeWidth={2.2}
           />
         </button>

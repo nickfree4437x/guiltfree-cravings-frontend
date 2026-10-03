@@ -15,7 +15,7 @@ function NavbarLogo({
 
   return (
     <Link
-      to="/"
+      to="/#home"
       onClick={onClick}
       className="flex shrink-0 items-center gap-2"
       aria-label="GuiltFree Cravings Home"

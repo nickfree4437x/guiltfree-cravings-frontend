@@ -32,10 +32,9 @@ const INSTAGRAM_URL = "#";
 
 /*
  * =========================================================
- * ANNOUNCEMENT BAR HEIGHT
+ * NAVBAR
  * =========================================================
  */
-// const ANNOUNCEMENT_HEIGHT = 38;
 
 function Navbar({
   isHomePage: _isHomePage,
@@ -84,6 +83,10 @@ function Navbar({
     (state) => state.items
   );
 
+  const openCartDrawer = useCartStore(
+    (state) => state.openCartDrawer
+  );
+
   const cartItemCount = items.reduce(
     (total, item) =>
       total + item.quantity,
@@ -112,15 +115,6 @@ function Navbar({
    * =========================================================
    * ANNOUNCEMENT BAR SCROLL BEHAVIOUR
    * =========================================================
-   *
-   * At top:
-   * Announcement bar is visible.
-   *
-   * On scroll:
-   * Announcement bar collapses.
-   *
-   * Navbar naturally moves to top: 0.
-   * =========================================================
    */
 
   useEffect(() => {
@@ -135,7 +129,9 @@ function Navbar({
     window.addEventListener(
       "scroll",
       handleScroll,
-      { passive: true }
+      {
+        passive: true,
+      }
     );
 
     return () => {
@@ -164,6 +160,27 @@ function Navbar({
 
   const closeAccount = () => {
     setIsAccountOpen(false);
+  };
+
+  /*
+   * =========================================================
+   * OPEN CART DRAWER
+   * =========================================================
+   *
+   * Navbar ke desktop aur mobile dono cart buttons
+   * isi handler ko use karenge.
+   *
+   * IMPORTANT:
+   * /cart par navigate nahi karega.
+   * Existing global CartDrawer open karega.
+   * =========================================================
+   */
+
+  const handleCartClick = () => {
+    setIsMenuOpen(false);
+    setIsAccountOpen(false);
+
+    openCartDrawer();
   };
 
   /*
@@ -248,26 +265,70 @@ function Navbar({
    * =========================================================
    */
 
+  /*
+   * =========================================================
+   * DESKTOP NAVIGATION LINKS
+   * =========================================================
+   *
+   * Keep /#section format because DesktopNavigation already
+   * handles these links correctly.
+   * =========================================================
+   */
+
   const navLinks: NavLink[] = [
     {
       label: "Home",
-      to: "/",
-    },
-    {
-      label: "Products",
-      to: "/#products",
+      to: "/#home",
     },
     {
       label: "About Us",
       to: "/#about",
     },
     {
+      label: "Products",
+      to: "/#products",
+    },
+    {
       label: "Reviews",
-      to: "/#why-choose",
+      to: "/#reviews",
     },
     {
       label: "Our Promise",
       to: "/#our-promise",
+    },
+  ];
+
+  /*
+   * =========================================================
+   * MOBILE NAVIGATION LINKS
+   * =========================================================
+   *
+   * MobileMenu handles #section links with its own smooth
+   * scroll handler, so keep the mobile links as plain hashes.
+   * This leaves the already-working desktop navigation alone.
+   * =========================================================
+   */
+
+  const mobileNavLinks: NavLink[] = [
+    {
+      label: "Home",
+      to: "#home",
+    },
+    {
+      label: "About Us",
+      to: "#about",
+    },
+    {
+      label: "Products",
+      to: "#products",
+    },
+    {
+      label: "Reviews",
+      to: "#reviews",
+    },
+    {
+      label: "Our Promise",
+      to: "#our-promise",
     },
   ];
 
@@ -404,9 +465,7 @@ function Navbar({
               lg:px-8
             "
           >
-            {/* ===============================================
-                LEFT — DELIVERY MESSAGE
-            =============================================== */}
+            {/* LEFT — DELIVERY MESSAGE */}
 
             <div
               className="
@@ -445,9 +504,7 @@ function Navbar({
               </span>
             </div>
 
-            {/* ===============================================
-                RIGHT — WHATSAPP + INSTAGRAM
-            =============================================== */}
+            {/* RIGHT — WHATSAPP + FSSAI */}
 
             <div
               className="
@@ -458,8 +515,6 @@ function Navbar({
                 sm:flex
               "
             >
-              {/* WhatsApp */}
-
               <a
                 href="#"
                 className="
@@ -467,12 +522,12 @@ function Navbar({
                   items-center
                   gap-1
                   whitespace-nowrap
+                  text-[10px]
                   transition-opacity
                   duration-200
                   hover:opacity-80
-                  text-[10px]
-                sm:text-[11px]
-                lg:text-[12px]
+                  sm:text-[11px]
+                  lg:text-[12px]
                 "
               >
                 <svg
@@ -481,7 +536,7 @@ function Navbar({
                   className="h-3.5 w-3.5"
                   aria-hidden="true"
                 >
-                  <path d="M20.52 3.48A11.87 11.87 0 0 0 12.05 0C5.5 0 .17 5.33.17 11.88c0 2.09.55 4.13 1.59 5.93L.07 24l6.35-1.66a11.87 11.87 0 0 0 5.63 1.43h.01c6.55 0 11.88-5.33 11.88-11.88 0-3.17-1.23-6.15-3.42-8.41ZM12.06 21.8h-.01a9.88 9.88 0 0 1-5.04-1.38l-.36-.21-3.77.99 1.01-3.67-.23-.38a9.86 9.86 0 0 1-1.51-5.27C2.15 6.44 6.59 2 12.05 2c2.65 0 5.14 1.03 7.02 2.91a9.87 9.87 0 0 1 2.91 7.03c0 5.46-4.44 9.9-9.92 9.9Zm5.43-7.41c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.67-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.21 5.08 4.5.71.31 1.26.49 1.69.63.71.23 1.35.2 1.86.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z" />
+                  <path d="M20.52 3.48A11.87 11.87 0 0 0 12.05 0C5.5.17 0 5.33.17 11.88c0 2.09.55 4.13 1.59 5.93L.07 24l6.35-1.66a11.87 11.87 0 0 0 5.63 1.43h.01c6.55 0 11.88-5.33 11.88-11.88 0-3.17-1.23-6.15-3.42-8.41ZM12.06 21.8h-.01a9.88 9.88 0 0 1-5.04-1.38l-.36-.21-3.77.99 1.01-3.67-.23-.38a9.86 9.86 0 0 1-1.51-5.27C2.15 6.44 6.59 2 12.05 2c2.65 0 5.14 1.03 7.02 2.91a9.87 9.87 0 0 1 2.91 7.03c0 5.46-4.44 9.9-9.92 9.9Zm5.43-7.41c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.67-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.21 5.08 4.5.71.31 1.26.49 1.69.63.71.23 1.35.2 1.86.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z" />
                 </svg>
 
                 <span>
@@ -491,6 +546,7 @@ function Navbar({
                 <span>
                   +91-9667760119
                 </span>
+
                 <span
                   className="
                     h-4
@@ -499,12 +555,11 @@ function Navbar({
                   "
                   aria-hidden="true"
                 />
+
                 <span>
                   FSSAI Lic :- #10823999000142
                 </span>
-
               </a>
-
             </div>
           </div>
         </div>
@@ -519,7 +574,7 @@ function Navbar({
             border-b
             border-slate-100
             bg-white/95
-            shadow-[0_4px_24px_rgba(0,0,0,0.06)]
+            shadow-sm
             backdrop-blur-xl
           "
           style={
@@ -528,10 +583,6 @@ function Navbar({
             } as CSSProperties
           }
         >
-          {/* =================================================
-              NAVBAR CONTAINER
-          ================================================= */}
-
           <div
             className="
               mx-auto
@@ -542,10 +593,6 @@ function Navbar({
               lg:px-8
             "
           >
-            {/* ===============================================
-                MAIN NAVBAR
-            =============================================== */}
-
             <div
               className="
                 flex
@@ -632,25 +679,19 @@ function Navbar({
 
                 <DesktopActions
                   cartItemCount={cartItemCount}
-                  isAuthenticated={
-                    isAuthenticated
-                  }
+                  isAuthenticated={isAuthenticated}
                   user={user}
                   displayName={displayName}
                   userInitial={userInitial}
-                  isAccountOpen={
-                    isAccountOpen
-                  }
+                  isAccountOpen={isAccountOpen}
                   onAccountToggle={() =>
                     setIsAccountOpen(
-                      (current) =>
-                        !current
+                      (current) => !current
                     )
                   }
-                  onAccountClose={
-                    closeAccount
-                  }
+                  onAccountClose={closeAccount}
                   onLogout={handleLogout}
+                  onCartClick={handleCartClick}
                   variant={navbarVariant}
                 />
               </div>
@@ -704,9 +745,7 @@ function Navbar({
 
                 <button
                   type="button"
-                  onClick={() =>
-                    navigate("/cart")
-                  }
+                  onClick={handleCartClick}
                   className="
                     relative
                     flex
@@ -723,7 +762,6 @@ function Navbar({
                     duration-200
                     hover:border-[#B5697A]/30
                     hover:text-[#B5697A]
-                    active:scale-95
                   "
                   aria-label={`Shopping cart with ${cartItemCount} items`}
                 >
@@ -757,7 +795,6 @@ function Navbar({
                         bg-[#B5697A]
                         px-1
                         text-[8px]
-                        font-bold
                         leading-none
                         text-white
                         shadow-sm
@@ -781,7 +818,7 @@ function Navbar({
 
       <MobileMenu
         isOpen={isMenuOpen}
-        navLinks={navLinks}
+        navLinks={mobileNavLinks}
         user={user}
         displayName={displayName}
         userInitial={userInitial}

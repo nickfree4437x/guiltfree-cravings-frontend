@@ -13,6 +13,7 @@ import AdminPaymentsPage from "../pages/admin/payments/AdminPaymentsPage";
 import AdminAnalyticsPage from "../pages/admin/analytics/AdminAnalyticsPage";
 import AdminOffers from "../pages/admin/offers/AdminOffersPage";
 import AdminSettingsPage from "../pages/admin/settings/AdminSettingsPage";
+import AdminReviewsPage from "../pages/admin/reviews/AdminReviewsPage";
 
 import AdminLayout from "../pages/admin/layout/AdminLayout";
 
@@ -59,6 +60,11 @@ function AdminRoutes() {
           <Route
             path="products"
             element={<AdminProductsPage />}
+          />
+
+          <Route
+            path="/reviews"
+            element={<AdminReviewsPage />}
           />
 
           {/* =================================================

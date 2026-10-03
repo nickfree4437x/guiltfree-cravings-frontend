@@ -18,7 +18,25 @@ interface PendingCartItem {
 }
 
 interface CartState {
+  /* =========================================================
+     CART DATA
+  ========================================================= */
+
   items: CartItem[];
+
+  /* =========================================================
+     CART DRAWER
+  ========================================================= */
+
+  isCartDrawerOpen: boolean;
+
+  openCartDrawer: () => void;
+
+  closeCartDrawer: () => void;
+
+  /* =========================================================
+     CART ACTIONS
+  ========================================================= */
 
   addToCart: (
     product: Product,
@@ -40,7 +58,12 @@ interface CartState {
   clearCart: () => void;
 
   getCartItemCount: () => number;
+
   getCartTotal: () => number;
+
+  /* =========================================================
+     PENDING CART
+  ========================================================= */
 
   setPendingCartItem: (
     product: Product,
@@ -59,7 +82,8 @@ interface CartState {
    CART STORAGE
 ========================================================= */
 
-const CART_STORAGE_KEY = "guiltfree_cart";
+const CART_STORAGE_KEY =
+  "guiltfree_cart";
 
 const PENDING_CART_STORAGE_KEY =
   "guiltfree_pending_cart_item";
@@ -71,15 +95,18 @@ const PENDING_CART_STORAGE_KEY =
 const getStoredCart = (): CartItem[] => {
   try {
     const storedCart =
-      localStorage.getItem(CART_STORAGE_KEY);
+      localStorage.getItem(
+        CART_STORAGE_KEY
+      );
 
     if (!storedCart) {
       return [];
     }
 
-    const parsedCart = JSON.parse(
-      storedCart
-    ) as CartItem[];
+    const parsedCart =
+      JSON.parse(
+        storedCart
+      ) as CartItem[];
 
     if (!Array.isArray(parsedCart)) {
       return [];
@@ -225,6 +252,32 @@ export const useCartStore =
       ===================================================== */
 
       items: storedCart,
+
+      /* =====================================================
+         CART DRAWER STATE
+      ===================================================== */
+
+      isCartDrawerOpen: false,
+
+      /* =====================================================
+         OPEN CART DRAWER
+      ===================================================== */
+
+      openCartDrawer: () => {
+        set({
+          isCartDrawerOpen: true,
+        });
+      },
+
+      /* =====================================================
+         CLOSE CART DRAWER
+      ===================================================== */
+
+      closeCartDrawer: () => {
+        set({
+          isCartDrawerOpen: false,
+        });
+      },
 
       /* =====================================================
          ADD TO CART

@@ -1,5 +1,3 @@
-
-
 interface OtpPhoneStepProps {
   phone: string;
   loading: boolean;
@@ -19,30 +17,71 @@ function OtpPhoneStep({
   onSendOtp,
   onKeyDown,
 }: OtpPhoneStepProps) {
-  const isValidPhone = /^[6-9]\d{9}$/.test(phone);
+  const isValidPhone =
+    /^[6-9]\d{9}$/.test(phone);
 
   return (
-    <div className="mt-8">
+    <div className="w-full">
       {/* =====================================================
           PHONE FIELD
       ====================================================== */}
 
       <div
-        className={`mt-2 flex h-[46px] overflow-hidden rounded-md border bg-white transition-all ${
-          phone.length > 0 && isValidPhone
-            ? "border-[#8b542f] ring-[#8b542f]/10"
-            : "border-[#d9c9bb] focus-within:border-[#8b542f] focus-within:ring-[#8b542f]/10"
-        }`}
-      >
-        {/* COUNTRY */}
+        className={`
+          flex
+          h-[45px]
+          w-full
+          overflow-hidden
+          rounded-xl
+          border
+          bg-white
+          transition-all
+          duration-200
 
-        <div className="flex items-center border-r border-[#eadfd3] px-4">
-          <span className="text-[12px] font-[350] text-[#2c2c2c] md:text-[14px]">
+          ${
+            phone.length > 0 && isValidPhone
+              ? "border-[#D4AAB4] bg-[#FFFBFC]"
+              : "border-[#E8DCDF] focus-within:border-[#B5697A] focus-within:ring-[#B5697A]/10"
+          }
+
+          ${
+            loading
+              ? "opacity-70"
+              : ""
+          }
+        `}
+      >
+        {/* =================================================
+            COUNTRY CODE
+        ================================================== */}
+
+        <div
+          className="
+            flex
+            shrink-0
+            items-center
+            border-r border-[#EDE1E4]
+            bg-[#FFFBFC]
+            px-3.5
+            sm:px-4
+          "
+        >
+          <span
+            className="
+              text-[12px]
+              font-semibold
+              tracking-[-0.01em]
+              text-[#3A3335]
+              sm:text-[13px]
+            "
+          >
             +91
           </span>
         </div>
 
-        {/* INPUT */}
+        {/* =================================================
+            PHONE INPUT
+        ================================================== */}
 
         <input
           id="auth-phone"
@@ -54,10 +93,23 @@ function OtpPhoneStep({
             onPhoneChange(event.target.value)
           }
           onKeyDown={onKeyDown}
-          placeholder="Phone Number"
+          placeholder="Enter mobile number"
           maxLength={10}
           disabled={loading}
-          className="min-w-0 flex-1 bg-transparent px-4 text-base text-[#2c2c2c] outline-none placeholder:text-[14px] placeholder:font-normal placeholder:text-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
+          className="
+            min-w-0
+            flex-1
+            bg-transparent
+            px-3.5
+            text-[13px]
+            text-[#2C2C2C]
+            outline-none
+            placeholder:font-normal
+            placeholder:text-[#A69B9E]
+            disabled:cursor-not-allowed
+            sm:px-4
+            sm:text-[14px]
+          "
           aria-label="Phone Number"
         />
       </div>
@@ -69,20 +121,45 @@ function OtpPhoneStep({
       {error && (
         <div
           role="alert"
-          className="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2"
+          className="
+            mt-2
+            rounded-[10px]
+            border
+            border-[#F2D9DD]
+            bg-[#FFF7F8]
+            px-3
+            py-2
+          "
         >
-          <p className="text-[10px] font-[350] leading-5 text-red-600 md:text-[12px]">
+          <p
+            className="
+              text-[10px]
+              leading-5
+              text-[#B75F70]
+              sm:text-[12px]
+            "
+          >
             {error}
           </p>
         </div>
       )}
 
       {/* =====================================================
-          HELPER
+          HELPER TEXT
       ====================================================== */}
 
-      <p className="mt-8 text-center text-[12px] font-[350] leading-5 text-slate-500 md:text-[13px]">
-        Your mobile number is safe with us and is used only for secure account verification and login.
+      <p
+        className="
+          mt-3
+          max-w-[390px]
+          text-[10px]
+          leading-relaxed
+          text-gray-600
+          sm:text-[11px]
+          text-center
+        "
+      >
+        Your number is safe and used only for secure login
       </p>
 
       {/* =====================================================
@@ -93,17 +170,54 @@ function OtpPhoneStep({
         type="button"
         onClick={onSendOtp}
         disabled={loading}
-        className="mt-28 flex h-10 w-full items-center justify-center gap-2 rounded-md bg-[#8b542f] px-5 text-sm text-white transition-all duration-200 hover:bg-[#744324] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#cdb9a8] disabled:shadow-none"
+        className="
+          mt-6
+          flex
+          h-[46px]
+          w-full
+          items-center
+          justify-center
+          gap-2
+          rounded-[12px]
+          bg-[#B5697A]
+          px-5
+          text-[13px]
+          text-white
+          transition-all
+          duration-200
+          hover:bg-[#A85D6F]
+          hover:shadow-sm
+          focus:outline-none
+          focus:ring-2
+          focus:ring-[#B5697A]/25
+          focus:ring-offset-2
+          disabled:cursor-not-allowed
+          disabled:bg-[#D7AEB8]
+          disabled:shadow-none
+        "
       >
         {loading ? (
           <>
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-            <span>Sending OTP...</span>
+            <span
+              className="
+                h-4
+                w-4
+                animate-spin
+                rounded-full
+                border-2
+                border-white/35
+                border-t-white
+              "
+            />
+
+            <span>
+              Sending OTP...
+            </span>
           </>
         ) : (
-          <>
-            <span>Continue</span>
-          </>
+          <span>
+            Continue
+          </span>
         )}
       </button>
     </div>

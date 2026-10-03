@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  PenLine,
+  // PenLine,
 } from "lucide-react";
 
 import ReviewModal from "./sections/ReviewModal";
@@ -130,9 +130,9 @@ function TestimonialsSection() {
     });
   };
 
-  const handleWriteReview = () => {
-    setIsReviewModalOpen(true);
-  };
+  // const handleWriteReview = () => {
+  //   setIsReviewModalOpen(true);
+  // };
 
   const handleReviewSubmit = (
     review: Testimonial
@@ -197,13 +197,14 @@ function TestimonialsSection() {
   return (
     <>
       <section
-        id="testimonials"
+        id="reviews"
         className="
           relative
           overflow-hidden
           bg-white
           py-10
           md:py-12
+          scroll-mt-12
         "
       >
         <div
@@ -284,7 +285,7 @@ function TestimonialsSection() {
               "
             >
               {/* Write a Review */}
-              <button
+              {/* <button
                 type="button"
                 onClick={handleWriteReview}
                 className="
@@ -324,7 +325,7 @@ function TestimonialsSection() {
                 />
 
                 Write a Review
-              </button>
+              </button> */}
 
               {/* Desktop arrows */}
               <div

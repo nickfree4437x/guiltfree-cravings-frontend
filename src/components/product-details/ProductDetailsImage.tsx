@@ -19,73 +19,23 @@ function ProductDetailsImage({
   return (
     <div
       className="
-        relative flex min-h-[360px]
+        relative flex min-h-[300px]
         items-center justify-center
         overflow-hidden
-        bg-gradient-to-br
-        from-[#FBF6EE]
-        via-[#F9F2E8]
-        to-[#FBF6EE]
-        p-8
-
-        sm:min-h-[500px]
+        bg-white
+        p-6
+        rounded-xl
+        sm:min-h-[400px]
         sm:p-12
 
         lg:sticky
         lg:top-[80px]
-        lg:min-h-[620px]
+        lg:min-h-[600px]
         lg:self-start
-        lg:p-14
+        lg:p-12
       "
     >
-      {/* Decorative background */}
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none
-          absolute -left-24 -top-24
-          h-72 w-72
-          rounded-full
-          bg-[#FBEEF1]/60
-          blur-[90px]
-        "
-      />
 
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none
-          absolute -bottom-28 -right-20
-          h-64 w-64
-          rounded-full
-          bg-[#F4E8D8]/60
-          blur-[80px]
-        "
-      />
-
-      {/* Packaging label */}
-      {packaging && (
-        <div
-          className="
-            absolute left-5 top-5 z-10
-            rounded-full
-            border border-[#EFE3D2]
-            bg-white/90
-            px-3.5 py-1.5
-            text-[10px]
-            font-medium
-            uppercase
-            tracking-[0.14em]
-            text-[#8B6F5C]
-            backdrop-blur-sm
-
-            sm:left-7
-            sm:top-7
-          "
-        >
-          {packaging}
-        </div>
-      )}
 
       {image ? (
         <img

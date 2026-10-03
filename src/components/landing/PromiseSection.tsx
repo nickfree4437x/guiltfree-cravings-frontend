@@ -48,7 +48,7 @@ function OurPromise() {
   return (
     <section
       id="our-promise"
-      className="relative overflow-hidden bg-white py-8 md:py-12"
+      className="relative overflow-hidden bg-white py-8 md:py-12 scroll-mt-12"
     >
       {/* Dotted pattern */}
       <div

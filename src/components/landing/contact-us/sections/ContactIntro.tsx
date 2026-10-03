@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 function ContactIntro() {
 
   return (
-    <section className="relative overflow-hidden bg-white px-6 pt-0 sm:px-10 sm:pt-2 md:px-14 md:pt-3 lg:px-20">
+    <section className="relative overflow-hidden bg-white px-6 pt-0 sm:px-10 sm:pt-2 md:px-14 md:pt-6 lg:px-20">
 
 
       {/* Floating sparkles (decoration) */}

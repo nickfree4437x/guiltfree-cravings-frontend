@@ -9,6 +9,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import toast from "react-hot-toast";
+
 import {
   getMyProfile,
   updateMyProfile,
@@ -101,9 +103,6 @@ function ProfilePage() {
     useState(false);
 
   const [pageError, setPageError] =
-    useState("");
-
-  const [successMessage, setSuccessMessage] =
     useState("");
 
   /*
@@ -222,7 +221,6 @@ function ProfilePage() {
       [field]: "",
     }));
 
-    setSuccessMessage("");
     setPageError("");
   };
 
@@ -301,7 +299,6 @@ function ProfilePage() {
   ) => {
     event.preventDefault();
 
-    setSuccessMessage("");
     setPageError("");
 
     const isValid =
@@ -355,8 +352,15 @@ function ProfilePage() {
         });
       }
 
-      setSuccessMessage(
-        "Profile updated successfully."
+      /*
+       * SUCCESS TOAST
+       */
+
+      toast.success(
+        "Profile updated successfully.",
+        {
+          duration: 3000,
+        }
       );
     } catch (error: any) {
       console.error(
@@ -420,36 +424,61 @@ function ProfilePage() {
    */
 
   return (
-    <main className="min-h-screen bg-[#fffaf5]">
+    <main className="min-h-screen bg-white">
 
-      <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 sm:pb-24 sm:pt-10 lg:px-8 lg:pt-12">
+      {/* ===================================================
+          PAGE CONTAINER
+      =================================================== */}
+
+      <div
+        className="
+          mx-auto
+          w-full
+          max-w-6xl
+          px-4
+          pb-24
+          pt-20
+          sm:px-6
+          sm:pb-28
+          sm:pt-24
+          lg:px-8
+          lg:pt-24
+        "
+      >
 
         {/* =================================================
-            HEADER
+            PAGE HEADER
         ================================================= */}
 
-        <div className="mb-8 text-center sm:mb-10 lg:mb-12">
+        <div className="mb-8 sm:mb-10">
           <ProfileHeader />
         </div>
 
         {/* =================================================
-            PROFILE CONTENT
+            MAIN PROFILE LAYOUT
         ================================================= */}
 
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8">
+        <div
+          className="
+            grid
+            items-start
+            gap-6
+            lg:grid-cols-[minmax(0,1fr)_290px]
+            lg:gap-7
+          "
+        >
 
           {/* =================================================
               PROFILE FORM
           ================================================= */}
 
           <section
-            className="min-w-0"
             aria-label="Profile information"
+            className="min-w-0"
           >
             <ProfileForm
               formData={formData}
               errors={errors}
-              successMessage={successMessage}
               pageError={pageError}
               isSaving={isSaving}
               phone={
@@ -467,9 +496,16 @@ function ProfilePage() {
           ================================================= */}
 
           <aside
-            className="min-w-0 space-y-4 lg:sticky lg:top-24"
             aria-label="Profile account information"
+            className="
+              min-w-0
+              space-y-4
+              lg:sticky
+              lg:top-24
+            "
           >
+
+            {/* Verification */}
             <ProfileVerificationCard
               phone={
                 profile?.phone ||
@@ -478,7 +514,9 @@ function ProfilePage() {
               }
             />
 
+            {/* Quick Links */}
             <ProfileQuickLinks />
+
           </aside>
 
         </div>

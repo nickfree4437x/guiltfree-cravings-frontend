@@ -14,7 +14,9 @@ interface CouponCardProps {
   coupon: Coupon;
 }
 
-function CouponCard({ coupon }: CouponCardProps) {
+function CouponCard({
+  coupon,
+}: CouponCardProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -37,23 +39,56 @@ function CouponCard({ coupon }: CouponCardProps) {
   };
 
   return (
-    <article className="relative overflow-hidden rounded-3xl border border-[#eadfd3] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-6">
+    <article
+      className="
+        group
+        relative
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#EFE3D2]
+        bg-white
+        p-5
+        shadow-sm
+        transition-all
+        duration-300
+        sm:p-6
+      "
+    >
 
       {/* =================================================
           COUPON TOP
       ================================================= */}
 
-      <div className="flex items-start justify-between gap-4">
+      <div className="relative flex items-start justify-between gap-4">
 
-        {/* Discount */}
+        {/* Discount Icon */}
 
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f3e4d3]">
+        <div
+          className="
+            flex
+            h-10
+            w-10
+            shrink-0
+            items-center
+            justify-center
+            rounded-xl
+            bg-[#FBEEF1]
+            transition-colors
+            duration-200
+            group-hover:bg-[#F8E5EA]
+          "
+        >
           <svg
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.7"
-            className="h-7 w-7 text-[#8b542f]"
+            className="
+              h-5
+              w-5
+              text-[#B5697A]
+            "
             aria-hidden="true"
           >
             <path
@@ -70,23 +105,59 @@ function CouponCard({ coupon }: CouponCardProps) {
           </svg>
         </div>
 
-        {/* Discount Text */}
+        {/* Discount Badge */}
 
-        <span className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-bold text-green-700">
+        <span
+          className="
+            rounded-full
+            border
+            border-[#F1DDE2]
+            bg-[#FBEEF1]
+            px-3
+            py-1
+            text-[9px]
+            tracking-wide
+            text-[#B5697A]
+            sm:text-[10px]
+          "
+        >
           {coupon.discount}
         </span>
-
       </div>
 
       {/* =================================================
           TITLE
       ================================================= */}
 
-      <h2 className="mt-5 text-lg font-bold text-slate-900">
+      <h2
+        className="
+          relative
+          mt-3
+          text-[15px]
+          font-semibold
+          tracking-tight
+          text-[#3E3430]
+          sm:text-[17px]
+        "
+      >
         {coupon.title}
       </h2>
 
-      <p className="mt-2 text-sm leading-6 text-slate-500">
+      {/* =================================================
+          DESCRIPTION
+      ================================================= */}
+
+      <p
+        className="
+          relative
+          mt-0
+          text-[11.5px]
+          leading-5
+          text-[#8B7A6C]
+          sm:text-[12px]
+          sm:leading-6
+        "
+      >
         {coupon.description}
       </p>
 
@@ -94,26 +165,70 @@ function CouponCard({ coupon }: CouponCardProps) {
           COUPON CODE
       ================================================= */}
 
-      <div className="mt-5 flex items-center gap-2 rounded-2xl border border-dashed border-[#c9a98d] bg-[#fffaf5] p-2">
+      <div
+        className="
+          relative
+          mt-3
+          flex
+          items-center
+          gap-2
+          rounded-xl
+          border
+          border-[#E2C4CC]
+          bg-[#FFFCF7]
+          p-1.5
+          transition-colors
+          duration-200
+          group-hover:border-[#D9AAB5]
+        "
+      >
+        {/* Code */}
 
         <div className="min-w-0 flex-1 px-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">
-            Coupon Code
-          </p>
+         
 
-          <p className="mt-0.5 truncate text-sm font-bold tracking-wider text-[#8b542f]">
+          <p
+            className="
+              mt-0
+              truncate
+              text-[13px]
+              font-bold
+              tracking-wider
+              text-[#B5697A]
+              sm:text-sm
+            "
+          >
             {coupon.code}
           </p>
         </div>
 
+        {/* Copy Button */}
+
         <button
           type="button"
           onClick={handleCopy}
-          className="shrink-0 rounded-xl bg-[#8b542f] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
+          className="
+            shrink-0
+            rounded-xl
+            bg-[#B5697A]
+            px-4
+            py-2.5
+            text-[11px]
+            text-white
+            shadow-sm
+            transition-all
+            duration-200
+            hover:bg-[#A55F70]
+            hover:shadow-md
+            active:scale-[0.97]
+            focus:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-[#B5697A]/30
+            focus-visible:ring-offset-2
+          "
         >
           {copied ? "Copied!" : "Copy"}
         </button>
-
       </div>
 
       {/* =================================================
@@ -122,12 +237,28 @@ function CouponCard({ coupon }: CouponCardProps) {
 
       {(coupon.minimumOrder ||
         coupon.expiry) && (
-        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
-
+        <div
+          className="
+            relative
+            mt-4
+            flex
+            flex-wrap
+            gap-x-4
+            gap-y-2
+            text-[10px]
+            leading-5
+            text-[#A39890]
+            sm:text-[11px]
+          "
+        >
           {coupon.minimumOrder && (
             <span>
               Minimum order:{" "}
-              <strong className="font-semibold text-slate-500">
+              <strong
+                className="
+                  text-[#6F625A]
+                "
+              >
                 {coupon.minimumOrder}
               </strong>
             </span>
@@ -136,15 +267,36 @@ function CouponCard({ coupon }: CouponCardProps) {
           {coupon.expiry && (
             <span>
               Valid until:{" "}
-              <strong className="font-semibold text-slate-500">
+              <strong
+                className="
+                  text-[#6F625A]
+                "
+              >
                 {coupon.expiry}
               </strong>
             </span>
           )}
-
         </div>
       )}
 
+      {/* =================================================
+          BOTTOM ACCENT
+      ================================================= */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          bottom-0
+          left-0
+          h-[2px]
+          w-0
+          bg-[#B5697A]
+          transition-all
+          duration-300
+          group-hover:w-full
+        "
+      />
     </article>
   );
 }

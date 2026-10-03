@@ -13,6 +13,10 @@ import {
   updateMyProfile,
 } from "../../api/authApi";
 
+import {
+  createOrder,
+} from "../../api/orderApi";
+
 import CheckoutHeader from "../../components/checkout/CheckoutHeader";
 import CheckoutCustomerForm from "../../components/checkout/CheckoutCustomerForm";
 import CheckoutOrderSummary from "../../components/checkout/CheckoutOrderSummary";
@@ -95,15 +99,18 @@ function CheckoutPage() {
   ========================================================= */
 
   const [appliedOffer] =
-    useState<import("../../api/offerApi").ValidateOfferResponse | null>(null);
+    useState<
+      import("../../api/offerApi").ValidateOfferResponse | null
+    >(null);
 
-  const cartTotal = getCartTotal();
+  const cartTotal =
+    getCartTotal();
 
   const discountAmount =
     appliedOffer?.discountAmount ?? 0;
 
-  const finalAmount =
-    appliedOffer?.totalAmount ?? cartTotal;
+  // const finalAmount =
+  //   appliedOffer?.totalAmount ?? cartTotal;
 
   /* =========================================================
      AUTH GUARD
@@ -137,7 +144,8 @@ function CheckoutPage() {
         user.name ||
         "",
 
-      phone: user.phone,
+      phone:
+        user.phone,
 
       email:
         current.email ||
@@ -305,7 +313,7 @@ function CheckoutPage() {
 
     try {
       /* =====================================================
-         SAVE CUSTOMER PROFILE
+         1. SAVE CUSTOMER PROFILE
       ===================================================== */
 
       const updatedUser =
@@ -318,13 +326,13 @@ function CheckoutPage() {
         );
 
       /* =====================================================
-         UPDATE AUTH STORE
+         2. UPDATE AUTH STORE
       ===================================================== */
 
       updateUser(updatedUser);
 
       /* =====================================================
-         CUSTOMER DATA FOR REVIEW PAGE
+         3. CUSTOMER DATA
       ===================================================== */
 
       const customer = {
@@ -341,41 +349,132 @@ function CheckoutPage() {
       };
 
       /* =====================================================
-         GO TO REVIEW
+         4. PREPARE ORDER ITEMS
+      ===================================================== */
+
+      const orderItems =
+        items.map((item) => ({
+          productId:
+            item.product.id,
+
+          variantId:
+            item.variant.id,
+
+          quantity:
+            item.quantity,
+        }));
+
+      /* =====================================================
+         5. CREATE ORDER
+      ===================================================== */
+
+      /*
+       * IMPORTANT:
+       *
+       * The backend is responsible for:
+       *
+       * - validating products
+       * - validating variants
+       * - calculating prices
+       * - calculating subtotal
+       * - validating offers
+       * - calculating discount
+       * - calculating final amount
+       * - creating the order
+       *
+       * Frontend does NOT send cartTotal/finalAmount
+       * as the source of truth.
+       */
+
+      const createdOrder =
+        await createOrder({
+          customer: {
+            name: fullName,
+            email,
+          },
+
+          items:
+            orderItems,
+
+          /*
+           * No offer is currently applied in this page.
+           *
+           * When the offer flow is connected, this can
+           * be replaced with the actual offer code.
+           */
+          offerCode:
+            null,
+        });
+
+      /* =====================================================
+         6. SAFETY CHECK
+      ===================================================== */
+
+      if (!createdOrder) {
+        throw new Error(
+          "Order could not be created."
+        );
+      }
+
+      /* =====================================================
+         7. GO DIRECTLY TO PAYMENT
       ===================================================== */
 
       navigate(
-        "/checkout/review",
+        "/payment",
         {
           state: {
+            /*
+             * IMPORTANT:
+             *
+             * PaymentPage expects:
+             *
+             * location.state.order
+             *
+             * So we pass the backend-created order here.
+             */
+
+            order:
+              createdOrder,
+
             customer,
 
             /*
-             * Preserve the validated offer
-             * for the review page.
+             * Keep these values available for
+             * any existing payment flow/state usage.
              */
-            offer: appliedOffer?.offer ?? null,
+
+            offer:
+              appliedOffer?.offer ??
+              null,
 
             discountAmount,
 
-            subtotal: cartTotal,
+            subtotal:
+              createdOrder.subtotal,
 
-            finalAmount,
+            finalAmount:
+              createdOrder.totalAmount,
           },
         }
       );
     } catch (error: any) {
       console.error(
-        "Failed to update customer profile:",
+        "Checkout / order creation failed:",
         error
       );
+
+      /* -----------------------------------------------------
+         API ERROR
+      ----------------------------------------------------- */
 
       const apiMessage =
         error?.response?.data?.message;
 
       setSubmitError(
         apiMessage ||
-          "Unable to save your details. Please try again."
+          error?.message ||
+          "Unable to create your order. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -398,43 +497,93 @@ function CheckoutPage() {
   ========================================================= */
 
   return (
-    <main className="min-h-screen bg-[#fffaf5]">
+    <main
+      className="
+        min-h-screen
+        bg-white
+        text-[#2C2C2C]
+      "
+    >
 
-      <div className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 sm:px-6 sm:pb-24 sm:pt-10 lg:px-8 lg:pt-12">
-
+      <div
+        className="
+          relative
+          mx-auto
+          w-full
+          max-w-6xl
+          px-4
+          pb-20
+          pt-7
+          sm:px-6
+          sm:pb-24
+          sm:pt-9
+          lg:px-8
+          lg:pt-11
+        "
+      >
         {/* ===================================================
             CHECKOUT HEADER
         =================================================== */}
 
-        <div className="mb-8 sm:mb-10 lg:mb-12">
+        <div
+          className="
+            mb-7
+            sm:mb-9
+            lg:mb-10
+          "
+        >
           <CheckoutHeader />
         </div>
 
         {/* ===================================================
-            CHECKOUT CONTENT
+            MAIN CHECKOUT AREA
         =================================================== */}
 
         <form
           onSubmit={handleSubmit}
-          className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_380px]"
+          className="
+            grid
+            items-start
+            gap-5
+            lg:grid-cols-[minmax(0,1fr)_350px]
+            lg:gap-7
+            xl:grid-cols-[minmax(0,1fr)_370px]
+            xl:gap-8
+          "
         >
-
           {/* =================================================
               CUSTOMER INFORMATION
           ================================================= */}
 
           <section
-            className="min-w-0"
+            className="
+              min-w-0
+              overflow-hidden
+              rounded-xl
+              border
+              border-[#EEDFE2]
+              bg-white
+              shadow-sm
+            "
             aria-label="Customer information"
           >
-            <CheckoutCustomerForm
-              formData={formData}
-              errors={errors}
-              submitError={submitError}
-              isSubmitting={isSubmitting}
-              phone={user.phone}
-              onChange={handleChange}
-            />
+
+            <div
+              className="
+                p-5
+                sm:p-7
+                lg:p-8
+              "
+            >
+              <CheckoutCustomerForm
+                formData={formData}
+                errors={errors}
+                submitError={submitError}
+                isSubmitting={isSubmitting}
+                phone={user.phone}
+                onChange={handleChange}
+              />
+            </div>
           </section>
 
           {/* =================================================
@@ -442,18 +591,31 @@ function CheckoutPage() {
           ================================================= */}
 
           <aside
-            className="min-w-0 lg:sticky lg:top-24"
+            className="
+              min-w-0
+              lg:sticky
+              lg:top-6
+            "
             aria-label="Order summary"
           >
+            <div
+              className="
+                overflow-hidden
+                rounded-xl
+                border
+                border-[#EEDFE2]
+                bg-white
+                shadow-sm
+              "
+            >
 
-            <CheckoutOrderSummary
-              items={items}
-              cartTotal={cartTotal}
-              isSubmitting={isSubmitting}
-            />
-
+              <CheckoutOrderSummary
+                items={items}
+                cartTotal={cartTotal}
+                isSubmitting={isSubmitting}
+              />
+            </div>
           </aside>
-
         </form>
 
       </div>

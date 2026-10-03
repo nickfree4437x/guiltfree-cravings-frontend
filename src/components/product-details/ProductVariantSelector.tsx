@@ -24,12 +24,12 @@ function ProductVariantSelector({
   }
 
   return (
-    <div className="mt-6">
-      <h2 className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#8B7A6C]">
+    <div className="mt-5">
+      <h2 className="text-[11px] tracking-[0.12em] text-[#8B7A6C]">
         Select Size
       </h2>
 
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="mt-1 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {variants.map((variant) => {
           const isSelected =
             selectedVariant?.id === variant.id;

@@ -2,12 +2,46 @@ import logo from "../../assets/logo.jpg";
 import fssaiLogo from "../../assets/fssai-logo.png";
 
 function Footer() {
+  /*
+   * =========================================================
+   * SMOOTH SCROLL
+   * =========================================================
+   */
+
+  const handleSmoothScroll = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string
+  ) => {
+    event.preventDefault();
+
+    const target = document.getElementById(
+      targetId
+    );
+
+    if (!target) {
+      return;
+    }
+
+    target.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    window.history.replaceState(
+      null,
+      "",
+      `#${targetId}`
+    );
+  };
+
   return (
     <footer className="bg-[#824958] pb-[50px] text-white md:pb-0">
       <div className="mx-auto max-w-7xl px-6 py-14 sm:px-8 sm:py-16 lg:px-10 lg:py-[68px]">
+
         {/* =========================================================
             MAIN FOOTER
         ========================================================= */}
+
         <div
           className="
             grid
@@ -18,13 +52,18 @@ function Footer() {
             xl:gap-14
           "
         >
+
           {/* =====================================================
               BRAND
           ===================================================== */}
+
           <div>
             <a
               href="#home"
               aria-label="Guilt Free Cravings Home"
+              onClick={(event) =>
+                handleSmoothScroll(event, "home")
+              }
               className="group inline-flex items-center gap-3"
             >
               <div
@@ -51,13 +90,11 @@ function Footer() {
                     w-full
                     object-cover
                     transition-transform
-                    duration-500
-                    group-hover:scale-105
                   "
                 />
               </div>
 
-              <span className="text-[18px] md:text-[22px] font-semibold tracking-tight text-white">
+              <span className="text-[18px] font-semibold tracking-tight text-white md:text-[22px]">
                 GuiltFree Cravings
               </span>
             </a>
@@ -66,15 +103,18 @@ function Footer() {
               className="
                 mt-4
                 max-w-sm
+                text-justify
                 text-[13px]
                 leading-6
                 text-white/75
                 sm:text-sm
-                text-justify
               "
             >
-              Wholesome homemade laddoos, thoughtfully crafted with simple ingredients, traditional care, 
-              and a whole lot of love. From our kitchen to your home, every bite is made to bring you a little more goodness, comfort, and joy.
+              Wholesome homemade laddoos, thoughtfully
+              crafted with simple ingredients, traditional
+              care, and a whole lot of love. From our kitchen
+              to your home, every bite is made to bring you
+              a little more goodness, comfort, and joy.
             </p>
 
             {/* Brand accent */}
@@ -88,6 +128,7 @@ function Footer() {
           {/* =====================================================
               QUICK LINKS
           ===================================================== */}
+
           <div>
             <h3
               className="
@@ -102,24 +143,40 @@ function Footer() {
             </h3>
 
             <ul className="mt-6 space-y-3.5 text-[13px] text-white/75 sm:text-sm">
+
+              {/* HOME */}
               <li>
                 <a
                   href="#home"
+                  onClick={(event) =>
+                    handleSmoothScroll(
+                      event,
+                      "home"
+                    )
+                  }
                   className="
                     inline-flex
                     transition-all
                     duration-200
                     hover:translate-x-0.5
-                    hover:text-white hover:underline
+                    hover:text-white
+                    hover:underline
                   "
                 >
                   Home
                 </a>
               </li>
 
+              {/* ABOUT */}
               <li>
                 <a
                   href="#about"
+                  onClick={(event) =>
+                    handleSmoothScroll(
+                      event,
+                      "about"
+                    )
+                  }
                   className="
                     inline-flex
                     transition-all
@@ -133,9 +190,16 @@ function Footer() {
                 </a>
               </li>
 
+              {/* PRODUCTS */}
               <li>
                 <a
                   href="#products"
+                  onClick={(event) =>
+                    handleSmoothScroll(
+                      event,
+                      "products"
+                    )
+                  }
                   className="
                     inline-flex
                     transition-all
@@ -149,9 +213,16 @@ function Footer() {
                 </a>
               </li>
 
+              {/* REVIEWS */}
               <li>
                 <a
-                  href="#vision"
+                  href="#reviews"
+                  onClick={(event) =>
+                    handleSmoothScroll(
+                      event,
+                      "reviews"
+                    )
+                  }
                   className="
                     inline-flex
                     transition-all
@@ -170,6 +241,7 @@ function Footer() {
           {/* =====================================================
               CUSTOMER CARE
           ===================================================== */}
+
           <div>
             <h3
               className="
@@ -184,9 +256,17 @@ function Footer() {
             </h3>
 
             <ul className="mt-6 space-y-3.5 text-[13px] text-white/75 sm:text-sm">
+
+              {/* CONTACT */}
               <li>
                 <a
                   href="#contact"
+                  onClick={(event) =>
+                    handleSmoothScroll(
+                      event,
+                      "contact"
+                    )
+                  }
                   className="
                     inline-flex
                     transition-all
@@ -200,9 +280,16 @@ function Footer() {
                 </a>
               </li>
 
+              {/* FAQ */}
               <li>
                 <a
                   href="#faq"
+                  onClick={(event) =>
+                    handleSmoothScroll(
+                      event,
+                      "faq"
+                    )
+                  }
                   className="
                     inline-flex
                     transition-all
@@ -216,9 +303,16 @@ function Footer() {
                 </a>
               </li>
 
+              {/* PRIVACY */}
               <li>
                 <a
                   href="#privacy"
+                  onClick={(event) =>
+                    handleSmoothScroll(
+                      event,
+                      "privacy"
+                    )
+                  }
                   className="
                     inline-flex
                     transition-all
@@ -232,9 +326,16 @@ function Footer() {
                 </a>
               </li>
 
+              {/* TERMS */}
               <li>
                 <a
                   href="#terms"
+                  onClick={(event) =>
+                    handleSmoothScroll(
+                      event,
+                      "terms"
+                    )
+                  }
                   className="
                     inline-flex
                     transition-all
@@ -249,7 +350,10 @@ function Footer() {
               </li>
             </ul>
 
-            {/* FSSAI */}
+            {/* =================================================
+                FSSAI
+            ================================================= */}
+
             <div
               className="
                 mt-7
@@ -316,6 +420,7 @@ function Footer() {
           {/* =====================================================
               GET IN TOUCH
           ===================================================== */}
+
           <div>
             <h3
               className="
@@ -330,7 +435,11 @@ function Footer() {
             </h3>
 
             <div className="mt-6 space-y-5">
-              {/* EMAIL */}
+
+              {/* =================================================
+                  EMAIL
+              ================================================= */}
+
               <a
                 href="mailto:hello@guiltfreecravings.com"
                 className="group flex items-start gap-3"
@@ -401,7 +510,10 @@ function Footer() {
                 </span>
               </a>
 
-              {/* PHONE */}
+              {/* =================================================
+                  PHONE
+              ================================================= */}
+
               <a
                 href="tel:+91XXXXXXXXXX"
                 className="group flex items-start gap-3"
@@ -465,7 +577,10 @@ function Footer() {
                 </span>
               </a>
 
-              {/* ADDRESS */}
+              {/* =================================================
+                  ADDRESS
+              ================================================= */}
+
               <div className="flex items-start gap-3">
                 <span
                   className="
@@ -535,11 +650,13 @@ function Footer() {
         {/* =========================================================
             DIVIDER
         ========================================================= */}
+
         <div className="mt-8 border-t border-white/15" />
 
         {/* =========================================================
             BOTTOM FOOTER
         ========================================================= */}
+
         <div
           className="
             flex
@@ -554,8 +671,8 @@ function Footer() {
           "
         >
           <p className="text-white/60">
-            © {new Date().getFullYear()} Guilt Free Cravings. All rights
-            reserved.
+            © {new Date().getFullYear()} Guilt Free Cravings.
+            All rights reserved.
           </p>
 
           <p className="text-white/60">

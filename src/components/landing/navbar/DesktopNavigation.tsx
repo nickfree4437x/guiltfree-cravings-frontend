@@ -89,31 +89,11 @@ function DesktopNavigation({
                 ${
                   isLight
                     ? "text-white/90 hover:bg-white/10 hover:text-white"
-                    : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]"
+                    : "text-slate-600 hover:underline hover:text-[#B5697A]"
                 }
               `}
             >
               {link.label}
-
-              {/* Subtle active/hover accent */}
-              <span
-                className={`
-                  absolute
-                  bottom-[4px]
-                  left-1/2
-                  -translate-x-1/2
-                  rounded-full
-                  transition-all
-                  duration-200
-                  group-hover:w-5
-                  ${
-                    isLight
-                      ? "bg-white"
-                      : "bg-[#B5697A]"
-                  }
-                `}
-                aria-hidden="true"
-              />
             </Link>
           ))}
         </div>

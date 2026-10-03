@@ -58,8 +58,8 @@ function FAQSection() {
         rounded-xl
         border
         border-[#EFE3D2]
-        bg-white
-      "
+        bg-white scroll-mt-20
+      " id="faq"
     >
       {/* ================= CONTENT ================= */}
       <div className="relative p-5 sm:p-7">

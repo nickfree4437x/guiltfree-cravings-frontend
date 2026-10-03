@@ -96,6 +96,7 @@ function FeaturedProducts() {
         px-5 py-6
         sm:px-8 sm:py-8
         lg:px-12
+        scroll-mt-12
       "
     >
       <div className="mx-auto w-full max-w-6xl">
