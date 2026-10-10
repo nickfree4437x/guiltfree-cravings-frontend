@@ -99,7 +99,7 @@ function AdminProductsPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-[calc(100vh-80px)] bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+      <main className="min-h-[calc(100vh-80px)] bg-white px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
         <div className="mx-auto max-w-7xl">
 
           <div>
@@ -140,7 +140,7 @@ function AdminProductsPage() {
    */
 
   return (
-    <main className="min-h-[calc(100vh-80px)] bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+    <main className="min-h-[calc(100vh-80px)] bg-white px-5 py-2 sm:px-8 lg:px-10 lg:py-4">
       <div className="mx-auto max-w-7xl">
 
         {/* =================================================

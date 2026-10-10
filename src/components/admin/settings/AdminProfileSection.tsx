@@ -13,8 +13,8 @@ function AdminProfileSection({
     <section className="rounded-xl border border-[#eadfd3] bg-white shadow-sm">
       {/* HEADER */}
 
-      <div className="border-b border-[#eadfd3] px-5 py-5 sm:px-6">
-        <h2 className="text-lg font-bold text-slate-900">
+      <div className="border-b border-[#eadfd3] px-5 py-4 sm:px-6">
+        <h2 className="text-lg font-semibold text-slate-900">
           Admin Profile
         </h2>
 
@@ -32,7 +32,7 @@ function AdminProfileSection({
         <div>
           <label
             htmlFor="admin-name"
-            className="text-xs uppercase tracking-wider text-slate-500"
+            className="text-xs uppercase tracking-wider text-slate-600"
           >
             Admin Name
           </label>
@@ -42,7 +42,7 @@ function AdminProfileSection({
             type="text"
             value={admin?.name || ""}
             readOnly
-            className="mt-2 w-full rounded-xl border border-[#eadfd3] bg-[#fffaf5] px-4 py-3 text-sm text-slate-700 outline-none"
+            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-700 outline-none"
           />
         </div>
 
@@ -61,7 +61,7 @@ function AdminProfileSection({
             type="email"
             value={admin?.email || ""}
             readOnly
-            className="mt-2 w-full rounded-xl border border-[#eadfd3] bg-[#fffaf5] px-4 py-3 text-sm text-slate-700 outline-none"
+            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-700 outline-none"
           />
         </div>
 
@@ -80,7 +80,7 @@ function AdminProfileSection({
             type="text"
             value={admin?.phone || ""}
             readOnly
-            className="mt-2 w-full rounded-xl border border-[#eadfd3] bg-[#fffaf5] px-4 py-3 text-sm text-slate-700 outline-none"
+            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-700 outline-none"
           />
         </div>
 
@@ -99,7 +99,7 @@ function AdminProfileSection({
             type="text"
             value="Administrator"
             readOnly
-            className="mt-2 w-full rounded-xl border border-[#eadfd3] bg-[#fffaf5] px-4 py-3 text-sm text-slate-700 outline-none"
+            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-700 outline-none"
           />
         </div>
       </div>

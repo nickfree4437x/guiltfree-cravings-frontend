@@ -1,27 +1,36 @@
-// src/components/admin/header/AdminHeader.tsx
-
-import { useEffect, useRef, useState } from "react";
 import {
-  Bell,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import {
   ChevronDown,
   LogOut,
   User,
+  Menu,
 } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
+
 import logo from "../../../assets/logo.jpg";
 
 import { useAdminAuthStore } from "../../../store/adminAuthStore";
+
+import AdminNotifications from "./AdminNotifications";
 
 interface AdminHeaderProps {
   title: string;
   description: string;
   onLogout: () => void;
+  onMenuClick: () => void;
 }
 
 function AdminHeader({
   title,
   description,
   onLogout,
+  onMenuClick,
 }: AdminHeaderProps) {
   const navigate = useNavigate();
 
@@ -32,9 +41,8 @@ function AdminHeader({
   const [isProfileOpen, setIsProfileOpen] =
     useState(false);
 
-  const profileRef = useRef<HTMLDivElement | null>(
-    null
-  );
+  const profileRef =
+    useRef<HTMLDivElement | null>(null);
 
   const adminInitial =
     admin?.name?.charAt(0)?.toUpperCase() || "A";
@@ -46,7 +54,9 @@ function AdminHeader({
    */
 
   useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
+    const handleOutsideClick = (
+      event: MouseEvent
+    ) => {
       if (
         profileRef.current &&
         !profileRef.current.contains(
@@ -80,6 +90,7 @@ function AdminHeader({
 
   const handleMyProfile = () => {
     setIsProfileOpen(false);
+
     navigate("/admin/settings");
   };
 
@@ -91,60 +102,169 @@ function AdminHeader({
 
   const handleLogout = () => {
     setIsProfileOpen(false);
+
     onLogout();
   };
 
-  return (
-    <header className="sticky top-0 z-30 border-b border-[#eadfd3] bg-white backdrop-blur-md">
-      <div className="flex min-h-[76px] items-center justify-between gap-6 px-5 sm:px-6 lg:px-8">
+  /*
+   * =========================================================
+   * MOBILE MENU
+   * =========================================================
+   */
 
+  const handleMenuClick = () => {
+    setIsProfileOpen(false);
+
+    onMenuClick();
+  };
+
+  return (
+    <header
+      className="
+        sticky
+        top-0
+        z-30
+        border-b
+        border-[#EADBD0]
+        bg-white
+        backdrop-blur-xl
+      "
+    >
+      <div
+        className="
+          flex
+          min-h-[64px]
+          items-center
+          justify-between
+          gap-3
+          px-3
+          sm:min-h-[74px]
+          sm:gap-4
+          sm:px-6
+          lg:px-8
+        "
+      >
         {/* =================================================
             LEFT SIDE
         ================================================= */}
 
-        <div className="flex min-w-0 items-center gap-5">
+        <div
+          className="
+            flex
+            min-w-0
+            items-center
+            gap-2.5
+            sm:gap-4
+          "
+        >
+          {/* =================================================
+              MOBILE MENU
+          ================================================= */}
 
-          {/* Brand */}
-          <div className="flex shrink-0 items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm ring-1 ring-[#eadfd3]">
-                <img
-                    src={logo}
-                    alt="GuiltFree Cravings"
-                    className="h-full w-full object-cover"
-                />
-            </div>
+          <button
+            type="button"
+            onClick={handleMenuClick}
+            aria-label="Open admin menu"
+            title="Open menu"
+            className="
+              flex
+              h-8
+              w-8
+              shrink-0
+              items-center
+              justify-center
+              text-[#6F6259]
+              hover:text-[#B5697A]
+              lg:hidden
+            "
+          >
+            <Menu
+              className="h-[18px] w-[18px]"
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
+          </button>
 
-            <div className="hidden sm:block">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8b542f]">
-                GuiltFree
-              </p>
+          {/* =================================================
+              BRAND
+          ================================================= */}
 
-              <p className="-mt-0.5 text-[12px] text-slate-700">
-                Cravings
-              </p>
+          <div
+            className="
+              flex
+              shrink-0
+              items-center
+              gap-2.5
+              sm:gap-3
+            "
+          >
+            {/* Logo */}
+            <div
+              className="
+                flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
+                overflow-hidden
+                rounded-full
+                border
+                border-[#EADBD0]
+                bg-white
+                sm:h-10
+                sm:w-10
+              "
+            >
+              <img
+                src={logo}
+                alt="GuiltFree Cravings"
+                className="
+                  h-full
+                  w-full
+                  object-cover
+                "
+              />
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="hidden h-9 w-px bg-[#eadfd3] md:block" />
+          {/* =================================================
+              PAGE INFORMATION
+          ================================================= */}
 
-          {/* Page Information */}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="hidden text-[10px] font-bold uppercase tracking-[0.18em] text-[#8b542f] md:block">
-                Admin
-              </span>
-
-              <span className="hidden text-slate-300 md:block">
-                /
-              </span>
-
-              <h1 className="truncate text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+              {/* Page Title */}
+              <h1
+                className="
+                  max-w-[150px]
+                  truncate
+                  text-[15px]
+                  font-bold
+                  tracking-tight
+                  text-[#1F4A2E]
+                  sm:max-w-[220px]
+                  sm:text-[19px]
+                  lg:max-w-none
+                "
+              >
                 {title}
               </h1>
             </div>
 
-            <p className="mt-1 hidden max-w-xl truncate text-xs text-slate-400 md:block">
+            {/* Description */}
+            <p
+              className="
+                mt-0
+                hidden
+                max-w-xl
+                truncate
+                text-[11px]
+                leading-relaxed
+                text-[#8B7A6C]
+                md:block
+              "
+            >
               {description}
             </p>
           </div>
@@ -154,30 +274,34 @@ function AdminHeader({
             RIGHT SIDE
         ================================================= */}
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div
+          className="
+            flex
+            shrink-0
+            items-center
+            gap-2
+            sm:gap-3
+          "
+        >
+          {/* =================================================
+              NOTIFICATIONS
+          ================================================= */}
 
-          {/* Notification */}
-          <button
-            type="button"
-            aria-label="Notifications"
-            title="Notifications"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfd3] bg-white text-slate-500 transition hover:bg-[#fffaf5] hover:text-[#8b542f] focus:outline-none focus:ring-2 focus:ring-[#8b542f]/20"
-          >
-            <Bell
-              className="h-[18px] w-[18px]"
-              strokeWidth={1.8}
-              aria-hidden="true"
-            />
+          <AdminNotifications />
 
-            {/* Notification Dot */}
-            <span
-              className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-[#8b542f]"
-              aria-hidden="true"
-            />
-          </button>
+          {/* =================================================
+              DIVIDER
+          ================================================= */}
 
-          {/* Divider */}
-          <div className="hidden h-8 w-px bg-[#eadfd3] sm:block" />
+          <div
+            className="
+              hidden
+              h-8
+              w-px
+              bg-[#EADBD0]
+              sm:block
+            "
+          />
 
           {/* =================================================
               PROFILE DROPDOWN
@@ -197,82 +321,212 @@ function AdminHeader({
               }
               aria-expanded={isProfileOpen}
               aria-haspopup="menu"
-              className={`flex items-center gap-2.5 rounded-2xl px-1.5 py-1.5 border border:ring-[#8b542f]/20 transition focus:outline-none ${
+              className={[
+                "flex items-center gap-2",
+                "md:rounded-2xl rounded-full border",
+                "px-1.5 py-1.5",
+                "focus:outline-none",
                 isProfileOpen
-                  ? "bg-[#fffaf5]"
-                  : "hover:bg-[#fffaf5]"
-              }`}
+                  ? "border-[#D9B8C1] bg-[#FDF4F6]"
+                  : "border-[#EADBD0] bg-white hover:border-[#D9B8C1] hover:bg-[#FDF4F6]",
+              ].join(" ")}
             >
               {/* Avatar */}
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f3e4d3] text-sm font-semibold text-[#8b542f]">
+              <span
+                className="
+                  flex
+                  h-7
+                  w-7
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#F8E8EC]
+                  text-sm
+                  font-semibold
+                  text-[#B5697A]
+                "
+              >
                 {adminInitial}
               </span>
 
-              {/* Details */}
-              <span className="hidden min-w-0 text-left sm:block">
-
-
-              </span>
-
+              {/* Chevron */}
               <ChevronDown
-                className={`hidden h-4 w-4 text-slate-400 transition-transform duration-200 sm:block ${
+                className={[
+                  "hidden h-4 w-4 text-[#8B7A6C]",
+                  "transition-transform duration-200",
+                  "sm:block",
                   isProfileOpen
                     ? "rotate-180"
-                    : ""
-                }`}
+                    : "",
+                ].join(" ")}
                 strokeWidth={1.8}
                 aria-hidden="true"
               />
             </button>
 
-            {/* Dropdown */}
+            {/* =================================================
+                DROPDOWN
+            ================================================= */}
+
             {isProfileOpen && (
               <div
-                className="absolute right-0 top-[calc(100%+10px)] z-50 w-52 overflow-hidden rounded-xl border border-[#eadfd3] bg-white p-2 shadow-md"
+                className="
+                  absolute
+                  right-0
+                  top-[calc(100%+10px)]
+                  z-50
+                  w-52
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-[#EADBD0]
+                  bg-white
+                  p-2
+                  shadow-md
+                "
                 role="menu"
               >
+                {/* Dropdown Header */}
+                <div
+                  className="
+                    mb-1
+                    rounded-xl
+                    bg-[#FDF4F6]
+                    px-3
+                    py-2
+                  "
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="
+                        flex
+                        h-7
+                        w-7
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-lg
+                        bg-[#F8E8EC]
+                        text-xs
+                        font-semibold
+                        text-[#B5697A]
+                      "
+                    >
+                      {adminInitial}
+                    </span>
+
+                    <div className="min-w-0">
+                      <p
+                        className="
+                          truncate
+                          text-xs
+                          text-[#1F4A2E]
+                        "
+                      >
+                        {admin?.name ||
+                          "Administrator"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 {/* My Profile */}
                 <button
                   type="button"
                   onClick={handleMyProfile}
-                  className="mt-1.5 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-slate-600 transition hover:bg-[#fffaf5] hover:text-[#8b542f]"
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-2.5
+                    rounded-xl
+                    px-3
+                    py-2
+                    text-sm
+                    text-[#6F6259]
+                    transition-all
+                    duration-200
+                    hover:bg-[#F8E8EC]
+                    hover:text-[#B5697A]
+                  "
                   role="menuitem"
                 >
-                  <span className="flex h-7 w-7 items-center justify-center text-[#8b542f]">
+                  <span
+                    className="
+                      flex
+                      h-7
+                      w-7
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-lg
+                      bg-[#F3F7F1]
+                      text-[#1F4A2E]
+                    "
+                  >
                     <User
-                      className="h-4 w-4"
+                      className="h-3 w-3"
                       strokeWidth={1.8}
                       aria-hidden="true"
                     />
                   </span>
 
-                  <span>My Profile</span>
+                  <span className="text-xs">
+                    My Profile
+                  </span>
                 </button>
 
                 {/* Logout */}
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-red-500 transition hover:bg-red-50 hover:text-red-600"
+                  className="
+                    mt-1
+                    flex
+                    w-full
+                    items-center
+                    gap-2.5
+                    rounded-xl
+                    px-3
+                    py-2
+                    text-sm
+                    text-red-500
+                    transition-all
+                    duration-200
+                    hover:bg-red-50
+                    hover:text-red-600
+                  "
                   role="menuitem"
                 >
-                  <span className="flex h-7 w-7 items-center justify-center">
+                  <span
+                    className="
+                      flex
+                      h-7
+                      w-7
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-lg
+                      bg-red-50
+                    "
+                  >
                     <LogOut
-                      className="h-4 w-4"
+                      className="h-3 w-3"
                       strokeWidth={1.8}
                       aria-hidden="true"
                     />
                   </span>
 
-                  <span>Logout</span>
+                  <span className="text-xs">
+                    Logout
+                  </span>
                 </button>
               </div>
             )}
           </div>
         </div>
       </div>
-
     </header>
   );
 }

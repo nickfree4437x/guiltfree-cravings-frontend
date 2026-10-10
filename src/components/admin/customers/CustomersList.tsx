@@ -31,7 +31,7 @@ function CustomersList({
   }
 
   return (
-    <>
+    <section className="overflow-hidden rounded-lg border border-[#eadfd3] bg-white shadow-sm">
       <CustomersTable
         customers={customers}
       />
@@ -39,7 +39,7 @@ function CustomersList({
       <CustomersMobileList
         customers={customers}
       />
-    </>
+    </section>
   );
 }
 

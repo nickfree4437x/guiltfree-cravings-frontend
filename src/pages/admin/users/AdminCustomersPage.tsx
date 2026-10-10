@@ -1,5 +1,3 @@
-// src/pages/admin/customers/AdminCustomersPage.tsx
-
 import {
   useEffect,
   useMemo,
@@ -12,12 +10,22 @@ import {
 
 import CustomersPageHeader from "../../../components/admin/customers/CustomersPageHeader";
 import CustomerSummaryCards from "../../../components/admin/customers/CustomerSummaryCards";
-import CustomersToolbar from "../../../components/admin/customers/CustomersToolbar";
+import CustomerFilters from "../../../components/admin/customers/CustomerFilters";
 import CustomersList from "../../../components/admin/customers/CustomersList";
 
 import type {
   AdminCustomer,
 } from "../../../components/admin/customers/types";
+
+type VerificationFilter =
+  | "all"
+  | "verified"
+  | "unverified";
+
+type OrdersFilter =
+  | "all"
+  | "with-orders"
+  | "no-orders";
 
 function AdminCustomersPage() {
   const [customers, setCustomers] =
@@ -26,17 +34,17 @@ function AdminCustomersPage() {
   const [search, setSearch] =
     useState("");
 
+  const [verificationFilter, setVerificationFilter] =
+    useState<VerificationFilter>("all");
+
+  const [ordersFilter, setOrdersFilter] =
+    useState<OrdersFilter>("all");
+
   const [isLoading, setIsLoading] =
     useState(true);
 
   const [pageError, setPageError] =
     useState("");
-
-  /*
-   * =========================================================
-   * LOAD REAL CUSTOMERS
-   * =========================================================
-   */
 
   useEffect(() => {
     let mounted = true;
@@ -79,12 +87,6 @@ function AdminCustomersPage() {
     };
   }, []);
 
-  /*
-   * =========================================================
-   * SUMMARY
-   * =========================================================
-   */
-
   const totalCustomers =
     customers.length;
 
@@ -100,22 +102,12 @@ function AdminCustomersPage() {
         customer.totalOrders > 0
     ).length;
 
-  /*
-   * =========================================================
-   * SEARCH
-   * =========================================================
-   */
-
   const filteredCustomers =
     useMemo(() => {
       const query =
         search
           .trim()
           .toLowerCase();
-
-      if (!query) {
-        return customers;
-      }
 
       return customers.filter(
         (customer) => {
@@ -130,118 +122,111 @@ function AdminCustomersPage() {
           const phone =
             customer.phone.toLowerCase();
 
-          return (
+          const matchesSearch =
+            !query ||
             name.includes(query) ||
             email.includes(query) ||
-            phone.includes(query)
+            phone.includes(query);
+
+          const matchesVerification =
+            verificationFilter === "all" ||
+            (verificationFilter === "verified" &&
+              customer.isVerified) ||
+            (verificationFilter === "unverified" &&
+              !customer.isVerified);
+
+          const matchesOrders =
+            ordersFilter === "all" ||
+            (ordersFilter === "with-orders" &&
+              customer.totalOrders > 0) ||
+            (ordersFilter === "no-orders" &&
+              customer.totalOrders === 0);
+
+          return (
+            matchesSearch &&
+            matchesVerification &&
+            matchesOrders
           );
         }
       );
     }, [
       customers,
       search,
+      verificationFilter,
+      ordersFilter,
     ]);
 
-  /*
-   * =========================================================
-   * LOADING STATE
-   * =========================================================
-   */
+  const hasActiveFilters =
+    Boolean(search.trim()) ||
+    verificationFilter !== "all" ||
+    ordersFilter !== "all";
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setVerificationFilter("all");
+    setOrdersFilter("all");
+  };
 
   if (isLoading) {
     return (
-      <main className="min-h-[calc(100vh-80px)] bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
-
+      <main className="min-h-[calc(100vh-80px)] bg-white px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
         <div className="mx-auto max-w-7xl">
-
           <CustomersPageHeader />
 
-          <div className="mt-8 rounded-xl border border-[#eadfd3] bg-white p-12 text-center shadow-sm">
-
+          <div className="mt-8 rounded-2xl border border-[#EFE3D2] bg-white p-12 text-center shadow-[0_2px_10px_rgba(31,74,46,0.035)]">
             <div
-              className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#eadfd3] border-t-[#8b542f]"
+              className="
+                mx-auto
+                h-8
+                w-8
+                animate-spin
+                rounded-full
+                border-2
+                border-[#EADBD0]
+                border-t-[#B5697A]
+              "
               aria-hidden="true"
             />
 
-            <p className="mt-4 text-sm font-medium text-slate-500">
+            <p className="mt-4 text-sm font-medium text-[#7B6D63]">
               Loading customers...
             </p>
-
           </div>
-
         </div>
-
       </main>
     );
   }
-
-  /*
-   * =========================================================
-   * ERROR STATE
-   * =========================================================
-   */
 
   if (pageError) {
     return (
-      <main className="min-h-[calc(100vh-80px)] bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
-
+      <main className="min-h-[calc(100vh-80px)] bg-white px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
         <div className="mx-auto max-w-7xl">
-
           <CustomersPageHeader />
 
-          <div className="mt-8 rounded-xl border border-red-200 bg-white p-10 text-center shadow-sm">
-
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+          <div className="mt-8 rounded-2xl border border-[#E8C8CE] bg-white p-10 text-center shadow-[0_2px_10px_rgba(31,74,46,0.035)]">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FBECEF] text-[#A85F70]">
               !
             </div>
 
-            <h2 className="mt-5 text-xl rounded-xl text-slate-900">
+            <h2 className="mt-5 text-xl font-semibold text-[#3D3834]">
               Unable to Load Customers
             </h2>
 
-            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-red-600">
+            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#A85F70]">
               {pageError}
             </p>
-
-            <button
-              type="button"
-              onClick={() =>
-                window.location.reload()
-              }
-              className="mt-6 rounded-full bg-[#8b542f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
-            >
-              Try Again
-            </button>
-
           </div>
-
         </div>
-
       </main>
     );
   }
 
-  /*
-   * =========================================================
-   * PAGE
-   * =========================================================
-   */
-
   return (
-    <div className="min-h-screen bg-[#fffaf5] px-5 py-8 sm:px-6 lg:px-8 lg:py-10">
-
+    <div className="min-h-screen bg-white px-5 py-2 sm:px-6 lg:px-8 lg:py-4">
       <div className="mx-auto max-w-7xl">
-
-        {/* =================================================
-            PAGE HEADER
-        ================================================= */}
-
         <CustomersPageHeader />
 
-        {/* =================================================
-            SUMMARY
-        ================================================= */}
-
+        {/* Summary */}
         <CustomerSummaryCards
           totalCustomers={
             totalCustomers
@@ -254,48 +239,43 @@ function AdminCustomersPage() {
           }
         />
 
-        {/* =================================================
-            CUSTOMER LIST
-        ================================================= */}
+        {/* Search & Filters */}
+        <CustomerFilters
+          search={search}
+          onSearchChange={setSearch}
+          verificationFilter={
+            verificationFilter
+          }
+          onVerificationFilterChange={
+            setVerificationFilter
+          }
+          ordersFilter={ordersFilter}
+          onOrdersFilterChange={
+            setOrdersFilter
+          }
+          hasActiveFilters={
+            hasActiveFilters
+          }
+          onClear={
+            handleClearFilters
+          }
+        />
 
-        <section className="mt-8 overflow-hidden rounded-xl border border-[#eadfd3] bg-white shadow-sm">
-
-          {/* =================================================
-              TOOLBAR
-          ================================================= */}
-
-          <CustomersToolbar
-            search={search}
-            filteredCount={
-              filteredCustomers.length
-            }
-            onSearchChange={
-              setSearch
-            }
-          />
-
-          {/* =================================================
-              CUSTOMER LIST
-          ================================================= */}
-
+        {/* Customer List */}
+        <section className="mt-8 overflow-hidden rounded-2xl border border-[#EFE3D2] bg-white shadow-[0_2px_10px_rgba(31,74,46,0.035)]">
           <CustomersList
             customers={
               filteredCustomers
             }
             hasSearch={
-              Boolean(
-                search.trim()
-              )
+              hasActiveFilters
             }
-            onClearSearch={() =>
-              setSearch("")
+            onClearSearch={
+              handleClearFilters
             }
           />
-
         </section>
-
       </div>
-
     </div>
   );
 }

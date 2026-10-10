@@ -18,7 +18,7 @@ function ProductStatusBadge({
     >
       <span
         className={[
-          "h-1.5 w-1.5 rounded-full",
+          "rounded-full",
           isActive
             ? "bg-green-500"
             : "bg-slate-400",

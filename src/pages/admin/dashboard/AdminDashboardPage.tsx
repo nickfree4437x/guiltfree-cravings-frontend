@@ -161,7 +161,7 @@ function AdminDashboardPage() {
    */
 
   return (
-    <main className="px-5 py-8 sm:px-8 lg:px-10">
+    <main className="px-5 py-4 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl">
 
         {/* =================================================

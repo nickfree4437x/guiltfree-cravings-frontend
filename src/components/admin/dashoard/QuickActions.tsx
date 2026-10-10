@@ -1,4 +1,5 @@
 import {
+  ArrowRight,
   Gift,
   PackagePlus,
   ShoppingBag,
@@ -8,7 +9,6 @@ import { Link } from "react-router-dom";
 
 interface QuickAction {
   label: string;
-  description: string;
   path: string;
   icon: typeof PackagePlus;
   iconBg: string;
@@ -19,51 +19,49 @@ interface QuickAction {
 const quickActions: QuickAction[] = [
   {
     label: "Add Product",
-    description: "Create a new product",
     path: "/admin/products",
     icon: PackagePlus,
-    iconBg: "bg-[#f3e4d3]",
-    iconColor: "text-[#8b542f]",
-    hoverBorder: "hover:border-[#d8bfa9]",
+    iconBg: "bg-[#EAF2FF]",
+    iconColor: "text-[#4D7FEA]",
+    hoverBorder: "hover:border-[#C9DAFA]",
   },
   {
     label: "View Orders",
-    description: "Manage customer orders",
     path: "/admin/orders",
     icon: ShoppingBag,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
-    hoverBorder: "hover:border-blue-200",
+    iconBg: "bg-[#FBECEF]",
+    iconColor: "text-[#B5697A]",
+    hoverBorder: "hover:border-[#E6C5CC]",
   },
   {
     label: "Customers",
-    description: "Manage your customers",
     path: "/admin/users",
     icon: Users,
-    iconBg: "bg-violet-50",
-    iconColor: "text-violet-600",
-    hoverBorder: "hover:border-violet-200",
+    iconBg: "bg-[#F2EBFF]",
+    iconColor: "text-[#8A5BE8]",
+    hoverBorder: "hover:border-[#DCCEF5]",
   },
   {
     label: "Create Offer",
-    description: "Create a new promotion",
     path: "/admin/offers",
     icon: Gift,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-600",
-    hoverBorder: "hover:border-emerald-200",
+    iconBg: "bg-[#E9F9EF]",
+    iconColor: "text-[#35A85A]",
+    hoverBorder: "hover:border-[#C9E8D3]",
   },
 ];
 
 function QuickActions() {
   return (
-    <section className="mt-8">
-      <div className="mb-4">
-        <h2 className="text-lg font-bold tracking-tight text-slate-900">
+    <section className="mt-6 rounded-lg bg-white">
+      {/* Section Header */}
+      <div className="mb-2">
+        <h2 className="text-[18px] font-semibold tracking-[-0.01em] text-[#1F4A2E]">
           Quick Actions
         </h2>
       </div>
 
+      {/* Actions */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {quickActions.map((action) => {
           const Icon = action.icon;
@@ -72,28 +70,58 @@ function QuickActions() {
             <Link
               key={action.path}
               to={action.path}
-              className={`group relative overflow-hidden rounded-2xl bg-white p-5 transition-all duration-300 ${action.hoverBorder}`}
+              className={`
+                group
+                flex
+                min-h-[168px]
+                flex-col
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-[#E8E1D9]
+                bg-white
+                px-5
+                py-5
+                text-center
+                transition-all
+                duration-300
+                hover:-translate-y-0.5
+                ${action.hoverBorder}
+              `}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${action.iconBg} ${action.iconColor}`}
-                >
-                  <Icon
-                    className="h-[21px] w-[21px]"
-                    strokeWidth={1.8}
-                    aria-hidden="true"
-                  />
-                </div>
+              {/* Icon */}
+              <div
+                className={`
+                  flex
+                  h-12
+                  w-12
+                  items-center
+                  justify-center
+                  rounded-xl
+                  ${action.iconBg}
+                  ${action.iconColor}
+                `}
+              >
+                <Icon
+                  className="h-[22px] w-[22px]"
+                  strokeWidth={1.8}
+                  aria-hidden="true"
+                />
               </div>
 
-              <div className="mt-5">
-                <h3 className="text-[12px] md:text-[14px] font-semibold text-slate-900">
-                  {action.label}
-                </h3>
+              {/* Label */}
+              <h3 className="mt-2 text-[15px] tracking-[-0.01em] text-[#31415A]">
+                {action.label}
+              </h3>
 
-                <p className="mt-1 text-xs font-[350] leading-5 text-slate-400">
-                  {action.description}
-                </p>
+              {/* Arrow */}
+              <div className="mt-2 flex items-center justify-center text-[#AAB1BA] transition-all duration-300 group-hover:text-[#B5697A]">
+                <ArrowRight
+                  className="h-[18px] w-[18px]"
+                  strokeWidth={1.6}
+                  aria-hidden="true"
+                />
               </div>
             </Link>
           );

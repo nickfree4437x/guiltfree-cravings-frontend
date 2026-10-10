@@ -1,16 +1,12 @@
-// src/components/admin/dashboard/StatusBadge.tsx
-
 interface StatusBadgeProps {
   status: string;
 }
 
-function StatusBadge({
-  status,
-}: StatusBadgeProps) {
+function StatusBadge({ status }: StatusBadgeProps) {
   const normalized = status.toUpperCase();
 
   let className =
-    "bg-slate-100 text-slate-700";
+    "border border-[#E8E1D9] bg-[#F7F4F1] text-[#6F6259]";
 
   if (
     normalized === "PAID" ||
@@ -18,7 +14,7 @@ function StatusBadge({
     normalized === "CONFIRMED"
   ) {
     className =
-      "bg-green-50 text-green-700";
+      "border border-[#CFE4D4] bg-[#EEF8F2] text-[#3F8A58]";
   }
 
   if (
@@ -26,7 +22,7 @@ function StatusBadge({
     normalized === "PROCESSING"
   ) {
     className =
-      "bg-amber-50 text-amber-700";
+      "border border-[#EFD5BD] bg-[#FFF3E8] text-[#C4773B]";
   }
 
   if (
@@ -34,12 +30,21 @@ function StatusBadge({
     normalized === "CANCELLED"
   ) {
     className =
-      "bg-red-50 text-red-700";
+      "border border-[#E8C8CE] bg-[#FBECEF] text-[#A85F70]";
   }
 
   return (
     <span
-      className={`inline-flex rounded-full px-3 py-1 text-xs ${className}`}
+      className={`
+        inline-flex
+        items-center
+        rounded-full
+        px-3
+        py-1
+        text-[10px]
+        tracking-[0.01em]
+        ${className}
+      `}
     >
       {status}
     </span>

@@ -1,7 +1,12 @@
 // src/components/admin/orders/OrderStatusBadge.tsx
 
-import type { OrderStatus } from "./types";
-import { getOrderStatusClass } from "./orderUtils";
+import type {
+  OrderStatus,
+} from "./types";
+
+import {
+  getOrderStatusClass,
+} from "./orderUtils";
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;
@@ -12,7 +17,7 @@ function OrderStatusBadge({
 }: OrderStatusBadgeProps) {
   return (
     <span
-      className={`inline-flex rounded-full px-3 py-1.5 text-xs ${getOrderStatusClass(
+      className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] tracking-[0.01em] ${getOrderStatusClass(
         status
       )}`}
     >

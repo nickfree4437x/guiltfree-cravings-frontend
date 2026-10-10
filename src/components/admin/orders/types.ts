@@ -19,15 +19,39 @@ export type PaymentStatus =
   | "FAILED"
   | "REFUNDED";
 
+export interface AdminOrderItem {
+  id: number;
+  productId: number;
+  variantId: number;
+  productName: string;
+  variantQuantity: number;
+  variantUnit: string;
+  packaging: string;
+  unitPrice: number;
+  quantity: number;
+  subtotal: number;
+}
+
 export interface AdminOrder {
   id: number;
   orderNumber: string;
+
   customerName: string;
   customerPhone: string;
   customerEmail?: string | null;
-  itemCount: number;
+
+  subtotal: number;
+  discountAmount: number;
   totalAmount: number;
+
+  offerCode?: string | null;
+
+  itemCount: number;
+  items: AdminOrderItem[];
+
   orderStatus: OrderStatus;
   paymentStatus: PaymentStatus;
+
   createdAt: string;
+  updatedAt: string;
 }

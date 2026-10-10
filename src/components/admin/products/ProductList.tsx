@@ -12,7 +12,7 @@ function ProductList({
   products,
 }: ProductListProps) {
   return (
-    <section className="mt-5 overflow-hidden rounded-3xl border border-[#eadfd3] bg-white shadow-sm">
+    <section className="mt-2 overflow-hidden rounded-lg border border-[#eadfd3] bg-white shadow-sm">
       <ProductTable
         products={products}
       />

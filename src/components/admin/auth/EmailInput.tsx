@@ -1,5 +1,6 @@
 // src/components/admin/auth/EmailInput.tsx
-import { Mail } from 'lucide-react';
+
+import { Mail } from "lucide-react";
 
 interface EmailInputProps {
   id: string;
@@ -20,9 +21,10 @@ export const EmailInput = ({
   disabled = false,
 }: EmailInputProps) => {
   return (
-    <div>
+    <div className="w-full">
 
-      <div className="relative mt-2">
+      {/* Input */}
+      <div className="relative">
         <input
           id={id}
           type="email"
@@ -31,14 +33,54 @@ export const EmailInput = ({
           placeholder={placeholder}
           autoComplete={autoComplete}
           disabled={disabled}
-          className="w-full rounded-xl border border-[#d9c7b7] bg-white px-4 py-2.5 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#8b542f] disabled:cursor-not-allowed disabled:bg-slate-50"
+          className="
+            w-full
+            rounded-xl
+            border
+            border-[#EADBD0]
+            bg-white
+            px-4
+            py-3
+            pr-12
+            text-[13px]
+            text-[#2C2C2C]
+            outline-none
+            transition-all
+            duration-200
+            placeholder:text-[#B4A49A]
+            hover:border-[#D9B7C0]
+            focus:border-[#B5697A]
+            disabled:cursor-not-allowed
+            disabled:bg-[#FAF7F5]
+            disabled:opacity-70
+          "
         />
 
-        <Mail
-          className="absolute right-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400"
-          strokeWidth={1.8}
-          aria-hidden="true"
-        />
+        {/* Email Icon */}
+        <span
+          className="
+            pointer-events-none
+            absolute
+            right-2.5
+            top-1/2
+            flex
+            h-9
+            w-9
+            -translate-y-1/2
+            items-center
+            justify-center
+            rounded-lg
+            text-[#A89486]
+            transition-colors
+            duration-200
+          "
+        >
+          <Mail
+            className="h-[17px] w-[17px]"
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
+        </span>
       </div>
     </div>
   );

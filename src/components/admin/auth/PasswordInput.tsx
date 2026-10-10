@@ -1,5 +1,9 @@
 // src/components/admin/auth/PasswordInput.tsx
-import { Eye, EyeOff } from 'lucide-react';
+
+import {
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 interface PasswordInputProps {
   id: string;
@@ -24,32 +28,102 @@ export const PasswordInput = ({
   disabled = false,
 }: PasswordInputProps) => {
   return (
-    <div>
+    <div className="w-full">
 
-      <div className="relative mt-2">
+      {/* =====================================================
+          INPUT
+          ===================================================== */}
+
+      <div className="relative">
         <input
           id={id}
-          type={showPassword ? "text" : "password"}
+          type={
+            showPassword
+              ? "text"
+              : "password"
+          }
           value={value}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) =>
+            onChange(event.target.value)
+          }
           placeholder={placeholder}
           autoComplete={autoComplete}
           disabled={disabled}
-          className="w-full rounded-xl border border-[#d9c7b7] bg-white px-4 py-2.5 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#8b542f] disabled:cursor-not-allowed disabled:bg-slate-50"
+          className="
+            w-full
+            rounded-xl
+            border
+            border-[#EADBD0]
+            bg-white
+            px-4
+            py-3
+            pr-12
+            text-[13px]
+            text-[#2C2C2C]
+            outline-none
+            transition-all
+            duration-200
+            placeholder:text-[#B4A49A]
+            hover:border-[#D9B7C0]
+            focus:border-[#B5697A]
+            disabled:cursor-not-allowed
+            disabled:bg-[#FAF7F5]
+            disabled:opacity-70
+          "
         />
+
+        {/* ===================================================
+            SHOW / HIDE PASSWORD
+            =================================================== */}
 
         <button
           type="button"
-          onClick={() => setShowPassword(!showPassword)}
+          onClick={() =>
+            setShowPassword(
+              !showPassword
+            )
+          }
           disabled={disabled}
-          aria-label={showPassword ? "Hide password" : "Show password"}
-          title={showPassword ? "Hide password" : "Show password"}
-          className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 hover:text-[#8b542f] disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label={
+            showPassword
+              ? "Hide password"
+              : "Show password"
+          }
+          title={
+            showPassword
+              ? "Hide password"
+              : "Show password"
+          }
+          className="
+            absolute
+            right-2
+            top-1/2
+            flex
+            h-9
+            w-9
+            -translate-y-1/2
+            items-center
+            justify-center
+            rounded-lg
+            text-[#A89486]
+            hover:text-[#B5697A]
+            focus:outline-none
+            disabled:cursor-not-allowed
+            disabled:opacity-50
+          "
         >
           {showPassword ? (
-            <EyeOff className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
+            <EyeOff
+              className="h-[17px] w-[17px]"
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
           ) : (
-            <Eye className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
+            <Eye
+              className="h-[17px] w-[17px]"
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
           )}
         </button>
       </div>

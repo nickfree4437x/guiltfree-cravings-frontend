@@ -1,0 +1,186 @@
+﻿function HindiEnglish(option)
+{
+   
+    if (option == "1")
+    {
+        //$("#<%=lbllng.ClientID%>").show();
+        //$("#<%=lnkbtnHi.ClientID%>").show();
+        //$("#<%=lnkbtnEn.ClientID%>").show();
+
+        $("#lbllng").show();
+        $("#lnkbtnHi").show();
+        $("#lnkbtnEn").show();
+
+        //MainOther.master
+        //$("#spanSiteMap").text("Site Map");
+        //$("#SpanLogIn").text("Log In");
+        //$("#SpanRegistration").text("Registration");
+        //$("#spanDate").text("Date");
+        //$("#SpanTime").text("Time");
+        //Index.htm
+        //alert(Option);
+        $("#lbllng").text("Language");
+        $("#lnkbtnHi").text("Hindi");
+        $("#lnkbtnEn").text("English");
+        $("#SpnSiteMap").text("Site Map");
+        $("#spnLogin").text("Log In");
+        $("#spnRegistration").text("Registration");
+        $("#spnDate").text("Date");
+        $("#spnTime").text("Time");
+        $("#spnJobSeeker").text("Job Seeker");
+        $("#spnEmployer").text("Employer");
+        $("#spnGovJobs").text("Gov Jobs");
+        $("#spanPvt").text("Private Jobs");
+        $("#spnContact").text("Contact");
+        $("#spnAboutUs").text("About");
+        $("#spnLoginn").text("Log in");
+        $("#spnNewAccount").text("New Account");
+        $("#spnMobileApp").text("DownLoad Mobile App");
+        $("#spnJobSeekerr").text("Job Seeker");
+        $("#spnEmployerr").text("Employer");
+        $("#spnJobs").text("Jobs");
+        $("#spnEssay").text("Essay");
+        $("#spnRojgarMela").text("Rojgar Mela");
+        $("#spnCarrierCounsling").text("Career Counselling");
+        $("#spnRegitration").text("Registration");
+        $("#spnLoginnn").text("Log in");
+        $("#spnImportantjobs").text("Important Jobs");
+        $("#spnSSC").text("Staff Selection Commission");
+        $("#spnSSC").css("fontSize", "15px")
+        $("#spnLockSewaAyog").text("Public Service Commission,Allahabad UP");
+        $("#spnLockSewaAyog").css("fontSize", "15px")
+        $("#spnUPUPSC").text("Subordinate Services Selection Commission,Lucknow UP");
+        $("#spnUPUPSC").css("fontSize", "15px")
+        $("#spnUPPoliceRequirement").text("Police Recruitment and Promotion Board,Lucknow UP");
+        $("#spnUPPoliceRequirement").css("fontSize", "15px")
+        $("#spnUPPowerCopLtd").text("Power Corporation Limited UP");
+        $("#spnUPPowerCopLtd").css("fontSize", "15px")
+        $("#spnIBPS").text("I.B.P.S.");
+        $("#spnIBPS").css("fontSize", "15px")
+        
+        $("#spnLoginin").text("Log In");
+        $("#spnSingnUP").text("Sign up");
+        $("#spnFAQ").text("Frequently Asked Questions");
+        $("#spnContactUS").text("Contact us");
+        $("#spnAboutUS").text("About us");
+        $("#SpanPrivacyPolicy").text("Privacy Policy");
+
+        $("#spnOnlineRegistration").text("Online Registration Anywhere Anytime.");
+        $("#spnPrivateGoverementJobsPortal").text("Private and Government Jobs On One Portal.");
+        $("#spnOnlineApplication").text("Facility to Apply Online.");
+        $("#spnEmailMedim").text("Job Notification via Email.");
+        $("#spnCatPlaceDepSalary").text("Search Jobs Through Using Filter Category,Place,Department And Salary.");
+        $("#spnEmployerr").text("Employer");
+        $("#spnOneLackEmployee").text("Lacs Of Jobseeker On One Click.");
+        $("#spnUploadJobs").text("24*7 Facilities for Uploading Jobs.");
+        $("#spnRojgarMelaMela").text("Facility  of Particepation in job Fair.");
+        $("#spnOnlineRegistrationOnline").text("Online Registration Anywhere Anytime.");
+        $("#spnOnlineReturnsFile").text("Online return File Facility.");
+        $("#spnJobs").text("Jobs");
+        $("#spnJobss").text("Jobs");
+        $("#spnPlaceSalaryEducation").text("Search of jobs according to location, salary and educational qualification.");
+        $("#spnSector").text("Sectorwise Search.");
+        $("#spnDepartmentSearch").text("Departmentwise Search.");
+        $("#spnPostSearch").text("Postwise Search.");
+        $("#spnEssay").text("Contract");
+        $("#spnSewayojanDepartmentHRD").text("To improve the Co-operation between the Department of Labour and Employment and National HRD Network.");
+        $("#spnNationalHRD").text("To Publicise Sewayojan Portal among the members of NHRDN.");
+        $("#spnGroupCandidate").text("To Encourage the members of NHRDN to recruit through the Portal.");
+
+        $("#p1HiNe").hide();//Updated by Rohit Dhama(04012017)
+        $("#p1EnNe").show();//Updated by Rohit Dhama(04012017)
+
+      }
+    else
+    {
+        //$("#<%=lbllng.ClientID%>").show();
+        //$("#<%=lnkbtnHi.ClientID%>").show();
+        //$("#<%=lnkbtnEn.ClientID%>").show();
+        //alert(option);
+
+        $("#lbllng").show();
+        $("#lnkbtnHi").show();
+        $("#lnkbtnEn").show();
+
+        //MainOther.master
+        //$("#spanSiteMap").text("साईट मैप");
+        //$("#SpanLogIn").text("लॉग इन");
+        //$("#SpanRegistration").text("पंजीकरण");
+        //$("#spanDate").text("दिनांक :");
+        //$("#SpanTime").text("समय :");
+
+        //Index.htm
+        $("#lbllng").text("भाषा");
+        $("#lnkbtnHi").text("हिंदी");
+        $("#lnkbtnEn").text("इंग्लिश");
+        $("#SpnSiteMap").text("साईट मैप");
+        $("#spnLogin").text("लॉग इन");
+        $("#spnRegistration").text("पंजीकरण");
+        $("#spnDate").text("दिनांक :");
+        $("#spnTime").text("समय :");
+        $("#spnJobSeeker").text("जॉब सीकर");
+        $("#spnEmployer").text("नियोजक");
+        $("#spnGovJobs").text("सरकारी नौकरियां");
+        $("#spanPvt").text("प्राइवेट नौकरियां");
+        $("#spnContact").text("संपर्क करें");
+        $("#spnAboutUs").text("हमारे बारे में");
+        //$("#spnLoginn").text("लॉग इन करें");
+        $("#spnLoginn").text("लॉग इन");
+        //$("#spnNewAccount").text("नया अकाउंट बनाए");
+        $("#spnNewAccount").text("पंजीकरण");
+        $("#spnMobileApp").text("मोबाइल ऐप डाउनलोड करें");
+        $("#spnJobSeekerr").text("जॉब सीकर");
+        $("#spnEmployerr").text("नियोजक");
+        $("#spnJobs").text("नौकरियां");
+        $("#spnEssay").text("अनुबंध");
+        $("#spnRojgarMela").text("रोजगार मेला");
+        $("#spnCarrierCounsling").text("करियर काउंसलिंग");
+        $("#spnRegitration").text("पंजीकरण");
+        $("#spnLoginnn").text("लॉग इन");
+        $("#spnImportantjobs").text("महत्वपूर्ण नौकरियां");
+        $("#spnSSC").text("कर्मचारी चयन आयोग");
+        $("#spnLockSewaAyog").text("लोक सेवा आयोग उ.प्र.");
+        $("#spnUPUPSC").text("उ.प्र. अधीनस्थ सेवा चयन आयोग");
+        $("#spnUPPoliceRequirement").text("उ.प्र. पुलिस भर्ती एवं प्रोन्नति बोर्ड");
+        $("#spnUPPowerCopLtd").text("उ.प्र. पॉवर कॉर्पोरेशन लिमिटेड");
+        $("#spnIBPS").text("आई. बी. पी. एस.");
+        $("#spnLoginin").text("लॉग इन");
+        $("#spnSingnUP").text("साइन अप");
+        $("#spnFAQ").text("अक्सर पूछें जाने वाले प्रश्न");
+        $("#spnContactUS").text("संपर्क करें");
+        $("#spnAboutUS").text("हमारें बारें में");
+        $("#SpanPrivacyPolicy").text("प्राईवेसी पालिसी");
+
+        $("#spnOnlineRegistration").text("ऑनलाइन पंजीयन कहीं भी कभी भी ।");
+        $("#spnPrivateGoverementJobsPortal").text("प्राइवेट एवं सरकारी नौकरियां एक पोर्टल पर उपलब्ध ।");
+        $("#spnOnlineApplication").text("ऑनलाइन आवेदन की सुविधा ।");
+        $("#spnEmailMedim").text("ईमेल के माध्यम से नौकरी की सूचना ।");
+        $("#spnCatPlaceDepSalary").text("श्रेणी, स्थान, विभाग एवं वेतन के अनुरूप नौकरियां खोजनें की सुविधा ।");
+        $("#spnEmployerr").text("नियोजक");
+        $("#spnOneLackEmployee").text("लाखों अभ्यार्थी एक क्लिक पर उपलब्ध।");
+        $("#spnUploadJobs").text("24*7 नौकरियां अपलोड करने की सुविधा ।");
+        $("#spnRojgarMelaMela").text("रोजगार मेलों में प्रतिभाग की सुविधा।");
+        $("#spnOnlineRegistrationOnline").text("ऑनलाइन पंजीकरण कहीं भी कभी भी।");
+        $("#spnOnlineReturnsFile").text("ऑनलाइन रिटर्न्स फाइल करने की सुविधा ।");
+        $("#spnJobs").text("नौकरियां");
+        $("#spnJobss").text("नौकरियां");
+        $("#spnPlaceSalaryEducation").text("स्थान, वेतन एवं शैक्षिक योग्यता के अनुरूप खोज ।");
+        $("#spnSector").text("सेक्टर  के अनुरूप खोज ।");
+        $("#spnDepartmentSearch").text("विभाग  के अनुरूप खोज ।");
+        $("#spnPostSearch").text("पद के अनुरूप खोज ।");
+        $("#spnEssay").text("अनुबंध");
+        $("#spnSewayojanDepartmentHRD").text("श्रम एवं सेवायोजन विभाग तथा नेशनल एच्.आर.डी. नेटवर्क (NHRDN) के मध्य सहयोग बढ़ाना।");
+        $("#spnNationalHRD").text("नेशनल एच्.आर.डी. नेटवर्क (NHRDN) के सदस्यों के मध्य सेवायोजन पोर्टल का प्रचार-प्रसार करना ।");
+        $("#spnGroupCandidate").text("समूह के सदस्यों को पोर्टल से भर्ती करने हेतु प्रेरित करना ।");
+
+        $("#p1HiNe").show();//Updated by Rohit Dhama(04012017)
+        $("#p1EnNe").hide();//Updated by Rohit Dhama(04012017)
+
+        
+    }
+}
+
+
+
+       
+        

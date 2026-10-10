@@ -8,7 +8,7 @@ function ProductsEmptyState({
   onAddProduct,
 }: ProductsEmptyStateProps) {
   return (
-    <section className="mt-5 rounded-3xl border border-[#eadfd3] bg-white p-10 text-center shadow-sm sm:p-14">
+    <section className="mt-5 rounded-xl border border-[#eadfd3] bg-white p-10 text-center shadow-sm sm:p-14">
 
       <h2 className="mt-5 text-lg font-bold text-slate-900">
         No products yet

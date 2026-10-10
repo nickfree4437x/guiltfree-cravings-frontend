@@ -2,13 +2,13 @@
 
 function CustomersPageHeader() {
   return (
-    <div>
+    <div className="">
 
-      <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+      <h1 className="mt-2 text-[18px] md:text-[24px] font-bold tracking-tight text-slate-900">
         Customers
       </h1>
 
-      <p className="mt-0 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
+      <p className="mt-0 max-w-xl text-sm leading-relaxed text-slate-500">
         View and manage customers registered
         with your GuiltFree Cravings store.
       </p>

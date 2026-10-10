@@ -1,6 +1,11 @@
 // src/pages/admin/layout/AdminLayout.tsx
 
 import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
   Outlet,
   useLocation,
   useNavigate,
@@ -15,9 +20,59 @@ function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const admin = useAdminAuthStore(
+    (state) => state.admin
+  );
+
   const logout = useAdminAuthStore(
     (state) => state.logout
   );
+
+  /*
+   * =========================================================
+   * MOBILE SIDEBAR
+   * =========================================================
+   */
+
+  const [isSidebarOpen, setIsSidebarOpen] =
+    useState(false);
+
+  /*
+   * =========================================================
+   * CLOSE MOBILE SIDEBAR ON ROUTE CHANGE
+   * =========================================================
+   */
+
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
+  /*
+   * =========================================================
+   * LOCK BODY SCROLL WHEN MOBILE SIDEBAR IS OPEN
+   * =========================================================
+   */
+
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isSidebarOpen]);
+
+  /*
+   * =========================================================
+   * ADMIN INITIAL
+   * =========================================================
+   */
+
+  const adminInitial =
+    admin?.name?.charAt(0)?.toUpperCase() || "A";
 
   /*
    * =========================================================
@@ -26,6 +81,8 @@ function AdminLayout() {
    */
 
   const handleLogout = () => {
+    setIsSidebarOpen(false);
+
     logout();
 
     navigate("/admin", {
@@ -98,6 +155,14 @@ function AdminLayout() {
       };
     }
 
+    if (pathname.startsWith("/admin/reviews")) {
+      return {
+        title: "Reviews",
+        description:
+          "Manage customer reviews and feedback.",
+      };
+    }
+
     if (pathname.startsWith("/admin/settings")) {
       return {
         title: "Settings",
@@ -116,24 +181,35 @@ function AdminLayout() {
   const page = getPageTitle();
 
   return (
-    <div className="min-h-screen bg-[#fffaf5]">
-      <div className="flex min-h-screen">
+    <div className="h-screen overflow-hidden bg-white">
+      <div className="flex h-screen min-h-0">
 
         {/* =====================================================
-            DESKTOP SIDEBAR
+            ADMIN SIDEBAR
+            Desktop + Mobile Drawer
         ===================================================== */}
 
-        <div className="hidden lg:block">
-          <div className="sticky top-0 h-screen">
-            <AdminSidebar />
-          </div>
-        </div>
+        <AdminSidebar
+          isOpen={isSidebarOpen}
+          onClose={() =>
+            setIsSidebarOpen(false)
+          }
+        />
 
         {/* =====================================================
             MAIN APPLICATION AREA
         ===================================================== */}
 
-        <div className="min-w-0 flex-1">
+        <div
+          className="
+            flex
+            h-screen
+            min-h-0
+            min-w-0
+            flex-1
+            flex-col
+          "
+        >
 
           {/* ===================================================
               TOP HEADER
@@ -143,42 +219,24 @@ function AdminLayout() {
             title={page.title}
             description={page.description}
             onLogout={handleLogout}
+            onMenuClick={() =>
+              setIsSidebarOpen(true)
+            }
           />
-
           {/* ===================================================
-              MOBILE BRAND / NAV BAR
+              SCROLLABLE MAIN CONTENT
           =================================================== */}
 
-          <div className="border-b border-[#eadfd3] bg-white px-5 py-3 lg:hidden">
-            <div className="flex items-center justify-between gap-4">
-
-              <div className="min-w-0">
-                <p className="truncate text-xs font-bold uppercase tracking-[0.18em] text-[#8b542f]">
-                  GuiltFree Cravings
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f3e4d3] text-xs font-bold text-[#8b542f]">
-                  A
-                </span>
-
-                <span className="max-w-[120px] truncate text-xs font-semibold text-slate-700">
-                  Administrator
-                </span>
-              </div>
-
-            </div>
-          </div>
-
-          {/* ===================================================
-              PAGE CONTENT
-          =================================================== */}
-
-          <main className="min-h-[calc(100vh-76px)]">
+          <main
+            className="
+              min-h-0
+              flex-1
+              overflow-y-auto
+              bg-white
+            "
+          >
             <Outlet />
           </main>
-
         </div>
       </div>
     </div>

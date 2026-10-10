@@ -1,5 +1,3 @@
-// src/components/admin/settings/NotificationsSection.tsx
-
 import NotificationToggle from "./NotificationToggle";
 
 interface NotificationsSectionProps {
@@ -20,30 +18,40 @@ function NotificationsSection({
   onCustomerNotificationsChange,
 }: NotificationsSectionProps) {
   return (
-    <section className="rounded-xl border border-[#eadfd3] bg-white shadow-sm">
-      {/* HEADER */}
+    <section className="overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
 
-      <div className="border-b border-[#eadfd3] px-5 py-5 sm:px-6">
-        <h2 className="text-lg font-bold text-slate-900">
-          Notifications
-        </h2>
+      {/* =====================================================
+          HEADER
+          ===================================================== */}
 
-        <p className="mt-1 text-sm text-slate-500">
-          Choose which admin notifications you want
-          to receive.
-        </p>
+      <div className="border-b border-[#EFE3D2] px-5 py-5 sm:px-6 sm:py-6">
+        <div className="flex items-start gap-4">
+
+          <div className="min-w-0">
+            <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-[#1F4A2E] sm:text-[18px]">
+              Notifications
+            </h2>
+
+            <p className="mt-0 text-[13px] leading-5 text-[#8B7A6C]">
+              Choose which admin notifications you want
+              to receive.
+            </p>
+          </div>
+
+        </div>
       </div>
 
-      {/* TOGGLES */}
+      {/* =====================================================
+          TOGGLES
+          ===================================================== */}
 
-      <div className="divide-y divide-[#eadfd3]">
+      <div className="divide-y divide-[#EFE3D2]">
+
         <NotificationToggle
           label="New Order Notifications"
           description="Get notified when a new order is created."
           checked={orderNotifications}
-          onChange={
-            onOrderNotificationsChange
-          }
+          onChange={onOrderNotificationsChange}
           ariaLabel="Toggle order notifications"
         />
 
@@ -51,9 +59,7 @@ function NotificationsSection({
           label="Payment Notifications"
           description="Get notified about successful or failed payments."
           checked={paymentNotifications}
-          onChange={
-            onPaymentNotificationsChange
-          }
+          onChange={onPaymentNotificationsChange}
           ariaLabel="Toggle payment notifications"
         />
 
@@ -61,11 +67,10 @@ function NotificationsSection({
           label="Customer Notifications"
           description="Receive notifications for important customer account activity."
           checked={customerNotifications}
-          onChange={
-            onCustomerNotificationsChange
-          }
+          onChange={onCustomerNotificationsChange}
           ariaLabel="Toggle customer notifications"
         />
+
       </div>
     </section>
   );

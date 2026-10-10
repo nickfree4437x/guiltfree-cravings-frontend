@@ -75,7 +75,7 @@ function ReviewStars({
                     star
                   )
                 }
-                className="group rounded-sm p-0.5 outline-none transition-transform duration-150 hover:scale-110 focus-visible:ring-2 focus-visible:ring-[#B5697A]/30"
+                className="group rounded-sm p-0.5 outline-none transition-transform duration-150 focus-visible:ring-2 focus-visible:ring-[#B5697A]/30"
               >
                 <Star
                   size={size}

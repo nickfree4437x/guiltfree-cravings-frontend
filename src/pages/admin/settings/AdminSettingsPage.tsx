@@ -40,7 +40,7 @@ function AdminSettingsPage() {
   ] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+    <div className="min-h-screen bg-white px-5 py-2 sm:px-8 lg:px-10 lg:py-4">
       <div className="mx-auto max-w-6xl">
 
         {/* =================================================
@@ -53,7 +53,7 @@ function AdminSettingsPage() {
             SETTINGS CONTENT
         ================================================= */}
 
-        <div className="mt-8 space-y-6">
+        <div className="mt-4 space-y-6">
 
           {/* =================================================
               ADMIN PROFILE

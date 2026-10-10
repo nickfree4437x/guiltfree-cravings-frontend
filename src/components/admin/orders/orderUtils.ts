@@ -14,11 +14,9 @@ import type {
 export const formatAmount = (
   amount: number
 ) => {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return `₹${amount.toLocaleString(
+    "en-IN"
+  )}`;
 };
 
 /*
@@ -30,11 +28,25 @@ export const formatAmount = (
 export const formatDate = (
   date: string
 ) => {
-  return new Intl.DateTimeFormat("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(date));
+  const parsedDate =
+    new Date(date);
+
+  if (
+    Number.isNaN(
+      parsedDate.getTime()
+    )
+  ) {
+    return "Date unavailable";
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-IN",
+    {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }
+  ).format(parsedDate);
 };
 
 /*
@@ -48,22 +60,22 @@ export const getOrderStatusClass = (
 ) => {
   switch (status) {
     case "PENDING":
-      return "bg-amber-50 text-amber-700";
+      return "border border-[#EFD5BD] bg-[#FFF3E8] text-[#C4773B]";
 
     case "CONFIRMED":
-      return "bg-blue-50 text-blue-700";
+      return "border border-[#D7E2F8] bg-[#F2F6FF] text-[#4D7FEA]";
 
     case "PROCESSING":
-      return "bg-purple-50 text-purple-700";
+      return "border border-[#D9D0EE] bg-[#F4F0FF] text-[#8062C7]";
 
     case "COMPLETED":
-      return "bg-green-50 text-green-700";
+      return "border border-[#CFE4D4] bg-[#EEF8F2] text-[#3F8A58]";
 
     case "CANCELLED":
-      return "bg-red-50 text-red-700";
+      return "border border-[#F0D1D5] bg-[#FFF3F5] text-[#C45D6D]";
 
     default:
-      return "bg-slate-50 text-slate-600";
+      return "border border-[#E8E1D9] bg-[#F7F4F1] text-[#6F6259]";
   }
 };
 
@@ -78,16 +90,16 @@ export const getPaymentStatusClass = (
 ) => {
   switch (status) {
     case "PAID":
-      return "bg-green-50 text-green-700";
+      return "border border-[#CFE4D4] bg-[#EEF8F2] text-[#3F8A58]";
 
     case "FAILED":
-      return "bg-red-50 text-red-700";
+      return "border border-[#F0D1D5] bg-[#FFF3F5] text-[#C45D6D]";
 
     case "REFUNDED":
-      return "bg-purple-50 text-purple-700";
+      return "border border-[#D9D0EE] bg-[#F4F0FF] text-[#8062C7]";
 
     case "PENDING":
     default:
-      return "bg-amber-50 text-amber-700";
+      return "border border-[#EFD5BD] bg-[#FFF3E8] text-[#C4773B]";
   }
 };

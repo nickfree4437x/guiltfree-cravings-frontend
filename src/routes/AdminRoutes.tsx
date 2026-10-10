@@ -9,6 +9,7 @@ import AdminDashboardPage from "../pages/admin/dashboard/AdminDashboardPage";
 import AdminProductsPage from "../pages/admin/product-page/AdminProductsPage";
 import AdminOrdersPage from "../pages/admin/orders/AdminOrdersPage";
 import AdminCustomersPage from "../pages/admin/users/AdminCustomersPage";
+import CustomerDetailsPage from "../pages/admin/users/CustomerDetailsPage";
 import AdminPaymentsPage from "../pages/admin/payments/AdminPaymentsPage";
 import AdminAnalyticsPage from "../pages/admin/analytics/AdminAnalyticsPage";
 import AdminOffers from "../pages/admin/offers/AdminOffersPage";
@@ -16,116 +17,83 @@ import AdminSettingsPage from "../pages/admin/settings/AdminSettingsPage";
 import AdminReviewsPage from "../pages/admin/reviews/AdminReviewsPage";
 
 import AdminLayout from "../pages/admin/layout/AdminLayout";
-
 import AdminProtectedRoute from "../protected-routes/AdminProtectedRoute";
 
 function AdminRoutes() {
   return (
     <Routes>
-
-      {/* =====================================================
-          ADMIN LOGIN
-          /admin
-      ===================================================== */}
-
+      {/* Admin Login */}
       <Route
         index
         element={<AdminLoginPage />}
       />
 
-      {/* =====================================================
-          PROTECTED ADMIN PANEL
-          /admin/*
-      ===================================================== */}
-
+      {/* Protected Admin Panel */}
       <Route element={<AdminProtectedRoute />}>
-
         <Route element={<AdminLayout />}>
 
-          {/* =================================================
-              DASHBOARD
-              /admin/dashboard
-          ================================================= */}
-
+          {/* Dashboard */}
           <Route
             path="dashboard"
             element={<AdminDashboardPage />}
           />
 
-          {/* =================================================
-              PRODUCTS
-              /admin/products
-          ================================================= */}
-
+          {/* Products */}
           <Route
             path="products"
             element={<AdminProductsPage />}
           />
 
+          {/* Reviews */}
           <Route
-            path="/reviews"
+            path="reviews"
             element={<AdminReviewsPage />}
           />
 
-          {/* =================================================
-              ORDERS
-              /admin/orders
-          ================================================= */}
-
+          {/* Orders */}
           <Route
             path="orders"
             element={<AdminOrdersPage />}
           />
 
-          {/* =================================================
-              PAYMENTS
-              /admin/payments
-          ================================================= */}
-
+          {/* Payments */}
           <Route
             path="payments"
             element={<AdminPaymentsPage />}
           />
 
-          {/* =================================================
-              ANALYTICS
-              /admin/analytics
-          ================================================= */}
-
+          {/* Analytics */}
           <Route
             path="analytics"
             element={<AdminAnalyticsPage />}
           />
 
+          {/* Offers */}
           <Route
             path="offers"
             element={<AdminOffers />}
           />
 
-          {/* =================================================
-              CUSTOMERS
-              /admin/users
-          ================================================= */}
-
+          {/* Customers */}
           <Route
             path="users"
             element={<AdminCustomersPage />}
           />
 
-          {/* =================================================
-              SETTINGS
-              /admin/settings
-          ================================================= */}
+          {/* Customer Details */}
+          <Route
+            path="customers/:id"
+            element={<CustomerDetailsPage />}
+          />
 
+          {/* Settings */}
           <Route
             path="settings"
             element={<AdminSettingsPage />}
           />
 
         </Route>
-
       </Route>
-
     </Routes>
   );
 }

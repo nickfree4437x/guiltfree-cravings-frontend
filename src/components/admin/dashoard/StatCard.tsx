@@ -24,50 +24,44 @@ interface StatCardProps {
 const cardConfig = {
   products: {
     icon: Package,
-    iconBg: "bg-[#f3e4d3]",
-    iconColor: "text-[#8b542f]",
-    accent: "bg-[#8b542f]",
-    hover: "hover:border-[#d8bfa9]",
+    iconBg: "bg-[#FBECEF]",
+    iconColor: "text-[#B5697A]",
+    accent: "bg-[#D99AA9]",
   },
 
   "active-products": {
     icon: Activity,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-600",
-    accent: "bg-emerald-500",
-    hover: "hover:border-emerald-200",
+    iconBg: "bg-[#EEF7F0]",
+    iconColor: "text-[#3E8052]",
+    accent: "bg-[#8DBA98]",
   },
 
   orders: {
     icon: ShoppingBag,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
-    accent: "bg-blue-500",
-    hover: "hover:border-blue-200",
+    iconBg: "bg-[#EEF5FF]",
+    iconColor: "text-[#4D7FEA]",
+    accent: "bg-[#91B4F4]",
   },
 
   "pending-orders": {
     icon: ClipboardList,
-    iconBg: "bg-amber-50",
-    iconColor: "text-amber-600",
-    accent: "bg-amber-500",
-    hover: "hover:border-amber-200",
+    iconBg: "bg-[#FFF3E8]",
+    iconColor: "text-[#C4773B]",
+    accent: "bg-[#E2AD7C]",
   },
 
   customers: {
     icon: Users,
-    iconBg: "bg-violet-50",
-    iconColor: "text-violet-600",
-    accent: "bg-violet-500",
-    hover: "hover:border-violet-200",
+    iconBg: "bg-[#F4F0FF]",
+    iconColor: "text-[#8062C7]",
+    accent: "bg-[#B8A4E5]",
   },
 
   "paid-orders": {
     icon: CheckCircle2,
-    iconBg: "bg-green-50",
-    iconColor: "text-green-600",
-    accent: "bg-green-500",
-    hover: "hover:border-green-200",
+    iconBg: "bg-[#EEF8F2]",
+    iconColor: "text-[#3F8A58]",
+    accent: "bg-[#91C5A0]",
   },
 } as const;
 
@@ -81,30 +75,72 @@ function StatCard({
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-xl bg-white p-5 shadow-sm transition-all duration-300 sm:p-6 ${config.hover}`}
+      className={`
+        group
+        relative
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#EFE3D2]
+        bg-white
+        p-5
+        shadow-sm
+        transition-all
+        duration-300
+        hover:shadow-sm
+        sm:p-6
+      `}
     >
-      {/* Top Accent */}
-      <div
-        className={`absolute left-0 top-0 w-full ${config.accent}`}
-        aria-hidden="true"
-      />
+
+      {/* =====================================================
+          CONTENT
+      ===================================================== */}
 
       <div className="flex items-start justify-between gap-4">
-        {/* Content */}
+
+        {/* Text */}
         <div className="min-w-0">
-          <p className="text-sm text-slate-500">
+          <p
+            className="
+              text-[12px]
+              tracking-[0.01em]
+              text-gray-600
+            "
+          >
             {label}
           </p>
 
-          <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+          <p
+            className="
+              mt-3
+              text-[28px]
+              font-bold
+              leading-none
+              tracking-[-0.02em]
+              text-[#1F2937]
+              sm:text-[30px]
+            "
+          >
             {value.toLocaleString("en-IN")}
           </p>
-
         </div>
 
-        {/* Icon */}
+        {/* =================================================
+            ICON
+        ================================================= */}
+
         <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${config.iconBg} ${config.iconColor} transition-transform duration-300`}
+          className={`
+            flex
+            h-11
+            w-11
+            shrink-0
+            items-center
+            justify-center
+            rounded-2xl
+            ${config.iconBg}
+            ${config.iconColor}
+          `}
         >
           <Icon
             className="h-[21px] w-[21px]"
@@ -113,8 +149,6 @@ function StatCard({
           />
         </div>
       </div>
-
-
     </div>
   );
 }

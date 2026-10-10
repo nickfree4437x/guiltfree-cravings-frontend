@@ -270,7 +270,7 @@ function ProductReviews({
         <button
           type="button"
           onClick={handleWriteReview}
-          className="group inline-flex w-fit items-center justify-center gap-2.5 rounded-lg border border-[#D9B7C0] bg-white px-5 py-2 text-[12px] font-medium text-[#B5697A] shadow-sm transition-all duration-200 hover:border-[#B5697A] hover:bg-[#B5697A] hover:text-white"
+          className="group inline-flex w-fit items-center justify-center gap-2.5 rounded-lg border border-[#D9B7C0] bg-white px-5 py-2 text-[12px] text-[#B5697A] transition-all duration-200 hover:border-[#B5697A] hover:bg-[#B5697A] hover:text-white"
         >
           <MessageSquarePlus
             size={15}
@@ -311,7 +311,7 @@ function ProductReviews({
                   </p>
 
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-[9px] font-medium ${
+                    className={`rounded-full px-2.5 py-0.5 text-[9px] ${
                       myReview.status ===
                       "VERIFIED"
                         ? "bg-[#FBEEF1] text-[#A55D6F]"
@@ -348,10 +348,9 @@ function ProductReviews({
                   onClick={() =>
                     setIsModalOpen(true)
                   }
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#E5D9CA] bg-white px-3 py-2 text-[11px] font-medium text-[#6D5844] transition hover:border-[#D9B7C0] hover:bg-[#FBEEF1] hover:text-[#B5697A]"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-[#E5D9CA] bg-white px-2 py-2 text-[11px] text-[#6D5844] transition hover:border-[#D9B7C0] hover:bg-[#FBEEF1] hover:text-[#B5697A]"
                 >
                   <Edit3 size={13} />
-                  Edit
                 </button>
 
                 <button
@@ -360,7 +359,7 @@ function ProductReviews({
                   onClick={() => {
                     void handleDeleteReview();
                   }}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#E8C7CE] bg-white px-3 py-2 text-[11px] font-medium text-[#B5697A] transition hover:border-[#B5697A] hover:bg-[#FBEEF1] disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-[#E8C7CE] bg-white px-2 py-2 text-[11px] text-[#B5697A] transition hover:bg-[#FBEEF1] disabled:opacity-50"
                 >
                   {isDeleting ? (
                     <Loader2
@@ -370,8 +369,6 @@ function ProductReviews({
                   ) : (
                     <Trash2 size={13} />
                   )}
-
-                  Delete
                 </button>
               </div>
             </div>
@@ -415,7 +412,7 @@ function ProductReviews({
             <button
               type="button"
               onClick={handleWriteReview}
-              className="mt-4 rounded-lg bg-[#B5697A] px-4 py-2.5 text-[11px] font-medium text-white transition hover:bg-[#A55D6F]"
+              className="mt-4 rounded-lg bg-[#B5697A] px-4 py-2.5 text-[11px] text-white transition hover:bg-[#A55D6F]"
             >
               Write the first review
             </button>

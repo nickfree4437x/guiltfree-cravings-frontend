@@ -131,11 +131,11 @@ export const ForgotPasswordModal = ({
             />
           </div>
 
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-900">
             Password Reset Successful
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="mt-2 text-sm leading-relaxed text-slate-500">
             Your admin password has been
             updated successfully.
           </p>
@@ -150,7 +150,11 @@ export const ForgotPasswordModal = ({
     return (
       <div className="mb-8 text-center">
 
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+        <h1 className="mt-3 text-[25px]
+              font-semibold
+              tracking-tight
+              text-[#2C2C2C]
+              sm:text-[27px]">
           {step === "email"
             ? "Forgot Password?"
             : step === "otp"
@@ -158,7 +162,7 @@ export const ForgotPasswordModal = ({
             : "Create New Password"}
         </h1>
 
-        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
+        <p className="mx-auto mt-0 max-w-sm text-sm leading-relaxed text-slate-500">
           {step === "email"
             ? "Enter your admin email and we'll send you a secure password reset OTP."
             : step === "otp"
@@ -176,7 +180,7 @@ export const ForgotPasswordModal = ({
    */
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#fffaf5] px-5 py-10">
+    <main className="flex min-h-screen items-center justify-center bg-white px-5 py-6">
       <div className="w-full max-w-md">
         {renderHeader()}
 
@@ -290,7 +294,7 @@ export const ForgotPasswordModal = ({
                 disabled={
                   isLoading
                 }
-                className="mx-auto flex items-center justify-center text-sm text-slate-500 transition-colors duration-200 hover:text-[#8b542f] hover:underline focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mx-auto flex items-center justify-center text-sm text-slate-500 transition-colors duration-200 hover:text-[#8b542f] hover:underline disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Back to Admin Login
               </button>

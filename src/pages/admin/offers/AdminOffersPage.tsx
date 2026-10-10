@@ -2,14 +2,13 @@ import {
   Plus,
   Search,
   Tag,
-  Users,
-  UserRound,
   Clock3,
   CheckCircle2,
   XCircle,
   Loader2,
-  Trash2,
 } from "lucide-react";
+
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 import {
   useEffect,
@@ -28,13 +27,21 @@ import {
 import CreateOfferModal from "../../../components/admin/offers/CreateOfferModal";
 
 function AdminOffersPage() {
-  const [offers, setOffers] = useState<Offer[]>([]);
+  const [offers, setOffers] =
+    useState<Offer[]>([]);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
 
-  const [search, setSearch] = useState("");
+  // ============================================================
+  // FILTERS
+  // ============================================================
+
+  const [search, setSearch] =
+    useState("");
 
   const [audience, setAudience] =
     useState<OfferAudience | "">("");
@@ -42,15 +49,25 @@ function AdminOffersPage() {
   const [status, setStatus] =
     useState<OfferStatus | "">("");
 
+  // ============================================================
+  // CREATE / EDIT MODAL
+  // ============================================================
+
   const [createOpen, setCreateOpen] =
     useState(false);
+
+  const [editingOffer, setEditingOffer] =
+    useState<Offer | null>(null);
+
+  // ============================================================
+  // DELETE
+  // ============================================================
 
   const [deleteId, setDeleteId] =
     useState<number | null>(null);
 
   const [deleteLoading, setDeleteLoading] =
     useState(false);
-
 
   // ============================================================
   // FETCH OFFERS
@@ -79,7 +96,6 @@ function AdminOffersPage() {
     }
   };
 
-
   useEffect(() => {
     const timer = window.setTimeout(() => {
       fetchOffers();
@@ -90,6 +106,34 @@ function AdminOffersPage() {
     };
   }, [search, audience, status]);
 
+  // ============================================================
+  // CREATE OFFER
+  // ============================================================
+
+  const handleCreateOffer = () => {
+    setEditingOffer(null);
+    setCreateOpen(true);
+  };
+
+  // ============================================================
+  // EDIT OFFER
+  // ============================================================
+
+  const handleEditOffer = (
+    offer: Offer
+  ) => {
+    setEditingOffer(offer);
+    setCreateOpen(true);
+  };
+
+  // ============================================================
+  // CLOSE CREATE / EDIT MODAL
+  // ============================================================
+
+  const handleCloseOfferModal = () => {
+    setCreateOpen(false);
+    setEditingOffer(null);
+  };
 
   // ============================================================
   // DELETE OFFER
@@ -123,7 +167,6 @@ function AdminOffersPage() {
     }
   };
 
-
   // ============================================================
   // STATS
   // ============================================================
@@ -131,7 +174,8 @@ function AdminOffersPage() {
   const total = offers.length;
 
   const active = offers.filter(
-    (offer) => offer.status === "ACTIVE"
+    (offer) =>
+      offer.status === "ACTIVE"
   ).length;
 
   const scheduled = offers.filter(
@@ -144,13 +188,12 @@ function AdminOffersPage() {
       offer.status === "EXPIRED"
   ).length;
 
-
   // ============================================================
   // RENDER
   // ============================================================
 
   return (
-    <div className="min-h-screen bg-[#fffaf5] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+    <div className="min-h-full bg-white px-5 py-2 sm:px-8 lg:px-10 lg:py-3">
       <div className="mx-auto max-w-7xl">
 
         {/* ======================================================
@@ -159,29 +202,42 @@ function AdminOffersPage() {
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8b542f]">
-              Promotions
-            </p>
-
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+            <h1 className="mt-2 text-[18px] font-bold tracking-tight text-slate-900 md:text-[24px]">
               Offers
             </h1>
 
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+            <p className="mt-0 max-w-xl text-sm leading-relaxed text-slate-500">
               Create and manage public offers and
               customer-specific discounts.
             </p>
           </div>
 
-
-          {/* ==================================================
-              CREATE OFFER — PRIMARY CTA
-          ================================================== */}
+          {/* CREATE OFFER */}
 
           <button
             type="button"
-            onClick={() => setCreateOpen(true)}
-            className="inline-flex w-fit items-center justify-center gap-2 rounded-xl bg-[#8b542f] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#754527] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#8b542f]/30"
+            onClick={handleCreateOffer}
+            className="
+              inline-flex
+              w-fit
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              bg-[#B5697A]
+              px-5
+              py-2.5
+              text-sm
+              text-white
+              shadow
+              transition-all
+              hover:bg-[#A85F70]
+              hover:shadow-sm
+              focus:outline-none
+              focus:ring-2
+              focus:ring-[#B5697A]/20
+              focus:ring-offset-2
+            "
           >
             <Plus
               className="h-4 w-4"
@@ -192,12 +248,11 @@ function AdminOffersPage() {
           </button>
         </div>
 
-
         {/* ======================================================
             STATS
         ====================================================== */}
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             label="Total Offers"
             value={total}
@@ -207,6 +262,9 @@ function AdminOffersPage() {
                 strokeWidth={1.8}
               />
             }
+            iconBg="bg-[#FBECEF]"
+            iconColor="text-[#B5697A]"
+            accent="bg-[#D99AA9]"
           />
 
           <StatCard
@@ -218,6 +276,9 @@ function AdminOffersPage() {
                 strokeWidth={1.8}
               />
             }
+            iconBg="bg-[#EEF8F2]"
+            iconColor="text-[#3F8A58]"
+            accent="bg-[#91C5A0]"
           />
 
           <StatCard
@@ -229,6 +290,9 @@ function AdminOffersPage() {
                 strokeWidth={1.8}
               />
             }
+            iconBg="bg-[#FFF3E8]"
+            iconColor="text-[#C4773B]"
+            accent="bg-[#E2AD7C]"
           />
 
           <StatCard
@@ -240,21 +304,33 @@ function AdminOffersPage() {
                 strokeWidth={1.8}
               />
             }
+            iconBg="bg-[#F4F0FF]"
+            iconColor="text-[#8062C7]"
+            accent="bg-[#B8A4E5]"
           />
         </div>
-
 
         {/* ======================================================
             FILTERS
         ====================================================== */}
 
-        <div className="mt-7 rounded-2xl border border-[#eadfd3] bg-white p-4">
+        <div className="mt-5">
           <div className="grid gap-3 lg:grid-cols-[1fr_200px_180px]">
 
-            {/* Search */}
+            {/* SEARCH */}
+
             <div className="relative">
               <Search
-                className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                className="
+                  pointer-events-none
+                  absolute
+                  left-3.5
+                  top-1/2
+                  h-4
+                  w-4
+                  -translate-y-1/2
+                  text-[#A99B90]
+                "
                 strokeWidth={1.8}
               />
 
@@ -262,15 +338,32 @@ function AdminOffersPage() {
                 type="text"
                 value={search}
                 onChange={(event) =>
-                  setSearch(event.target.value)
+                  setSearch(
+                    event.target.value
+                  )
                 }
                 placeholder="Search offer, code or customer phone..."
-                className="w-full rounded-xl border border-[#eadfd3] bg-white py-3 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-[#8b542f] focus:ring-2 focus:ring-[#8b542f]/10"
+                className="
+                  w-full
+                  rounded-xl
+                  border
+                  border-[#E8DED3]
+                  bg-white
+                  py-3
+                  pl-10
+                  pr-4
+                  text-sm
+                  text-[#3D3834]
+                  outline-none
+                  transition
+                  placeholder:text-[#A99B90]
+                  focus:border-[#B5697A]
+                "
               />
             </div>
 
+            {/* AUDIENCE */}
 
-            {/* Audience */}
             <select
               value={audience}
               onChange={(event) =>
@@ -280,7 +373,19 @@ function AdminOffersPage() {
                     | ""
                 )
               }
-              className="rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-600 outline-none transition focus:border-[#8b542f] focus:ring-2 focus:ring-[#8b542f]/10"
+              className="
+                rounded-xl
+                border
+                border-[#E8DED3]
+                bg-white
+                px-4
+                py-3
+                text-sm
+                text-[#6F6259]
+                outline-none
+                transition
+                focus:border-[#B5697A]
+              "
             >
               <option value="">
                 All Audiences
@@ -295,8 +400,8 @@ function AdminOffersPage() {
               </option>
             </select>
 
+            {/* STATUS */}
 
-            {/* Status */}
             <select
               value={status}
               onChange={(event) =>
@@ -306,7 +411,19 @@ function AdminOffersPage() {
                     | ""
                 )
               }
-              className="rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-600 outline-none transition focus:border-[#8b542f] focus:ring-2 focus:ring-[#8b542f]/10"
+              className="
+                rounded-xl
+                border
+                border-[#E8DED3]
+                bg-white
+                px-4
+                py-3
+                text-sm
+                text-[#6F6259]
+                outline-none
+                transition
+                focus:border-[#B5697A]
+              "
             >
               <option value="">
                 All Statuses
@@ -328,55 +445,59 @@ function AdminOffersPage() {
                 Inactive
               </option>
             </select>
-
           </div>
         </div>
-
 
         {/* ======================================================
             OFFERS CONTENT
         ====================================================== */}
 
-        <div className="mt-6 overflow-hidden rounded-3xl border border-[#eadfd3] bg-white">
+        <div className="mt-5 overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
 
-          {/* ==================================================
-              LOADING
-          ================================================== */}
+          {/* LOADING */}
 
           {loading ? (
             <div className="flex min-h-[300px] items-center justify-center">
-              <div className="flex items-center gap-3 text-sm text-slate-500">
+              <div className="flex items-center gap-3 text-sm text-[#8B7A6C]">
                 <Loader2
-                  className="h-5 w-5 animate-spin text-[#8b542f]"
+                  className="h-5 w-5 animate-spin text-[#B5697A]"
                   strokeWidth={1.8}
                 />
 
                 Loading offers...
               </div>
             </div>
-
           ) : error ? (
 
-            /* ==================================================
-               ERROR
-            ================================================== */
+            /* ERROR */
 
             <div className="flex min-h-[300px] flex-col items-center justify-center px-6 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FBECEF] text-[#B5697A]">
                 <XCircle
                   className="h-5 w-5"
                   strokeWidth={1.8}
                 />
               </div>
 
-              <p className="mt-4 text-sm font-medium text-red-500">
+              <p className="mt-4 text-sm font-medium text-[#A85F70]">
                 {error}
               </p>
 
               <button
                 type="button"
                 onClick={fetchOffers}
-                className="mt-4 rounded-xl bg-[#8b542f] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#754527]"
+                className="
+                  mt-4
+                  rounded-xl
+                  bg-[#B5697A]
+                  px-4
+                  py-2.5
+                  text-sm
+                  text-white
+                  transition
+                  hover:bg-[#A85F70]
+                  focus:outline-none
+                "
               >
                 Try Again
               </button>
@@ -384,32 +505,44 @@ function AdminOffersPage() {
 
           ) : offers.length === 0 ? (
 
-            /* ==================================================
-               EMPTY STATE
-            ================================================== */
+            /* EMPTY STATE */
 
             <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f8eee4] text-[#8b542f]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#FBECEF] text-[#B5697A]">
                 <Tag
                   className="h-6 w-6"
                   strokeWidth={1.7}
                 />
               </div>
 
-              <h3 className="mt-5 text-lg font-semibold text-slate-900">
+              <h3 className="mt-5 text-lg font-semibold text-[#1F4A2E]">
                 No offers found
               </h3>
 
-              <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+              <p className="mt-2 max-w-md text-sm leading-6 text-[#8B7A6C]">
                 Create your first public or
                 customer-specific offer to get started.
               </p>
 
-              {/* SECOND CREATE OFFER CTA */}
               <button
                 type="button"
-                onClick={() => setCreateOpen(true)}
-                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#8b542f] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#754527] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#8b542f]/30"
+                onClick={handleCreateOffer}
+                className="
+                  mt-5
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-xl
+                  bg-[#B5697A]
+                  px-5 py-2
+                  md:py-2.5
+                  text-sm
+                  text-white
+                  shadow
+                  transition-all
+                  hover:bg-[#A85F70]
+                  focus:outline-none
+                "
               >
                 <Plus
                   className="h-4 w-4"
@@ -427,77 +560,79 @@ function AdminOffersPage() {
             ================================================== */
 
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px]">
-
+              <table className="w-full min-w-[940px]">
                 <thead>
-                  <tr className="border-b border-[#eadfd3] bg-[#fdfbf8]">
+                  <tr className="border-b border-[#A85F70] bg-[#B5697A]">
 
-                    <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                      Offer
+                    <th className="px-6 py-3 text-left">
+                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                        Offer
+                      </span>
                     </th>
 
-                    <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                      Audience
+                    <th className="px-6 py-3 text-left">
+                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                        Audience
+                      </span>
                     </th>
 
-                    <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                      Discount
+                    <th className="px-6 py-3 text-left">
+                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                        Discount
+                      </span>
                     </th>
 
-                    <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                      Usage
+                    <th className="px-6 py-3 text-left">
+                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                        Usage
+                      </span>
                     </th>
 
-                    <th className="px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                      Status
+                    <th className="px-6 py-3 text-left">
+                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                        Status
+                      </span>
                     </th>
 
-                    <th className="px-6 py-4 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                      Action
+                    <th className="px-6 py-3 text-right">
+                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                        Action
+                      </span>
                     </th>
 
                   </tr>
                 </thead>
 
-
                 <tbody>
                   {offers.map((offer) => (
                     <tr
                       key={offer.id}
-                      className="border-b border-[#f1e9e2] transition last:border-0 hover:bg-[#fdfbf8]"
+                      className="
+                        border-b
+                        border-[#F1E9E1]
+                        transition-colors
+                        duration-200
+                        last:border-0
+                        hover:bg-[#FFFBF8]
+                      "
                     >
 
                       {/* OFFER */}
-                      <td className="px-6 py-5">
-                        <p className="text-sm font-semibold text-slate-900">
-                          {offer.name}
-                        </p>
 
-                        <p className="mt-1 inline-flex rounded-md bg-[#f8eee4] px-2 py-1 text-[11px] font-semibold tracking-wide text-[#754527]">
+                      <td className="px-6 py-3">
+
+                        <p className="mt-1.5 inline-flex rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[11px] tracking-[0.04em] text-[#A85F70]">
                           {offer.code}
                         </p>
                       </td>
 
-
                       {/* AUDIENCE */}
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-2">
 
-                          {offer.audience ===
-                          "PUBLIC" ? (
-                            <Users
-                              className="h-4 w-4 text-[#8b542f]"
-                              strokeWidth={1.8}
-                            />
-                          ) : (
-                            <UserRound
-                              className="h-4 w-4 text-[#8b542f]"
-                              strokeWidth={1.8}
-                            />
-                          )}
+                      <td className="px-6 py-3">
+                        <div className="flex items-center gap-2.5">
 
                           <div>
-                            <p className="text-sm font-medium text-slate-700">
+                            <p className="text-[13px] text-[#3D3834]">
                               {offer.audience ===
                               "PUBLIC"
                                 ? "Public"
@@ -505,7 +640,7 @@ function AdminOffersPage() {
                             </p>
 
                             {offer.customerPhone && (
-                              <p className="mt-0.5 text-xs text-slate-400">
+                              <p className="mt-0.5 text-[12px] text-[#9A8D82]">
                                 {offer.customerPhone}
                               </p>
                             )}
@@ -514,41 +649,33 @@ function AdminOffersPage() {
                         </div>
                       </td>
 
-
                       {/* DISCOUNT */}
-                      <td className="px-6 py-5">
-                        <p className="text-sm font-semibold text-slate-800">
+
+                      <td className="px-6 py-3">
+                        <p className="text-[14px] text-[#1F4A2E]">
                           {offer.discountType ===
                           "PERCENTAGE"
                             ? `${offer.discountValue}%`
                             : `₹${offer.discountValue}`}
                         </p>
-
-                        {offer.minOrderValue !==
-                          null && (
-                          <p className="mt-1 text-xs text-slate-400">
-                            Min ₹
-                            {offer.minOrderValue}
-                          </p>
-                        )}
                       </td>
 
-
                       {/* USAGE */}
-                      <td className="px-6 py-5">
-                        <p className="text-sm text-slate-700">
+
+                      <td className="px-6 py-3">
+                        <p className="text-[13px] text-[#5F554E]">
                           {offer.usageCount ?? 0}
 
                           {offer.usageLimit !==
-                          null
+                            null
                             ? ` / ${offer.usageLimit}`
                             : ""}
                         </p>
                       </td>
 
-
                       {/* STATUS */}
-                      <td className="px-6 py-5">
+
+                      <td className="px-6 py-3">
                         <StatusBadge
                           status={
                             offer.status ??
@@ -557,45 +684,68 @@ function AdminOffersPage() {
                         />
                       </td>
 
-
                       {/* ACTION */}
-                      <td className="px-6 py-5 text-right">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleDelete(
-                              offer.id
-                            )
-                          }
-                          disabled={
-                            deleteLoading &&
-                            deleteId ===
-                              offer.id
-                          }
-                          aria-label={`Delete ${offer.name}`}
-                          title="Delete offer"
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {deleteLoading &&
-                          deleteId ===
-                            offer.id ? (
-                            <Loader2
-                              className="h-4 w-4 animate-spin"
-                              strokeWidth={1.8}
-                            />
-                          ) : (
-                            <Trash2
-                              className="h-4 w-4"
-                              strokeWidth={1.8}
-                            />
-                          )}
-                        </button>
+
+                      <td className="px-6 py-3">
+                        <div className="flex items-center justify-end gap-2">
+
+                      {/* EDIT */}
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleEditOffer(offer)
+                        }
+                        disabled={deleteLoading}
+                        aria-label={`Edit ${offer.name}`}
+                        title="Edit offer"
+                        className="
+                          p-2 rounded-md text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 transition
+                        "
+                      >
+                        <FaEdit
+                          className="h-[16px] w-[16px]"
+                          strokeWidth={1.9}
+                        />
+                      </button>
+
+                      {/* DELETE */}
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDelete(offer.id)
+                        }
+                        disabled={
+                          deleteLoading &&
+                          deleteId === offer.id
+                        }
+                        aria-label={`Delete ${offer.name}`}
+                        title="Delete offer"
+                        className="
+                          p-2 rounded-md text-sm bg-red-50 text-red-600 hover:bg-red-100 transition
+                        "
+                      >
+                        {deleteLoading &&
+                        deleteId === offer.id ? (
+                          <Loader2
+                            className="h-[16px] w-[16px] animate-spin"
+                            strokeWidth={1.9}
+                          />
+                        ) : (
+                          <FaTrash
+                            className="h-[16px] w-[16px]"
+                            strokeWidth={1.9}
+                          />
+                        )}
+                      </button>
+
+                    </div>
                       </td>
 
                     </tr>
                   ))}
                 </tbody>
-
               </table>
             </div>
           )}
@@ -603,21 +753,19 @@ function AdminOffersPage() {
         </div>
       </div>
 
-
       {/* ========================================================
-          CREATE OFFER MODAL
+          CREATE / EDIT OFFER MODAL
       ======================================================== */}
 
       <CreateOfferModal
         open={createOpen}
-        onClose={() => setCreateOpen(false)}
+        offer={editingOffer}
+        onClose={handleCloseOfferModal}
         onCreated={fetchOffers}
       />
-
     </div>
   );
 }
-
 
 // ============================================================
 // STAT CARD
@@ -627,32 +775,62 @@ function StatCard({
   label,
   value,
   icon,
+  iconBg,
+  iconColor,
 }: {
   label: string;
   value: number;
   icon: ReactNode;
+  iconBg: string;
+  iconColor: string;
+  accent: string;
 }) {
   return (
-    <div className="rounded-2xl border border-[#eadfd3] bg-white p-5 transition hover:shadow-sm">
+    <div
+      className="
+        group
+        relative
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#EFE3D2]
+        bg-white
+        p-5
+        shadow-sm
+        sm:p-6
+      "
+    >
 
-      <div className="flex items-center justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f8eee4] text-[#8b542f]">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-[13px] tracking-[0.01em] text-gray-600">
+            {label}
+          </p>
+
+          <p className="mt-3 text-[28px] font-bold leading-none tracking-[-0.02em] text-[#1F2937] sm:text-[30px]">
+            {value.toLocaleString("en-IN")}
+          </p>
+        </div>
+
+        <div
+          className={`
+            flex
+            h-11
+            w-11
+            shrink-0
+            items-center
+            justify-center
+            rounded-2xl
+            ${iconBg}
+            ${iconColor}
+          `}
+        >
           {icon}
         </div>
       </div>
-
-      <p className="mt-5 text-2xl font-semibold tracking-tight text-slate-900">
-        {value}
-      </p>
-
-      <p className="mt-1 text-xs text-slate-500">
-        {label}
-      </p>
-
     </div>
   );
 }
-
 
 // ============================================================
 // STATUS BADGE
@@ -668,21 +846,30 @@ function StatusBadge({
     string
   > = {
     ACTIVE:
-      "bg-emerald-50 text-emerald-600",
+      "border border-[#CFE4D4] bg-[#EEF8F2] text-[#3F8A58]",
 
     SCHEDULED:
-      "bg-amber-50 text-amber-600",
+      "border border-[#EFD5BD] bg-[#FFF3E8] text-[#C4773B]",
 
     EXPIRED:
-      "bg-slate-100 text-slate-500",
+      "border border-[#E8E1D9] bg-[#F7F4F1] text-[#766A61]",
 
     INACTIVE:
-      "bg-red-50 text-red-500",
+      "border border-[#E8C8CE] bg-[#FBECEF] text-[#A85F70]",
   };
 
   return (
     <span
-      className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${styles[status]}`}
+      className={`
+        inline-flex
+        items-center
+        rounded-full
+        px-3
+        py-1
+        text-[10px]
+        tracking-[0.01em]
+        ${styles[status]}
+      `}
     >
       {status}
     </span>

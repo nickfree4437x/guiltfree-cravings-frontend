@@ -1,0 +1,66 @@
+﻿jQuery(document).ready(function () {
+    'use strict';
+    var $affectedElements = $("p,div,h3,a,span.title1,span.title2"); // Can be extended, ex. $("div, p, span.someClass")
+    // Storing the original size in a data attribute so size can be reset
+    $affectedElements.each(function () {
+        var $this = $(this);
+        $this.data("orig-size", $this.css("font-size"));
+    });
+    $(".increaseFont").click(function () {
+        changeFontSize(1);
+    });
+    $(".decreaseFont").click(function () {
+        changeFontSize(-1);
+    });
+    $(".resetFont").click(function () {
+        $affectedElements.each(function () {
+            var $this = $(this);
+            $this.css("font-size", $this.data("orig-size"));
+        });
+    });
+    function changeFontSize(direction) {
+        $affectedElements.each(function () {
+            var $this = $(this);
+            var orgSize = parseInt($this.data("orig-size"));
+            var currSize = parseInt($this.css("font-size"));
+            if (currSize > (orgSize + 3)) {
+                return;
+            }
+            if (currSize < (orgSize - 3)) {
+                return;
+            }
+            $this.css("font-size", parseInt($this.css("font-size")) + direction);
+        });
+    }
+    var $affectedElementsDesign = $("body,p,div,h1, h2, h3, h4, h5, h6,a,span.title1,span.title2");
+    $affectedElementsDesign.each(function () {
+        var $this = $(this);
+        $this.data("orig-background", $this.css("background"));
+        $this.data("orig-color", $this.css("color"));
+    });
+    $(".defaultTheme").click(function () {
+        $affectedElements.each(function () {
+            var $this = $(this);
+            $this.css("background", $this.data("orig-background"));
+            $this.css("color", $this.data("orig-color"));
+        });
+    });
+    $(".darkTheme").click(function () {
+        changeTheme();
+    });
+    function changeTheme() {
+        $affectedElements.each(function () {
+            var $this = $(this);
+            $this.css("background", "#212120");
+            $this.css("color", "#f0ff10");
+        });
+    }
+}); /*ready*/
+(function ($) {
+    var interval = setInterval(function () {
+        var momentNow = moment();
+        $('#ClockDisplay').html('<i class="fa fa-calendar"></i>&nbsp;' +
+            momentNow.format('dddd') +
+            ', ' + momentNow.format('DD MMMM YYYY') + ' |&nbsp;&nbsp;<i class="fa fa-clock-o"></i>&nbsp; ' + momentNow.format('hh:mm:ss A'));
+    }, 100);
+})(jQuery);

@@ -14,7 +14,7 @@ function ProductsPageHeader({
           Products
         </h1>
 
-        <p className="mt-0 max-w-xl text-sm leading-6 text-slate-500">
+        <p className="mt-0 max-w-xl text-sm leading-relaxed text-slate-500">
           Manage your products and their basic
           information.
         </p>

@@ -12,13 +12,32 @@ function DashboardStats({
   stats,
 }: DashboardStatsProps) {
   return (
-    <section aria-label="Dashboard statistics">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section
+      aria-label="Dashboard statistics"
+      className="w-full"
+    >
+      <div
+        className="
+          grid
+          grid-cols-1
+          gap-4
+          sm:grid-cols-2
+          xl:grid-cols-4
+        "
+      >
+        {/* =====================================================
+            TOTAL PRODUCTS
+        ===================================================== */}
+
         <StatCard
           label="Total Products"
           value={stats.totalProducts}
           icon="products"
         />
+
+        {/* =====================================================
+            TOTAL ORDERS
+        ===================================================== */}
 
         <StatCard
           label="Total Orders"
@@ -26,11 +45,19 @@ function DashboardStats({
           icon="orders"
         />
 
+        {/* =====================================================
+            PENDING ORDERS
+        ===================================================== */}
+
         <StatCard
           label="Pending Orders"
           value={stats.pendingOrders}
           icon="pending-orders"
         />
+
+        {/* =====================================================
+            TOTAL CUSTOMERS
+        ===================================================== */}
 
         <StatCard
           label="Total Customers"

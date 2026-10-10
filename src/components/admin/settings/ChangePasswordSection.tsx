@@ -1,11 +1,11 @@
 import { useState } from "react";
+
 import {
   Check,
   Eye,
   EyeOff,
   KeyRound,
   Lock,
-  ShieldCheck,
 } from "lucide-react";
 
 import { changeAdminPassword } from "../../../api/adminApi";
@@ -87,7 +87,7 @@ function ChangePasswordSection({
    */
 
   const passwordInputClass =
-    "h-12 w-full rounded-xl border border-[#eadfd3] bg-[#fffaf5] px-4 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#8b542f] focus:ring-2 focus:ring-[#8b542f]/10";
+    "h-11 w-full rounded-xl border border-[#E8DED3] bg-white px-4 pr-12 text-sm text-[#3D3834] outline-none placeholder:text-[#B0A39A] hover:border-[#DCCDC0] focus:border-[#B5697A] focus:bg-white";
 
   /*
    * =========================================================
@@ -236,30 +236,26 @@ function ChangePasswordSection({
    */
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-[#eadfd3] bg-white shadow-[0_12px_40px_rgba(117,69,39,0.05)]">
+    <section className="overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
+
       {/* =====================================================
           HEADER
           ===================================================== */}
 
-      <div className="border-b border-[#eee4dc] px-5 py-5 sm:px-7 sm:py-6">
+      <div className="border-b border-[#EFE3D2] bg-white px-5 py-5 sm:px-7 sm:py-6">
         <div className="flex items-start gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#f8eee4] text-[#8b542f]">
-            <KeyRound
-              className="h-5 w-5"
-              strokeWidth={1.8}
-            />
-          </div>
 
-          <div>
-            <h2 className="text-[17px] font-semibold tracking-tight text-slate-900 sm:text-lg">
+          <div className="min-w-0">
+            <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-[#1F4A2E] sm:text-[18px]">
               Change Password
             </h2>
 
-            <p className="mt-1 text-[13px] leading-5 text-slate-500 sm:text-sm">
-              Update your admin account password to
-              keep your account secure.
+            <p className="mt-1 text-[13px] leading-relaxed text-gray-600">
+              Update your admin account password to keep
+              your account secure.
             </p>
           </div>
+
         </div>
       </div>
 
@@ -271,7 +267,9 @@ function ChangePasswordSection({
         onSubmit={handleSubmit}
         className="px-5 py-6 sm:px-7 sm:py-7"
       >
+
         <div className="grid gap-5 lg:grid-cols-2">
+
           {/* =================================================
               CURRENT PASSWORD
               ================================================= */}
@@ -279,15 +277,16 @@ function ChangePasswordSection({
           <div className="lg:col-span-2">
             <label
               htmlFor="current-admin-password"
-              className="mb-2 block text-[13px] font-medium text-slate-700"
+              className="mb-2 block text-[12px] uppercase tracking-[0.06em] text-[#6F6259]"
             >
               Current Password
             </label>
 
             <div className="relative">
               <Lock
-                className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#A9998C]"
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
               <input
@@ -323,17 +322,19 @@ function ChangePasswordSection({
                     ? "Hide current password"
                     : "Show current password"
                 }
-                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-[#f8eee4] hover:text-[#8b542f]"
+                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-[#A9998C] hover:text-[#B5697A] focus:outline-none"
               >
                 {showCurrentPassword ? (
                   <EyeOff
                     className="h-[17px] w-[17px]"
                     strokeWidth={1.8}
+                    aria-hidden="true"
                   />
                 ) : (
                   <Eye
                     className="h-[17px] w-[17px]"
                     strokeWidth={1.8}
+                    aria-hidden="true"
                   />
                 )}
               </button>
@@ -347,15 +348,16 @@ function ChangePasswordSection({
           <div>
             <label
               htmlFor="new-admin-password"
-              className="mb-2 block text-[13px] font-medium text-slate-700"
+              className="mb-2 block text-[12px] uppercase tracking-[0.06em] text-[#6F6259]"
             >
               New Password
             </label>
 
             <div className="relative">
               <Lock
-                className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#A9998C]"
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
               <input
@@ -391,17 +393,19 @@ function ChangePasswordSection({
                     ? "Hide new password"
                     : "Show new password"
                 }
-                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-[#f8eee4] hover:text-[#8b542f]"
+                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-[#A9998C] hover:text-[#B5697A] focus:outline-none"
               >
                 {showNewPassword ? (
                   <EyeOff
                     className="h-[17px] w-[17px]"
                     strokeWidth={1.8}
+                    aria-hidden="true"
                   />
                 ) : (
                   <Eye
                     className="h-[17px] w-[17px]"
                     strokeWidth={1.8}
+                    aria-hidden="true"
                   />
                 )}
               </button>
@@ -415,15 +419,16 @@ function ChangePasswordSection({
           <div>
             <label
               htmlFor="confirm-admin-password"
-              className="mb-2 block text-[13px] font-medium text-slate-700"
+              className="mb-2 block text-[12px] uppercase tracking-[0.06em] text-[#6F6259]"
             >
               Confirm New Password
             </label>
 
             <div className="relative">
               <Lock
-                className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute left-4 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[#A9998C]"
                 strokeWidth={1.8}
+                aria-hidden="true"
               />
 
               <input
@@ -459,17 +464,19 @@ function ChangePasswordSection({
                     ? "Hide confirm password"
                     : "Show confirm password"
                 }
-                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-[#f8eee4] hover:text-[#8b542f]"
+                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-[#A9998C] hover:text-[#B5697A] focus:outline-none"
               >
                 {showConfirmPassword ? (
                   <EyeOff
                     className="h-[17px] w-[17px]"
                     strokeWidth={1.8}
+                    aria-hidden="true"
                   />
                 ) : (
                   <Eye
                     className="h-[17px] w-[17px]"
                     strokeWidth={1.8}
+                    aria-hidden="true"
                   />
                 )}
               </button>
@@ -477,55 +484,81 @@ function ChangePasswordSection({
 
             {confirmPassword &&
               newPassword === confirmPassword && (
-                <div className="mt-2 flex items-center gap-1.5 text-[12px] text-emerald-600">
-                  <Check
-                    className="h-3.5 w-3.5"
-                    strokeWidth={2}
-                  />
+                <div className="mt-2 flex items-center gap-1.5 text-[12px] text-[#3F8A58]">
+                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#EEF8F2]">
+                    <Check
+                      className="h-2.5 w-2.5"
+                      strokeWidth={2.5}
+                      aria-hidden="true"
+                    />
+                  </span>
                   Passwords match
                 </div>
               )}
           </div>
+
         </div>
 
         {/* ===================================================
             PASSWORD REQUIREMENTS
             =================================================== */}
 
-        <div className="mt-6 rounded-2xl border border-[#eadfd3] bg-[#fffaf5] p-4 sm:p-5">
-          <div className="flex items-center gap-2">
-            <ShieldCheck
-              className="h-4 w-4 text-[#8b542f]"
-              strokeWidth={1.8}
-            />
+        <div className="mt-4 rounded-xl border border-[#EFE3D2] bg-white p-4 sm:p-5">
 
-            <p className="text-[13px] font-semibold text-slate-800">
-              Password requirements
-            </p>
+          <div className="flex items-center gap-2.5">
+
+            <div>
+              <p className="text-[13px] font-semibold text-[#3D3834]">
+                Password requirements
+              </p>
+
+              <p className="mt-0.5 text-[11px] text-[#9A8D82]">
+                Make sure your new password meets all
+                requirements.
+              </p>
+            </div>
           </div>
 
-          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
             {passwordRequirements.map(
               (requirement) => (
                 <div
                   key={requirement.label}
-                  className={`flex items-center gap-2 text-[12px] transition-colors ${
-                    requirement.valid
-                      ? "text-emerald-600"
-                      : "text-slate-500"
-                  }`}
+                  className={`
+                    flex
+                    items-center
+                    gap-2
+                    text-[12px]
+                    transition-colors
+                    ${
+                      requirement.valid
+                        ? "text-[#3F8A58]"
+                        : "text-[#7B6D63]"
+                    }
+                  `}
                 >
                   <span
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                      requirement.valid
-                        ? "border-emerald-500 bg-emerald-500 text-white"
-                        : "border-slate-300"
-                    }`}
+                    className={`
+                      flex
+                      h-4
+                      w-4
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-full
+                      border
+                      ${
+                        requirement.valid
+                          ? "border-[#3F8A58] bg-[#3F8A58] text-white"
+                          : "border-[#D8CEC4] bg-white"
+                      }
+                    `}
                   >
                     {requirement.valid && (
                       <Check
                         className="h-2.5 w-2.5"
                         strokeWidth={2.5}
+                        aria-hidden="true"
                       />
                     )}
                   </span>
@@ -544,7 +577,7 @@ function ChangePasswordSection({
             =================================================== */}
 
         {error && (
-          <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] leading-5 text-red-600">
+          <div className="mt-5 rounded-xl border border-[#E8C8CE] bg-[#FBECEF] px-4 py-3 text-[13px] leading-relaxed text-[#A85F70]">
             {error}
           </div>
         )}
@@ -554,10 +587,11 @@ function ChangePasswordSection({
             =================================================== */}
 
         {success && (
-          <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-[13px] leading-5 text-emerald-700">
+          <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-[#CFE4D4] bg-[#EEF8F2] px-4 py-3 text-[13px] leading-5 text-[#3F8A58]">
             <Check
               className="mt-0.5 h-4 w-4 shrink-0"
               strokeWidth={2}
+              aria-hidden="true"
             />
 
             <span>{success}</span>
@@ -572,7 +606,25 @@ function ChangePasswordSection({
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex h-11 items-center justify-center rounded-xl bg-[#8b542f] px-5 text-[13px] font-medium text-white transition hover:bg-[#754527] focus:outline-none focus:ring-2 focus:ring-[#8b542f]/20 disabled:cursor-not-allowed disabled:opacity-60"
+            className="
+              inline-flex
+              h-11
+              items-center
+              justify-center
+              rounded-xl
+              bg-[#B5697A]
+              px-5
+              text-[13px]
+              text-white
+              transition-all
+              duration-200
+              hover:bg-[#A85F70]
+              hover:shadow-sm
+              focus:outline-none
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+              disabled:hover:translate-y-0
+            "
           >
             {isLoading ? (
               <>
@@ -580,10 +632,18 @@ function ChangePasswordSection({
                 Updating...
               </>
             ) : (
-              "Update Password"
+              <>
+                <KeyRound
+                  className="mr-2 h-4 w-4"
+                  strokeWidth={1.8}
+                  aria-hidden="true"
+                />
+                Update Password
+              </>
             )}
           </button>
         </div>
+
       </form>
     </section>
   );

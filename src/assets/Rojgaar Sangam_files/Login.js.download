@@ -1,0 +1,386 @@
+﻿function HindiEnglish(option)
+{
+   
+    if (option == "1")
+    {
+       
+        $("#lbllng").hide();
+        $("#lnkbtnHi").hide();
+        $("#lnkbtnEn").hide();
+
+        $("#spanJobSeeker").text("JobSeeker");
+        $("#spanEmployer").text("Employer");
+        $("#SpanGovJobs").text("Gov Jobs");
+        $("#SpanPrivateGovs").text("Private Jobs");
+        $("#SpanContact").text("Contact Us");
+        $("#SpanAbout").text("About Us");
+        $("#SpanLogin").text("Log In");
+        $("#SpanNewAccount").text("New Account");
+
+        $("#SpanLoginnPage").text("Log In");
+        $("#SpanSignUp").text("Sign Up");
+        $("#SpanFrequntlyAskQ").text("Frequently Asked Questions");
+        $("#SpanContactUs").text("Contact us");
+        $("#SpanAboutUs").text("About us");
+        $("#SpanScreenReader").text("Screen Reader Access");
+
+        //$("#myModalLabel").text("Log In");
+        $("#SpanAdmin").text("Admin :");
+        $("#SpanForEmployer").text("Employer:");
+        $("#SpanOneLackEmployer").text("Lacs of Applicant On One Click.");
+        $("#SpanGovJobUpload").text("24*7 Facilities for Uploading Jobs.");
+        $("#SpanAllDistrict").text("Facility for Organizing Employment in all the districts.");
+        $("#SpanOnlineRegistration").text("Online Registration Anywhere Anytime.");
+        $("#SpanOnlineReturn").text("Online Returns File Facility");
+        $("#SpanUserManual").text("User Manual(Employer)");
+        $("#SpanJobSeeker").text("Job Seeker:");
+        $("#SpanOnlineRegistrationn").text("Online Registration Anywhere Anytime.");
+        $("#SpanAllGovJobs").text("All government jobs available on a portal.");
+        $("#SpanOnlineApplicationFacility").text("Online Registration Facility");
+        $("#SpanEmailJobs").text("Job Notification via Email");
+        $("#SpanCatPlaceDepSalary").text("Search Jobs Through Using Filter Category,Place,Department And Salary.");
+        $("#SpanUserManualJobSeeker").text("User Manual (Job Seeker)");
+        $("#spnManualofRojgarMelaJobSeeker").text("procedue for online Applied in job fair(JobSeeker)");
+
+        //$("#ContentPlaceHolder1_DropDownList1").empty();
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('J').html('Joseeker'));
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('E').html('Employer'));
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('D').html('Admin'));
+
+        $("#SpanUserClass").text("User Class :");
+        $("#SpanUserId").text("User id:");
+        $("#spnPassword").text("Password:");
+        $("#ContentPlaceHolder1_btnRefresh").val("Select new Captcha");
+        $("#ContentPlaceHolder1_LoginButton").val("Submit");
+        $("#spanNewUser").text("New Users?");
+        $("#ContentPlaceHolder1_lnkbtnsignup1").text("Sign Up");
+        $("#ContentPlaceHolder1_lnkbtnForgotPassword").text("Forgot Password?");
+        $("#ContentPlaceHolder1_lnkbtnSignup").text("Registration");
+
+
+        //Contact.aspx
+        $("#spanJobSeeker").text("JobSeeker");
+        $("#spanEmployer").text("Employer");
+        $("#SpanGovJobs").text("Gov Jobs");
+        $("#SpanPrivateGovs").text("Private Jobs");
+        $("#SpanContact").text("Contact Us");
+        $("#SpanAbout").text("About Us");
+        $("#SpanLogin").text("Log In");
+        $("#SpanNewAccount").text("New Account");
+
+        $("#SpanLoginn").text("Log In");
+        $("#SpanSignUp").text("Sign Up");
+        $("#SpanFrequntlyAskQ").text("Frequently Asked Questions");
+        $("#SpanContactUs").text("Contact us");
+        $("#SpanAboutUs").text("About us");
+
+        $("#SpanContactDetails1").text("Contact Detail");
+        $("#SpanCpntactDetails2").text("Contact Detail");
+        $("#SpanSRADetails").text("Screen Reader Access Detail");
+        //$("#myModalLabel").text("");
+        $("#SpanEducationSewayojanNidesaliya").text("Directorate of Training and Employment");
+        $("#SpanGuruGovindSinghMarg").text("Guru Govind Singh Marg");
+        $("#SpanBasMandiChoraha").text("Bans mandi chauraha");
+        $("#SpanLucknow").text("Lucknow");
+        $("#SpanUPIndia").text("Uttar Pradesh , India");
+        $("#SpanEmail").text("Email");
+        $("#SpanPhoneNo1").text("Phone No.");
+        $("#SpanPhoneNo2").text("Phone No.");
+
+        $("#SpanHelplineNumber").text("Helpline Number");
+
+        $("#SpanWebSite").text("Website");
+        $("#SpanWorkTime").text("Working-Time");
+        $("#SpanWorkDivas").text("Working-Days");
+        $("#SpanMondayFriday").text("Monday to Friday");
+
+        //Reg.aspx
+        //$("#SpanCategoryReg").text("Monday to Friday English");
+        //$("#SpanFreeAccountReg").text("Monday to Friday English");
+        //$("#SpanForAdminReg").text("Monday to Friday English");
+        //$("#SpanforEmployerReg").text("Monday to Friday English");
+        //$("#SpanForJobseekerReg").text("Monday to Friday English");
+
+        $("#ContentPlaceHolder1_SpanFreeAccountReg").text("Create free Account.");
+        $("#ContentPlaceHolder1_SpanForAdminReg").text("for Admin:");
+        $("#ContentPlaceHolder1_SpanforEmployerReg").text("for Employer:");
+        $("#ContentPlaceHolder1_SpanOneLackEmployerReg").text("Millions of Applicant are available on one click.");
+        $("#ContentPlaceHolder1_SpanUploadFacilityJobsReg").text("24*7 Facilities for uploading jobs.");
+        $("#ContentPlaceHolder1_SpanAllDistrictReg").text("Facility for organizing employment fairs in all the Districts.");
+        $("#ContentPlaceHolder1_SpanOnlineRegistrationregReg").text("Online registration anytime anywhere.");
+        $("#ContentPlaceHolder1_SpanOnlineReturnsReg").text("Online filing facility.");
+        $("#ContentPlaceHolder1_SpanCategoryPlaceSalaryReg").text("Facilitating search for candidates, according to category, location, or salary.");
+        $("#ContentPlaceHolder1_SpanForJobseekerReg").text("for Jobseeker:");
+        $("#ContentPlaceHolder1_SpanOnlineRegistrationReg").text("Online registration anytime anywhere.");
+        $("#ContentPlaceHolder1_SpanAllGovJobsOnOnePortalReg").text("All government jobs available on a portal.");
+        $("#ContentPlaceHolder1_SpanOnlineApplyFacilityReg").text("Facility to Apply Online.");
+        $("#ContentPlaceHolder1_SpanEmailJobsReg").text("Job Notification via Email.");
+        $("#ContentPlaceHolder1_SpanCategoryPlaceDepartmentSalaryReg").text("Facility to search jobs according to category, location, department and salary.");
+        $("#ContentPlaceHolder1_SpanPasswordatLeastReg").text("(1) Password must be at least 8 and maximum of 12 characters.");
+        $("#ContentPlaceHolder1_spanMinimumOneWordUpperCaseLowerCaseReg").text("(2) It is mandatory to have at least one letter in upper case and in a lower case.");
+        $("#ContentPlaceHolder1_SpanPasswordMinimumOneNumberReg").text("(3) Password must contain at least one number.");
+        $("#ContentPlaceHolder1_SpanPasswordLessThenOneReg").text("(4) Password must also have at least one special character.");
+        $("#ContentPlaceHolder1_SpanSepecialCharactorReg").text("(5) Valid list of special carers.");
+        $("#ContentPlaceHolder1_SpanCategoryReg").text("Select your category :");
+        $("#ContentPlaceHolder1_SpanMobileVerifiedReg").text("Mobile Verification (Please check your mobile number or mail id.)");
+
+        $("#ContentPlaceHolder1_Label1").text("Name :");
+        $("#ContentPlaceHolder1_Label22").text("Mobile No. :");
+        $("#ContentPlaceHolder1_lbl_user_id").text("User Id :");
+        $("#ContentPlaceHolder1_Label3").text("Password :");
+        $("#ContentPlaceHolder1_Label4").text("Confirm Password :");
+        $("#ContentPlaceHolder1_Label7").text("Email ID :");
+        $("#ContentPlaceHolder1_btnRefresh").val("Select new captcha :");
+        $("#ContentPlaceHolder1_btn_registrationFirst").val("Submit :");
+        $("#ContentPlaceHolder1_lnkbtn_goto").text("Log in:");
+
+        //$("#ContentPlaceHolder1_DropDownList1").empty();
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('J').html('Joseeker'));
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('E').html('Employer'));
+        
+        //AboutUs.aspx
+        $("#SpanAboutUsUsUs").text("About Us");
+        $("#SpanContactUsUsUs").text("Contact Us");
+        $("#SpanHistoryAboutUs").text("Brief History:-");
+        $("#SpanSecondWorldWarAboutUs").text("On the end of Second World War in 1945, for ordely absorption of the released service personnel and other war workers; The need for an organization to handle this complex problem in a uniform manner was and in July 1945 “Directorate general of Resettlement and Employment” was set up.A  Training and Employment service organization committee (popularly known as Shiva Rao committee) was appointed in 1952, under the chairmanship of Shri B. Shiva Rao. Based on the recommendations of the committee, the day to day administration of the organization was handed over to the state governments with effect from 1st November 1956.To make Employment offices more effective the Indian Parliament passed an Act called the compulsory notification of vacancies Act 1959 in the year 1959 and it was implemented all over the country in 1960 (except J&K).At present there are 90 Employment Offices working under Department of Training and Employment in Uttar-Pradesh, out of which 18 are the Regional Offices situated in the Head-quarters of all commissionaries 57 District Employment Offices, 13 University Employment Bureau, 01 town Employment offices and 01 professional education Employment Offices in U.P. along with this 52 Coaching cum Guidance Centre are being conducted to enhance the Employbility of the weaker section of society viz.SC /ST,OBC classes and differently abled.");
+        $("#SpanScreenReaderAccess").text("The website complies with World Wide Web Consortium (W3C) Web Content Accessibility Guidelines (WCAG) 2.0 level AA. This will enable people with visual impairments access the website using assistive technologies, such as screen readers. The information of the website is accessible with different screen readers, such as JAWS, NVDA, SAFA, Supernova and Window-Eyes. Following table lists the information about different screen readers:");
+        $("#SpanOrganizationalStructureAboutUs").text("Organizational Structure:-");
+        $("#SpanSewayojanKiryaKalapDepAboutUs").text("Activity of Sewayojan Department:-");
+        $("#SpanSARLinksHeader").text("Information About Different Screen Readers:-");
+        $("#SpanEmployementSewayojanDepAboutUs").text("Employment exchanges working under the deptt. of Training and Employment offers job opportunities to the job seeker candidates registered with them against the vacancies notified to them by the employers. Along with that adequate career guidance is also provided to the job seekers.Employers from pvt. Sector are registered and invited by deptt. to conduct campus placement so that maximum no. of candidates could be provided suitable employment opportunities  matching upto their academic qualifications.");
+        $("#SpanSewayojanDepAboutUs").text("Following are the schemes being operated and administrated by Deptt. of Employment :-");
+        $("#spanCarrierCounslingAboutUs").text("1.Career Counselling / guidance programs :-");
+        $("#SpanPurposePlanMakeCareerCounselingAboutUS").text("The main aim of this scheme is to organize career guidance camps, so that jobseekers could be provided suitable assistance in selecting a career path / academic course to chalk out a livelihood for themselves in future.Vocational Guidance Program:-This is being carried on in accordance to the rules and regulation mentioned in the national employment service manual of Govt. of India.Under this scheme various factors like; candidate’s socio–economic background, academic standards, aptitude And job scenario are kept in mind while providing adequate guidance / counseling to him /her. An intensive contact program is being run with schools and colleges under the district wise jurisdiction of each employment exchange to make it more successful.");
+        $("#SpanPurposeNidesaliyaCarierCounslingAboutUS").text("To fulfill the above mentioned objectives a carrer counselling cell has been setup in Directorate of Training and Employment U.P. in the year 2006-2007; whose primary aim is to allocate targets to all the employment exchanges for counseling and providing them further help to attain the allotted targets from the year 2008-2009 a massive counseling program is being run  by regional / district employment offices and University employment bureau under the nomenclature of “AVSAR” to achieve the desired goal.");
+
+        $("#SpanCarrierCounsilgSiverAboutUs").text("Every year now the deptt. is organizing the career counseling camps as per schedule namely:-");
+        $("#SpanAvsarDivasAboutUS").text("•	AVSAR DIVAS - January of every year.");
+        $("#SpanSamadhanAvsarAboutUS").text("• Samadhaan Avsar – From 15 April to 31 July.");
+        $("#SpanbusinessPakhvadaAboutUS").text("• Apna Vyavasay chuniye Pakhwara – From 15 Aug to 31 Aug .");
+        $("#SpanCarierCounslingAboutUS").text("• Counselling Seminaar / Workshops –  From September to December.");
+
+        $("#SpanRojgarMelaAboutUS").text("2- Rojgar Mela / Job Fairs  :-");
+        $("#SpanStateSewayojanOfficeAboutUS").text("Campus placement to the registered candidates is provided via job fairs namely Rojgar mela by deptt. of employment employers from Pvt. Sector are invited and campus interview are organizes to help job seekers get a suitable job / guidance under one root.");
+        $("#SpanRojgarMelaParticipateAboutUs").text("Firstly the job seeker has to register him / her at the official portal of the deptt. similarly employers too need to register them at the portal and then after the employer uploads vacancies of his establishment on the portal. A system generated e-mail and sms would reach to all the registered candidates whose qualification experience and skill match the notified vacancy. So that job seekers can apply upto a desired no. on the basis of first come first serve. The list of applied candidates will be visible on the employer and admin panel and the employer how can shortlist desired no. of candidates from this list. An e-mail / sms from concerned employment officer will be to such shortlisted candidates informing them about the date time and venue of job fair.After interview / test the employer will furnish the list of selected candidates to the employment office who , now would upload it on the portal.");
+        $("#SpanEducationCenterAboutUS").text("3- Coaching Cum Guidance Centre :-");
+        $("#SpanfiftyTwoDistrictAboutUS").text("Coaching Cum Guidance Centre have been established in 52 district of state. The principal motive of this scheme is to provide training in language, Secretarial practice, computer, shorthand / typing and general studies to the weaker section of society namely SC /ST  and OBC candidates absolutely free of cost to enhance their employability after 10+2 and helping them to chalk out a career in various clerical level competitions.");
+        $("#SpanModelCarrierCenterAboutUs").text("4-MODEL CAREER CENTRE  :-");
+        $("#SpanMahanidesakRojgarEmployementAboutUS").text("The Career counseling cell at Directorate of Training and Employment U.P. Lucknow and District Employment Office Ghaziabad have been upgraded and developed as Model Career Centre as per the directives issued by Director general, Employment and Training, New Delhi. The proposal of above mentioned Model Career centre has been accepted by govt. of India.");
+        $("#SpanModelCarrierCenterAboutUS").text("Model Career Centre will provide necessary information / existance, library facilities are the candidates studying in various Institution across the state; i.e. The centre would provide information about the prevailing employment scenario and upcoming occupations also.");
+        $("#SpanRojgarInfoAboutUs").text("5-Employment Market Information  :-");
+        $("#SpanRojgarMelaRelationAboutUs").text("Employment exchange as part of their regular activities are to collect labour market information about newly emerging areas and areas going out of existence so that job seekers can be guided for the gainful activities.Quaterly information is being collected from the registered employers about the vacancies arising in their establishments. Currently this data is collected from all public sector establishment coming in the jurisdiction of each district and only those private sector establishments who, have 25 and more people employed with them. Such information is collected on the prescribed proforma called ER-I mentioned in section -5 of the Employment Exchange(Compulsory notification of the vacancy Act 1959). It is manadatory to send this information to the local employment Exchange by all the employers falling in its jurisdiction as per their classification the data of all the work force in these establishments is collected according to their educational and technical abilities.");
+        $("#SpanSewayojanOfficeVacancyAboutUs").text("6.COMPULSORY NOTIFICATION OF VACANCIES,ACT, 1959. :- ");
+        $("#SpanSewayojanOfficeVacEPAboutUs").text("1) This Act may be called the Employment Exchanges ( Compulsory Notification of Vacancies) Act,1959. (2) It extends to the whole of India. (3) It shall come into force in a State on such data as the Central Government may, by notification in the Official Gazette, appoint in this behalf for such State and different dates may be appointed for different States or for different areas of a State. 2. Definitions. – In this Act, unless the context otherwise requires-- (a) “ appropriate Government” means – (1) in relation to – (a) any establishment of any railway, major port, mine or oil-field, or (b) any establishment owned, controlled or managed by – (i) the Central Government or a department of the Central Government, (ii) a company in which not less than fifty one percent of the share capital is held by the Central Government or partly by the Central Government and partly by one or more State Governments, (iii) a corporation ( including a co-operative society ) established by or under a Central Act which is owned, controlled or managed by the Central Government, the Central Government; (2) in relation to any other establishment, the Government of the State in which that other establishment is situated; (b) ‘employee’ means any person who is employed in an establishment to do any work for remuneration; (c) “ employer” means any person who employs one or more other person to do any work in an establishment for remuneration and includes any person entrusted with the supervision and control of employees in such establishment; Omitted by Act 51 of 1970 1 NESM Vol.III/EE(CNV)Act (d) “employment exchange” means any office or place established and maintained by the Government for the collection and furnishing of information, either by the keeping of registers or otherwise, respecting--- (i ) persons who seek to engage employees. (ii) persons who seek employment, and (iii) vacancies to which persons seeking employment, may be appointed ; (e) “establishment” means— ( a) any office, or (b) any place where any industry, trade, business or occupation is carried on; (f) “ establishment in public sector” means an establishment owned, controlled or managed by --- (1) the Government or a department of the Government (2) a Government company as defined in Section 617 of the Companies Act,1956 ( 1 of 1956) ; (3) a corporation (including a co-operative society ) established by or under a");
+        $("#SpanAdhineumDharaFourAboutUs").text("Central, Provincial or State Act, which is owned, controlled or managed by the Government; (4) a local authority; (g) “ establishment in private sector” means an establishment which is not an establishment in public sector and where ordinarily twenty-five or more persons are employed to work for remuneration; (h) “ prescribed” means prescribed by rules made under this Act; (i) “unskilled office work” means work done in an establishment by any of the following categories of employees namely--- (1) Daftri; (2) Jamadar, orderly and peon; (3) Dusting man or farash; (4) Bundle or record lifter; (5) Process server; (6) Watchman; (7) Sweeper; (8) Any other employee doing any routine or unskilled work which the Central Government may, by notification in the Official Gazette, declare to be unskilled office work. 2 NESM Vol.III/EE(CNV)Act 3. Act not to apply in relation to certain vacancies.—(1) This act shall not apply in relation to vacancies, -- (a) in any employment in agriculture ( including horticulture) in any establishment in private sector other than employment as agricultural or farm machinery operatives; (b) in any employment in domestic service; (c) in any employment the total duration of which is less than three months; (d) in any employment to do unskilled office work; (e) in any employment connected with the staff of Parliament. (3) Unless the Central Government otherwise directs by notification in Official Gazette in this behalf, this Act shall not apply in relation to : (a) vacancies which are proposed to be filled through promotion or by absorption of surplus staff of any branch or department of the same establishment or on the result of any examination conducted or interview held by, or on the recommendation of, any independent agency, such as the Union or a State Public Service Commission and the like; (b) vacancies in an employment which carries a remuneration of less than sixty rupees in a month. (4) Notification of vacancies to employment exchanges.--- (1) After the commencement of this Act in any state or area thereof, the employer in every establishment in public sector in that state or area shall, before filling up any vacancy in any employment in that establishment, notify that vacancy to such employment exchanges as may be prescribed. (2) The appropriate Government may, by notification in the Official Gazette, require that from such date as may be specified in the notification, the employer in every establishment in private sector or every establishment pertaining to any class or category of establishments in private sector shall, before filling up any vacancy in any employment in that establishment, notify that vacancy to such employment exchanges as may be prescribed, and the employer shall thereupon comply with such requisition. (3) The manner in which the vacancies referred to sub-section (1) or subsection (2) shall be notified to the employment exchanges and the particulars of employment in which such vacancies have occurred or are about to occur shall be such as may be prescribed. (4) Nothing in sub-sections");
+        $("#SpanAdhineumDharaFiveAboutUs").text("(1) and (2) shall be deemed to impose any obligation upon any employer to recruit any person through the employment exchange to fill any vacancy merely because that vacancy has been notified under any of those sub-section. 3 NESM Vol.III/EE(CNV)Act 5. Employers to furnish information and returns in prescribed form.--- (1) After the commencement of this Act in any State or area thereof, the employers in every establishment in public sector in that State or area shall furnish such information or return as may be prescribed in relation to vacancies that have occurred or are about to occur in that establishment, to such employment exchanges as may be prescribed. (2) The appropriate Government may, be notification in the Official Gazette, require that from such date as may be specified in the notification, the employer in every establishment in private sector or every establishment pertaining to any class or category of establishments in private sector shall furnish such information or return as may be prescribed in relation to vacancies that have occurred or are about to occur in that establishment to such employment exchanges as may be prescribed, and the employer shall thereupon comply with such requisition. (3) The form in which, and the intervals of time at which, such information or return shall be furnished and the particulars which they shall contain shall be such as may be prescribed. 6. Right of access to records or documents.--- Such Officer of Government as may be prescribed in this behalf, or any person authorised by him in writing, shall have access to any relevant record or document in the possession of any employer required to furnish any information or returns under Section 5 and may enter at any reasonable time any premises where he believes such record or document to be and inspect or take copies of relevant records or documents or ask any question necessary for obtaining any information required under that section. 7. Penalties.-- (1) If any employer fails to notify to the employment exchanges prescribed for the purpose any vacancy in contravention of sub-section (1) or subsection (2) of section 4, he shall be punishable for the first offence with fine which may extend to five hundred rupees and for every subsequent offence with fine which may extend to one thousand rupees. (2) If any person – (a) required to furnish any information or return- (i) refuses or neglects to furnish such information or returns, or (ii) furnishes or causes to be furnished any information or return which he knows to be false, or (iii) refuses to answer, or gives a false answer to, any question necessary for obtaining any information required to be furnished under Section 5, or 4 NESM Vol.III/EE(CNV)Act (b) impedes the right of access to relevant records or documents or the right of entry conferred by Section 6, he shall be punishable for the first offence with fine which may extend to two hundred and fifty rupees and for every subsequent offence with fine which may extend to five hundred rupees. 8. Cognizance of offences.No prosecution for an offence under this");
+        $("#SpanAdhineumDharaSixAboutUs").text("Act shall be instituted except by, or with the sanction of, such officer of Government as may be prescribed in this behalf or any person authorised by that officer in writing. 9. Protection of action taken in good faith.- No suit, prosecution or other legal proceeding shall lie against any person for anything which is in good faith done or intended to be done under this Act. 10. Power to make rules.- (1) The Central Government may, by notification in the Official Gazette and subject to the condition of previous publication, make rules for carrying out the purposes of this Act. (2) In particular, and without prejudice to the generality of the foregoing power, such rules may provide for all or any of the following matters, namely- (a) the employment exchange or exchanges to which, the form and manner in which, and the time within which, vacancies shall be notified, and the particulars of employments in which such vacancies have occurred or are about to occur; (b) the form and manner in which and the intervals at which, information and returns required under Section 5 shall be furnished, and the particulars which they shall contain; (c) the officers by whom and the manner in which the right of access to documents and the right of entry conferred by Section 6 may be exercised; (d) any other matter which is to be, or may be, prescribed under this Act. [(3)] Every rule made under this Act shall be laid, as soon");
+        $("#SpanAdhineumDharaSevenAboutUs").text("as may be after it is made, before each House of Parliament, while it is in session, for a total period of thirty days which may be comprised in one session or in two or more successive sessions, and if, before the expiry of the session immediately following the session or the successive sessions aforesaid, both Houses agree in making any modification in the rule or both Houses agree that the rule should not be made, the rule shall thereafter have effect only in such modified form or be of no effect, as the case may be; 5 NESM Vol.III/EE(CNV)Act so, however, that any such modification or annulment shall be without prejudice to the validity of anything previously done under that rule. Substituted by Act 4 of 1986 with effect from 15/5/86. ( Act. 4 : Delegated Legislation Provisions ( Amendment) Act , 1985. 6 NESM Vol.III/EE(CNV)Act.");
+        $("#SpanAdhineumDharaImprtantAdhineumAboutUs").text("Important Acts and Regulations:-");
+        $("#SpanSerialNoAboutUS").text("Serial Number");
+        $("#SpanTitleAboutUS").text("Title");
+        $("#SpanTypeodFileAboutUS").text("Type of File");
+        $("#SpanSizeofFileAboutUs").text("Size of File");
+        $("#SpanAdhisuchanAdhineumVacAboutUs").text("EMPLOYMENT EXCHANGES (COMPULSORY NOTIFICATION OF VACANCIES) ACT, 1959");
+        $("#SpanRuleVacAboutUs").text("EMPLYMENT  EXCHANGES  (COMPULSORY  NOTIFICATION  OF VACANCIES) RULES 1960 ");
+        $("#SpanSewayojanOfficeMenualPartOneAboutUs").text("National Employment service Manual Volume-1");
+        $("#SpanSewayojanOfficeMenualPartTwoAboutUs").text("National Employment service Manual Volume-2");
+        $("#SpanSewayojanOfficeMenualPartThreeAboutUs").text("National Employment service Manual Volume-3");
+        $("#SpanUPEmployementRuleAboutUs").text("UP Unemployment allowance Plan 2012,Manual");
+        $("#SpanBussinesClassificationAboutUS").text("NATIONAL CLASSIFICATION OF OCCUPATIONS-2004");
+        $("#SpanNationalClassificationAboutUs").text("National Industrial Classification 2008");
+    }
+    else
+    {
+        $("#lbllng").hide();
+        $("#lnkbtnHi").hide();
+        $("#lnkbtnEn").hide();
+        
+      
+        $("#spanJobSeeker").text("जॉब सीकर");
+        $("#spanEmployer").text("नियोजक");
+        $("#SpanGovJobs").text("सरकारी नौकरियां");
+        $("#SpanPrivateGovs").text("प्राइवेट नौकरियां");
+        $("#SpanContact").text("संपर्क करें");
+        $("#SpanAbout").text("हमारे बारे में");
+        $("#SpanLogin").text("लॉग इन करें");
+        $("#SpanNewAccount").text("नया अकाउंट बनाए");
+        $("#SpanLoginnPage").text("लॉग इन");
+        $("#SpanSignUp").text("साइन अप");
+        $("#SpanFrequntlyAskQ").text("अक्सर पूछें जाने वाले प्रश्न");
+        $("#SpanContactUs").text("संपर्क करें");
+        $("#SpanAboutUs").text("हमारें बारें में");
+        $("#SpanScreenReader").text("स्क्रीन रीडर एक्सेस");
+        
+        //$("#myModalLabel").text("लॉग इन");
+        $("#SpanAdmin").text("प्रशासनिक :");
+        $("#SpanForEmployer").text("नियोजक हेतु:");
+        $("#SpanOneLackEmployer").text("लाखों अभ्यार्थी एक क्लिक पर उपलब्ध ।");
+        $("#SpanGovJobUpload").text("24*7 नौकरियां अपलोड करने की सुविधा ।");
+        $("#SpanAllDistrict").text("समस्त जनपद में रोजगार मेलों के आयोजन की सुविधा ।");
+        $("#SpanOnlineRegistration").text("ऑनलाइन पंजीकरण कहीं भी कभी भी ।");
+        $("#SpanOnlineReturn").text("ऑनलाइन रिटर्न्स फाइल करने की सुविधा ।");
+        $("#SpanUserManual").text("यूजर  मैनुअल ( नियोजक )");
+        $("#SpanJobSeeker").text("जॉब सीकर हेतु:");
+        $("#SpanOnlineRegistrationn").text("ऑनलाइन पंजीयन कहीं भी कभी भी ।");
+        $("#SpanAllGovJobs").text("समस्त सरकारी नौकरियां एक पोर्टल पर उपलब्ध ।");
+        $("#SpanOnlineApplicationFacility").text("ऑनलाइन आवेदन की सुविधा ।");
+        $("#SpanEmailJobs").text("ईमेल के माध्यम से नौकरी की सूचना ।");
+        $("#SpanCatPlaceDepSalary").text("श्रेणी, स्थान, विभाग एवं वेतन के अनुरूप नौकरियां खोजनें की सुविधा ।");
+        $("#SpanUserManualJobSeeker").text("यूजर  मैनुअल ( जॉब सीकर )");
+        $("#spnManualofRojgarMelaJobSeeker").text("रोजगार मेले में आवेदन की प्रक्रिया ( जॉब सीकर )");
+
+        //$("#SpanUserClass").text("उपयोगकर्ता वर्ग :");
+        //$("#SpanUserId").text("उपयोगकर्ता आई०डी० :");
+        //$("#ContentPlaceHolder1_DropDownList1").empty();
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('J').html('जॉब सीकर'));
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('E').html('नियोजक'));
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('D').html('प्रशासनिक'));
+        //$("#PasswordLabel").text("पासवर्ड :");
+
+        $("#SpanUserClass").text("उपयोगकर्ता वर्ग :");
+        $("#SpanUserId").text("उपयोगकर्ता आई०डी०:");
+        $("#spnPassword").text("पासवर्ड:");
+        $("#ContentPlaceHolder1_btnRefresh").val("नया कैप्चा चुनें");
+        $("#ContentPlaceHolder1_LoginButton").val("प्रवेश करे");
+        $("#spanNewUser").text("नए उपयोगकर्ता?");
+        $("#ContentPlaceHolder1_lnkbtnsignup1").text("साइन अप करें");
+        $("#ContentPlaceHolder1_lnkbtnForgotPassword").text("पासवर्ड भूल गए?");
+        $("#ContentPlaceHolder1_lnkbtnSignup").text("पंजीकरण");
+
+
+        //Contact.aspx
+        $("#spanJobSeeker").text("जॉब सीकर");
+        $("#spanEmployer").text("नियोजक");
+        $("#SpanGovJobs").text("सरकारी नौकरियां");
+        $("#SpanPrivateGovs").text("प्राइवेट नौकरियां");
+        $("#SpanContact").text("संपर्क करें");
+        $("#SpanAbout").text("हमारे बारे में");
+        $("#SpanLogin").text("लॉग इन करें");
+        $("#SpanNewAccount").text("नया अकाउंट बनाए");
+        $("#SpanLoginn").text("लॉग इन");
+        $("#SpanSignUp").text("साइन अप");
+        $("#SpanFrequntlyAskQ").text("अक्सर पूछें जाने वाले प्रश्न");
+        $("#SpanContactUs").text("संपर्क करें");
+        $("#SpanAboutUs").text("हमारें बारें में");
+
+        $("#SpanContactDetails1").text("सम्पर्क विवरण");
+        $("#SpanCpntactDetails2").text("सम्पर्क विवरण");
+        $("#SpanSRADetails").text("स्क्रीन रीडर एक्सेस विवरण");
+        //$("#myModalLabel").text("");
+        $("#SpanEducationSewayojanNidesaliya").text("प्रशिक्षण एवं सेवायोजन निदेशालय");
+        $("#SpanGuruGovindSinghMarg").text("गुरु गोविन्द सिंह मार्ग");
+        $("#SpanBasMandiChoraha").text("बास मंडी चौराहा");
+        $("#SpanLucknow").text("लखनऊ");
+        $("#SpanUPIndia").text("उत्तर प्रदेश , इंडिया");
+        $("#SpanEmail").text("ईमेल");
+        $("#SpanPhoneNo1").text("फोन न.");
+        $("#SpanPhoneNo2").text("फोन न.");
+
+        $("#SpanHelplineNumber").text("हेल्पलाइन नंबर");
+
+        $("#SpanWebSite").text("वेबसाइट");
+        $("#SpanWorkTime").text("कार्य-समय");
+        $("#SpanWorkDivas").text("कार्य-दिवस");
+        $("#SpanMondayFriday").text("सोमवार से शुक्रवार");
+        
+        //Reg.aspx
+        //$("#SpanCategoryReg").text("Monday to Friday Hindi");
+        //$("#SpanFreeAccountReg").text("Monday to Friday Hindi");
+        //$("#SpanForAdminReg").text("Monday to Friday Hindi");
+        //$("#SpanforEmployerReg").text("Monday to Friday Hindi");
+        //$("#SpanForJobseekerReg").text("Monday to Friday Hindi");
+
+        $("#ContentPlaceHolder1_SpanFreeAccountReg").text("नि:शुल्क अकाउंट बनाए.");
+        $("#ContentPlaceHolder1_SpanForAdminReg").text("एडमिन हेतु:");
+        $("#ContentPlaceHolder1_SpanforEmployerReg").text("नियोजक हेतु:");
+        $("#ContentPlaceHolder1_SpanOneLackEmployerReg").text("लाखों अभ्यार्थी एक क्लिक पर उपलब्ध ।");
+        $("#ContentPlaceHolder1_SpanUploadFacilityJobsReg").text("24*7 नौकरियां अपलोड करने की सुविधा ।");
+        $("#ContentPlaceHolder1_SpanAllDistrictReg").text("समस्त जनपद में रोजगार मेलों के आयोजन की सुविधा ।");
+        $("#ContentPlaceHolder1_SpanOnlineRegistrationRegReg").text("ऑनलाइन पंजीकरण कहीं भी कभी भी ।");
+        $("#ContentPlaceHolder1_SpanOnlineReturnsReg").text("ऑनलाइन रिटर्न्स फाइल करने की सुविधा ।");
+        $("#ContentPlaceHolder1_SpanCategoryPlaceSalaryReg").text("श्रेणी, स्थान, या सैलरी के अनुरूप अभ्यर्थियों को खोजनें की सुविधा ।");
+        $("#ContentPlaceHolder1_SpanForJobseekerReg").text("जॉब सीकर हेतु:");
+        $("#ContentPlaceHolder1_SpanOnlineRegistrationReg").text("ऑनलाइन पंजीयन कहीं भी कभी भी ।");
+        $("#ContentPlaceHolder1_SpanAllGovJobsOnOnePortalReg").text("समस्त सरकारी नौकरियां एक पोर्टल पर उपलब्ध ।");
+        $("#ContentPlaceHolder1_SpanOnlineApplyFacilityReg").text("ऑनलाइन आवेदन की सुविधा ।");
+        $("#ContentPlaceHolder1_SpanEmailJobsReg").text("ईमेल के माध्यम से नौकरी की सूचना ।");
+        $("#ContentPlaceHolder1_SpanCategoryPlaceDepartmentSalaryReg").text("श्रेणी, स्थान, विभाग एवं वेतन के अनुरूप नौकरियां खोजनें की सुविधा ।");
+        $("#ContentPlaceHolder1_SpanPasswordatLeastReg").text("(1) पासवर्ड कम से कम 8 और अधिकतम 12 वर्णों का होना चाहिए.");
+        $("#ContentPlaceHolder1_spanMinimumOneWordUpperCaseLowerCaseReg").text("(2) कम से कम एक वर्ण अपर केस में एवं एक लोअर केस में होना अनिवार्य है.");
+        $("#ContentPlaceHolder1_SpanPasswordMinimumOneNumberReg").text("(3) पासवर्ड में कम से कम एक नंबर भी होना चाहिए.");
+        $("#ContentPlaceHolder1_SpanPasswordLessThenOneReg").text("(4) पासवर्ड में कम से कम एक स्पेशल करैक्टर भी होना चाहिए.");
+        $("#ContentPlaceHolder1_SpanSepecialCharactorReg").text("(5) स्पेशल करैक्टर की मान्य सूची.");
+        $("#ContentPlaceHolder1_SpanCategoryReg").text("अपनी श्रेणी चुने :");
+        $("#ContentPlaceHolder1_SpanMobileVerifiedReg").text("मोबाइल सत्यापन  (कृपया अपना मोबाइल नंबर अथवा मेल आई डी चेक करें.)");
+
+        $("#ContentPlaceHolder1_Label1").text("नाम :");
+        $("#ContentPlaceHolder1_Label22").text("मोबाइल नम्बर :");
+        $("#ContentPlaceHolder1_lbl_user_id").text("यूज़र आईडी :");
+        $("#ContentPlaceHolder1_Label3").text("पासवर्ड :");
+        $("#ContentPlaceHolder1_Label4").text("पासवर्ड की पुष्टि कीजिये :");
+        $("#ContentPlaceHolder1_Label7").text("ई-मेल आई०डी० :");
+        $("#ContentPlaceHolder1_Label7").text("ई-मेल आई०डी० :");
+        $("#ContentPlaceHolder1_btnRefresh").text("नया कैप्चा चुनें :");
+        $("#ContentPlaceHolder1_btn_registrationFirst").text("प्रविष्ट करें :");
+        $("#ContentPlaceHolder1_lnkbtn_goto").text("लॉग इन करें :");
+
+        //$("#ContentPlaceHolder1_DropDownList1").empty();
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('J').html('जॉब सीकर'));
+        //$("#ContentPlaceHolder1_DropDownList1").append($("<option></option>").val('E').html('नियोजक'));
+
+        //AboutUs.aspx
+        $("#SpanAboutUsUsUs").text("हमारे बारे में");
+        $("#SpanHistoryAboutUs").text("संक्षिप्त इतिहास");
+        $("#SpanSecondWorldWarAboutUs").text("दूसरे विश्व युद्ध  की समाप्ति पर विमुक्त सैनिकों को सेवायोजित कराने के उद्देश्य से सन 1945 में केन्द्रीय स्तर पर पुनर्वास एवं रोजगार महानिदेशालय की स्थापना की गयी,जिसके नियंत्रण में देश के विभिन्न भागों में सेवायोजन कार्यालयों की स्थापना हुई। संसद सदस्य श्री शिवाराव की अध्यक्षता में 1952 में गठित प्रशिक्षण एवं सेवायोजन सेवा संगठन समिति की संस्तुतियों के कार्यान्वयन के फलस्वरूप 1956 से सेवायोजन कार्यालयों का दैनिक प्रशासन केन्द्रीय सरकार द्वारा प्रदेश शासन को हस्तान्तरित कर दिया गया तथा सेवायोजन कार्यालयों द्वारा अनुपालन की जाने वाली नीति एवं प्रक्रिया के निर्धारण का कार्य भारत सरकार को आंवटित किया गया। सेवायोजन कार्यालयों को अधिक प्रभावी बनाने के उद्देश्य से 1959 में भारतीय संसद द्वारा सेवायोजन कार्यालय (रिक्तियों का अनिवार्य अधिसूचन) अधिनियम, 1959 पारित किया गया, जिसे मई 1960 से पूरे देश में (जम्मू कश्मीर के अतिरिक्त) प्रभावी किया गया। वर्तमान में उत्तर प्रदेश में सेवायोजन सेवा के अन्तर्गत 90 सेवायोजन कार्यालय कार्यरत हैं। जिनमें 18 क्षेत्रीय सेवायोजन कार्यालय, 01 व्यावसायिक एवं प्रबन्धकीय सेवायोजन कार्यालय, 57 जिला सेवायोजन कार्यालय,13 विश्वविद्यालय सेवायोजन सूचना एवं मंत्रणा केन्द्र तथा 01 नगर सेवायोजन कार्यालय सम्मिलित हैं। इसके साथ ही अनुसूचित जाति, अनुसूचित जनजाति, अन्य पिछडे वर्ग तथा विकलांग वर्ग के अभ्यार्थियों की सेवायोजकता में वृद्धि करने के उद्देश्य से 52 शिक्षण एवं मार्ग दर्शन केन्द्र विभिन्न जनपदों में संचालित हैं।");
+        $("#SpanScreenReaderAccess").text("वेबसाइट वर्ल्ड वाइड वेब कंसोर्टियम (W3C) वेब कंटेंट एक्सेसिबिलिटी गाइडलाइंस (WCAG) 2.0 लेवल AA का अनुपालन करती है। यह दृष्टिबाधित लोगों को स्क्रीन रीडर्स जैसी सहायक तकनीकों का उपयोग करके वेबसाइट तक पहुँचने में सक्षम करेगा। वेबसाइट की जानकारी विभिन्न स्क्रीन रीडर्स जैसे JAWS, NVDA, SAFA, Supernova और Window-Eyes के साथ उपलब्ध है। निम्न तालिका विभिन्न स्क्रीन रीडर्स के बारे में जानकारी सूचीबद्ध करती है:");
+        $("#SpanOrganizationalStructureAboutUs").text("संगठनात्मक संरचना");
+        $("#SpanSewayojanKiryaKalapDepAboutUs").text("सेवायोजन विभाग के क्रिया-कलाप :-");
+        $("#SpanSARLinksHeader").text("विभिन्न स्क्रीन रीडर्स के बारे में जानकारी:-");
+        $("#SpanEmployementSewayojanDepAboutUs").text("प्रशिक्षण एवं सेवायोजन विभाग के अधीन संचालित सेवायोजन कार्यालयों द्वारा नियोजकों द्वारा अधिसूचित रिक्तियों के सापेक्ष कार्यालय में पंजीकृत बेरोजगार अभ्यर्थियों का सम्प्रेषण कर उनको रोजगार के अवसर उपलब्ध कराए जाते हैं. साथ ही साथ बेरोजगार अभ्यर्थियों को करियर काउंसलिंग के माध्यम से रोजगार के अवसरों की जानकारी दी जाती है.निजी क्षेत्र के नियोजकों को आमंत्रित कर रोजगार मेलों का आयोजन भी विभाग द्वारा किया जाता है ताकि अधिक से अधिक बेरोजगारों को रोजगार के अवसर उपलब्ध कराए जा सके.");
+        $("#SpanSewayojanDepAboutUs").text("सेवायोजन विभाग द्वारा निम्नलिखित योजनायें संचालित हैं :-");
+        $("#spanCarrierCounslingAboutUs").text("1.करियर काउंसलिंग :");
+        $("#SpanPurposePlanMakeCareerCounselingAboutUS").text("इस योजना का उद्देश्य करियर काउंसलिंग शिविरों का आयोजन कर बेरोजगारों को शिक्षण,प्रशिक्षण एवं रोजगार के अवसरों के अनुरूप विषय चयन में सहायता करना तथा रोजगार बाजार में उपलब्ध अवसरों के जानकारी प्रदान करना है. सेवायोजन विभाग में व्यवसाय मार्गदर्शन कार्यक्रम के अन्तर्गत छात्रों एवं बेरोजगारों को उपयुक्त आजीविका के चयन हेतु मार्गदर्शन प्रदान किये जाने का कार्य भारत सरकार के राष्ट्रीय रोजगार सेवा मैनुवल में की गयी व्यवस्था के अनुसार किया जाता है. इस योजना के अन्तर्गत अभ्यर्थियों की शैक्षिक उपलब्धियों‚ रूचि–अभिरूचि‚ पारिवारिक और आर्थिक पृष्ठभूमि और व्यवसाय जगत की परिवर्तनशील गतिविधियों के आधार पर व्यवसायिक मार्गदर्शन और मंत्रणा प्रदान की जाती है। इस कार्यक्रम के सम्यक् संचालन हेतु सेवायोजन कार्यालयों को शैक्षिक संस्थानों से सघन सम्पर्क स्थापित करना होता है।");
+        $("#SpanPurposeNidesaliyaCarierCounslingAboutUS").text("उक्त उद्देश्यों की पूर्ति हेतु वर्ष 2006–07 में निदेशालय स्तर पर कॅरियर काउन्सिलिंग सेल की स्थापना की गयी‚ जिसका मुख्य उद्देश्य करियर काउन्सिलिंग  हेतु क्षेत्र के कार्यालयों के लिए लक्ष्यों का निर्धारण और उन्हें समय–समय पर मार्गदर्शन देना है। वर्ष 2008 में व्यवसाय मार्गदर्शन कार्यक्रम को अधिक गतिशील बनाने की दिशा में 'अभिनव प्रयास एवं नूतन दिशायें' कार्यक्रम के अन्तर्गत विभिन्न प्रकार के सघन एवं समन्वित कार्यक्रमों को आयोजित किए जाने की व्यवस्था सुनिश्चित की गयी तथा इस कार्यक्रम का नाम “करियर काउन्सिलिंग” कर दिया गया। वर्ष 2008–09 में 'अवसर' नामोदिष्ट कार्यक्रम के अन्तर्गत विभिन्न क्षेत्रीय एवं जिला सेवायोजन कार्यालयों के अतिरिक्त विश्वविद्या्लय सेवायोजन सूचना एवं मंत्रणा केन्द्रों  द्वारा लक्ष्यानुरूप कार्यशालाएँ आयोजित की गयी। इस प्रकार प्रत्येक वर्ष करियर काउन्सिलिंग शिविरों का आयोजन किया जा रहा है.");
+
+        $("#SpanCarrierCounsilgSiverAboutUs").text("इस प्रकार प्रत्येक वर्ष करियर काउन्सिलिंग शिविरों का आयोजन किया जा रहा है.");
+        $("#SpanAvsarDivasAboutUS").text("•	अवसर दिवस – प्रत्येक वर्ष 06 जनवरी को.");
+        $("#SpanSamadhanAvsarAboutUS").text("• समाधान अवसर – 15 अप्रैल से 31 जुलाई के मध्य");
+        $("#SpanbusinessPakhvadaAboutUS").text("• अपना व्यवसाय चुनिए पखवाडा – 15 अगस्त से 31 अगस्त के मध्य");
+        $("#SpanCarierCounslingAboutUS").text("• करियर काउन्सिलिंग (सेमीनार⁄ कार्यशाला) – सितम्बर से दिसम्बर तक");
+        
+        $("#SpanRojgarMelaAboutUS").text("2.रोजगार मेला :");
+        $("#SpanStateSewayojanOfficeAboutUS").text("प्रदेश के सेवायोजन कार्यालयों द्वारा निजी क्षेत्र में भी बेरोजगार अभ्यर्थियों को रोजगार के अवसर उपलब्ध करने के प्रयास किये जा रहे हैं .सेवायोजन कार्यालयों द्वारा बेरोजगार अभ्यर्थियों एवं नियोजकों को एक ही स्थान पर आमंत्रित कर रोजगार मेलों का आयोजन किया जाता है, जिसमें नियोजक अपनी आवश्कतानुसार बेरोजगार अभ्यर्थियों का चयन करते हैं.तथा  बेरोजगार अभ्यर्थियों को भी अपनी इच्छानुसार संस्थान/कंपनी चयन करने की सुविधा उपलब्ध रहती है.");
+        $("#SpanRojgarMelaParticipateAboutUs").text("रोजगार मेलें में प्रतिभाग करने हेतु सर्वप्रथम जॉब सीकर को सेवायोजन पोर्टल पर अपना पंजीकरण कराना आवश्यक है. बेरोजगार अभ्यर्थियों के समान ही नियोजकों के भी उक्त पोर्टल पर पंजीकरण की व्यवस्था की गयी है .पंजीकरण के उपरांत नियोजक अपने संस्थान की रिक्तियों को सेवायोजन पोर्टल पर अपलोड कर सकते है.  उक्त अधिसूचित रिक्तियों के सापेक्ष जिन बेरोजगार अभ्यर्थियों की प्रोफाइल मैच करती है उनको सिस्टम जनरेटेड मेल प्रेषित हो जाएगी कि आपकी शैक्षिक योग्यता ,कौशल एवं अनुभव के अनुरूप रिक्तियां पोर्टल पर अपलोड की गयी है. अत: आप “प्रथम आओ प्रथम पाओ” के आधार पर निर्धारित संख्या तक आवेदन कर सकते है.ऐसे आवेदित अभ्यर्थियों की सूची नियोजक एवं एडमिन पैनल पर प्रदर्शित करने की व्यवस्था भी पोर्टल पर की गयी है. नियोजक द्वारा उक्त सूची के आधार पर अपनी आवश्यकतानुसार अभ्यर्थियों को सॉर्ट लिस्ट किया जा सकेगा. ऐसे सॉर्ट लिस्टेड अभ्यर्थियों को सम्बंधित सेवायोजन अधिकारी द्वारा ई-मेल के माध्यम से रोजगार मेलों में प्रतिभाग करने हेतु आमंत्रित किये जाने की व्यवस्था की गयी है. रोजगार मेलों का आयोजन सम्बंधित जनपद स्तरीय समिति द्वारा सम्पादित किया जायेगा. चयन के उपरांत नियोजक चयनित अभ्यर्थियों की सूची सम्बंधित सेवायोजन अधिकारी को उपलब्ध करायेंगें जिसको उनके द्वारा उक्त पोर्टल पर अपलोड कर दिया जायेगा.");
+        $("#SpanEducationCenterAboutUS").text("3.शिक्षण एवं मार्गदर्शन केंद्र  :");
+        $("#SpanfiftyTwoDistrictAboutUS").text("प्रदेश के 52 जनपदों में स्थापित शिक्षण एवं मार्गदर्शन केन्द्रों का मुख्य उद्देश्य समाज के निर्बल वर्ग यथा अनुसूचित जाति/जनजाति एवं अन्य पिछड़ा वर्ग के अभ्यर्थियों भाषा,सचिवीय पद्यति, कंप्यूटर ,आशुलिपि एवं सामान्य ज्ञान में प्रशिक्षण प्रदान कर उनकी सेवायोजकता में वृद्धि करना है.");
+        $("#SpanModelCarrierCenterAboutUs").text("4.माडल करियर सेन्टर :");
+        $("#SpanMahanidesakRojgarEmployementAboutUS").text("महानिदेशक, रोजगार एवं प्रशिक्षण ,भारत सरकार, नई दिल्ली के निर्देशों के क्रम में निदेशालय में कार्यरत करियर काउंसलिंग सेल तथा जिला सेवायोजन कार्यालय ,गाजियाबाद को माडल करियर सेन्टर के रूप में विकसित किये जाने का प्रस्ताव भारत सरकार द्वारा स्वीकार किया जा चुका है.");
+        $("#SpanModelCarrierCenterAboutUS").text("माडल करियर सेन्टर का कार्य पूरे प्रदेश के अध्ययनरत छात्र-छात्राओं तथा प्रशिक्षण संस्थानों में अध्ययन कर प्रशिक्षार्थियो से सम्बंधित है. इस सेन्टर द्वारा वर्तमान परिवेश में शिक्षण ,प्रशिक्षण एवं रोजगार के नए उभरते व्यवसायों की जानकारी प्रदान की जाती है.");
+        $("#SpanRojgarInfoAboutUs").text("5.रोजगार बाजार सूचना :-");
+        $("#SpanRojgarMelaRelationAboutUs").text("रोजगार ⁄ बेरोजगारी के विभिन्न आयामों के संबंध में सूचनाओं का एकत्रीकरण, संकलन, प्रचार एवं प्रसार। राज्य  रोजगार बाजार सूचना कार्यक्रम के अंतर्गत प्रदेश के संगठित क्षेत्र के नियोजको से त्रिमास के अन्त में उनके संस्थानों में कार्यरत  कर्मचारियों की संख्या त्रिमास में उत्पन्न रिक्तियों, सेवायोजको द्वारा रिक्तियों हेतु उपयुक्त अभ्यर्थियों की कमी की सूचना संबंधित क्षेत्र के क्षेत्रीय  / जिला/ नगर /सेवायोजन कार्यालय द्वारा त्रैमासिक आधार पर एकत्र की जाती हैं |वर्तमान समय में उक्त सूचनाएं  सार्वजनिक  क्षेत्र के समस्त अधिष्ठानों एवं निजी  क्षेत्र के अकृषि  अधिष्ठानों द्वारा जिनके यहाँ प्रायः 25 या उससे अधिक कर्मचारी कार्यरत हैं, सेवायोजन कार्यालय (रिक्तियो का  अनिवार्य अधिसूचन) अधिनियम 1959  के अंतर्गत  निर्धारित प्रपत्र ई०आर०-1 पर अधिनियम की धारा-5 तथा तत्सम्बन्धी नियमावली के अंतर्गत प्रेषित करना अनिवार्य हैं | एक  वर्ष सार्वजनिक तथा दूसरे वर्ष  निजी क्षेत्र के अधिष्ठानों में कार्यरत कर्मचारियों की व्यवसायानुसार एवं शैक्षिक /प्राविधिक योग्यतानुसार संख्या की सूचना एकत्रित की जाती हैं |");
+        $("#SpanSewayojanOfficeVacancyAboutUs").text("6.सेवायोजन कार्यालय (रिक्तियों का अनिवार्य अधिसूचन )अधिनियम का प्रवर्तन  :- ");
+        $("#SpanSewayojanOfficeVacEPAboutUs").text("1-	संसद द्वारा सेवायोजन कार्यालय (रिक्तियों का अनिवार्य अधिसूचन) अधिनियम 1959 पारित किया गया, जिसे भारत सरकार के श्रम मंत्रालय  की विज्ञप्ति सं. ई०पी०/11/(1)60, दिनांक 01-04-1960 द्वारा इसी तिथि से सम्पूर्ण देश में लागू कर दिया गया | इस अधिनियम की परिसीमा में सार्वजनिक क्षेत्र के  समस्त सेवायोजक तथा निजी क्षेत्र के (कृषि क्षेत्र के अतिरिक्त) वें सेवायोजक हैं, जिनके कार्यालय/संस्थानों/प्रतिष्ठानों में सामान्यतया 25 या इससे अधिक कर्मचारी सेवारत हैं |");
+        $("#SpanAdhineumDharaFourAboutUs").text("2-उपर्युक्त अधिनियम की धारा -4 में दी गयी व्यवस्थाओं के अनुसार अधिनियम के अंतर्गत आने वाले सेवायोजकों का यह वैधानिक दायित्व  है कि वे धारा -3 द्वारा  अवमुक्त रिक्तियों  के अतिरिक्त अपने  कार्यालय/ संस्थानों/ प्रतिष्ठानों में होने वाली समस्त रिक्तियां  अधिनियमान्तर्गत निर्मित नियमावली 1960 की नियम -4 द्वारा निर्धारित प्रारूप पर कम से कम 15 दिनों का समय देते  हुए  सम्बंधित सेवायोजन कार्यालय को अधिसूचित करें |");
+        $("#SpanAdhineumDharaFiveAboutUs").text("3-	अधिनियम की धारा -5 में यह व्यवस्था हैं कि सेवायोजक नियमावली 1960 के नियम – 6 में विनिर्दिष्ट  परिलेख ई०आर०-1, ई०आर०-2 में   सूचनायें  त्रिमासिक / द्विवार्षिक आधार पर अपने क्षेत्र के  सेवायोजन कार्यालयों को उपलब्ध करायेगे |");
+        $("#SpanAdhineumDharaSixAboutUs").text("4-	 अधिनियम की धारा- 6 में निहित व्यवस्था के आधार पर विभाग के अधिकारियों द्वारा नियोजकों के नियुक्ति सम्बन्धी  अभिलेखों का  निरीक्षण कर यह सुनिश्चित किया जाता हैं कि अधिनियम कि विभिन्न धाराओं का विधिवत पालन किया जा रहा है |");
+        $("#SpanAdhineumDharaSevenAboutUs").text("5-अधिनियम कि धारा -7 के अंतर्गत दोषी पाये गये नियोजकों के विरुद्ध दण्डात्मक कार्यवाही की व्यवस्था है |");
+        $("#SpanAdhineumDharaImprtantAdhineumAboutUs").text("महत्वपूर्ण अधिनियम एवं विनियमन");
+        $("#SpanSerialNoAboutUS").text("क्र० सं०");
+        $("#SpanTitleAboutUS").text("शीर्षक");
+        $("#SpanTypeodFileAboutUS").text("फ़ाइल का प्रकार");
+        $("#SpanSizeofFileAboutUs").text("फ़ाइल का साइज़");
+        $("#SpanAdhisuchanAdhineumVacAboutUs").text("रिक्तियों का अनिवार्य अधिसूचन , अधिनियम 1959");
+        $("#SpanRuleVacAboutUs").text("रिक्तियों का अनिवार्य अधिसूचन , नियमावली");
+        $("#SpanSewayojanOfficeMenualPartOneAboutUs").text("सेवायोजन कार्यालयों का संचालन मैनुअल भाग I");
+        $("#SpanSewayojanOfficeMenualPartTwoAboutUs").text("सेवायोजन कार्यालयों का संचालन मैनुअल भाग II");
+        $("#SpanSewayojanOfficeMenualPartThreeAboutUs").text("सेवायोजन कार्यालयों का संचालन मैनुअल भाग III");
+        $("#SpanUPEmployementRuleAboutUs").text("उ० प्र० बेरोज़गारी भत्ता योजना 2012,नियमावली");
+        $("#SpanBussinesClassificationAboutUS").text("राष्ट्रीय व्यावसायिक वर्गीकरण 2004");
+        $("#SpanNationalClassificationAboutUs").text("राष्ट्रीय औद्योगिक वर्गीकरण 2008");
+    }
+}
+
+
+
+       
+        

@@ -1,5 +1,3 @@
-// src/components/admin/customers/CustomerSummaryCards.tsx
-
 interface CustomerSummaryCardsProps {
   totalCustomers: number;
   verifiedCustomers: number;
@@ -11,63 +9,76 @@ function CustomerSummaryCards({
   verifiedCustomers,
   customersWithOrders,
 }: CustomerSummaryCardsProps) {
-  return (
-    <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+  const unverifiedCustomers = Math.max(
+    totalCustomers - verifiedCustomers,
+    0
+  );
 
+  return (
+    <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {/* TOTAL CUSTOMERS */}
 
-      <div className="rounded-2xl border border-[#eadfd3] bg-white p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+      <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-gray-600">
           Total Customers
         </p>
 
-        <p className="mt-3 text-2xl font-bold text-slate-900">
-          {totalCustomers.toLocaleString(
-            "en-IN"
-          )}
+        <p className="mt-2 text-[28px] font-bold leading-none tracking-[-0.02em] text-[#B5697A]">
+          {totalCustomers.toLocaleString("en-IN")}
         </p>
 
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-2 text-[12px] text-[#8B7A6C]">
           Registered customers
         </p>
       </div>
 
       {/* VERIFIED */}
 
-      <div className="rounded-2xl border border-[#eadfd3] bg-white p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+      <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-gray-600">
           Verified
         </p>
 
-        <p className="mt-3 text-2xl font-bold text-green-600">
-          {verifiedCustomers.toLocaleString(
-            "en-IN"
-          )}
+        <p className="mt-2 text-[28px] font-bold leading-none tracking-[-0.02em] text-[#3F8A58]">
+          {verifiedCustomers.toLocaleString("en-IN")}
         </p>
 
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-2 text-[12px] text-[#8B7A6C]">
           OTP verified accounts
+        </p>
+      </div>
+
+      {/* UNVERIFIED */}
+
+      <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-gray-600">
+          Unverified
+        </p>
+
+        <p className="mt-2 text-[28px] font-bold leading-none tracking-[-0.02em] text-[#C4773B]">
+          {unverifiedCustomers.toLocaleString("en-IN")}
+        </p>
+
+        <p className="mt-2 text-[12px] text-[#8B7A6C]">
+          Pending OTP verification
         </p>
       </div>
 
       {/* WITH ORDERS */}
 
-      <div className="rounded-2xl border border-[#eadfd3] bg-white p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+      <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-gray-600">
           With Orders
         </p>
 
-        <p className="mt-3 text-2xl font-bold text-[#8b542f]">
-          {customersWithOrders.toLocaleString(
-            "en-IN"
-          )}
+        <p className="mt-2 text-[28px] font-bold leading-none tracking-[-0.02em] text-[#4D7FEA]">
+          {customersWithOrders.toLocaleString("en-IN")}
         </p>
 
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-2 text-[12px] text-[#8B7A6C]">
           Customers who placed orders
         </p>
       </div>
-
     </div>
   );
 }
