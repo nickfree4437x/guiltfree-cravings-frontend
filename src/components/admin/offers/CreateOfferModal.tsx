@@ -1265,80 +1265,73 @@ function CreateOfferModal({
       );
     }
 
-    // ============================================================
-    // FIELD
-    // ============================================================
+   // ============================================================
+// FIELD
+// ============================================================
 
-    interface FieldProps {
-      label: string;
-      value: string;
-      onChange: (value: string) => void;
-      placeholder?: string;
-      type?: string;
-      min?: string;
-      disabled?: boolean;
-    }
+interface FieldProps {
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  type?: string;
+  min?: string;
+  disabled?: boolean;
+}
 
-    function Field({
-      label,
-      value,
-      onChange,
-      placeholder,
-      type = "text",
-      min,
-      disabled = false,
-    }: FieldProps) {
-      return (
-        <div>
-          <label
-            className="
-              mb-2
-              block
-              text-[12px]
-              text-[#6F6259]
-            "
-          >
-            {label}
-          </label>
+function Field({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  min,
+  disabled = false,
+}: FieldProps) {
+  return (
+    <div>
+      {label && (
+        <label className="mb-2 block text-[12px] text-[#6F6259]">
+          {label}
+        </label>
+      )}
 
-          <input
-            type={type}
-            value={value}
-            min={min}
-            disabled={disabled}
-            onChange={(event) =>
-              onChange(event.target.value)
-            }
-            placeholder={placeholder}
-            className="
-              w-full
-              rounded-xl
-              border
-              border-[#E8DED3]
-              bg-white
-              px-4
-              py-3
-              text-[13px]
-              text-[#3D3834]
-              outline-none
-              placeholder:text-[#B8AAA0]
-              hover:border-[#D9C8BA]
-              focus:border-[#B5697A]
-              focus:bg-white
-              disabled:cursor-not-allowed
-              disabled:opacity-60
-            "
-          />
-        </div>
-      );
-    }
+      <input
+        type={type}
+        value={value}
+        min={min}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        className="
+          w-full
+          rounded-xl
+          border
+          border-[#E8DED3]
+          bg-white
+          px-4
+          py-3
+          text-[13px]
+          text-[#3D3834]
+          outline-none
+          placeholder:text-[#B8AAA0]
+          hover:border-[#D9C8BA]
+          focus:border-[#B5697A]
+          focus:bg-white
+          disabled:cursor-not-allowed
+          disabled:opacity-60
+        "
+      />
+    </div>
+  );
+}
 
 // ============================================================
 // DATE FIELD
 // ============================================================
 
 interface DateFieldProps {
-  label: string;
+  label?: string;
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;

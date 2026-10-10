@@ -71,7 +71,7 @@ function AdminLayout() {
    * =========================================================
    */
 
-  const adminInitial =
+  // const adminInitial =
     admin?.name?.charAt(0)?.toUpperCase() || "A";
 
   /*

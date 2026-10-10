@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   CalendarDays,
@@ -17,119 +12,75 @@ import {
   UserRound,
   XCircle,
 } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 
-import {
-  Link,
-  useParams,
-} from "react-router-dom";
-
-import {
-  getAdminCustomerById,
-} from "../../../api/adminUsersApi";
-
+import { getAdminCustomerById } from "../../../api/adminUsersApi";
 import type {
   AdminCustomerDetails,
   AdminCustomerOrder,
 } from "../../../components/admin/customers/types";
-
 import CustomerVerificationBadge from "../../../components/admin/customers/CustomerVerificationBadge";
-
 import StatusBadge from "../../../components/admin/dashoard/StatusBadge";
+import { formatCustomerDate } from "../../../components/admin/customers/customerUtils";
 
-import {
-  formatCustomerDate,
-} from "../../../components/admin/customers/customerUtils";
-
-function formatCurrency(
-  amount: number
-) {
-  return `₹${amount.toLocaleString(
-    "en-IN"
-  )}`;
+function formatCurrency(amount: number) {
+  return `₹${amount.toLocaleString("en-IN")}`;
 }
 
-function formatOrderDate(
-  date: string
-) {
-  return new Date(date).toLocaleDateString(
-    "en-IN",
-    {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }
-  );
+function formatOrderDate(date: string) {
+  return new Date(date).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function CustomerDetailsPage() {
-  const { id } = useParams<{
-    id: string;
-  }>();
+  const { id } = useParams<{ id: string }>();
 
   const [customer, setCustomer] =
-    useState<AdminCustomerDetails | null>(
-      null
-    );
+    useState<AdminCustomerDetails | null>(null);
 
-  const [isLoading, setIsLoading] =
-    useState(true);
-
-  const [pageError, setPageError] =
-    useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [pageError, setPageError] = useState("");
 
   useEffect(() => {
     let mounted = true;
 
-    const loadCustomer =
-      async () => {
-        const customerId =
-          Number(id);
+    const loadCustomer = async () => {
+      const customerId = Number(id);
 
-        if (
-          !Number.isInteger(
-            customerId
-          ) ||
-          customerId <= 0
-        ) {
+      if (!Number.isInteger(customerId) || customerId <= 0) {
+        setPageError("Invalid customer ID.");
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setPageError("");
+
+        const result = await getAdminCustomerById(customerId);
+
+        if (mounted) {
+          setCustomer(result);
+        }
+      } catch (error: any) {
+        console.error("Failed to load customer details:", error);
+
+        if (mounted) {
           setPageError(
-            "Invalid customer ID."
+            error?.response?.data?.message ||
+              error?.message ||
+              "Unable to load customer details right now."
           );
+        }
+      } finally {
+        if (mounted) {
           setIsLoading(false);
-          return;
         }
-
-        try {
-          setIsLoading(true);
-          setPageError("");
-
-          const result =
-            await getAdminCustomerById(
-              customerId
-            );
-
-          if (mounted) {
-            setCustomer(result);
-          }
-        } catch (error: any) {
-          console.error(
-            "Failed to load customer details:",
-            error
-          );
-
-          if (mounted) {
-            setPageError(
-              error?.response?.data
-                ?.message ||
-                error?.message ||
-                "Unable to load customer details right now."
-            );
-          }
-        } finally {
-          if (mounted) {
-            setIsLoading(false);
-          }
-        }
-      };
+      }
+    };
 
     void loadCustomer();
 
@@ -138,16 +89,22 @@ function CustomerDetailsPage() {
     };
   }, [id]);
 
-  const stats =
-    customer?.stats;
+  // Safe defaults prevent TypeScript errors when stats are missing.
+  const stats = customer?.stats ?? {
+    totalOrders: 0,
+    totalSpent: 0,
+    paidOrders: 0,
+    pendingOrders: 0,
+    processingOrders: 0,
+    completedOrders: 0,
+    cancelledOrders: 0,
+    totalReviews: 0,
+  };
 
-  const latestOrder =
-    useMemo<AdminCustomerOrder | null>(
-      () =>
-        customer?.orders?.[0] ||
-        null,
-      [customer]
-    );
+  const latestOrder = useMemo<AdminCustomerOrder | null>(
+    () => customer?.orders?.[0] || null,
+    [customer]
+  );
 
   if (isLoading) {
     return (
@@ -155,19 +112,7 @@ function CustomerDetailsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex min-h-[400px] items-center justify-center rounded-2xl border border-[#EFE3D2] bg-white">
             <div className="text-center">
-              <div
-                className="
-                  mx-auto
-                  h-8
-                  w-8
-                  animate-spin
-                  rounded-full
-                  border-2
-                  border-[#EADBD0]
-                  border-t-[#B5697A]
-                "
-              />
-
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#EADBD0] border-t-[#B5697A]" />
               <p className="mt-4 text-sm font-medium text-[#7B6D63]">
                 Loading customer details...
               </p>
@@ -184,20 +129,9 @@ function CustomerDetailsPage() {
         <div className="mx-auto max-w-7xl">
           <Link
             to="/admin/users"
-            className="
-              inline-flex
-              items-center
-              gap-2
-              text-[13px]
-              text-[#A85F70]
-              transition
-              hover:text-[#8F4E60]
-            "
+            className="inline-flex items-center gap-2 text-[13px] text-[#A85F70] transition hover:text-[#8F4E60]"
           >
-            <ArrowLeft
-              className="h-4 w-4"
-              strokeWidth={1.8}
-            />
+            <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
             Back to Customers
           </Link>
 
@@ -211,25 +145,12 @@ function CustomerDetailsPage() {
             </h2>
 
             <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#A85F70]">
-              {pageError ||
-                "Customer could not be found."}
+              {pageError || "Customer could not be found."}
             </p>
 
             <Link
               to="/admin/users"
-              className="
-                mt-6
-                inline-flex
-                items-center
-                rounded-xl
-                bg-[#B5697A]
-                px-5
-                py-2.5
-                text-sm
-                text-white
-                transition
-                hover:bg-[#A45D6F]
-              "
+              className="mt-6 inline-flex items-center rounded-xl bg-[#B5697A] px-5 py-2.5 text-sm text-white transition hover:bg-[#A45D6F]"
             >
               Back to Customers
             </Link>
@@ -242,51 +163,31 @@ function CustomerDetailsPage() {
   return (
     <main className="min-h-full bg-white px-5 py-3 sm:px-8 lg:px-10 lg:py-6">
       <div className="mx-auto max-w-7xl">
-
         {/* BACK */}
-
         <Link
           to="/admin/users"
-          className="
-            inline-flex
-            items-center
-            gap-2 hover:underline
-            text-[13px]
-            text-[#A85F70]
-            transition
-            hover:text-[#8F4E60]
-          "
+          className="inline-flex items-center gap-2 text-[13px] text-[#A85F70] transition hover:text-[#8F4E60] hover:underline"
         >
-          <ArrowLeft
-            className="h-4 w-4"
-            strokeWidth={1.8}
-          />
+          <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
           Back to Customers
         </Link>
 
         {/* HEADER */}
-
         <section className="mt-3 rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm sm:p-6 lg:p-7">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#FBECEF] text-[#B5697A]">
-                <UserRound
-                  className="h-6 w-6"
-                  strokeWidth={1.7}
-                />
+                <UserRound className="h-6 w-6" strokeWidth={1.7} />
               </div>
 
               <div>
                 <div className="flex flex-wrap items-center gap-3">
                   <h1 className="text-[22px] font-semibold tracking-[-0.02em] text-[#1F4A2E] sm:text-[25px]">
-                    {customer.name ||
-                      "Unnamed Customer"}
+                    {customer.name || "Unnamed Customer"}
                   </h1>
 
                   <CustomerVerificationBadge
-                    isVerified={
-                      customer.isVerified
-                    }
+                    isVerified={customer.isVerified}
                   />
                 </div>
 
@@ -301,33 +202,22 @@ function CustomerDetailsPage() {
                 className="h-4 w-4 text-[#B5697A]"
                 strokeWidth={1.7}
               />
-
-              Joined{" "}
-              {formatCustomerDate(
-                customer.createdAt
-              )}
+              Joined {formatCustomerDate(customer.createdAt)}
             </div>
           </div>
         </section>
 
         {/* CUSTOMER INFORMATION */}
-
         <section className="mt-5 rounded-xl border border-[#EFE3D2] bg-white p-4 shadow-sm sm:p-5">
-          <div className="flex items-center gap-2">
-
-            <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
-              Customer Information
-            </h2>
-          </div>
+          <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
+            Customer Information
+          </h2>
 
           <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <InfoItem
               icon={UserRound}
               label="Full Name"
-              value={
-                customer.name ||
-                "Unnamed Customer"
-              }
+              value={customer.name || "Unnamed Customer"}
             />
 
             <InfoItem
@@ -339,42 +229,30 @@ function CustomerDetailsPage() {
             <InfoItem
               icon={Mail}
               label="Email"
-              value={
-                customer.email ||
-                "Not provided"
-              }
+              value={customer.email || "Not provided"}
             />
 
             <InfoItem
               icon={CheckCircle2}
               label="Verification"
-              value={
-                customer.isVerified
-                  ? "Verified"
-                  : "Unverified"
-              }
+              value={customer.isVerified ? "Verified" : "Unverified"}
             />
 
             <InfoItem
               icon={CalendarDays}
               label="Joined"
-              value={formatCustomerDate(
-                customer.createdAt
-              )}
+              value={formatCustomerDate(customer.createdAt)}
             />
 
             <InfoItem
               icon={Clock3}
               label="Last Updated"
-              value={formatCustomerDate(
-                customer.updatedAt
-              )}
+              value={formatCustomerDate(customer.updatedAt)}
             />
           </div>
         </section>
 
-        {/* STATS */}
-
+        {/* CUSTOMER STATISTICS */}
         <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CustomerStat
             icon={ShoppingBag}
@@ -387,9 +265,7 @@ function CustomerDetailsPage() {
           <CustomerStat
             icon={CreditCard}
             label="Total Spent"
-            value={formatCurrency(
-              stats.totalSpent
-            )}
+            value={formatCurrency(stats.totalSpent)}
             iconBg="bg-[#EEF8F2]"
             iconColor="text-[#3F8A58]"
           />
@@ -443,18 +319,14 @@ function CustomerDetailsPage() {
           />
         </section>
 
-        {/* LAST ORDER */}
-
+        {/* LATEST ORDER */}
         {latestOrder && (
           <section className="mt-4 rounded-xl border border-[#EFE3D2] bg-white p-4 shadow-sm sm:p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <div className="flex items-center gap-2">
-
-                  <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
-                    Latest Order
-                  </h2>
-                </div>
+                <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
+                  Latest Order
+                </h2>
 
                 <p className="mt-0.5 text-[12px] text-[#8B7A6C]">
                   Most recent order placed by this customer.
@@ -473,9 +345,7 @@ function CustomerDetailsPage() {
                 </p>
 
                 <p className="mt-1.5 text-[16px] text-[#1F4A2E]">
-                  {formatCurrency(
-                    latestOrder.totalAmount
-                  )}
+                  {formatCurrency(latestOrder.totalAmount)}
                 </p>
               </div>
 
@@ -485,11 +355,7 @@ function CustomerDetailsPage() {
                 </p>
 
                 <div className="mt-2">
-                  <StatusBadge
-                    status={
-                      latestOrder.paymentStatus
-                    }
-                  />
+                  <StatusBadge status={latestOrder.paymentStatus} />
                 </div>
               </div>
 
@@ -499,11 +365,7 @@ function CustomerDetailsPage() {
                 </p>
 
                 <div className="mt-2">
-                  <StatusBadge
-                    status={
-                      latestOrder.orderStatus
-                    }
-                  />
+                  <StatusBadge status={latestOrder.orderStatus} />
                 </div>
               </div>
             </div>
@@ -511,17 +373,13 @@ function CustomerDetailsPage() {
         )}
 
         {/* ORDER HISTORY */}
-
         <section className="mt-6 overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
           <div className="border-b border-[#EFE3D2] px-5 py-5 sm:px-6">
-            <div className="flex items-center gap-1">
+            <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
+              Order History
+            </h2>
 
-              <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
-                Order History
-              </h2>
-            </div>
-
-            <p className="mt-0 text-[12px] text-[#8B7A6C]">
+            <p className="text-[12px] text-[#8B7A6C]">
               All orders placed by this customer.
             </p>
           </div>
@@ -577,75 +435,49 @@ function CustomerDetailsPage() {
                 </thead>
 
                 <tbody>
-                  {customer.orders.map(
-                    (order) => (
-                      <tr
-                        key={order.id}
-                        className="
-                          border-b
-                          border-[#F1E9E1]
-                          last:border-0
-                          hover:bg-[#FFFBF8]
-                        "
-                      >
-                        <td className="px-6 py-5">
-                          <span className="rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[11px] text-[#A85F70]">
-                            {order.orderNumber}
-                          </span>
-                        </td>
+                  {customer.orders.map((order) => (
+                    <tr
+                      key={order.id}
+                      className="border-b border-[#F1E9E1] last:border-0 hover:bg-[#FFFBF8]"
+                    >
+                      <td className="px-6 py-5">
+                        <span className="rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[11px] text-[#A85F70]">
+                          {order.orderNumber}
+                        </span>
+                      </td>
 
-                        <td className="px-6 py-5">
-                          <div>
-                            <p className="text-[13px] font-semibold text-[#3D3834]">
-                              {order.items.length}{" "}
-                              {order.items.length ===
-                              1
-                                ? "item"
-                                : "items"}
-                            </p>
+                      <td className="px-6 py-5">
+                        <div>
+                          <p className="text-[13px] font-semibold text-[#3D3834]">
+                            {order.items.length}{" "}
+                            {order.items.length === 1 ? "item" : "items"}
+                          </p>
 
-                            <p className="mt-1 max-w-[260px] truncate text-[11px] text-[#9A8D82]">
-                              {order.items
-                                .map(
-                                  (item) =>
-                                    item.productName
-                                )
-                                .join(", ") ||
-                                "No items"}
-                            </p>
-                          </div>
-                        </td>
+                          <p className="mt-1 max-w-[260px] truncate text-[11px] text-[#9A8D82]">
+                            {order.items
+                              .map((item) => item.productName)
+                              .join(", ") || "No items"}
+                          </p>
+                        </div>
+                      </td>
 
-                        <td className="px-6 py-5 text-[14px] font-semibold text-[#1F4A2E]">
-                          {formatCurrency(
-                            order.totalAmount
-                          )}
-                        </td>
+                      <td className="px-6 py-5 text-[14px] font-semibold text-[#1F4A2E]">
+                        {formatCurrency(order.totalAmount)}
+                      </td>
 
-                        <td className="px-6 py-5">
-                          <StatusBadge
-                            status={
-                              order.paymentStatus
-                            }
-                          />
-                        </td>
+                      <td className="px-6 py-5">
+                        <StatusBadge status={order.paymentStatus} />
+                      </td>
 
-                        <td className="px-6 py-5">
-                          <StatusBadge
-                            status={
-                              order.orderStatus
-                            }
-                          />
-                        </td>
+                      <td className="px-6 py-5">
+                        <StatusBadge status={order.orderStatus} />
+                      </td>
 
-                        <td className="px-6 py-5 text-[13px] text-[#766A61]">
-                          {formatOrderDate(
-                            order.createdAt
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  )}
+                      <td className="px-6 py-5 text-[13px] text-[#766A61]">
+                        {formatOrderDate(order.createdAt)}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -656,11 +488,7 @@ function CustomerDetailsPage() {
   );
 }
 
-/*
- * =========================================================
- * INFO ITEM
- * =========================================================
- */
+/* INFO ITEM */
 
 interface InfoItemProps {
   icon: typeof UserRound;
@@ -668,11 +496,7 @@ interface InfoItemProps {
   value: string;
 }
 
-function InfoItem({
-  icon: Icon,
-  label,
-  value,
-}: InfoItemProps) {
+function InfoItem({ icon: Icon, label, value }: InfoItemProps) {
   return (
     <div className="rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-4">
       <div className="flex items-center gap-2">
@@ -693,11 +517,7 @@ function InfoItem({
   );
 }
 
-/*
- * =========================================================
- * CUSTOMER STAT
- * =========================================================
- */
+/* CUSTOMER STAT */
 
 interface CustomerStatProps {
   icon: typeof ShoppingBag;
