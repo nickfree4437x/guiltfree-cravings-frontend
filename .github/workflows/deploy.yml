@@ -1,0 +1,68 @@
+
+name: Deploy Guilt Free Cravings Frontend
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          VITE_API_URL: https://guiltfreecravings.com/api
+
+      - name: Configure SSH
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy frontend
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          tar -czf /tmp/frontend-dist.tar.gz -C dist .
+          scp -i ~/.ssh/deploy_key \
+            /tmp/frontend-dist.tar.gz \
+            "$VPS_USER@$VPS_HOST:/tmp/frontend-dist.tar.gz"
+          ssh -i ~/.ssh/deploy_key "$VPS_USER@$VPS_HOST" '
+            set -e
+            mkdir -p /var/www/guiltfree-cravings/frontend/dist
+            tar -xzf /tmp/frontend-dist.tar.gz \
+              -C /var/www/guiltfree-cravings/frontend/dist
+            rm -f /tmp/frontend-dist.tar.gz
+            nginx -t
+            systemctl reload nginx
+          '
