@@ -39,7 +39,7 @@ interface AccountProfileFormProps {
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  "https://guiltfree-cravings-backend.onrender.com/api";
+  "https://guiltfreecravings.com/api";
 
 function AccountProfileForm({
   user,
