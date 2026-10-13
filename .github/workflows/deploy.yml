@@ -15,7 +15,9 @@ concurrency:
 
 jobs:
   deploy:
+    name: Build and Deploy Frontend
     runs-on: ubuntu-latest
+    environment: VITE_MSG91_WIDGET_ID
 
     steps:
       - name: Checkout repository
@@ -36,6 +38,13 @@ jobs:
           VITE_MSG91_WIDGET_ID: ${{ vars.VITE_MSG91_WIDGET_ID }}
           VITE_MSG91_WIDGET_TOKEN: ${{ secrets.VITE_MSG91_WIDGET_TOKEN }}
         run: |
+          set -eu
+
+          if [ -z "$VITE_API_URL" ]; then
+            echo "::error::VITE_API_URL is missing."
+            exit 1
+          fi
+
           if [ -z "$VITE_MSG91_WIDGET_ID" ]; then
             echo "::error::VITE_MSG91_WIDGET_ID is missing."
             exit 1
@@ -55,13 +64,22 @@ jobs:
           VITE_MSG91_WIDGET_ID: ${{ vars.VITE_MSG91_WIDGET_ID }}
           VITE_MSG91_WIDGET_TOKEN: ${{ secrets.VITE_MSG91_WIDGET_TOKEN }}
 
+      - name: Verify production API URL in build
+        run: |
+          set -eu
+          if ! grep -R -q 'https://guiltfreecravings.com/api' dist/assets/; then
+            echo "::error::Production API URL was not found in the frontend build."
+            exit 1
+          fi
+          echo "Production API URL verified in build."
+
       - name: Configure SSH
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
-          set -e
+          set -eu
 
           if [ -z "$VPS_HOST" ] || [ -z "$VPS_USER" ] || [ -z "$VPS_SSH_KEY" ]; then
             echo "::error::One or more VPS deployment secrets are missing."
@@ -83,7 +101,7 @@ jobs:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
         run: |
-          set -e
+          set -eu
 
           scp -i ~/.ssh/deploy_key \
             /tmp/frontend-dist.tar.gz \
@@ -94,10 +112,10 @@ jobs:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
         run: |
-          set -e
+          set -eu
 
           ssh -i ~/.ssh/deploy_key "$VPS_USER@$VPS_HOST" '
-            set -e
+            set -eu
 
             DEPLOY_DIR="/var/www/guiltfree-cravings/frontend"
             RELEASE_DIR="$DEPLOY_DIR/dist"
