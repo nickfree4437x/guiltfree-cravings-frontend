@@ -1,4 +1,4 @@
-
+```yaml
 name: Deploy Guilt Free Cravings Frontend
 
 on:
@@ -31,10 +31,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate frontend environment
+        env:
+          VITE_API_URL: https://guiltfreecravings.com/api
+          VITE_MSG91_WIDGET_ID: ${{ vars.VITE_MSG91_WIDGET_ID }}
+          VITE_MSG91_WIDGET_TOKEN: ${{ secrets.VITE_MSG91_WIDGET_TOKEN }}
+        run: |
+          if [ -z "$VITE_MSG91_WIDGET_ID" ]; then
+            echo "::error::VITE_MSG91_WIDGET_ID is missing."
+            exit 1
+          fi
+
+          if [ -z "$VITE_MSG91_WIDGET_TOKEN" ]; then
+            echo "::error::VITE_MSG91_WIDGET_TOKEN is missing."
+            exit 1
+          fi
+
+          echo "Frontend environment configuration is present."
+
       - name: Build frontend
         run: npm run build
         env:
           VITE_API_URL: https://guiltfreecravings.com/api
+          VITE_MSG91_WIDGET_ID: ${{ vars.VITE_MSG91_WIDGET_ID }}
+          VITE_MSG91_WIDGET_TOKEN: ${{ secrets.VITE_MSG91_WIDGET_TOKEN }}
 
       - name: Configure SSH
         env:
@@ -42,27 +62,61 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
+          set -e
+
+          if [ -z "$VPS_HOST" ] || [ -z "$VPS_USER" ] || [ -z "$VPS_SSH_KEY" ]; then
+            echo "::error::One or more VPS deployment secrets are missing."
+            exit 1
+          fi
+
           install -m 700 -d ~/.ssh
           printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+
           ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Deploy frontend
+      - name: Package frontend build
+        run: tar -czf /tmp/frontend-dist.tar.gz -C dist .
+
+      - name: Upload frontend build
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
         run: |
-          tar -czf /tmp/frontend-dist.tar.gz -C dist .
+          set -e
+
           scp -i ~/.ssh/deploy_key \
             /tmp/frontend-dist.tar.gz \
             "$VPS_USER@$VPS_HOST:/tmp/frontend-dist.tar.gz"
+
+      - name: Deploy frontend on VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          set -e
+
           ssh -i ~/.ssh/deploy_key "$VPS_USER@$VPS_HOST" '
             set -e
-            mkdir -p /var/www/guiltfree-cravings/frontend/dist
-            tar -xzf /tmp/frontend-dist.tar.gz \
-              -C /var/www/guiltfree-cravings/frontend/dist
-            rm -f /tmp/frontend-dist.tar.gz
+
+            DEPLOY_DIR="/var/www/guiltfree-cravings/frontend"
+            RELEASE_DIR="$DEPLOY_DIR/dist"
+            ARCHIVE="/tmp/frontend-dist.tar.gz"
+
+            test -f "$ARCHIVE"
+            mkdir -p "$RELEASE_DIR"
+
+            tar -xzf "$ARCHIVE" -C "$RELEASE_DIR"
+            rm -f "$ARCHIVE"
+
             nginx -t
             systemctl reload nginx
+
+            echo "Frontend deployment completed successfully."
           '
+
+      - name: Cleanup local archive
+        if: always()
+        run: rm -f /tmp/frontend-dist.tar.gz
+```
