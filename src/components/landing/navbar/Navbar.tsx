@@ -28,7 +28,24 @@ interface NavbarProps {
  * INSTAGRAM LINK
  * =========================================================
  */
-const INSTAGRAM_URL = "#";
+const INSTAGRAM_URL = "https://instagram.com/guilt.free_cravings?srtk=Ym5yOGxqb3JxYm9k&utm_source=qr";
+
+/*
+ * =========================================================
+ * WHATSAPP LINK
+ * =========================================================
+ *
+ * Click karne par WhatsApp open hoga aur ye message
+ * pre-filled rahega.
+ * =========================================================
+ */
+const WHATSAPP_NUMBER = "919667760119";
+
+const WHATSAPP_MESSAGE = encodeURIComponent(
+  "Hi, I want to place an order"
+);
+
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
 
 /*
  * =========================================================
@@ -516,7 +533,9 @@ function Navbar({
               "
             >
               <a
-                href="#"
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="
                   flex
                   items-center
@@ -758,9 +777,6 @@ function Navbar({
                     border-slate-200
                     bg-white
                     text-slate-800
-                    transition-all
-                    duration-200
-                    hover:border-[#B5697A]/30
                     hover:text-[#B5697A]
                   "
                   aria-label={`Shopping cart with ${cartItemCount} items`}

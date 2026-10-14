@@ -87,7 +87,7 @@ function About() {
             {/* Main heading */}
 
             <h2 className="text-[18px] sm:text-[24px] md:text-[22px] font-[600] text-[#C9788B] tracking-wide leading-snug mb-1">
-              Welcome To Guilt Free Cravings
+              Our Promise, Made with Care
             </h2>
 
             {/* Intro description */}

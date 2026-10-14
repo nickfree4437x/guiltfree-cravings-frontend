@@ -102,9 +102,6 @@ function DesktopActions({
           justify-center
           rounded-full
           border
-          transition-all
-          duration-200
-          active:scale-95
           ${
             isLight
               ? "border-white/30 bg-white/10 text-white backdrop-blur-sm hover:border-white/50 hover:bg-white/15"
@@ -123,7 +120,6 @@ function DesktopActions({
             w-[18px]
             transition-transform
             duration-200
-            group-hover:scale-105
           "
           aria-hidden="true"
         >
@@ -148,7 +144,6 @@ function DesktopActions({
               rounded-full
               px-1
               text-[9px]
-              font-semibold
               leading-none
               shadow-sm
               ${
