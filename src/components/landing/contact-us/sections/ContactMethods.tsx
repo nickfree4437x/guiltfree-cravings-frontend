@@ -5,18 +5,37 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
-const CONTACT_PHONE = "+91 XXXXX XXXXX";
-const CONTACT_EMAIL = "hello@example.com";
-const WHATSAPP_NUMBER = "91XXXXXXXXXX";
+const CONTACT_PHONE = "+91-9667760119";
+const CONTACT_EMAIL = "guiltfreecravings24@gmail.com";
+
+/*
+ * =========================================================
+ * WHATSAPP
+ * =========================================================
+ *
+ * IMPORTANT:
+ * wa.me link mein sirf pure digits hone chahiye.
+ * Koi +, -, ya space nahi.
+ *
+ * Example: 919667760119 ✅
+ *          +91-9667760119 ❌
+ * =========================================================
+ */
+
+const WHATSAPP_NUMBER = "919667760119";
+
+const WHATSAPP_MESSAGE = encodeURIComponent(
+  "Hi, I want to place an order"
+);
+
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
 
 function ContactMethods() {
-  const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}`;
-
   const methods = [
     {
       id: "whatsapp",
       number: "01",
-      href: whatsappLink,
+      href: WHATSAPP_URL,
       external: true,
       icon: MessageCircle,
       label: "WhatsApp",
@@ -82,7 +101,6 @@ function ContactMethods() {
                   sm:gap-4 sm:px-6 sm:py-6
                 "
               >
-
 
                 {/* ============ ICON ============ */}
                 <span

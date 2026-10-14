@@ -306,12 +306,12 @@ function Navbar({
       to: "/#products",
     },
     {
-      label: "Reviews",
-      to: "/#reviews",
-    },
-    {
       label: "Our Promise",
       to: "/#our-promise",
+    },
+    {
+      label: "Reviews",
+      to: "/#reviews",
     },
   ];
 

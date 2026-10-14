@@ -65,22 +65,11 @@ function HowOurLaddoosAreMade() {
           .how-fadeUp { animation: howFadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
           .pulse-ring  { animation: pulseRing 2s ease-out infinite; }
 
-          /* Custom video controls accent */
-          video::-webkit-media-controls-panel {
-            background-image: linear-gradient(transparent, rgba(0,0,0,0.7)) !important;
-          }
-          video::-webkit-media-controls-play-button,
-          video::-webkit-media-controls-mute-button,
-          video::-webkit-media-controls-fullscreen-button {
-            filter: brightness(1.2);
-          }
-
           @media (prefers-reduced-motion: reduce) {
             .how-fadeUp, .pulse-ring { animation: none !important; }
           }
         `}
       </style>
-
 
       <div className="relative mx-auto w-full max-w-[1360px] px-6 sm:px-10 md:px-14 lg:px-20">
 
@@ -90,7 +79,7 @@ function HowOurLaddoosAreMade() {
         <div className="mx-auto max-w-3xl text-center">
 
           {/* Heading */}
-          <h2 className="anim-fadeUp delay-2  text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide leading-snug md:whitespace-nowrap text-[#C9788B]">
+          <h2 className="anim-fadeUp delay-2 text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide leading-snug md:whitespace-nowrap text-[#C9788B]">
             How Our Laddoos Are Made
           </h2>
 
@@ -138,18 +127,16 @@ function HowOurLaddoosAreMade() {
                 sm:rounded-xl
               "
             >
-              {/* ============================================
-                  VIDEO — with YouTube-like attributes
-              ============================================ */}
+              {/* VIDEO — native controls removed */}
               <video
                 ref={videoRef}
                 src={DUMMY_VIDEO_URL}
                 playsInline
                 preload="metadata"
-                controls
+                controls={false}
                 controlsList="nodownload noremoteplayback"
-                disablePictureInPicture={false}
-                disableRemotePlayback={false}
+                disablePictureInPicture
+                disableRemotePlayback
                 onEnded={handleVideoEnded}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
@@ -159,8 +146,7 @@ function HowOurLaddoosAreMade() {
                 Your browser does not support the video tag.
               </video>
 
-              {/* ============ CUSTOM OVERLAY (hidden when controls active) ============ */}
-              {/* Dark overlay — only when NOT playing (paused state) */}
+              {/* Dark overlay — only when NOT playing */}
               <div
                 className={`
                   pointer-events-none absolute inset-0 z-[5]
@@ -170,7 +156,7 @@ function HowOurLaddoosAreMade() {
                 `}
               />
 
-              {/* Center Play/Pause button (only when NOT playing) */}
+              {/* Center Play button (only when NOT playing) */}
               {!isPlaying && (
                 <button
                   type="button"
@@ -186,7 +172,7 @@ function HowOurLaddoosAreMade() {
                     text-white
                     shadow-[0_8px_30px_rgba(181,105,122,0.45)]
                     transition-all duration-300
-                     hover:bg-[#A55F70]
+                    hover:bg-[#A55F70]
                     focus:outline-none focus-visible:ring-2
                     focus-visible:ring-white focus-visible:ring-offset-2
                     focus-visible:ring-offset-transparent
@@ -235,11 +221,9 @@ function HowOurLaddoosAreMade() {
                   </span>
                 </div>
               )}
-
             </div>
           </div>
         </div>
-
 
       </div>
     </section>

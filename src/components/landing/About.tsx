@@ -134,23 +134,21 @@ function About() {
           ================================================= */}
 
           <div className="relative">
-
             <div className="relative max-w-[340px] sm:max-w-[420px] md:max-w-[500px] h-[230px] sm:h-[360px] md:h-[370px] overflow-hidden border border-[#E8DCCF] bg-[#F5EEE5]">
-
               <video
-                className="aspect-[4/3] w-full object-cover"
-                controls
+                className="h-full w-full object-cover"
+                autoPlay
                 muted
                 loop
                 playsInline
-                poster="https://placehold.co/1000x750/F5EEE5/1F4A2E?text=GuiltFree+Kitchen"
+                preload="auto"
+                onCanPlay={() => console.log("Video ready to play")}
+                onError={(e) => console.error("Video loading error:", e.currentTarget.error)}
               >
                 <source
                   src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
                   type="video/mp4"
                 />
-
-                Your browser does not support the video tag.
               </video>
             </div>
 
