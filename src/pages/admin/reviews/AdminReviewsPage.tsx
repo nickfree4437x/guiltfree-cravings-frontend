@@ -343,19 +343,18 @@ function AdminReviewsPage() {
   // ==========================================================
 
   return (
-    <div className="min-h-full bg-white px-5 py-5 sm:px-6 lg:px-8 lg:py-7">
+    <div className="min-h-full bg-white px-5 py-2 sm:px-6 lg:px-8 lg:py-3">
       <div className="mx-auto max-w-7xl">
 
-        {/* ====================================================
+                {/* ====================================================
             PAGE HEADER
         ==================================================== */}
 
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-
+        <div className="flex flex-row items-start justify-between gap-3 sm:gap-4 lg:items-end">
+          <div className="min-w-0 flex-1">
             <h1
               className="
-                mt-2 text-[18px] md:text-[24px] font-bold tracking-tight text-slate-900
+                mt-2 text-[18px] font-bold tracking-tight text-slate-700 md:text-[22px]
               "
             >
               Reviews
@@ -363,11 +362,10 @@ function AdminReviewsPage() {
 
             <p
               className="
-                mt-0 max-w-xl text-sm leading-relaxed text-slate-500
+                mt-0 max-w-xl text-[11px] md:text-[12px] font-[350] leading-relaxed text-slate-500
               "
             >
-              Review customer feedback, moderate
-              submissions and manage published reviews.
+              Moderate and manage customer reviews.
             </p>
           </div>
 
@@ -382,16 +380,20 @@ function AdminReviewsPage() {
             }
             className="
               inline-flex
-              w-fit
+              shrink-0
               items-center
-              gap-2
+              gap-1.5
+              sm:gap-2
               rounded-xl
               border
               border-[#E8DED3]
               bg-white
-              px-4
-              py-2.5
-              text-[12px]
+              px-3
+              sm:px-4
+              py-2
+              sm:py-2.5
+              text-[11px]
+              sm:text-[12px]
               text-[#6F6259]
               shadow-sm
               hover:border-[#D9B8C1]
@@ -405,8 +407,8 @@ function AdminReviewsPage() {
             <RefreshCw
               className={
                 isRefreshing
-                  ? "h-4 w-4 animate-spin"
-                  : "h-4 w-4"
+                  ? "h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin"
+                  : "h-3.5 w-3.5 sm:h-4 sm:w-4"
               }
               strokeWidth={1.8}
             />
@@ -510,7 +512,7 @@ function AdminReviewsPage() {
               </h2>
             </div>
 
-            <p className="mt-0 text-[12px] text-[#8B7A6C]">
+            <p className="mt-0 text-[12px] text-gray-500">
               {filteredReviews.length} review
               {filteredReviews.length !== 1
                 ? "s"
@@ -521,7 +523,7 @@ function AdminReviewsPage() {
 
           {isLoading ? (
             <div className="flex min-h-[300px] items-center justify-center">
-              <div className="flex items-center gap-3 text-[12px] text-[#8B7A6C]">
+              <div className="flex items-center gap-3 text-[12px] text-gray-500">
                 <Loader2
                   className="
                     h-5
@@ -559,7 +561,7 @@ function AdminReviewsPage() {
                 No reviews found
               </h3>
 
-              <p className="mt-2 max-w-sm text-[12px] leading-5 text-[#8B7A6C]">
+              <p className="mt-2 max-w-sm text-[12px] leading-5 text-gray-500">
                 {search ||
                 statusFilter !== "ALL" ||
                 ratingFilter !== "ALL"

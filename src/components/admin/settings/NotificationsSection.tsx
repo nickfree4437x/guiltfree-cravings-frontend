@@ -28,11 +28,11 @@ function NotificationsSection({
         <div className="flex items-start gap-4">
 
           <div className="min-w-0">
-            <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-[#1F4A2E] sm:text-[18px]">
+            <h2 className="text-[14px] md:text-[16px] font-semibold tracking-[-0.01em] text-[#1F4A2E]">
               Notifications
             </h2>
 
-            <p className="mt-0 text-[13px] leading-5 text-[#8B7A6C]">
+            <p className="mt-0 text-[11px] md:text-[12px] text-slate-500">
               Choose which admin notifications you want
               to receive.
             </p>

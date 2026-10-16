@@ -58,51 +58,21 @@ function ProductCard({
       return;
     }
 
-    /* -------------------------------------------------------
-       LOGGED IN
-       Add item directly → open cart drawer
-    ------------------------------------------------------- */
-
+    /*
+     * LOGGED IN:
+     * Add item directly and open cart drawer.
+     */
     if (isAuthenticated) {
-      console.log(
-        "1. ADD TO CART CLICKED",
-        {
-          product: product.name,
-          variant: variant.id,
-          quantity,
-        }
-      );
-
-      addToCart(
-        product,
-        variant,
-        quantity
-      );
-
-      console.log(
-        "2. BEFORE OPEN DRAWER"
-      );
-
+      addToCart(product, variant, quantity);
       openCartDrawer();
-
-      console.log(
-        "3. AFTER OPEN DRAWER"
-      );
-
       return;
     }
 
-    /* -------------------------------------------------------
-       LOGGED OUT
-       Store pending item → open OTP authentication
-    ------------------------------------------------------- */
-
-    setPendingCartItem(
-      product,
-      variant,
-      quantity
-    );
-
+    /*
+     * LOGGED OUT:
+     * Save pending item and open OTP authentication.
+     */
+    setPendingCartItem(product, variant, quantity);
     setIsAuthModalOpen(true);
   };
 
@@ -111,27 +81,14 @@ function ProductCard({
   ========================================================= */
 
   const handleAuthSuccess = () => {
-    /*
-      Add the product that was waiting
-      for authentication.
-    */
     addPendingCartItem();
-
-    /*
-      Close authentication modal
-      and open cart drawer.
-    */
     setIsAuthModalOpen(false);
-
     openCartDrawer();
   };
 
   return (
     <>
-      {/* =====================================================
-          PRODUCT CARD
-      ===================================================== */}
-
+      {/* PRODUCT CARD */}
       <article
         className="
           group relative flex h-full flex-col
@@ -140,17 +97,15 @@ function ProductCard({
           shadow-[0_8px_30px_-18px_rgba(82,55,43,0.22)]
         "
       >
-        {/* =====================================================
-            IMAGE AREA
-        ===================================================== */}
-
+        {/* IMAGE AREA */}
         <Link
           to={`/products/${product.id}`}
+          state={{ packaging }}
           aria-label={`View details for ${product.name}`}
           className="
             group/image relative block cursor-pointer
             overflow-hidden
-            rounded-sm
+            rounded-xl
             bg-[#FBF7F2]
             focus:outline-none
             focus-visible:ring-2
@@ -158,21 +113,14 @@ function ProductCard({
           "
         >
           {/* Soft image-area glow */}
-
           <div
             aria-hidden="true"
             className="
               pointer-events-none
-              absolute
-              -right-16
-              -top-16
-              z-0
-              h-40
-              w-40
-              rounded-full
+              absolute -right-16 -top-16 z-0
+              h-40 w-40 rounded-full
               bg-[#F8E8EC]/70
-              transition-transform
-              duration-700
+              transition-transform duration-700
             "
           />
 
@@ -180,20 +128,14 @@ function ProductCard({
             aria-hidden="true"
             className="
               pointer-events-none
-              absolute
-              -bottom-20
-              -left-16
-              z-0
-              h-40
-              w-40
-              rounded-full
+              absolute -bottom-20 -left-16 z-0
+              h-40 w-40 rounded-full
               bg-[#F5E9D9]/60
               blur-3xl
             "
           />
 
           {/* Product image */}
-
           <div className="relative z-10">
             <ProductCardImage
               product={product}
@@ -202,54 +144,33 @@ function ProductCard({
           </div>
 
           {/* Subtle bottom fade */}
-
           <div
             aria-hidden="true"
             className="
               pointer-events-none
-              absolute
-              inset-x-0
-              bottom-0
-              z-20
-              h-20
-              opacity-70
+              absolute inset-x-0 bottom-0 z-20
+              h-20 opacity-70
             "
           />
 
           {/* Hover image treatment */}
-
           <div
             aria-hidden="true"
             className="
               pointer-events-none
-              absolute
-              inset-0
-              z-30
+              absolute inset-0 z-30
               bg-gradient-to-t
               from-[#B5697A]/[0.08]
-              via-transparent
-              to-transparent
+              via-transparent to-transparent
               opacity-0
-              transition-opacity
-              duration-500
+              transition-opacity duration-500
               group-hover/image:opacity-100
             "
           />
         </Link>
 
-        {/* =====================================================
-            PRODUCT CONTENT
-        ===================================================== */}
-
-        <div
-          className="
-            relative
-            flex
-            flex-1
-            flex-col
-            bg-white
-          "
-        >
+        {/* PRODUCT CONTENT */}
+        <div className="relative flex flex-1 flex-col bg-white">
           <ProductCardContent
             product={product}
             packaging={packaging}
@@ -258,18 +179,11 @@ function ProductCard({
         </div>
       </article>
 
-      {/* =====================================================
-          AUTH MODAL
-      ===================================================== */}
-
+      {/* AUTH MODAL */}
       {isAuthModalOpen && (
         <OtpAuthModal
-          onClose={() =>
-            setIsAuthModalOpen(false)
-          }
-          onSuccess={
-            handleAuthSuccess
-          }
+          onClose={() => setIsAuthModalOpen(false)}
+          onSuccess={handleAuthSuccess}
         />
       )}
     </>

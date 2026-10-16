@@ -74,7 +74,7 @@ function CheckoutCustomerForm({
               className="
                 text-[11px]
                 leading-relaxed
-                text-slate-500
+                text-slate-600
                 sm:text-xs
               "
             >
@@ -95,7 +95,7 @@ function CheckoutCustomerForm({
           flex
           items-start
           gap-3
-          rounded-xl
+          rounded-lg
           border
           border-[#DCEFE5]
           bg-[#F5FBF8]
@@ -147,7 +147,7 @@ function CheckoutCustomerForm({
           FORM FIELDS
       ===================================================== */}
 
-      <div className="mt-5 space-y-5">
+      <div className="mt-2 space-y-4">
         {/* ===================================================
             FULL NAME
         =================================================== */}
@@ -178,7 +178,7 @@ function CheckoutCustomerForm({
             placeholder="Enter your full name"
             autoComplete="name"
             disabled={isSubmitting}
-            className={`mt-2 h-11 w-full rounded-xl border bg-white px-3.5 text-[13px] text-[#2C2C2C] outline-none transition-all placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-50 ${
+            className={`mt-1 h-10 w-full rounded-lg border font-[350] bg-white px-3.5 text-[14px] text-[#2C2C2C] outline-none transition-all placeholder:text-slate-400 placeholder:font-[350] disabled:cursor-not-allowed disabled:bg-slate-50 ${
               errors.fullName
                 ? "border-red-400 focus:border-red-400 focus:ring-red-100"
                 : "border-[#E6D9DC] focus:border-[#B5697A] focus:ring-[#F8E8EC]"
@@ -216,7 +216,7 @@ function CheckoutCustomerForm({
             Mobile number
           </label>
 
-          <div className="relative mt-2">
+          <div className="relative mt-1">
             <input
               id="phone"
               type="tel"
@@ -225,16 +225,16 @@ function CheckoutCustomerForm({
               aria-readonly="true"
               autoComplete="tel"
               className="
-                h-11
+                h-10
                 w-full
                 cursor-not-allowed
-                rounded-xl
+                rounded-lg
                 border
                 border-[#E6D9DC]
                 bg-[#FAF8F8]
                 px-3.5
                 pr-11
-                text-[13px]
+                text-[14px]
                 text-slate-500
                 outline-none
               "
@@ -293,7 +293,7 @@ function CheckoutCustomerForm({
             placeholder="Enter your email address"
             autoComplete="email"
             disabled={isSubmitting}
-            className={`mt-2 h-11 w-full rounded-xl border bg-white px-3.5 text-[13px] text-[#2C2C2C] outline-none transition-all placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-50 ${
+            className={`mt-1 h-10 w-full rounded-lg border bg-white px-3.5 text-[14px] text-[#2C2C2C] outline-none transition-all placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-50 ${
               errors.email
                 ? "border-red-400 focus:border-red-400 focus:ring-red-100"
                 : "border-[#E6D9DC] focus:border-[#B5697A] focus:ring-[#F8E8EC]"
@@ -323,8 +323,8 @@ function CheckoutCustomerForm({
         <div
           role="alert"
           className="
-            mt-6
-            rounded-xl
+            mt-4
+            rounded-lg
             border
             border-red-200
             bg-red-50

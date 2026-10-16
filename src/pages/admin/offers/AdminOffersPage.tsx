@@ -202,13 +202,12 @@ function AdminOffersPage() {
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="mt-2 text-[18px] font-bold tracking-tight text-slate-900 md:text-[24px]">
+            <h1 className="mt-2 text-[18px] font-bold tracking-tight text-slate-700 md:text-[22px]">
               Offers
             </h1>
 
-            <p className="mt-0 max-w-xl text-sm leading-relaxed text-slate-500">
-              Create and manage public offers and
-              customer-specific discounts.
+            <p className="mt-0 max-w-xl text-[11px] md:text-[12px] font-[350] leading-relaxed text-slate-500">
+              Create and manage offers and discounts.
             </p>
           </div>
 
@@ -218,29 +217,32 @@ function AdminOffersPage() {
             type="button"
             onClick={handleCreateOffer}
             className="
+              md:mt-0 -mt-2
               inline-flex
-              w-fit
+              w-full
+              sm:w-fit
               items-center
               justify-center
-              gap-2
-              rounded-xl
+              gap-1.5
+              sm:gap-2
+              rounded-lg
               bg-[#B5697A]
-              px-5
+              px-4
+              sm:px-5
               py-2.5
-              text-sm
+              text-[11.5px]
+              sm:text-[12px]
               text-white
               shadow
               transition-all
               hover:bg-[#A85F70]
               hover:shadow-sm
               focus:outline-none
-              focus:ring-2
-              focus:ring-[#B5697A]/20
               focus:ring-offset-2
             "
           >
             <Plus
-              className="h-4 w-4"
+              className="h-3.5 w-3.5 sm:h-4 sm:w-4"
               strokeWidth={2}
             />
 
@@ -349,10 +351,10 @@ function AdminOffersPage() {
                   border
                   border-[#E8DED3]
                   bg-white
-                  py-3
+                  py-2.5
                   pl-10
                   pr-4
-                  text-sm
+                  text-[11px] md:text-[12px]
                   text-[#3D3834]
                   outline-none
                   transition
@@ -379,8 +381,8 @@ function AdminOffersPage() {
                 border-[#E8DED3]
                 bg-white
                 px-4
-                py-3
-                text-sm
+                py-2.5
+                text-[11px] md:text-[12px]
                 text-[#6F6259]
                 outline-none
                 transition
@@ -417,8 +419,8 @@ function AdminOffersPage() {
                 border-[#E8DED3]
                 bg-white
                 px-4
-                py-3
-                text-sm
+                py-2.5
+                text-[11px] md:text-[12px]
                 text-[#6F6259]
                 outline-none
                 transition
@@ -458,7 +460,7 @@ function AdminOffersPage() {
 
           {loading ? (
             <div className="flex min-h-[300px] items-center justify-center">
-              <div className="flex items-center gap-3 text-sm text-[#8B7A6C]">
+              <div className="flex items-center gap-3 text-[11px] md:text-[12px] text-[#8B7A6C]">
                 <Loader2
                   className="h-5 w-5 animate-spin text-[#B5697A]"
                   strokeWidth={1.8}
@@ -508,18 +510,18 @@ function AdminOffersPage() {
             /* EMPTY STATE */
 
             <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#FBECEF] text-[#B5697A]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FBECEF] text-[#B5697A]">
                 <Tag
-                  className="h-6 w-6"
+                  className="h-5 w-5"
                   strokeWidth={1.7}
                 />
               </div>
 
-              <h3 className="mt-5 text-lg font-semibold text-[#1F4A2E]">
+              <h3 className="mt-3 text-[14px] md:text-[16px] font-semibold text-[#1F4A2E]">
                 No offers found
               </h3>
 
-              <p className="mt-2 max-w-md text-sm leading-6 text-[#8B7A6C]">
+              <p className="mt-2 max-w-md text-[11px] md:text-[12px] leading-relxed text-gray-600">
                 Create your first public or
                 customer-specific offer to get started.
               </p>
@@ -536,7 +538,7 @@ function AdminOffersPage() {
                   bg-[#B5697A]
                   px-5 py-2
                   md:py-2.5
-                  text-sm
+                  text-[11px] md:text-[12px]
                   text-white
                   shadow
                   transition-all
@@ -564,38 +566,38 @@ function AdminOffersPage() {
                 <thead>
                   <tr className="border-b border-[#A85F70] bg-[#B5697A]">
 
-                    <th className="px-6 py-3 text-left">
-                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                    <th className="px-6 py-2.5 text-left">
+                      <span className="text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
                         Offer
                       </span>
                     </th>
 
-                    <th className="px-6 py-3 text-left">
-                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                    <th className="px-6 py-2.5 text-left">
+                      <span className="text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
                         Audience
                       </span>
                     </th>
 
-                    <th className="px-6 py-3 text-left">
-                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                    <th className="px-6 py-2.5 text-left">
+                      <span className="text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
                         Discount
                       </span>
                     </th>
 
-                    <th className="px-6 py-3 text-left">
-                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                    <th className="px-6 py-2.5 text-left">
+                      <span className="text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
                         Usage
                       </span>
                     </th>
 
-                    <th className="px-6 py-3 text-left">
-                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                    <th className="px-6 py-2.5 text-left">
+                      <span className="text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
                         Status
                       </span>
                     </th>
 
-                    <th className="px-6 py-3 text-right">
-                      <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                    <th className="px-6 py-2.5 text-right">
+                      <span className="text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
                         Action
                       </span>
                     </th>
@@ -621,7 +623,7 @@ function AdminOffersPage() {
 
                       <td className="px-6 py-3">
 
-                        <p className="mt-1.5 inline-flex rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[11px] tracking-[0.04em] text-[#A85F70]">
+                        <p className="mt-1 inline-flex rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[10px] tracking-[0.04em] text-[#A85F70]">
                           {offer.code}
                         </p>
                       </td>
@@ -632,7 +634,7 @@ function AdminOffersPage() {
                         <div className="flex items-center gap-2.5">
 
                           <div>
-                            <p className="text-[13px] text-[#3D3834]">
+                            <p className="text-[11px] md:text-[12px] text-[#3D3834]">
                               {offer.audience ===
                               "PUBLIC"
                                 ? "Public"
@@ -640,7 +642,7 @@ function AdminOffersPage() {
                             </p>
 
                             {offer.customerPhone && (
-                              <p className="mt-0.5 text-[12px] text-[#9A8D82]">
+                              <p className="mt-0.5 text-[11px] text-[#9A8D82]">
                                 {offer.customerPhone}
                               </p>
                             )}
@@ -652,7 +654,7 @@ function AdminOffersPage() {
                       {/* DISCOUNT */}
 
                       <td className="px-6 py-3">
-                        <p className="text-[14px] text-[#1F4A2E]">
+                        <p className="text-[13px] text-[#1F4A2E]">
                           {offer.discountType ===
                           "PERCENTAGE"
                             ? `${offer.discountValue}%`
@@ -704,7 +706,7 @@ function AdminOffersPage() {
                         "
                       >
                         <FaEdit
-                          className="h-[16px] w-[16px]"
+                          className="h-[14px] w-[14px]"
                           strokeWidth={1.9}
                         />
                       </button>
@@ -734,7 +736,7 @@ function AdminOffersPage() {
                           />
                         ) : (
                           <FaTrash
-                            className="h-[16px] w-[16px]"
+                            className="h-[14px] w-[14px]"
                             strokeWidth={1.9}
                           />
                         )}

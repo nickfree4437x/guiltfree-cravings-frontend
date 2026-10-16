@@ -173,7 +173,7 @@ function AdminCustomersPage() {
         <div className="mx-auto max-w-7xl">
           <CustomersPageHeader />
 
-          <div className="mt-8 rounded-2xl border border-[#EFE3D2] bg-white p-12 text-center shadow-[0_2px_10px_rgba(31,74,46,0.035)]">
+          <div className="mt-6 rounded-2xl border border-[#EFE3D2] bg-white p-12 text-center shadow-[0_2px_10px_rgba(31,74,46,0.035)]">
             <div
               className="
                 mx-auto
@@ -262,7 +262,7 @@ function AdminCustomersPage() {
         />
 
         {/* Customer List */}
-        <section className="mt-8 overflow-hidden rounded-2xl border border-[#EFE3D2] bg-white shadow-[0_2px_10px_rgba(31,74,46,0.035)]">
+        <section className="mt-8 overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
           <CustomersList
             customers={
               filteredCustomers

@@ -119,11 +119,11 @@ function ProductCardImage({
         bg-white
         ${
           compact
-            ? "h-full w-full rounded-lg p-1.5"
+            ? "h-full w-full rounded-xl p-1.5"
             : `
               h-[140px]
               w-full
-              rounded-md
+              rounded-xl
               p-3
               sm:h-[220px]
               sm:p-5

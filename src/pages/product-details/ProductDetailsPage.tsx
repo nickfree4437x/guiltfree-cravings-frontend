@@ -1,9 +1,11 @@
+
 import {
   useEffect,
   useMemo,
   useState,
 } from "react";
 import {
+  useLocation,
   useNavigate,
   useParams,
 } from "react-router-dom";
@@ -32,10 +34,25 @@ type PackagingOption =
   | "Glass Jar";
 
 function ProductDetailsPage() {
-  const { id } =
-    useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  /*
+   * Packaging passed from the product listing card.
+   * Invalid or missing navigation state is ignored.
+   */
+  const packagingFromNavigation: unknown = (
+    location.state as { packaging?: unknown } | null
+  )?.packaging;
+
+  const requestedPackaging: PackagingOption | null =
+    packagingFromNavigation === "Plastic Box" ||
+    packagingFromNavigation === "Cardboard Box" ||
+    packagingFromNavigation === "Glass Jar"
+      ? packagingFromNavigation
+      : null;
 
   /* =========================================================
      PRODUCT STATE
@@ -44,44 +61,31 @@ function ProductDetailsPage() {
   const [product, setProduct] =
     useState<Product | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   /* =========================================================
      PRODUCT SELECTION STATE
   ========================================================= */
 
-  const [
-    selectedPackaging,
-    setSelectedPackaging,
-  ] = useState<PackagingOption>(
-    "Plastic Box"
-  );
+  const [selectedPackaging, setSelectedPackaging] =
+    useState<PackagingOption>("Plastic Box");
 
-  const [
-    selectedVariantId,
-    setSelectedVariantId,
-  ] = useState<number | null>(null);
+  const [selectedVariantId, setSelectedVariantId] =
+    useState<number | null>(null);
 
-  const [quantity, setQuantity] =
-    useState(1);
+  const [quantity, setQuantity] = useState(1);
 
   /* =========================================================
      AUTH STATE
   ========================================================= */
 
-  const [
-    isAuthModalOpen,
-    setIsAuthModalOpen,
-  ] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] =
+    useState(false);
 
-  const isAuthenticated =
-    useAuthStore(
-      (state) => state.isAuthenticated
-    );
+  const isAuthenticated = useAuthStore(
+    (state) => state.isAuthenticated
+  );
 
   /* =========================================================
      CART STORE
@@ -91,20 +95,16 @@ function ProductDetailsPage() {
     (state) => state.addToCart
   );
 
-  const setPendingCartItem =
-    useCartStore(
-      (state) => state.setPendingCartItem
-    );
+  const setPendingCartItem = useCartStore(
+    (state) => state.setPendingCartItem
+  );
 
-  const addPendingCartItem =
-    useCartStore(
-      (state) => state.addPendingCartItem
-    );
+  const addPendingCartItem = useCartStore(
+    (state) => state.addPendingCartItem
+  );
 
   /*
    * Existing right-side cart drawer.
-   *
-   * We only open the drawer from here.
    * The /cart page remains available separately.
    */
   const openCartDrawer = useCartStore(
@@ -116,6 +116,8 @@ function ProductDetailsPage() {
   ========================================================= */
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchProduct = async () => {
       try {
         setLoading(true);
@@ -127,70 +129,68 @@ function ProductDetailsPage() {
           !Number.isInteger(productId) ||
           productId <= 0
         ) {
-          throw new Error(
-            "Invalid product ID."
-          );
+          throw new Error("Invalid product ID.");
         }
 
-        const data =
-          await getProductById(
-            productId
-          );
+        const data = await getProductById(productId);
+
+        if (cancelled) {
+          return;
+        }
 
         setProduct(data);
 
         /*
-         * =====================================================
          * INITIAL VARIANT SELECTION
          *
          * Priority:
+         * 1. Packaging requested from the product card,
+         *    if a matching variant exists.
+         * 2. Plastic Box
+         * 3. Cardboard Box
+         * 4. Glass Jar
          *
-         * 1. Plastic Box
-         * 2. Cardboard Box
-         * 3. Glass Jar
-         *
-         * Within each packaging type:
-         * smallest quantity first.
-         * =====================================================
+         * Within each packaging type, the smallest
+         * quantity is selected first.
          */
 
-        const sortedVariants = [
-          ...data.variants,
-        ].sort((a, b) => {
-          if (
-            a.quantity !==
-            b.quantity
-          ) {
-            return (
-              a.quantity - b.quantity
-            );
-          }
+        const sortedVariants = [...data.variants].sort(
+          (a, b) => {
+            if (a.quantity !== b.quantity) {
+              return a.quantity - b.quantity;
+            }
 
-          return a.id - b.id;
-        });
+            return a.id - b.id;
+          }
+        );
+
+        const requestedVariant = requestedPackaging
+          ? sortedVariants.find(
+              (variant) =>
+                variant.packaging === requestedPackaging
+            )
+          : undefined;
 
         const firstPlasticBoxVariant =
           sortedVariants.find(
             (variant) =>
-              variant.packaging ===
-              "Plastic Box"
+              variant.packaging === "Plastic Box"
           );
 
         const firstCardboardBoxVariant =
           sortedVariants.find(
             (variant) =>
-              variant.packaging ===
-              "Cardboard Box"
+              variant.packaging === "Cardboard Box"
           );
 
         const firstGlassJarVariant =
           sortedVariants.find(
             (variant) =>
-              variant.packaging ===
-              "Glass Jar"
+              variant.packaging === "Glass Jar"
           );
 
         const initialVariant =
+          requestedVariant ??
           firstPlasticBoxVariant ??
           firstCardboardBoxVariant ??
           firstGlassJarVariant;
@@ -200,153 +200,120 @@ function ProductDetailsPage() {
             initialVariant.packaging as PackagingOption
           );
 
-          setSelectedVariantId(
-            initialVariant.id
-          );
+          setSelectedVariantId(initialVariant.id);
         } else {
-          setSelectedPackaging(
-            "Plastic Box"
-          );
-
+          setSelectedPackaging("Plastic Box");
           setSelectedVariantId(null);
         }
 
         setQuantity(1);
       } catch (fetchError) {
+        if (cancelled) {
+          return;
+        }
+
         console.error(
           "Failed to fetch product:",
           fetchError
         );
 
         setProduct(null);
-
         setError(
           "Unable to load this product right now."
         );
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     void fetchProduct();
-  }, [id]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, requestedPackaging]);
 
   /* =========================================================
      AVAILABLE PACKAGING OPTIONS
   ========================================================= */
 
   const availablePackagings =
-    useMemo<PackagingOption[]>(
-      () => {
-        if (!product) {
-          return [];
-        }
-
-        const options: PackagingOption[] =
-          [];
-
-        const hasPlasticBox =
-          product.variants.some(
-            (variant) =>
-              variant.packaging ===
-              "Plastic Box"
-          );
-
-        const hasCardboardBox =
-          product.variants.some(
-            (variant) =>
-              variant.packaging ===
-              "Cardboard Box"
-          );
-
-        const hasGlassJar =
-          product.variants.some(
-            (variant) =>
-              variant.packaging ===
-              "Glass Jar"
-          );
-
-        if (hasPlasticBox) {
-          options.push(
-            "Plastic Box"
-          );
-        }
-
-        if (hasCardboardBox) {
-          options.push(
-            "Cardboard Box"
-          );
-        }
-
-        if (hasGlassJar) {
-          options.push("Glass Jar");
-        }
-
-        return options;
-      },
-      [product]
-    );
-
-  /* =========================================================
-     VARIANTS FOR SELECTED PACKAGING
-  =========================================================
-
-     Existing behavior preserved:
-
-     Plastic Box:
-       → Plastic Box + Cardboard Box variants
-
-     Cardboard Box:
-       → Plastic Box + Cardboard Box variants
-
-     Glass Jar:
-       → Glass Jar variants only
-  */
-
-  const packagingVariants =
-    useMemo(() => {
-      if (
-        !product ||
-        !selectedPackaging
-      ) {
+    useMemo<PackagingOption[]>(() => {
+      if (!product) {
         return [];
       }
 
-      return product.variants
-        .filter((variant) => {
-          if (
-            selectedPackaging ===
-            "Glass Jar"
-          ) {
-            return (
-              variant.packaging ===
-              "Glass Jar"
-            );
-          }
+      const options: PackagingOption[] = [];
 
-          return (
-            variant.packaging ===
-              "Plastic Box" ||
-            variant.packaging ===
-              "Cardboard Box"
-          );
-        })
-        .sort((a, b) => {
-          if (
-            a.quantity !==
-            b.quantity
-          ) {
-            return (
-              a.quantity - b.quantity
-            );
-          }
+      const hasPlasticBox = product.variants.some(
+        (variant) =>
+          variant.packaging === "Plastic Box"
+      );
 
-          return a.id - b.id;
-        });
-    }, [
-      product,
-      selectedPackaging,
-    ]);
+      const hasCardboardBox = product.variants.some(
+        (variant) =>
+          variant.packaging === "Cardboard Box"
+      );
+
+      const hasGlassJar = product.variants.some(
+        (variant) =>
+          variant.packaging === "Glass Jar"
+      );
+
+      if (hasPlasticBox) {
+        options.push("Plastic Box");
+      }
+
+      if (hasCardboardBox) {
+        options.push("Cardboard Box");
+      }
+
+      if (hasGlassJar) {
+        options.push("Glass Jar");
+      }
+
+      return options;
+    }, [product]);
+
+  /* =========================================================
+     VARIANTS FOR SELECTED PACKAGING
+
+     Plastic Box:
+       Plastic Box + Cardboard Box variants
+
+     Cardboard Box:
+       Plastic Box + Cardboard Box variants
+
+     Glass Jar:
+       Glass Jar variants only
+  ========================================================= */
+
+  const packagingVariants = useMemo(() => {
+    if (!product || !selectedPackaging) {
+      return [];
+    }
+
+    return product.variants
+      .filter((variant) => {
+        if (selectedPackaging === "Glass Jar") {
+          return variant.packaging === "Glass Jar";
+        }
+
+        return (
+          variant.packaging === "Plastic Box" ||
+          variant.packaging === "Cardboard Box"
+        );
+      })
+      .sort((a, b) => {
+        if (a.quantity !== b.quantity) {
+          return a.quantity - b.quantity;
+        }
+
+        return a.id - b.id;
+      });
+  }, [product, selectedPackaging]);
 
   /* =========================================================
      SELECTED VARIANT
@@ -354,9 +321,7 @@ function ProductDetailsPage() {
 
   const selectedVariant =
     packagingVariants.find(
-      (variant) =>
-        variant.id ===
-        selectedVariantId
+      (variant) => variant.id === selectedVariantId
     ) ??
     packagingVariants[0] ??
     null;
@@ -365,14 +330,10 @@ function ProductDetailsPage() {
      CHANGE PACKAGING
   ========================================================= */
 
-  const handlePackagingChange = (
-    packaging: string
-  ) => {
+  const handlePackagingChange = (packaging: string) => {
     if (
-      packaging !==
-        "Plastic Box" &&
-      packaging !==
-        "Cardboard Box" &&
+      packaging !== "Plastic Box" &&
+      packaging !== "Cardboard Box" &&
       packaging !== "Glass Jar"
     ) {
       return;
@@ -383,50 +344,41 @@ function ProductDetailsPage() {
     }
 
     /*
-     * Find variants available for
-     * selected packaging group.
+     * Find variants available for the selected
+     * packaging group.
      */
+    const matchingVariants = product.variants
+      .filter((variant) => {
+        if (packaging === "Glass Jar") {
+          return variant.packaging === "Glass Jar";
+        }
 
-    const matchingVariants =
-      product.variants
-        .filter((variant) => {
-          if (
-            packaging ===
-            "Glass Jar"
-          ) {
-            return (
-              variant.packaging ===
-              "Glass Jar"
-            );
-          }
+        return (
+          variant.packaging === "Plastic Box" ||
+          variant.packaging === "Cardboard Box"
+        );
+      })
+      .sort((a, b) => {
+        if (a.quantity !== b.quantity) {
+          return a.quantity - b.quantity;
+        }
 
-          return (
-            variant.packaging ===
-              "Plastic Box" ||
-            variant.packaging ===
-              "Cardboard Box"
-          );
-        })
-        .sort((a, b) => {
-          if (
-            a.quantity !==
-            b.quantity
-          ) {
-            return (
-              a.quantity - b.quantity
-            );
-          }
+        return a.id - b.id;
+      });
 
-          return a.id - b.id;
-        });
+    setSelectedPackaging(packaging);
 
-    setSelectedPackaging(
-      packaging
+    /*
+     * Prefer the exact packaging variant when available.
+     * This avoids selecting a Plastic Box variant while
+     * the Cardboard Box option is selected.
+     */
+    const preferredVariant = matchingVariants.find(
+      (variant) => variant.packaging === packaging
     );
 
     setSelectedVariantId(
-      matchingVariants[0]?.id ??
-        null
+      (preferredVariant ?? matchingVariants[0])?.id ?? null
     );
 
     setQuantity(1);
@@ -439,10 +391,7 @@ function ProductDetailsPage() {
   const handleVariantChange = (
     variant: ProductVariant
   ) => {
-    setSelectedVariantId(
-      variant.id
-    );
-
+    setSelectedVariantId(variant.id);
     setQuantity(1);
   };
 
@@ -450,15 +399,8 @@ function ProductDetailsPage() {
      QUANTITY
   ========================================================= */
 
-  const handleQuantityChange = (
-    nextQuantity: number
-  ) => {
-    setQuantity(
-      Math.max(
-        1,
-        nextQuantity
-      )
-    );
+  const handleQuantityChange = (nextQuantity: number) => {
+    setQuantity(Math.max(1, nextQuantity));
   };
 
   /* =========================================================
@@ -466,10 +408,7 @@ function ProductDetailsPage() {
   ========================================================= */
 
   const handleAddToCart = () => {
-    if (
-      !product ||
-      !selectedVariant
-    ) {
+    if (!product || !selectedVariant) {
       return;
     }
 
@@ -481,23 +420,15 @@ function ProductDetailsPage() {
      * Authenticated user:
      * directly add item to cart.
      */
-
     if (isAuthenticated) {
-      addToCart(
-        product,
-        selectedVariant,
-        quantity
-      );
-
+      addToCart(product, selectedVariant, quantity);
       return;
     }
 
     /*
      * Guest user:
-     * save pending cart item,
-     * then open existing OTP auth modal.
+     * save pending cart item, then open OTP auth modal.
      */
-
     setPendingCartItem(
       product,
       selectedVariant,
@@ -512,13 +443,7 @@ function ProductDetailsPage() {
   ========================================================= */
 
   const handleAuthSuccess = () => {
-    /*
-     * Add the pending cart item
-     * after successful OTP login.
-     */
-
     addPendingCartItem();
-
     setIsAuthModalOpen(false);
   };
 
@@ -526,16 +451,12 @@ function ProductDetailsPage() {
      REVIEW LOGIN
   ========================================================= */
 
-  const handleReviewLoginRequired =
-    () => {
-      /*
-       * Reuse the exact same
-       * existing OTP authentication
-       * modal used for cart actions.
-       */
-
-      setIsAuthModalOpen(true);
-    };
+  const handleReviewLoginRequired = () => {
+    /*
+     * Reuse the existing OTP authentication modal.
+     */
+    setIsAuthModalOpen(true);
+  };
 
   /* =========================================================
      LOADING
@@ -552,13 +473,9 @@ function ProductDetailsPage() {
             {/* Info Skeleton */}
             <div className="space-y-5 py-4">
               <div className="h-8 w-3/4 rounded bg-[#F5EFE6]" />
-
               <div className="h-5 w-full rounded bg-[#F5EFE6]" />
-
               <div className="h-5 w-5/6 rounded bg-[#F5EFE6]" />
-
               <div className="h-12 w-full rounded bg-[#F5EFE6]" />
-
               <div className="h-12 w-full rounded bg-[#F5EFE6]" />
             </div>
           </div>
@@ -571,10 +488,7 @@ function ProductDetailsPage() {
      ERROR
   ========================================================= */
 
-  if (
-    error ||
-    !product
-  ) {
+  if (error || !product) {
     return (
       <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-16 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">
@@ -589,9 +503,7 @@ function ProductDetailsPage() {
 
           <button
             type="button"
-            onClick={() =>
-              navigate("/")
-            }
+            onClick={() => navigate("/")}
             className="
               mt-7
               rounded-xl
@@ -624,11 +536,7 @@ function ProductDetailsPage() {
     <>
       <main className="bg-white px-5 py-28 sm:px-8 sm:py-28 lg:px-12 lg:py-32">
         <div className="mx-auto w-full max-w-6xl">
-
-          {/* =================================================
-              PRODUCT SECTION
-          ================================================= */}
-
+          {/* PRODUCT SECTION */}
           <div
             className="
               overflow-hidden
@@ -639,61 +547,31 @@ function ProductDetailsPage() {
               shadow-sm
             "
           >
-            <div
-              className="
-                grid
-                lg:grid-cols-[1fr_1fr]
-              "
-            >
-              {/* ================= LEFT ================= */}
-
+            <div className="grid lg:grid-cols-[1fr_1fr]">
+              {/* LEFT: PRODUCT IMAGES */}
               <ProductDetailsImage
                 product={product}
-                packaging={
-                  selectedPackaging
-                }
+                packaging={selectedPackaging}
               />
 
-              {/* ================= RIGHT ================= */}
-
+              {/* RIGHT: PRODUCT INFORMATION */}
               <ProductDetailsInfo
                 product={product}
-                availablePackagings={
-                  availablePackagings
-                }
-                selectedPackaging={
-                  selectedPackaging
-                }
-                variants={
-                  packagingVariants
-                }
-                selectedVariant={
-                  selectedVariant
-                }
+                availablePackagings={availablePackagings}
+                selectedPackaging={selectedPackaging}
+                variants={packagingVariants}
+                selectedVariant={selectedVariant}
                 quantity={quantity}
-                onPackagingChange={
-                  handlePackagingChange
-                }
-                onVariantChange={
-                  handleVariantChange
-                }
-                onQuantityChange={
-                  handleQuantityChange
-                }
-                onAddToCart={
-                  handleAddToCart
-                }
-                onViewCart={
-                  openCartDrawer
-                }
+                onPackagingChange={handlePackagingChange}
+                onVariantChange={handleVariantChange}
+                onQuantityChange={handleQuantityChange}
+                onAddToCart={handleAddToCart}
+                onViewCart={openCartDrawer}
               />
             </div>
           </div>
 
-          {/* =================================================
-              PRODUCT PICKER GUIDE
-          ================================================= */}
-
+          {/* PRODUCT PICKER GUIDE */}
           <div
             className="
               px-5
@@ -709,10 +587,7 @@ function ProductDetailsPage() {
             </div>
           </div>
 
-          {/* =================================================
-              CUSTOMER STORIES
-          ================================================= */}
-
+          {/* CUSTOMER STORIES */}
           <div
             className="
               px-5
@@ -724,18 +599,11 @@ function ProductDetailsPage() {
             "
           >
             <div className="mx-auto w-full max-w-6xl">
-              <CustomerStories
-                productName={
-                  product.name
-                }
-              />
+              <CustomerStories productName={product.name} />
             </div>
           </div>
 
-          {/* =================================================
-              RECOMMENDED PRODUCTS
-          ================================================= */}
-
+          {/* RECOMMENDED PRODUCTS */}
           <div
             className="
               px-5
@@ -748,17 +616,12 @@ function ProductDetailsPage() {
           >
             <div className="mx-auto w-full max-w-6xl">
               <RecommendedProducts
-                currentProductId={
-                  product.id
-                }
+                currentProductId={product.id}
               />
             </div>
           </div>
 
-          {/* =================================================
-              CUSTOMER REVIEWS
-          ================================================= */}
-
+          {/* CUSTOMER REVIEWS */}
           <div
             className="
               px-5
@@ -771,33 +634,20 @@ function ProductDetailsPage() {
           >
             <div className="mx-auto w-full max-w-6xl">
               <CustomerReviews
-                productId={
-                  product.id
-                }
-                productName={
-                  product.name
-                }
-                onLoginRequired={
-                  handleReviewLoginRequired
-                }
+                productId={product.id}
+                productName={product.name}
+                onLoginRequired={handleReviewLoginRequired}
               />
             </div>
           </div>
         </div>
       </main>
 
-      {/* =====================================================
-          EXISTING OTP AUTH MODAL
-      ===================================================== */}
-
+      {/* EXISTING OTP AUTH MODAL */}
       {isAuthModalOpen && (
         <OtpAuthModal
-          onClose={() =>
-            setIsAuthModalOpen(false)
-          }
-          onSuccess={
-            handleAuthSuccess
-          }
+          onClose={() => setIsAuthModalOpen(false)}
+          onSuccess={handleAuthSuccess}
         />
       )}
     </>

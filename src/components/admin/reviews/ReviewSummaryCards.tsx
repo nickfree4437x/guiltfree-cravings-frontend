@@ -113,7 +113,7 @@ function SummaryCard({
             {label}
           </p>
 
-          <p className="mt-3 text-[28px] font-bold leading-none tracking-[-0.02em] text-[#1F2937]">
+          <p className="mt-3 text-[28px] font-bold leading-none tracking-[-0.02em] text-gray-500">
             {value.toLocaleString("en-IN")}
           </p>
         </div>

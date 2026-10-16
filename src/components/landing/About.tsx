@@ -92,7 +92,7 @@ function About() {
 
             {/* Intro description */}
 
-            <p className="text-gray-800 text-[11px] sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed mb-3 max-w-[320px] sm:max-w-[600px] mx-auto">
+            <p className="text-gray-600 text-[11px] sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed mb-3 max-w-[320px] sm:max-w-[600px] mx-auto">
               Homemade laddoos crafted with thoughtfully selected
               ingredients, comforting flavours, and lots of love.
             </p>
@@ -120,7 +120,7 @@ function About() {
 
                     {/* Description */}
 
-                    <p className="text-gray-800 text-[11px] sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed mb-3 max-w-[320px] sm:max-w-[600px] mx-auto">
+                    <p className="text-gray-700 text-[11px] sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed mb-3 max-w-[320px] sm:max-w-[600px] mx-auto">
                       {value.description}
                     </p>
                   </div>
@@ -223,7 +223,7 @@ function About() {
 
                   {/* Description */}
 
-                  <p className="text-gray-800 text-[12px] sm:text-[13px] md:text-[13px] 
+                  <p className="text-gray-600 text-[12px] font-[350] sm:text-[13px] md:text-[13px] 
                            leading-relaxed tracking-wide">
                     {card.description}
                   </p>

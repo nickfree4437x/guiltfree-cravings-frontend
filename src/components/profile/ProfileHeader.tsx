@@ -1,6 +1,6 @@
 function ProfileHeader() {
   return (
-    <div className="mx-auto mt-4 max-w-2xl text-center sm:mt-6">
+    <div className="mx-auto mt-4 max-w-2xl text-center sm:mt-5">
 
       {/* Heading */}
       <h1
@@ -14,7 +14,7 @@ function ProfileHeader() {
       {/* Description */}
       <p
         className="
-          text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-600
+          text-[12.5px] sm:text-[13.5px] md:text-[14px] font-[350] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-600
         "
       >
         Manage your details for a smoother and easier shopping experience.

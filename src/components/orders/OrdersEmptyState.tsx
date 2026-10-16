@@ -49,7 +49,7 @@ function OrdersEmptyState() {
       <Link
         to="/#products"
         className="
-          mt-7
+          mt-5
           inline-flex
           items-center
           justify-center
@@ -58,7 +58,6 @@ function OrdersEmptyState() {
           px-6
           py-2.5
           text-[11px]
-          font-semibold
           text-white
           shadow-sm
           transition-all
@@ -66,9 +65,6 @@ function OrdersEmptyState() {
           hover:bg-[#A55F70]
           hover:shadow-md
           focus:outline-none
-          focus-visible:ring-2
-          focus-visible:ring-[#B5697A]/30
-          focus-visible:ring-offset-2
           sm:px-7
           sm:text-[12px]
         "

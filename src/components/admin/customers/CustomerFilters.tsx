@@ -79,7 +79,7 @@ function CustomerFilters({
                 bg-white
                 pl-10
                 pr-4
-                text-[13px]
+                text-[11px] md:text-[12px]
                 text-[#3D3834]
                 outline-none
                 placeholder:text-[#B0A39A]
@@ -112,7 +112,7 @@ function CustomerFilters({
                 bg-white
                 px-3.5
                 pr-10
-                text-[13px]
+                text-[11px] md:text-[12px]
                 text-[#514840]
                 outline-none
                 hover:border-[#DCCDC0]
@@ -169,7 +169,7 @@ function CustomerFilters({
                 bg-white
                 px-3.5
                 pr-10
-                text-[13px]
+                text-[11px] md:text-[12px]
                 text-[#514840]
                 outline-none
                 hover:border-[#DCCDC0]

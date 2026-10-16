@@ -14,6 +14,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import { Eye } from "lucide-react";
+
 interface CustomersTableProps {
   customers: AdminCustomer[];
 }
@@ -32,48 +34,50 @@ function CustomersTable({
   };
 
   return (
-    <div className="hidden overflow-x-auto lg:block">
-      <table className="w-full min-w-[950px]">
+    <div className="w-full overflow-x-auto">
+      <table className="w-full min-w-[720px] lg:min-w-[950px]">
         <thead>
           <tr className="border-b border-[#B5697A] bg-[#B5697A]">
-            <th className="px-6 py-3 text-left">
-              <span className="text-[11px] uppercase text-white/80">
+            <th className="px-4 py-2.5 text-left sm:px-6">
+              <span className="text-[10px] font-[450] uppercase tracking-[0.08em] text-white sm:text-[11px]">
                 Customer
               </span>
             </th>
 
-            <th className="px-6 py-3 text-left">
-              <span className="text-[11px] uppercase  text-white/80">
+            <th className="px-4 py-2.5 text-left sm:px-6">
+              <span className="text-[10px] font-[450] uppercase tracking-[0.08em] text-white sm:text-[11px]">
                 Phone
               </span>
             </th>
 
-            <th className="px-6 py-3 text-left">
-              <span className="text-[11px] uppercase text-white/80">
+            {/* EMAIL — mobile pe hide */}
+            <th className="hidden px-4 py-2.5 text-left sm:table-cell sm:px-6">
+              <span className="text-[10px] font-[450] uppercase tracking-[0.08em] text-white sm:text-[11px]">
                 Email
               </span>
             </th>
 
-            <th className="px-6 py-3 text-left">
-              <span className="text-[11px] uppercase text-white/80">
-                Verification
+            <th className="px-4 py-2.5 text-left sm:px-6">
+              <span className="text-[10px] font-[450] uppercase tracking-[0.08em] text-white sm:text-[11px]">
+                Verified
               </span>
             </th>
 
-            <th className="px-6 py-3 text-left">
-              <span className="text-[11px] uppercase text-white/80">
+            <th className="px-4 py-2.5 text-left sm:px-6">
+              <span className="text-[10px] font-[450] uppercase tracking-[0.08em] text-white sm:text-[11px]">
                 Orders
               </span>
             </th>
 
-            <th className="px-6 py-3 text-left">
-              <span className="text-[11px] uppercase text-white/80">
+            {/* JOINED — mobile pe hide */}
+            <th className="hidden px-4 py-2.5 text-left sm:table-cell sm:px-6">
+              <span className="text-[10px] font-[450] uppercase tracking-[0.08em] text-white sm:text-[11px]">
                 Joined
               </span>
             </th>
 
-            <th className="px-6 py-3 text-right">
-              <span className="text-[11px] uppercase  text-white/80">
+            <th className="px-4 py-2.5 text-right sm:px-6">
+              <span className="text-[10px] uppercase text-white/80 sm:text-[11px]">
                 Action
               </span>
             </th>
@@ -96,8 +100,8 @@ function CustomersTable({
               >
                 {/* CUSTOMER */}
 
-                <td className="px-6 py-3">
-                  <p className="text-[14px] text-[#3D3834]">
+                <td className="px-4 py-3 sm:px-6">
+                  <p className="truncate text-[12px] text-gray-600 md:text-[13px]">
                     {customer.name ||
                       "Unnamed Customer"}
                   </p>
@@ -105,20 +109,20 @@ function CustomersTable({
 
                 {/* PHONE */}
 
-                <td className="px-6 py-3 text-[13px] text-[#6F6259]">
+                <td className="px-4 py-3 text-[11.5px] text-gray-500 sm:px-6 sm:text-[12.5px]">
                   {customer.phone}
                 </td>
 
-                {/* EMAIL */}
+                {/* EMAIL — mobile pe hide */}
 
-                <td className="px-6 py-3 text-[13px] text-[#6F6259]">
+                <td className="hidden px-4 py-3 text-[11.5px] text-gray-500 sm:table-cell sm:px-6 sm:text-[12.5px]">
                   {customer.email ||
                     "—"}
                 </td>
 
                 {/* VERIFICATION */}
 
-                <td className="px-6 py-3">
+                <td className="px-4 py-3 sm:px-6">
                   <CustomerVerificationBadge
                     isVerified={
                       customer.isVerified
@@ -128,17 +132,17 @@ function CustomersTable({
 
                 {/* ORDERS */}
 
-                <td className="px-6 py-3">
-                  <span className="text-[13px] text-[#1F4A2E]">
+                <td className="px-4 py-3 sm:px-6">
+                  <span className="text-[12px] text-[#1F4A2E] sm:text-[13px]">
                     {customer.totalOrders.toLocaleString(
                       "en-IN"
                     )}
                   </span>
                 </td>
 
-                {/* JOINED */}
+                {/* JOINED — mobile pe hide */}
 
-                <td className="px-6 py-3 text-[13px] text-[#766A61]">
+                <td className="hidden px-4 py-3 text-[11.5px] text-gray-500 sm:table-cell sm:px-6 sm:text-[12.5px]">
                   {formatCustomerDate(
                     customer.createdAt
                   )}
@@ -146,7 +150,7 @@ function CustomersTable({
 
                 {/* ACTION */}
 
-                <td className="px-6 py-3 text-right">
+                <td className="px-4 py-3 text-right sm:px-6">
                   <button
                     type="button"
                     onClick={() =>
@@ -154,24 +158,32 @@ function CustomersTable({
                         customer.id
                       )
                     }
+                    aria-label={`View ${customer.name || "customer"}`}
+                    title="View customer"
                     className="
                       inline-flex
+                      h-8
+                      w-8
                       items-center
-                      gap-1.5
-                      rounded-xl
+                      justify-center
+                      rounded-lg
                       border
-                      border-[#E6C5CC]
-                      bg-white
-                      px-3.5
-                      py-2
-                      text-[12px]
-                      text-[#A85F70]
-                      hover:bg-[#FBECEF]
-                      hover:text-[#9A5264]
+                      border-[#D7E2F8]
+                      bg-[#F2F6FF]
+                      text-[#4D7FEA]
+                      hover:border-[#BFD0F5]
+                      hover:bg-[#E8F0FF]
+                      hover:text-[#3D6ED8]
                       focus:outline-none
+                      sm:h-9
+                      sm:w-9
                     "
                   >
-                    View
+                    <Eye
+                      className="h-[14px] w-[14px] sm:h-[16px] sm:w-[16px]"
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
                   </button>
                 </td>
               </tr>

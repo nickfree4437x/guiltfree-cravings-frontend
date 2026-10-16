@@ -259,12 +259,12 @@ function TestimonialsSection() {
               <p
                 className="
                   mx-auto
-                  mt-0
+                  mt-0 font-[350]
                   max-w-[580px]
                   text-[12.5px]
                   leading-relaxed
                   tracking-wide
-                  text-[#2c2c2c]
+                  text-gray-600
                   sm:text-[13.5px]
                   md:text-[14px]
                 "
@@ -407,7 +407,8 @@ function TestimonialsSection() {
             ref={scrollRef}
             className="
               relative
-              mt-8
+              mt-0
+              md:mt-6
               flex
               snap-x
               snap-mandatory

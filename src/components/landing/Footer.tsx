@@ -15,7 +15,7 @@ function Footer() {
 
   return (
     <footer className="bg-[#824958] pb-[50px] text-white md:pb-0">
-      <div className="mx-auto max-w-7xl px-6 py-14 sm:px-8 sm:py-16 lg:px-10 lg:py-[68px]">
+      <div className="mx-auto max-w-7xl px-6 py-6 sm:px-8 sm:py-14 lg:px-10 lg:py-14">
 
         {/* =========================================================
             MAIN FOOTER
@@ -59,32 +59,26 @@ function Footer() {
               </span>
             </a>
 
-            <p className="mt-4 max-w-sm text-justify text-[13px] leading-6 text-white/75 sm:text-sm">
+            <p className="mt-4 max-w-sm text-justify text-[13px] font-[350] leading-relaxed text-white/75 sm:text-[13px]">
               Wholesome homemade laddoos, thoughtfully crafted with simple
               ingredients, traditional care, and a whole lot of love. From our
               kitchen to your home, every bite is made to bring you a little
               more goodness, comfort, and joy.
             </p>
-
-            <div className="mt-6 flex items-center gap-2">
-              <span className="h-px w-8 bg-white/30" />
-              <span className="h-1 w-1 rounded-full bg-white/60" />
-              <span className="h-px w-12 bg-white/15" />
-            </div>
           </div>
 
           {/* =====================================================
               QUICK LINKS + CUSTOMER CARE
               Mobile: 2 cols | Desktop: alag columns (md:contents)
           ===================================================== */}
-          <div className="grid grid-cols-2 gap-6 md:contents">
+          <div className="grid grid-cols-2 gap-4 md:contents">
 
             {/* ================= QUICK LINKS ================= */}
             <div>
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+              <h3 className="text-[11px] uppercase tracking-[0.18em] text-white">
                 Quick Links
               </h3>
-              <ul className="mt-6 space-y-3.5 text-[13px] text-white/75 sm:text-sm">
+              <ul className="mt-6 space-y-3 font-[350] text-[12px] text-white/75 sm:text-[13px]">
                 {[
                   { label: "Home", id: "home" },
                   { label: "About Us", id: "about" },
@@ -102,14 +96,80 @@ function Footer() {
                   </li>
                 ))}
               </ul>
+
+              {/* =====================================================
+                  SOCIAL ICONS (Facebook + Instagram)
+                  Quick Links column ke neeche — desktop pe FSSAI ke left
+              ===================================================== */}
+              <div className="mt-6 flex items-center gap-3">
+                {/* Facebook */}
+                <a
+                  href="https://www.facebook.com/profile.php?id=61595572672465"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Facebook"
+                  className="
+                    group flex h-9 w-9 items-center justify-center
+                    rounded-full bg-[#1877F2] text-white
+                    shadow-sm
+                    transition-all duration-300
+                    hover:scale-105 hover:shadow-md
+                    sm:h-10 sm:w-10
+                  "
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                    aria-hidden="true"
+                  >
+                    <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.33V22c4.78-.76 8.43-4.92 8.43-9.94Z" />
+                  </svg>
+                </a>
+
+                {/* Instagram */}
+                <a
+                  href="https://instagram.com/guilt.free_cravings?srtk=Ym5yOGxqb3JxYm9k&utm_source=qr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Instagram"
+                  className="
+                    group flex h-9 w-9 items-center justify-center
+                    rounded-full text-white
+                    shadow-sm
+                    transition-all duration-300
+                    hover:scale-105 hover:shadow-md
+                    sm:h-10 sm:w-10
+                  "
+                  style={{
+                    background:
+                      "linear-gradient(45deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%)",
+                  }}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                    aria-hidden="true"
+                  >
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg>
+                </a>
+              </div>
             </div>
 
             {/* ================= CUSTOMER CARE ================= */}
             <div>
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+              <h3 className="text-[11px] uppercase tracking-[0.18em] text-white">
                 Customer Care
               </h3>
-              <ul className="mt-6 space-y-3.5 text-[13px] text-white/75 sm:text-sm">
+              <ul className="mt-6 space-y-3 font-[350] text-[12px] text-white/75 sm:text-[13px]">
                 {[
                   { label: "Contact Us", id: "contact" },
                   { label: "FAQs", id: "faq" },
@@ -153,8 +213,8 @@ function Footer() {
                     <p className="text-[9px] uppercase tracking-[0.12em] text-white/50">
                       FSSAI License
                     </p>
-                    <p className="mt-0.5 whitespace-nowrap text-[10px] text-white sm:text-[11px]">
-                      FSSAI Lic :- #10823999000142
+                    <p className="mt-0.5 whitespace-nowrap font-[350] text-[10px] text-white sm:text-[11px]">
+                      FSSAI Lic :- #23326006003247
                     </p>
                   </div>
                 </div>
@@ -186,8 +246,8 @@ function Footer() {
                   <p className="text-[9px] uppercase tracking-[0.12em] text-white/50">
                     FSSAI License
                   </p>
-                  <p className="mt-0.5 whitespace-nowrap text-[10px] text-white sm:text-[11px]">
-                    FSSAI Lic :- #10823999000142
+                  <p className="mt-0.5 whitespace-nowrap font-[350] text-[10px] text-white sm:text-[11px]">
+                    FSSAI Lic :- #23326006003247
                   </p>
                 </div>
               </div>
@@ -198,7 +258,7 @@ function Footer() {
               GET IN TOUCH
           ===================================================== */}
           <div>
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+            <h3 className="text-[11px] uppercase tracking-[0.18em] text-white">
               Get in Touch
             </h3>
 
@@ -225,10 +285,10 @@ function Footer() {
                   </svg>
                 </span>
                 <span>
-                  <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-white/50">
+                  <span className="block text-[10px] uppercase tracking-[0.14em] text-white/50">
                     Email
                   </span>
-                  <span className="mt-1 block text-[13px] text-white/85 transition-colors duration-200 group-hover:text-white sm:text-sm">
+                  <span className="mt-1 block text-[12px] font-[350] text-white/85 transition-colors duration-200 group-hover:text-white sm:text-[13px]">
                     guiltfreecravings24@gmail.com
                   </span>
                 </span>
@@ -254,10 +314,10 @@ function Footer() {
                   </svg>
                 </span>
                 <span>
-                  <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-white/50">
+                  <span className="block text-[10px] uppercase tracking-[0.14em] text-white/50">
                     Phone
                   </span>
-                  <span className="mt-1 block text-[13px] text-white/85 transition-colors duration-200 group-hover:text-white sm:text-sm">
+                  <span className="mt-1 block text-[12px] font-[350] text-white/85 transition-colors duration-200 group-hover:text-white sm:text-[13px]">
                     +91-9667760119
                   </span>
                 </span>
@@ -281,11 +341,12 @@ function Footer() {
                   </svg>
                 </span>
                 <span>
-                  <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-white/50">
+                  <span className="block text-[10px] uppercase tracking-[0.14em] text-white/50">
                     Address
                   </span>
-                  <span className="mt-1 block text-[13px] leading-5 text-white/85 sm:text-sm">
-                    Dwarka Delhi, India
+                  <span className="mt-1 block text-[12px] font-[350] leading-relaxed text-white/85 sm:text-[12.5px]">
+                    RZ-E-60 Chanakya Place Part - 1 , DABRI ,
+                    Janakpuri, West , Delhi-110059
                   </span>
                 </span>
               </div>
@@ -294,14 +355,14 @@ function Footer() {
         </div>
 
         {/* DIVIDER */}
-        <div className="mt-8 border-t border-white/15" />
+        <div className="mt-4 border-t border-white/15" />
 
         {/* BOTTOM FOOTER */}
-        <div className="flex flex-col gap-3 pt-6 text-[11px] sm:flex-row sm:items-center sm:justify-between sm:text-xs">
+        <div className="flex flex-col gap-3 pt-4 text-[11px] font-[350] sm:flex-row sm:items-center sm:justify-between sm:text-xs">
           <p className="text-white/60">
-            © {new Date().getFullYear()} Guilt Free Cravings. All rights reserved.
+            © {new Date().getFullYear()} GuiltFree Cravings. All rights reserved.
           </p>
-          <p className="text-white/60">Made with care for every craving.</p>
+          <p className="text-white/50 font-[350]">Made with care for every craving.</p>
         </div>
       </div>
     </footer>

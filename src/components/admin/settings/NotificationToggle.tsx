@@ -29,7 +29,7 @@ function NotificationToggle({
         type="button"
         onClick={onChange}
         className={[
-          "relative h-6 w-11 shrink-0 rounded-full transition-all duration-200",
+          "relative h-6 w-11 shrink-0 rounded-full",
           "focus:outline-none focus:ring-2 focus:ring-[#B5697A]/20 focus:ring-offset-2",
           checked
             ? "bg-[#B5697A]"

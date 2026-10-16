@@ -41,7 +41,7 @@ function ProfileVerificationCard({
       </div>
 
       {/* PHONE */}
-      <div className="mt-3 rounded-xl border border-[#F1E7DC] bg-[#FFFCF7] p-2.5">
+      <div className="mt-3 rounded-xl border border-[#F1E7DC] bg-white p-2">
 
 
         <div className="flex items-center justify-between gap-3">
@@ -50,7 +50,7 @@ function ProfileVerificationCard({
             +91 {phone}
           </p>
 
-          <span className="rounded-full bg-[#FBEEF1] px-2.5 py-1.5 text-[9px] text-[#B5697A]">
+          <span className="rounded-full bg-[#FBEEF1] px-2.5 py-1.5 text-[9px] md:text-[10px] text-[#B5697A]">
             Verified
           </span>
 

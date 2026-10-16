@@ -1,33 +1,52 @@
+import { Info } from "lucide-react";
+
 function OrderSuccessPaymentNotice() {
   return (
-    <section className="mt-8 rounded-3xl border border-amber-200 bg-amber-50 p-6">
+    <section
+      role="status"
+      aria-labelledby="payment-notice-title"
+      className="mt-8 overflow-hidden rounded-xl border border-amber-200/80 bg-white shadow-sm"
+    >
 
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-4 bg-gradient-to-br from-amber-50/80 to-[#fffaf7] p-5 sm:p-6">
 
-        <div
-          className="mt-0.5 shrink-0 text-amber-600"
-          aria-hidden="true"
-        >
-          ⚠
-        </div>
+        {/* Content */}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2
+              id="payment-notice-title"
+              className="text-[12px] md:text-[14px] font-semibold text-slate-700 sm:text-base"
+            >
+              Payment Confirmation Pending
+            </h2>
 
-        <div>
+            <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-100/70 px-2.5 py-1 text-[9px] md:text-[10px] uppercase tracking-wider text-amber-800">
+              Pending
+            </span>
+          </div>
 
-          <h2 className="text-sm font-bold text-amber-800">
-            Payment Confirmation Pending
-          </h2>
-
-          <p className="mt-1 text-xs leading-5 text-amber-700 sm:text-sm">
-            This is currently a development/testing
-            flow. Razorpay payment integration is not
-            connected yet, so this order has not been
-            marked as paid.
+          <p className="mt-2 text-[12px] font-light sm:text-[13px] md:text-[13.5px] leading-relaxed tracking-wide mx-auto text-gray-600">
+            Your order has been created, but payment has not been
+            confirmed yet. Razorpay integration is currently not
+            connected in this development/testing flow, so this
+            order has not been marked as paid.
           </p>
 
+          {/* Development Notice */}
+          <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-amber-200/70 bg-white/80 p-3">
+            <Info
+              className="mt-0.5 h-4 w-4 shrink-0 text-amber-700"
+              aria-hidden="true"
+            />
+
+            <p className="text-xs leading-5 text-slate-500">
+              This is a testing notice. Payment confirmation will
+              require the payment gateway integration to be
+              configured and verified.
+            </p>
+          </div>
         </div>
-
       </div>
-
     </section>
   );
 }

@@ -216,7 +216,7 @@ function CartDrawerSummary({
 
           active:scale-[0.99]
 
-          sm:mt-3
+          sm:mt-3 font-[350]
           sm:h-11
           sm:text-[13.5px]
         "

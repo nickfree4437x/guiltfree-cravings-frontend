@@ -184,7 +184,6 @@ function CustomerStories({
                 "
                 src={story.videoUrl}
                 poster={story.thumbnailUrl}
-                controls
                 playsInline
                 preload="metadata"
               />

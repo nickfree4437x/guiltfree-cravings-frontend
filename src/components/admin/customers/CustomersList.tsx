@@ -5,7 +5,6 @@ import type {
 } from "./types";
 
 import CustomersEmptyState from "./CustomersEmptyState";
-import CustomersMobileList from "./CustomersMobileList";
 import CustomersTable from "./CustomersTable";
 
 interface CustomersListProps {
@@ -33,10 +32,6 @@ function CustomersList({
   return (
     <section className="overflow-hidden rounded-lg border border-[#eadfd3] bg-white shadow-sm">
       <CustomersTable
-        customers={customers}
-      />
-
-      <CustomersMobileList
         customers={customers}
       />
     </section>

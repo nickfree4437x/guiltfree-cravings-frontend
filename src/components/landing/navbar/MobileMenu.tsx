@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import type { MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import {
-  ArrowRight,
   X,
   Heart,
 } from "lucide-react";
@@ -187,7 +186,7 @@ function MobileMenu({
               <p
                 className="
                   text-[10px]
-                  tracking-[0.2em] text-[#A59485]
+                  tracking-[0.15em] text-gray-500
                 "
               >
                 GuiltFree
@@ -214,7 +213,6 @@ function MobileMenu({
               transition-all duration-200
               hover:border-[#B5697A] hover:bg-[#FBEEF1]
               hover:text-[#B5697A]
-              active:scale-95
             "
           >
             <X
@@ -248,14 +246,14 @@ function MobileMenu({
                       : "0ms",
                   }}
                   className={`
-                    group relative flex min-h-[45px] items-center justify-between
+                    group relative flex min-h-[40px] items-center justify-between
                     overflow-hidden rounded-xl border px-4
-                    text-[14px]
+                    text-[13px] font-[350]
                     transition-all duration-300
                     ${
                       isActive
                         ? "border-[#F0D7DD] bg-[#FBEEF1] text-[#B5697A] shadow-sm"
-                        : "border-transparent text-[#5E5148] hover:border-[#F0D7DD] hover:bg-[#FBEEF1] hover:text-[#B5697A]"
+                        : "border-transparent text-gray-600 hover:border-[#F0D7DD] hover:bg-[#FBEEF1] hover:text-[#B5697A]"
                     }
                     ${
                       isOpen
@@ -268,16 +266,6 @@ function MobileMenu({
                   <span className="flex items-center gap-2.5 pl-1">
                     {link.label}
                   </span>
-
-                  <ArrowRight
-                    size={16}
-                    strokeWidth={1.9}
-                    className="
-                      -translate-x-1 opacity-0
-                      transition-all duration-200
-                      group-hover:translate-x-0 group-hover:opacity-100
-                    "
-                  />
                 </Link>
               );
             })}

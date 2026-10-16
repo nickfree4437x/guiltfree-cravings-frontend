@@ -5,11 +5,11 @@ import {
 } from "react";
 
 import {
-  Edit3,
   Loader2,
   MessageSquarePlus,
-  Trash2,
 } from "lucide-react";
+
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 import {
   deleteProductReview,
@@ -348,9 +348,9 @@ function ProductReviews({
                   onClick={() =>
                     setIsModalOpen(true)
                   }
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#E5D9CA] bg-white px-2 py-2 text-[11px] text-[#6D5844] transition hover:border-[#D9B7C0] hover:bg-[#FBEEF1] hover:text-[#B5697A]"
+                  className="p-2 rounded-md text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
                 >
-                  <Edit3 size={13} />
+                  <FaEdit size={13} />
                 </button>
 
                 <button
@@ -359,7 +359,7 @@ function ProductReviews({
                   onClick={() => {
                     void handleDeleteReview();
                   }}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#E8C7CE] bg-white px-2 py-2 text-[11px] text-[#B5697A] transition hover:bg-[#FBEEF1] disabled:opacity-50"
+                  className="p-2 rounded-md text-sm bg-red-50 text-red-600 hover:bg-red-100 transition"
                 >
                   {isDeleting ? (
                     <Loader2
@@ -367,7 +367,7 @@ function ProductReviews({
                       className="animate-spin"
                     />
                   ) : (
-                    <Trash2 size={13} />
+                    <FaTrash size={13} />
                   )}
                 </button>
               </div>
@@ -412,7 +412,7 @@ function ProductReviews({
             <button
               type="button"
               onClick={handleWriteReview}
-              className="mt-4 rounded-lg bg-[#B5697A] px-4 py-2.5 text-[11px] text-white transition hover:bg-[#A55D6F]"
+              className="mt-4 rounded-lg bg-[#B5697A] px-4 py-2.5 text-[11px] font-[350] text-white transition hover:bg-[#A55D6F]"
             >
               Write the first review
             </button>

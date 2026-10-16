@@ -12,7 +12,7 @@ function CustomerVideoHeader() {
 
       <p
         className="
-          mt-0 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-700
+          mt-0 text-[12.5px] sm:text-[13.5px] md:text-[14px] font-[350] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-700
         "
       >
         See how our laddoos are becoming a part of everyday

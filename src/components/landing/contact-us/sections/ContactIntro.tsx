@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 function ContactIntro() {
 
   return (
-    <section className="relative overflow-hidden bg-white px-6 pt-0 sm:px-10 sm:pt-2 md:px-14 md:pt-6 lg:px-20">
+    <section className="relative overflow-hidden bg-white px-6 pt-2 sm:px-10 sm:pt-2 md:px-14 md:pt-6 lg:px-20">
 
 
       {/* Floating sparkles (decoration) */}
@@ -26,7 +26,7 @@ function ContactIntro() {
         </h1>
 
         {/* Description */}
-        <p className="mt-2 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-700">
+        <p className="mt-2 text-[12.5px] sm:text-[13.5px] md:text-[14px] font-[350] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-600">
           Questions about your order, our laddoos, or anything else?
           We're here to help always happy to chat.
         </p>

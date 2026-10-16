@@ -312,10 +312,10 @@ function Hero() {
             <span
               className="
                 text-[10px]
-                uppercase
+                uppercase font-[350]
                 tracking-[0.2em]
                 text-white/95
-                sm:text-[12px]
+                sm:text-[11px]
                 sm:tracking-[0.22em]
               "
             >
@@ -402,7 +402,7 @@ function Hero() {
               leading-[1.5]
               text-white/90
               min-[400px]:text-[13px]
-              sm:mx-0
+              sm:mx-0 font-[350]
               sm:mt-5
               sm:max-w-lg
               sm:text-[13.5px]
@@ -417,59 +417,6 @@ function Hero() {
           </p>
 
           {/* =================================================
-              RATING BADGE
-          ================================================= */}
-
-          <div
-            className="
-              anim-fadeUp
-              delay-4
-              mt-5
-              flex
-              items-center
-              justify-center
-              gap-2
-              sm:justify-start
-            "
-          >
-            <div className="flex items-center gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className="
-                    h-3
-                    w-3
-                    text-[#E7B5C1]
-                    drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]
-                    sm:h-3.5
-                    sm:w-3.5
-                  "
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-
-            <span
-              className="
-                text-shadow-soft
-                text-[10.5px]
-                tracking-wide
-                text-white/90
-                sm:text-[12px]
-              "
-            >
-              <span className="text-white">
-                4.9
-              </span>{" "}
-              · Loved by 100+ customers
-            </span>
-          </div>
-
-          {/* =================================================
               CTA BUTTONS
           ================================================= */}
 
@@ -482,7 +429,7 @@ function Hero() {
               flex-col
               items-stretch
               justify-center
-              gap-3
+              gap-3 font-[350]
               min-[420px]:flex-row
               min-[420px]:items-center
               sm:mt-8
@@ -631,7 +578,7 @@ function Hero() {
                 </svg>
               </span>
 
-              Discover Story
+              About Us
             </a>
           </div>
 
@@ -652,7 +599,7 @@ function Hero() {
               gap-y-2.5
               border-t
               border-white/15
-              pt-5
+              pt-5 font-[350]
               sm:mt-9
               sm:justify-start
               sm:gap-x-7
@@ -661,7 +608,7 @@ function Hero() {
             "
           >
             {[
-              "No Process Sugar",
+              "No Refined Sugar",
               "No Palm Oil",
               "No preservatives",
             ].map((label) => (
@@ -726,98 +673,6 @@ function Hero() {
                 </span>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* =================================================
-            FLOATING STATS CARD
-        ================================================= */}
-
-        <div
-          className="
-            anim-fadeUp
-            delay-5
-            absolute
-            bottom-24
-            left-1/2
-            hidden
-            -translate-x-1/2
-            md:bottom-10
-            md:left-auto
-            md:right-8
-            md:block
-            md:translate-x-0
-            lg:right-12
-            xl:right-16
-          "
-        >
-          <div
-            className="
-              rounded-2xl
-              border
-              border-white/20
-              bg-white/[0.08]
-              px-5
-              py-3.5
-              shadow-2xl
-              backdrop-blur-xl
-              md:px-6
-              md:py-4
-            "
-          >
-            <div className="flex items-center gap-3 md:gap-4">
-              <div className="flex -space-x-2.5">
-                {[
-                  "#B5697A",
-                  "#8F4F60",
-                  "#E7B5C1",
-                ].map((color, index) => (
-                  <div
-                    key={index}
-                    className="
-                      h-7
-                      w-7
-                      rounded-full
-                      border-2
-                      border-white/40
-                      shadow-sm
-                      md:h-8
-                      md:w-8
-                    "
-                    style={{
-                      backgroundColor: color,
-                    }}
-                  />
-                ))}
-              </div>
-
-              <div>
-                <p
-                  className="
-                    font-display
-                    text-sm
-                    leading-none
-                    text-white
-                    md:text-base
-                  "
-                >
-                  100+
-                </p>
-
-                <p
-                  className="
-                    mt-1
-                    text-[9px]
-                    uppercase
-                    tracking-[0.15em]
-                    text-white/70
-                    md:text-[9.5px]
-                  "
-                >
-                  Happy Customers
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>

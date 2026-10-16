@@ -75,7 +75,7 @@ function ProfileForm({
 
       {/* ERROR MESSAGE */}
       {pageError && (
-        <div className="mt-6 flex items-start gap-3 rounded-2xl border border-[#F0D9D9] bg-[#FFF7F7] p-4">
+        <div className="mt-6 flex items-start gap-3 rounded-xl border border-[#F0D9D9] bg-[#FFF7F7] p-4">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FCEAEA] text-sm font-semibold text-[#C86B6B]">
             !
           </div>
@@ -113,7 +113,7 @@ function ProfileForm({
             placeholder="Enter your full name"
             autoComplete="name"
             disabled={isSaving}
-            className={`mt-2 w-full rounded-xl border bg-white px-4 py-2.5 text-[12px] text-[#3F352E] outline-none transition placeholder:text-[#B4A69C] sm:text-[13px] ${
+            className={`mt-2 w-full rounded-lg border bg-white px-4 py-2.5 text-[12px] text-[#3F352E] outline-none transition placeholder:text-[#B4A69C] sm:text-[13px] ${
               errors.name
                 ? "border-red-400 focus:border-red-400 focus:ring-red-100"
                 : "border-[#E3D6C8] focus:border-[#B5697A] focus:ring-[#F8E8EC]"
@@ -138,11 +138,11 @@ function ProfileForm({
               readOnly
               aria-readonly="true"
               autoComplete="tel"
-              className="w-full cursor-not-allowed rounded-xl border border-[#E3D6C8] bg-[#FAF8F5] px-4 py-2.5 pr-12 text-[12px] text-[#756A62] outline-none sm:text-[13px]"
+              className="w-full cursor-not-allowed rounded-lg border border-[#E3D6C8] bg-[#FAF8F5] px-4 py-2.5 pr-12 text-[12px] text-[#756A62] outline-none sm:text-[13px]"
             />
 
-            <div className="pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full bg-[#EAF4EC] px-2 py-1">
-              <span className="text-[9px] text-[#3E7049]">
+            <div className="pointer-events-none absolute  right-3 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full bg-[#EAF4EC] px-2 py-1">
+              <span className="text-[9px] md:text-[10px] text-[#3E7049]">
                 Verified
               </span>
             </div>
@@ -165,7 +165,7 @@ function ProfileForm({
             placeholder="Enter your email address"
             autoComplete="email"
             disabled={isSaving}
-            className={`mt-0 w-full rounded-xl border bg-white px-4 py-2.5 text-[12px] text-[#3F352E] outline-none transition placeholder:text-[#B4A69C] sm:text-[13px] ${
+            className={`mt-0 w-full rounded-lg border bg-white px-4 py-2.5 text-[12px] text-[#3F352E] outline-none transition placeholder:text-[#B4A69C] sm:text-[13px] ${
               errors.email
                 ? "border-red-400 focus:border-red-400 focus:ring-red-100"
                 : "border-[#E3D6C8] focus:border-[#B5697A] focus:ring-[#F8E8EC]"

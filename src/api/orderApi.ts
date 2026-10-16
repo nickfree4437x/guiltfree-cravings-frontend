@@ -19,26 +19,65 @@ export interface CreateOrderCustomer {
 
 /*
  * =========================================================
+ * DELIVERY ADDRESS
+ * =========================================================
+ */
+
+export interface DeliveryAddressPayload {
+  addressLine1: string;
+  addressLine2: string | null;
+  area: string;
+  city: string;
+  state: string;
+  pincode: string;
+}
+
+/*
+ * =========================================================
+ * DELIVERY TYPES
+ * =========================================================
+ */
+
+export type DeliveryZone =
+  | "WITHIN_DWARKA"
+  | "OUTSIDE_DWARKA";
+
+export type DeliveryStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "OUT_FOR_DELIVERY"
+  | "DELIVERED"
+  | "CANCELLED";
+
+/*
+ * =========================================================
  * CREATE ORDER PAYLOAD
  * =========================================================
  *
- * offerCode is optional.
+ * The frontend sends customer details, delivery address,
+ * product/variant IDs, quantities, and an optional offer code.
  *
- * If customer has applied an offer during checkout,
- * the offer code will be sent to the backend.
+ * Delivery zone and delivery charge must be determined
+ * and validated by the backend.
  *
- * IMPORTANT:
- * Backend must re-validate the offer and calculate
- * the final discount. Frontend discount values are
- * never trusted for order creation.
+ * Frontend values are never trusted for pricing.
  */
 
 export interface CreateOrderPayload {
   customer: CreateOrderCustomer;
+
+  deliveryAddress: DeliveryAddressPayload;
+
   items: CreateOrderItem[];
 
   offerCode?: string | null;
 }
+
+/*
+ * =========================================================
+ * ORDER ITEM
+ * =========================================================
+ */
 
 export interface OrderItem {
   id: number;
@@ -55,6 +94,12 @@ export interface OrderItem {
   quantity: number;
   subtotal: number;
 }
+
+/*
+ * =========================================================
+ * ORDER STATUS
+ * =========================================================
+ */
 
 export type OrderStatus =
   | "PENDING"
@@ -86,23 +131,48 @@ export interface Order {
   customerEmail: string | null;
 
   /*
+   * Delivery address saved with the order.
+   */
+
+  addressLine1: string | null;
+  addressLine2: string | null;
+  area: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+
+  /*
+   * Backend-calculated delivery details.
+   */
+
+  deliveryZone: DeliveryZone | null;
+  deliveryCharge: number;
+  deliveryChargeConfirmed: boolean;
+  deliveryStatus: DeliveryStatus;
+
+  /*
    * Original order subtotal before offer discount.
    */
+
   subtotal: number;
 
   /*
    * Discount applied to the order.
    */
+
   discountAmount?: number;
 
   /*
    * Applied offer code, if any.
    */
+
   offerCode?: string | null;
 
   /*
-   * Final payable order amount.
+   * Final order amount returned by the backend.
+   * Delivery-charge inclusion depends on backend logic.
    */
+
   totalAmount: number;
 
   orderStatus: OrderStatus;
@@ -163,9 +233,7 @@ const AUTH_TOKEN_KEY = "guiltfree_auth_token";
 
 const getAuthToken = (): string | null => {
   try {
-    return localStorage.getItem(
-      AUTH_TOKEN_KEY
-    );
+    return localStorage.getItem(AUTH_TOKEN_KEY);
   } catch {
     return null;
   }
@@ -188,8 +256,7 @@ api.interceptors.request.use(
     const token = getAuthToken();
 
     if (token) {
-      config.headers.Authorization =
-        `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
@@ -204,23 +271,20 @@ api.interceptors.request.use(
  * CREATE ORDER
  * =========================================================
  *
- * The backend remains responsible for:
+ * Backend responsibilities:
  *
- * - validating products
- * - validating variants
- * - calculating prices
- * - calculating subtotal
- * - validating the offer
- * - calculating discount
- * - calculating final total
- * - creating the order
+ * - Authenticate the user
+ * - Validate customer and delivery address
+ * - Validate products and variants
+ * - Calculate product prices and subtotal
+ * - Validate the offer
+ * - Calculate the discount
+ * - Determine delivery eligibility
+ * - Calculate delivery charges
+ * - Create the order and its items
  *
- * Frontend only sends:
- *
- * - customer details
- * - product/variant IDs
- * - quantities
- * - optional offer code
+ * The frontend must never determine the authoritative
+ * delivery charge or final payable amount.
  */
 
 export const createOrder = async (
@@ -241,13 +305,9 @@ export const createOrder = async (
  * =========================================================
  */
 
-export const getMyOrders = async (): Promise<
-  Order[]
-> => {
+export const getMyOrders = async (): Promise<Order[]> => {
   const response =
-    await api.get<OrdersResponse>(
-      "/orders"
-    );
+    await api.get<OrdersResponse>("/orders");
 
   return response.data.data;
 };

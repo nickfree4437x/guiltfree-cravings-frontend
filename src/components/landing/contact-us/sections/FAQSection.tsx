@@ -25,12 +25,12 @@ const faqs: FAQItem[] = [
   {
     question: "Can I cancel or change my order?",
     answer:
-      "If you need to change or cancel an order, please contact us as soon as possible with your order number so our team can check the order status.",
+      "yes but in 1hr only post that it will not be possible.",
   },
   {
     question: "How should I store my laddoos?",
     answer:
-      "Keep your laddoos sealed and store them according to the storage instructions provided with your order.",
+      "All the products needs to be stored in room temperature and not be kept in refrigerator. For knowing product specific shelf life please click on Product you want to buy",
   },
   {
     question:
@@ -57,7 +57,7 @@ function FAQSection() {
         overflow-hidden
         rounded-xl
         border
-        border-[#EFE3D2]
+        border-gray-200
         bg-white scroll-mt-20
       " id="faq"
     >
@@ -102,7 +102,7 @@ function FAQSection() {
                   text-[16px]
                   font-semibold
                   leading-tight
-                  text-[#1F4A2E]
+                  text-gray-600
                   sm:text-[18px]
                 "
               >
@@ -149,25 +149,25 @@ function FAQSection() {
                     justify-between
                     gap-3
                     px-4
-                    py-3
+                    py-2.5
                     text-left
                     transition-colors
                     duration-300
                     sm:px-5
-                    sm:py-3.5
+                    sm:py-3
                     ${
                       isOpen
-                        ? "bg-[#FFFCF7]"
-                        : "bg-white hover:bg-[#FFFCF7]"
+                        ? "bg-[#fffbfc]"
+                        : "bg-white hover:bg-[#fffbfc]"
                     }
                   `}
                 >
                   <span
                     className="
                       pr-4
-                      text-[14px]
-                      text-[#2C2C2C]
-                      sm:text-[16px]
+                      text-[13px]
+                      text-gray-600
+                      sm:text-[15px]
                     "
                   >
                     {faq.question}
@@ -216,13 +216,14 @@ function FAQSection() {
                   >
                     <p
                       className="
+                        mt-1
                         bg-white
                         px-4
                         pb-4
                         text-justify
-                        text-[12px]
+                        text-[12px] font-[350]
                         leading-relaxed
-                        text-gray-700
+                        text-gray-600
                         sm:px-5
                         sm:text-[13px]
                       "

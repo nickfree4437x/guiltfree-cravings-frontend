@@ -90,7 +90,7 @@ function ReviewDetailModal({
                 text-[16px] md:text-[18px]
                 font-semibold
                 tracking-[-0.02em]
-                text-[#1F4A2E]
+                text-gray-600
               "
             >
               {review.title ||
@@ -113,7 +113,7 @@ function ReviewDetailModal({
               border
               border-[#E8DED3]
               bg-[#FFFCF8]
-              text-[#8B7A6C]
+              text-gray-500
               hover:border-[#D9B8C1]
               hover:bg-[#FBECEF]
               hover:text-[#B5697A]
@@ -179,7 +179,7 @@ function ReviewDetailModal({
               rounded-xl
               border
               border-[#EFE3D2]
-              bg-[#FFFCF8]
+              bg-white
               p-5
             "
           >
@@ -194,7 +194,7 @@ function ReviewDetailModal({
                   text-[11px]
                   uppercase
                   tracking-[0.08em]
-                  text-[#8B7A6C]
+                  text-gray-500
                 "
               >
                 Customer Comment
@@ -262,7 +262,7 @@ function ReviewDetailModal({
             gap-2
             border-t
             border-[#EFE3D2]
-            bg-[#FFFCF8]
+            bg-white
             px-5
             py-4
             sm:flex-row

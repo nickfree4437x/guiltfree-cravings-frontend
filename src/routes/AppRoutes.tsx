@@ -8,6 +8,7 @@ import CheckoutPage from "../pages/check-out/CheckoutPage";
 import PaymentPage from "../pages/payment-page/PaymentPage";
 import OrderSuccessPage from "../pages/order-success/OrderSuccessPage";
 import MyOrdersPage from "../pages/my-orders/MyOrdersPage";
+import OrderDetailsPage from "../pages/orders/OrderDetailsPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import LoginPage from "../pages/login/LoginPage";
 import WishlistPage from "../pages/wishlist/WishlistPage";
@@ -53,6 +54,11 @@ const AppRoutes = () => {
         <Route
           path="/order-success"
           element={<OrderSuccessPage />}
+        />
+
+        <Route
+          path="/orders/:orderId"
+          element={<OrderDetailsPage />}
         />
 
         {/* My Orders */}

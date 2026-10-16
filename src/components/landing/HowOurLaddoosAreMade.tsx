@@ -99,7 +99,7 @@ function HowOurLaddoosAreMade() {
           </div>
 
           {/* Description */}
-          <p className="mt-2 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
+          <p className="mt-2 text-[12.5px] sm:text-[13.5px] font-[350] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
             Slow-roasted on low heat, warm with{" "}
             <span className="text-[#B5697A]">Desi Ghee</span>
             , hand-rolled with love. Real craft, zero shortcuts.
@@ -204,7 +204,7 @@ function HowOurLaddoosAreMade() {
                 >
                   <div className="min-w-0">
                     <p className="mt-1 text-[10px] leading-tight text-white drop-shadow-sm sm:text-[12px]">
-                      Slow Roasted Grains • Desi Ghee • Jaggery & Dates
+                      Slow Roasted Grains • Desi Ghee • Dates
                     </p>
                   </div>
 

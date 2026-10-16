@@ -6,7 +6,7 @@ import {
   ShoppingBag,
   Users,
   CreditCard,
-  BarChart3,
+  // BarChart3,
   Settings,
   LogOut,
   Gift,
@@ -98,16 +98,16 @@ function AdminSidebar({
         />
       ),
     },
-    {
-      label: "Analytics",
-      path: "/admin/analytics",
-      icon: (
-        <BarChart3
-          size={18}
-          strokeWidth={1.8}
-        />
-      ),
-    },
+    // {
+    //   label: "Analytics",
+    //   path: "/admin/analytics",
+    //   icon: (
+    //     <BarChart3
+    //       size={18}
+    //       strokeWidth={1.8}
+    //     />
+    //   ),
+    // },
     {
       label: "Reviews",
       path: "/admin/reviews",
@@ -197,12 +197,8 @@ function AdminSidebar({
             </div>
 
             <div className="min-w-0">
-              <p className="text-[14px] font-semibold text-[#1F4A2E]">
-                GuiltFree
-              </p>
-
-              <p className="mt-0.5 text-[10px] font-medium text-[#A89486]">
-                Admin Portal
+              <p className="text-[14px] font-semibold text-gray-700">
+                Admin Panel
               </p>
             </div>
           </div>
@@ -213,12 +209,11 @@ function AdminSidebar({
             onClick={onClose}
             aria-label="Close menu"
             className="
-              flex h-8 w-8 items-center justify-center
+              flex h-7 w-7 items-center justify-center
               rounded-full
               border border-[#EADBD0]
               bg-white
               text-[#6F6259]
-              transition-all duration-200
               hover:border-[#D9B8C1]
               hover:bg-[#FDF4F6]
               hover:text-[#B5697A]
@@ -226,7 +221,7 @@ function AdminSidebar({
             "
           >
             <X
-              size={16}
+              size={15}
               strokeWidth={1.8}
             />
           </button>
@@ -248,12 +243,11 @@ function AdminSidebar({
                     "group relative flex items-center gap-3",
                     "rounded-lg px-3 py-1.5",
                     "text-[13px]",
-                    "transition-all duration-200",
                     "focus:outline-none",
 
                     isActive
-                      ? "bg-[#B5697A] text-white shadow-sm"
-                      : "text-[#6F6259] hover:bg-[#FBEEF1] hover:text-[#B5697A]",
+                      ? "bg-[#B5697A] text-white shadow-sm font-[350]"
+                      : "text-gray-500 hover:bg-[#FBEEF1] hover:text-[#B5697A]",
                   ].join(" ")
                 }
               >
@@ -261,12 +255,12 @@ function AdminSidebar({
                   <>
                     <span
                       className={[
-                        "flex h-8 w-8 shrink-0 items-center justify-center",
+                        "flex h-7 w-7 shrink-0 items-center justify-center",
                         "rounded-lg transition-all duration-200",
 
                         isActive
                           ? "text-white"
-                          : "text-[#8B7A6C] group-hover:text-[#B5697A]",
+                          : "text-gray-500 group-hover:text-[#B5697A]",
                       ].join(" ")}
                     >
                       {item.icon}
@@ -293,7 +287,7 @@ function AdminSidebar({
               rounded-lg
               bg-[#FBEEF1]
               px-3 py-2
-              text-[13px]
+              text-[13.5px]
               text-[#B5697A]
               transition-all duration-200
               hover:bg-[#F7DDE3]
@@ -333,6 +327,9 @@ function AdminSidebar({
           bg-white
           lg:flex
           lg:flex-col
+          lg:relative
+          lg:z-10
+          lg:shadow-md
         "
       >
         {/* ================= BRAND ================= */}
@@ -354,12 +351,8 @@ function AdminSidebar({
             </div>
 
             <div className="min-w-0">
-              <p className="text-[14px] font-semibold text-[#2C2C2C]">
-                GuiltFree
-              </p>
-
-              <p className="mt-0 text-[10px] font-semibold text-[#A89486]">
-                Admin Portal
+              <p className="text-[14px] font-semibold text-gray-600">
+                Admin Panel
               </p>
             </div>
           </div>
@@ -379,12 +372,12 @@ function AdminSidebar({
                   [
                     "group relative flex items-center gap-3",
                     "rounded-lg px-3 py-1.5",
-                    "text-[13px]",
+                    "text-[13.5px]",
                     "focus:outline-none",
 
                     isActive
                       ? "bg-[#B5697A] text-white"
-                      : "text-gray-600 hover:bg-[#FBEEF1] hover:text-[#B5697A]",
+                      : "text-gray-500 hover:bg-[#FBEEF1] hover:text-[#B5697A]",
                   ].join(" ")
                 }
               >

@@ -117,7 +117,7 @@ function ContactMethods() {
                 {/* ============ CONTENT ============ */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-[15px] font-semibold leading-tight text-[#1F4A2E] sm:text-[17px]">
+                    <h3 className="text-[14px] font-semibold leading-tight text-gray-600 sm:text-[16px]">
                       {method.label}
                     </h3>
 
@@ -131,7 +131,7 @@ function ContactMethods() {
                     </span>
                   </div>
 
-                  <p className="mt-1.5 break-all text-[13px] leading-[1.5] text-[#7A6A5C] sm:text-[14px]">
+                  <p className="mt-1.5 break-all text-[12px] leading-[1.5] font-[350] text-[#B5697A] sm:text-[13px]">
                     {method.value}
                   </p>
                 </div>

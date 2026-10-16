@@ -27,8 +27,6 @@ interface AdminHeaderProps {
 }
 
 function AdminHeader({
-  title,
-  description,
   onLogout,
   onMenuClick,
 }: AdminHeaderProps) {
@@ -153,8 +151,8 @@ function AdminHeader({
             flex
             min-w-0
             items-center
-            gap-2.5
-            sm:gap-4
+            gap-0.5
+            sm:gap-3
           "
         >
           {/* =================================================
@@ -194,7 +192,7 @@ function AdminHeader({
               flex
               shrink-0
               items-center
-              gap-2.5
+              gap-2
               sm:gap-3
             "
           >
@@ -232,41 +230,34 @@ function AdminHeader({
               PAGE INFORMATION
           ================================================= */}
 
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              {/* Page Title */}
-              <h1
-                className="
-                  max-w-[150px]
-                  truncate
-                  text-[15px]
-                  font-bold
-                  tracking-tight
-                  text-[#1F4A2E]
-                  sm:max-w-[220px]
-                  sm:text-[19px]
-                  lg:max-w-none
-                "
-              >
-                {title}
-              </h1>
-            </div>
+          {/* Brand */}
+          <div className="flex flex-col justify-center leading-none">
+            <span
+              className={`
+                
+                text-[14px]
+                font-bold
+                tracking-[-0.04em]
+                sm:text-[16px]
+                text-gray-600
+              `}
+            >
+              Guilt<span className="text-amber-600">Free</span> Cravings
+            </span>
 
-            {/* Description */}
-            <p
+            <span
               className="
-                mt-0
-                hidden
-                max-w-xl
-                truncate
-                text-[11px]
-                leading-relaxed
-                text-[#8B7A6C]
-                md:block
+                mt-1 ml-0.5
+                text-[8px]
+                uppercase 
+                tracking-[0.08em]
+                text-[#B5697A]
+                sm:text-[9px]
+                font-[350]
               "
             >
-              {description}
-            </p>
+              Sweet bhi Health bhi
+            </span>
           </div>
         </div>
 

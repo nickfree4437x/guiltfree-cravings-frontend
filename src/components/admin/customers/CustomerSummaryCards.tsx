@@ -19,7 +19,7 @@ function CustomerSummaryCards({
       {/* TOTAL CUSTOMERS */}
 
       <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
-        <p className="text-[11px] uppercase tracking-[0.08em] text-gray-600">
+        <p className="text-[12px] tracking-[0.08em] text-gray-500">
           Total Customers
         </p>
 
@@ -35,7 +35,7 @@ function CustomerSummaryCards({
       {/* VERIFIED */}
 
       <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
-        <p className="text-[11px] uppercase tracking-[0.08em] text-gray-600">
+        <p className="text-[12px] tracking-[0.08em] text-gray-500">
           Verified
         </p>
 
@@ -51,7 +51,7 @@ function CustomerSummaryCards({
       {/* UNVERIFIED */}
 
       <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
-        <p className="text-[11px] uppercase tracking-[0.08em] text-gray-600">
+        <p className="text-[12px] tracking-[0.08em] text-gray-500">
           Unverified
         </p>
 
@@ -67,7 +67,7 @@ function CustomerSummaryCards({
       {/* WITH ORDERS */}
 
       <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
-        <p className="text-[11px] uppercase tracking-[0.08em] text-gray-600">
+        <p className="text-[12px] tracking-[0.08em] text-gray-500">
           With Orders
         </p>
 

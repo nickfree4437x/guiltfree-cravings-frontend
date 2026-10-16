@@ -9,9 +9,7 @@ interface OrderCardProps {
   order: Order;
 }
 
-function formatOrderDate(
-  dateString: string
-) {
+function formatOrderDate(dateString: string) {
   const date = new Date(dateString);
 
   if (Number.isNaN(date.getTime())) {
@@ -25,14 +23,11 @@ function formatOrderDate(
   }).format(date);
 }
 
-function OrderCard({
-  order,
-}: OrderCardProps) {
+function OrderCard({ order }: OrderCardProps) {
   const navigate = useNavigate();
 
   const totalItems = order.items.reduce(
-    (total, item) =>
-      total + item.quantity,
+    (total, item) => total + item.quantity,
     0
   );
 
@@ -40,24 +35,20 @@ function OrderCard({
     <article
       className="
         overflow-hidden
-        rounded-xl
-        border
-        border-[#EFE3D2]
+        rounded-2xl
+        border border-[#EFE3D2]
         bg-white
         shadow-sm
-        transition-all
-        duration-300
-        hover:border-[#E8C8D0]
+        transition-all duration-300
+        hover:border-[#DDB0BB]
       "
     >
-      {/* =================================================
-          ORDER HEADER
-      ================================================= */}
+      {/* ORDER HEADER */}
 
-      <div className="p-5 sm:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+      <div className="bg-white p-5 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[9px] uppercase tracking-[0.16em] text-[#A39890] sm:text-[10px]">
+            <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#A39890]">
               Order Number
             </p>
 
@@ -65,15 +56,12 @@ function OrderCard({
               {order.orderNumber}
             </h2>
 
-            <p className="mt-1.5 text-[10px] text-[#8B7A6C] sm:text-[11px]">
-              Placed on{" "}
-              {formatOrderDate(
-                order.createdAt
-              )}
+            <p className="mt-1.5 text-[11px] text-[#8B7A6C] sm:text-xs">
+              Placed on {formatOrderDate(order.createdAt)}
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <OrderStatusBadge
               type="order"
               status={order.orderStatus}
@@ -87,106 +75,92 @@ function OrderCard({
         </div>
       </div>
 
-      {/* =================================================
-          ORDER SUMMARY
-      ================================================= */}
+    {/* ORDER SUMMARY */}
 
-      <div
-        className="
-          border-y
-          border-[#EFE3D2]
-          bg-[#FFFCF7]
-          px-5
-          py-4
-          sm:px-6
-        "
-      >
-        <div className="grid gap-4 sm:grid-cols-3">
-          {/* Items */}
+    <div
+      className="
+        border-y
+        border-[#EFE3D2]
+        bg-white
+        px-5
+        py-4
+        sm:px-6
+      "
+    >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-0">
 
-          <div className="sm:border-r sm:border-[#EFE3D2] sm:pr-4">
-            <p className="text-[9px] uppercase tracking-[0.12em] text-[#A39890]">
-              Items
-            </p>
+        {/* Items */}
 
-            <p className="mt-1 text-[12px] font-semibold text-[#5E5148] sm:text-[13px]">
-              {totalItems}{" "}
-              {totalItems === 1
-                ? "Item"
-                : "Items"}
-            </p>
-          </div>
+        <div className="flex items-center justify-between gap-4 sm:block sm:border-r sm:border-[#EFE3D2] sm:pr-4">
+          <p className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A39890]">
+            Items
+          </p>
 
-          {/* Customer */}
-
-          <div className="sm:border-r sm:border-[#EFE3D2] sm:px-4">
-            <p className="text-[9px] uppercase tracking-[0.12em] text-[#A39890]">
-              Customer
-            </p>
-
-            <p className="mt-1 truncate text-[12px] font-semibold text-[#5E5148] sm:text-[13px]">
-              {order.customerName}
-            </p>
-          </div>
-
-          {/* Total */}
-
-          <div className="sm:pl-4">
-            <p className="text-[9px] uppercase tracking-[0.12em] text-[#A39890]">
-              Total
-            </p>
-
-            <p className="mt-1 text-[14px] font-semibold text-[#B5697A] sm:text-[15px]">
-              ₹{order.totalAmount}
-            </p>
-          </div>
+          <p className="text-right text-[12px] font-semibold text-[#5E5148] sm:mt-1.5 sm:text-left sm:text-[13px]">
+            {totalItems} {totalItems === 1 ? "Item" : "Items"}
+          </p>
         </div>
-      </div>
 
-      {/* =================================================
-          ORDER ITEMS
-      ================================================= */}
+        {/* Customer */}
+
+        <div className="flex items-center justify-between gap-4 sm:block sm:border-r sm:border-[#EFE3D2] sm:px-5">
+          <p className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A39890]">
+            Customer
+          </p>
+
+          <p className="min-w-0 truncate text-right text-[12px] font-semibold text-[#5E5148] sm:mt-1.5 sm:text-left sm:text-[13px]">
+            {order.customerName}
+          </p>
+        </div>
+
+        {/* Total Amount */}
+
+        <div className="flex items-center justify-between gap-4 sm:block sm:pl-5">
+          <p className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A39890]">
+            Total Amount
+          </p>
+
+          <p className="text-right text-[14px] font-semibold text-[#B5697A] sm:mt-1.5 sm:text-left sm:text-[15px]">
+            ₹{order.totalAmount}
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+      {/* ORDER ITEMS */}
 
       <div className="px-5 py-5 sm:px-6 sm:py-6">
-        <div className="mb-2 flex items-center justify-between">
-          <p className="text-[10px] uppercase tracking-[0.14em] text-[#A39890]">
+        {/* <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8B7A6C]">
             Order Items
           </p>
 
           {order.items.length > 3 && (
-            <span className="text-[10px] text-[#A39890]">
+            <span className="rounded-full border border-[#EFE3D2] bg-[#FFF9F5] px-2.5 py-1 text-[10px] font-medium text-[#8B7A6C]">
               {order.items.length} total
             </span>
           )}
-        </div>
+        </div> */}
 
-        <OrderItemsList
-          items={order.items}
-        />
+        <OrderItemsList items={order.items} />
       </div>
 
-      {/* =================================================
-          ORDER FOOTER
-      ================================================= */}
+      {/* ORDER FOOTER */}
 
       <div
         className="
-          flex
-          flex-col
-          gap-4
-          border-t
-          border-[#EFE3D2]
-          px-5
-          py-4
-          sm:flex-row
-          sm:items-center
-          sm:justify-between
+          flex flex-col gap-4
+          border-t border-[#EFE3D2]
+          bg-white
+          px-5 py-4
+          sm:flex-row sm:items-center sm:justify-between
           sm:px-6
         "
       >
-        <p className="text-[10px] leading-5 text-[#A39890] sm:text-[11px]">
+        <p className="text-[12px] text-[#8B7A6C] sm:text-[14px]">
           Payment status:{" "}
-          <span className="capitalize text-[#6F625A]">
+          <span className=" capitalize text-[#5E5148]">
             {order.paymentStatus
               .toLowerCase()
               .replace(/_/g, " ")}
@@ -195,31 +169,19 @@ function OrderCard({
 
         <button
           type="button"
-          onClick={() =>
-            navigate(
-              `/orders/${order.id}`
-            )
-          }
+          onClick={() => navigate(`/orders/${order.id}`)}
           className="
-            inline-flex
-            h-9
-            items-center
-            justify-center
+            inline-flex h-10 w-full items-center justify-center
             rounded-full
             bg-[#B5697A]
-            px-5
-            text-[11px]
-            text-white
-            transition-all
-            duration-200
+            px-6 font-[350]
+            text-[12px] tracking-wide text-white
+            shadow-sm
+            transition-all duration-200
             hover:bg-[#A55F70]
-            hover:shadow-sm
-            active:scale-[0.98]
             focus:outline-none
-            focus-visible:ring-2
-            focus-visible:ring-[#B5697A]/30
             focus-visible:ring-offset-2
-            sm:text-[12px]
+            sm:w-auto
           "
         >
           View Order

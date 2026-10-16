@@ -70,7 +70,7 @@ function ProductPickerGuide() {
         "Just craving something sweet?",
 
       desktopDescription:
-        "Pick any flavour that catches your eye. That’s the whole idea — enjoy a comforting, homemade-style laddoo whenever the craving hits.",
+        "Pick any flavour that catches your eye. That’s the whole idea enjoy a comforting, homemade-style laddoo whenever the craving hits.",
 
       mobileDescription:
         "Pick any. That’s the whole idea.",
@@ -188,7 +188,7 @@ function ProductPickerGuide() {
                     transition-colors
                     duration-200
                     lg:block
-                    lg:text-[14px]
+                    lg:text-[15px]
                     text-gray-700
                   `}
                 >
@@ -294,7 +294,7 @@ function ProductPickerGuide() {
                         text-[12px]
                         leading-relaxed
                         text-gray-600
-                        lg:block
+                        lg:block font-light
                         lg:text-[13px]
                       "
                     >
@@ -309,7 +309,7 @@ function ProductPickerGuide() {
                       className="
                         text-[11px]
                         leading-relaxed
-                        text-gray-600
+                        text-gray-600 font-[350]
                         sm:text-[12px]
                         lg:hidden
                       "

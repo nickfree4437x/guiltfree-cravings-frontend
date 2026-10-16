@@ -87,7 +87,7 @@ function ChangePasswordSection({
    */
 
   const passwordInputClass =
-    "h-11 w-full rounded-xl border border-[#E8DED3] bg-white px-4 pr-12 text-sm text-[#3D3834] outline-none placeholder:text-[#B0A39A] hover:border-[#DCCDC0] focus:border-[#B5697A] focus:bg-white";
+    "h-11 w-full rounded-xl border border-[#E8DED3] bg-white px-4 pr-12 text-[11px] md:text-[12px] text-[#3D3834] outline-none placeholder:text-[#B0A39A] hover:border-[#DCCDC0] focus:border-[#B5697A] focus:bg-white";
 
   /*
    * =========================================================
@@ -246,11 +246,11 @@ function ChangePasswordSection({
         <div className="flex items-start gap-4">
 
           <div className="min-w-0">
-            <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-[#1F4A2E] sm:text-[18px]">
+            <h2 className="text-[14px] md:text-[16px] font-semibold text-slate-700">
               Change Password
             </h2>
 
-            <p className="mt-1 text-[13px] leading-relaxed text-gray-600">
+            <p className="mt-0 text-[11px] md:text-[12px] text-slate-500">
               Update your admin account password to keep
               your account secure.
             </p>
@@ -277,7 +277,7 @@ function ChangePasswordSection({
           <div className="lg:col-span-2">
             <label
               htmlFor="current-admin-password"
-              className="mb-2 block text-[12px] uppercase tracking-[0.06em] text-[#6F6259]"
+              className="mb-1 block text-[11px] md:text-[12px] uppercase tracking-[0.06em] text-[#6F6259]"
             >
               Current Password
             </label>
@@ -348,7 +348,7 @@ function ChangePasswordSection({
           <div>
             <label
               htmlFor="new-admin-password"
-              className="mb-2 block text-[12px] uppercase tracking-[0.06em] text-[#6F6259]"
+              className="mb-1 block text-[11px] md:text-[12px] uppercase tracking-[0.06em] text-[#6F6259]"
             >
               New Password
             </label>
@@ -419,7 +419,7 @@ function ChangePasswordSection({
           <div>
             <label
               htmlFor="confirm-admin-password"
-              className="mb-2 block text-[12px] uppercase tracking-[0.06em] text-[#6F6259]"
+              className="mb-1 block text-[11px] md:text-[12px]] uppercase tracking-[0.06em] text-[#6F6259]"
             >
               Confirm New Password
             </label>
@@ -508,11 +508,11 @@ function ChangePasswordSection({
           <div className="flex items-center gap-2.5">
 
             <div>
-              <p className="text-[13px] font-semibold text-[#3D3834]">
+              <p className="text-[13px] font-semibold text-gray-600">
                 Password requirements
               </p>
 
-              <p className="mt-0.5 text-[11px] text-[#9A8D82]">
+              <p className="mt-0.5 text-[10px] md:text-[11px] text-gray-500">
                 Make sure your new password meets all
                 requirements.
               </p>
@@ -602,13 +602,14 @@ function ChangePasswordSection({
             ACTION
             =================================================== */}
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-5 flex justify-end">
           <button
             type="submit"
             disabled={isLoading}
             className="
               inline-flex
-              h-11
+              h-10
+              md:h-11
               items-center
               justify-center
               rounded-xl

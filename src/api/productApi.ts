@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 /* =========================================================
@@ -23,12 +24,26 @@ export interface Product {
   id: number;
   name: string;
   description: string;
+
+  // Main image displayed on the landing page
   image: string;
+
+  // General product gallery
+  images: string[];
+
+  // Packaging-specific image galleries
+  regularImages: string[];
+  glassJarImages: string[];
+  cardboardBoxImages: string[];
+
+  // Existing single-image fields retained for compatibility
   glassJarImage: string | null;
   cardboardBoxImage: string | null;
+
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+
   variants: ProductVariant[];
 }
 

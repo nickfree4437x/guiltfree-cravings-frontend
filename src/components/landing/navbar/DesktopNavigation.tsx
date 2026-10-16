@@ -80,8 +80,8 @@ function DesktopNavigation({
                 whitespace-nowrap
                 rounded-full
                 px-4
-                py-2
-                text-[14px]
+                py-2 font-[350]
+                text-[13px]
                 tracking-[-0.01em]
                 transition-all
                 duration-200

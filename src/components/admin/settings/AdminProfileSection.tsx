@@ -14,11 +14,11 @@ function AdminProfileSection({
       {/* HEADER */}
 
       <div className="border-b border-[#eadfd3] px-5 py-4 sm:px-6">
-        <h2 className="text-lg font-semibold text-slate-900">
+        <h2 className="text-[14px] md:text-[16px] font-semibold text-slate-700">
           Admin Profile
         </h2>
 
-        <p className="mt-0 text-sm text-slate-500">
+        <p className="mt-0 text-[11px] md:text-[12px] text-slate-500">
           Basic information about the current
           administrator account.
         </p>
@@ -26,13 +26,13 @@ function AdminProfileSection({
 
       {/* CONTENT */}
 
-      <div className="grid gap-5 p-5 sm:grid-cols-2 sm:p-6">
+      <div className="grid gap-3 md:gap-5 p-5 sm:grid-cols-2 sm:p-6">
         {/* NAME */}
 
         <div>
           <label
             htmlFor="admin-name"
-            className="text-xs uppercase tracking-wider text-slate-600"
+            className="text-[11px] md:text-[12px] uppercase tracking-wider text-slate-500"
           >
             Admin Name
           </label>
@@ -42,7 +42,7 @@ function AdminProfileSection({
             type="text"
             value={admin?.name || ""}
             readOnly
-            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-[12px] md:text-[12.5px] text-slate-700 outline-none"
           />
         </div>
 
@@ -51,7 +51,7 @@ function AdminProfileSection({
         <div>
           <label
             htmlFor="admin-email"
-            className="text-xs uppercase tracking-wider text-slate-500"
+            className="text-[11px] md:text-[12px] uppercase tracking-wider text-slate-500"
           >
             Email
           </label>
@@ -61,35 +61,17 @@ function AdminProfileSection({
             type="email"
             value={admin?.email || ""}
             readOnly
-            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-[12px] md:text-[12.5px] text-slate-700 outline-none"
           />
         </div>
 
-        {/* PHONE */}
-
-        <div>
-          <label
-            htmlFor="admin-phone"
-            className="text-xs uppercase tracking-wider text-slate-500"
-          >
-            Phone
-          </label>
-
-          <input
-            id="admin-phone"
-            type="text"
-            value={admin?.phone || ""}
-            readOnly
-            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-700 outline-none"
-          />
-        </div>
 
         {/* ROLE */}
 
         <div>
           <label
             htmlFor="admin-role"
-            className="text-xs uppercase tracking-wider text-slate-500"
+            className="text-[11px] md:text-[12px] uppercase tracking-wider text-slate-500"
           >
             Account Role
           </label>
@@ -99,7 +81,7 @@ function AdminProfileSection({
             type="text"
             value="Administrator"
             readOnly
-            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-[12px] md:text-[12.5px] text-slate-700 outline-none"
           />
         </div>
       </div>

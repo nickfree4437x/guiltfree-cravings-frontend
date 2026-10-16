@@ -4,6 +4,10 @@ import {
   Loader2,
   Star,
   XCircle,
+  Mail,
+  Package,
+  Calendar,
+  User,
 } from "lucide-react";
 
 import type { AdminReview } from "../../../api/adminReviewApi";
@@ -32,9 +36,11 @@ function ReviewRow({
   return (
     <div
       className="
+        group
         px-5
         py-5
         transition-colors
+        hover:bg-[#FFFCF8]
         sm:px-6
       "
     >
@@ -42,10 +48,11 @@ function ReviewRow({
         className="
           flex
           flex-col
-          gap-5
-          xl:flex-row
-          xl:items-center
-          xl:justify-between
+          gap-4
+          lg:flex-row
+          lg:items-start
+          lg:justify-between
+          lg:gap-6
         "
       >
         {/* ====================================================
@@ -66,8 +73,8 @@ function ReviewRow({
                     key={star}
                     className={
                       star <= review.rating
-                        ? "h-[14px] w-[14px] fill-[#D79A3B] text-[#D79A3B]"
-                        : "h-[14px] w-[14px] text-[#DED4CA]"
+                        ? "h-[13px] w-[13px] fill-[#D79A3B] text-[#D79A3B]"
+                        : "h-[13px] w-[13px] text-[#DED4CA]"
                     }
                     strokeWidth={1.7}
                     aria-hidden="true"
@@ -76,9 +83,11 @@ function ReviewRow({
               )}
             </div>
 
-            <span className="text-[11px] text-[#8B7A6C]">
-              {review.rating}/5
+            <span className="text-[11px] font-medium text-[#8B7A6C]">
+              {review.rating}.0
             </span>
+
+            <span className="h-3 w-px bg-[#EADFD3]" />
 
             <ReviewStatusBadge
               status={review.status}
@@ -89,11 +98,12 @@ function ReviewRow({
 
           <h3
             className="
-              mt-1
+              mt-2
               text-[14px]
               font-semibold
               tracking-[-0.01em]
-              text-gray-600
+              text-slate-700
+              sm:text-[15px]
             "
           >
             {review.title ||
@@ -104,12 +114,12 @@ function ReviewRow({
 
           <p
             className="
-              mt-0
+              mt-1
               line-clamp-2
               max-w-3xl
-              text-[12px]
+              text-[12.5px]
               leading-relaxed
-              text-[#8B7A6C]
+              text-slate-500
             "
           >
             {review.comment ||
@@ -130,27 +140,50 @@ function ReviewRow({
               text-[#A0958C]
             "
           >
-            <span className=" text-[#6F6259]">
+            {/* NAME */}
+            <span className="inline-flex items-center gap-1.5 text-gray-600">
+              <User
+                className="h-3 w-3 text-[#B8AAA0]"
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
               {review.displayName ||
                 "Customer"}
             </span>
 
+            {/* EMAIL */}
             {review.email && (
-              <span>
+              <span className="inline-flex items-center gap-1.5">
+                <Mail
+                  className="h-3 w-3 text-[#B8AAA0]"
+                  strokeWidth={1.8}
+                  aria-hidden="true"
+                />
                 {review.email}
               </span>
             )}
 
+            {/* PRODUCT */}
             {review.product?.name && (
-              <span>
-                Product:{" "}
-                <span className="font-medium text-[#6F6259]">
+              <span className="inline-flex items-center gap-1.5">
+                <Package
+                  className="h-3 w-3 text-[#B8AAA0]"
+                  strokeWidth={1.8}
+                  aria-hidden="true"
+                />
+                <span className="text-[#8B7A6C]">
                   {review.product.name}
                 </span>
               </span>
             )}
 
-            <span>
+            {/* DATE */}
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar
+                className="h-3 w-3 text-[#B8AAA0]"
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
               {formatReviewDate(
                 review.createdAt
               )}
@@ -168,6 +201,7 @@ function ReviewRow({
             shrink-0
             items-center
             gap-2
+            lg:pt-1
           "
         >
           {/* ==================================================
@@ -188,14 +222,18 @@ function ReviewRow({
               shrink-0
               items-center
               justify-center
-              rounded-xl
+              rounded-lg
               border
               border-[#D7E2F8]
               bg-[#F2F6FF]
               text-[#4D7FEA]
+              transition-all
+              duration-200
               hover:border-[#BFD0F5]
               hover:bg-[#E8F0FF]
               hover:text-[#3D6ED8]
+              focus:outline-none
+              focus:ring-2
               focus:ring-[#4D7FEA]/15
               disabled:cursor-not-allowed
               disabled:opacity-60
@@ -229,15 +267,18 @@ function ReviewRow({
                 shrink-0
                 items-center
                 justify-center
-                rounded-xl
+                rounded-lg
                 border
                 border-[#CFE4D4]
                 bg-[#EEF8F2]
                 text-[#3F8A58]
+                transition-all
+                duration-200
                 hover:border-[#B7D8C0]
                 hover:bg-[#E3F3E8]
                 hover:text-[#34764A]
                 focus:outline-none
+                focus:ring-2
                 focus:ring-[#3F8A58]/15
                 disabled:cursor-not-allowed
                 disabled:opacity-60
@@ -284,15 +325,18 @@ function ReviewRow({
                 shrink-0
                 items-center
                 justify-center
-                rounded-xl
+                rounded-lg
                 border
                 border-[#F0D1D5]
                 bg-[#FFF3F5]
                 text-[#C45D6D]
+                transition-all
+                duration-200
                 hover:border-[#E8B9C0]
                 hover:bg-[#FCE7EA]
                 hover:text-[#B84D5E]
                 focus:outline-none
+                focus:ring-2
                 focus:ring-[#C45D6D]/15
                 disabled:cursor-not-allowed
                 disabled:opacity-60

@@ -8,7 +8,6 @@ import {
   CalendarDays,
   Loader2,
   CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 
 import {
@@ -16,6 +15,8 @@ import {
   useState,
   type FormEvent,
 } from "react";
+
+import toast from "react-hot-toast";
 
 import {
   createOffer,
@@ -130,9 +131,6 @@ function CreateOfferModal({
   const [loading, setLoading] =
     useState(false);
 
-  const [error, setError] =
-    useState("");
-
   // ==========================================================
   // POPULATE FORM
   // ==========================================================
@@ -142,7 +140,6 @@ function CreateOfferModal({
       return;
     }
 
-    setError("");
     setLoading(false);
 
     // --------------------------------------------------------
@@ -240,7 +237,6 @@ function CreateOfferModal({
   const handleClose = () => {
     if (loading) return;
 
-    setError("");
     onClose();
   };
 
@@ -255,23 +251,17 @@ function CreateOfferModal({
 
     if (loading) return;
 
-    setError("");
-
     // --------------------------------------------------------
     // BASIC VALIDATION
     // --------------------------------------------------------
 
     if (!name.trim()) {
-      setError(
-        "Offer name is required."
-      );
+      toast.error("Offer name is required.");
       return;
     }
 
     if (!code.trim()) {
-      setError(
-        "Offer code is required."
-      );
+      toast.error("Offer code is required.");
       return;
     }
 
@@ -279,7 +269,7 @@ function CreateOfferModal({
       audience === "SPECIFIC_CUSTOMER" &&
       !customerPhone.trim()
     ) {
-      setError(
+      toast.error(
         "Customer phone number is required."
       );
       return;
@@ -296,7 +286,7 @@ function CreateOfferModal({
       !Number.isInteger(numericDiscount) ||
       numericDiscount <= 0
     ) {
-      setError(
+      toast.error(
         "Enter a valid discount value."
       );
       return;
@@ -306,7 +296,7 @@ function CreateOfferModal({
       discountType === "PERCENTAGE" &&
       numericDiscount > 100
     ) {
-      setError(
+      toast.error(
         "Percentage discount cannot exceed 100%."
       );
       return;
@@ -323,7 +313,7 @@ function CreateOfferModal({
       ) ||
         Number(minOrderValue) < 0)
     ) {
-      setError(
+      toast.error(
         "Enter a valid minimum order value."
       );
       return;
@@ -337,7 +327,7 @@ function CreateOfferModal({
       ) ||
         Number(maxDiscount) <= 0)
     ) {
-      setError(
+      toast.error(
         "Enter a valid maximum discount."
       );
       return;
@@ -350,7 +340,7 @@ function CreateOfferModal({
       ) ||
         Number(usageLimit) <= 0)
     ) {
-      setError(
+      toast.error(
         "Enter a valid usage limit."
       );
       return;
@@ -363,7 +353,7 @@ function CreateOfferModal({
       ) ||
       Number(perCustomerLimit) <= 0
     ) {
-      setError(
+      toast.error(
         "Enter a valid per-customer limit."
       );
       return;
@@ -374,7 +364,7 @@ function CreateOfferModal({
     // --------------------------------------------------------
 
     if (!startsAt) {
-      setError(
+      toast.error(
         "Start date is required."
       );
       return;
@@ -388,7 +378,7 @@ function CreateOfferModal({
         parsedStartDate.getTime()
       )
     ) {
-      setError(
+      toast.error(
         "Enter a valid start date."
       );
       return;
@@ -411,7 +401,7 @@ function CreateOfferModal({
           parsedExpiryDate.getTime()
         )
       ) {
-        setError(
+        toast.error(
           "Enter a valid expiry date."
         );
         return;
@@ -421,7 +411,7 @@ function CreateOfferModal({
         parsedExpiryDate.getTime() <=
         parsedStartDate.getTime()
       ) {
-        setError(
+        toast.error(
           "Expiry date must be after the start date."
         );
         return;
@@ -495,14 +485,22 @@ function CreateOfferModal({
           offer.id,
           payload
         );
+
+        toast.success(
+          "Offer updated successfully."
+        );
       } else {
         await createOffer(payload);
+
+        toast.success(
+          "Offer created successfully."
+        );
       }
 
       onCreated();
       onClose();
     } catch (err: any) {
-      setError(
+      toast.error(
         err?.response?.data?.message ||
           err?.message ||
           (
@@ -602,11 +600,11 @@ function CreateOfferModal({
             <div className="min-w-0">
               <h2
                 className="
-                  text-[17px]
+                  text-[14px]
                   font-semibold
                   tracking-[-0.01em]
-                  text-[#1F4A2E]
-                  sm:text-[18px]
+                  text-gray-600
+                  sm:text-[16px]
                 "
               >
                 {isEditMode
@@ -617,9 +615,9 @@ function CreateOfferModal({
               <p
                 className="
                   mt-0
-                  text-[12px]
+                  text-[11px] md:text-[12px]
                   leading-relaxed
-                  text-[#8B7A6C]
+                  text-gray-500
                 "
               >
                 {isEditMode
@@ -725,11 +723,11 @@ function CreateOfferModal({
                     </div>
 
                     <div>
-                      <p className="text-[13px] text-[#3D3834]">
+                      <p className="text-[12px] md:text-[13px] text-[#3D3834]">
                         Public Offer
                       </p>
 
-                      <p className="mt-0 text-[11px] leading-5 text-[#8B7A6C]">
+                      <p className="mt-0 text-[11px] leading-relaxed text-gray-600">
                         Available to eligible customers
                       </p>
                     </div>
@@ -1108,36 +1106,6 @@ function CreateOfferModal({
                 "
               />
             </label>
-
-            {/* ==================================================
-                ERROR
-            ================================================== */}
-
-            {error && (
-              <div
-                className="
-                  flex
-                  items-start
-                  gap-3
-                  rounded-xl
-                  border
-                  border-[#E8C8CE]
-                  bg-[#FBECEF]
-                  px-4
-                  py-3
-                  text-[12px]
-                  leading-5
-                  text-[#A85F70]
-                "
-              >
-                <AlertCircle
-                  className="mt-0.5 h-4 w-4 shrink-0"
-                  strokeWidth={1.8}
-                />
-
-                <p>{error}</p>
-              </div>
-            )}
           </div>
 
           {/* ==================================================
@@ -1145,127 +1113,128 @@ function CreateOfferModal({
           ================================================== */}
 
           <div
+            className="
+              sticky
+              bottom-0
+              grid
+              grid-cols-2
+              shrink-0
+              gap-3
+              border-t
+              border-[#EFE3D2]
+              bg-white
+              px-5
+              py-4
+              sm:px-7
+            "
+          >
+            <button
+              type="button"
+              onClick={handleClose}
+              disabled={loading}
+              className="
+                flex
+                w-full
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-[#E8DED3]
+                bg-white
+                px-5
+                py-2.5
+                text-[14px]
+                text-[#6F6259]
+                hover:border-[#D9B8C1]
+                hover:bg-[#FDF4F6]
+                hover:text-[#A85F70]
+                focus:outline-none
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="
+                flex
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                bg-[#B5697A]
+                px-5
+                py-2.5
+                text-[14px]
+                text-white
+                shadow-sm
+                transition-all
+                duration-200
+                hover:bg-[#A85F70]
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
+            >
+              {loading ? (
+                <>
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    strokeWidth={1.8}
+                  />
+
+                  {isEditMode
+                    ? "Updating..."
+                    : "Creating..."}
+                </>
+              ) : (
+                <>
+                  <CheckCircle2
+                    className="h-4 w-4"
+                    strokeWidth={1.8}
+                  />
+
+                  {isEditMode
+                    ? "Update Offer"
+                    : "Create Offer"}
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECTION LABEL
+// ============================================================
+
+function SectionLabel({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <label
       className="
-        sticky
-        bottom-0
-        grid
-        grid-cols-2
-        shrink-0
-        gap-3
-        border-t
-        border-[#EFE3D2]
-        bg-white
-        px-5
-        py-4
-        sm:px-7
+        mb-0
+        block
+        text-[11px] md:text-[12px] font-[350]
+        tracking-[-0.01em]
+        text-gray-600
       "
     >
-      <button
-        type="button"
-        onClick={handleClose}
-        disabled={loading}
-        className="
-          flex
-          w-full
-          items-center
-          justify-center
-          rounded-xl
-          border
-          border-[#E8DED3]
-          bg-white
-          px-5
-          py-2.5
-          text-[14px]          text-[#6F6259]
-          hover:border-[#D9B8C1]
-          hover:bg-[#FDF4F6]
-          hover:text-[#A85F70]
-          focus:outline-none
-          disabled:cursor-not-allowed
-          disabled:opacity-50
-        "
-      >
-        Cancel
-      </button>
+      {children}
+    </label>
+  );
+}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="
-          flex
-          w-full
-          items-center
-          justify-center
-          gap-2
-          rounded-xl
-          bg-[#B5697A]
-          px-5
-          py-2.5
-          text-[14px]
-          text-white
-          shadow-sm
-          transition-all
-          duration-200
-          hover:bg-[#A85F70]
-          disabled:cursor-not-allowed
-          disabled:opacity-60
-        "
-      >
-        {loading ? (
-          <>
-            <Loader2
-              className="h-4 w-4 animate-spin"
-              strokeWidth={1.8}
-            />
-
-            {isEditMode
-              ? "Updating..."
-              : "Creating..."}
-          </>
-        ) : (
-          <>
-            <CheckCircle2
-              className="h-4 w-4"
-              strokeWidth={1.8}
-            />
-
-            {isEditMode
-              ? "Update Offer"
-              : "Create Offer"}
-          </>
-        )}
-      </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      );
-    }
-
-    // ============================================================
-    // SECTION LABEL
-    // ============================================================
-
-    function SectionLabel({
-      children,
-    }: {
-      children: React.ReactNode;
-    }) {
-      return (
-        <label
-          className="
-            mb-0
-            block
-            text-[13px]
-            tracking-[-0.01em]
-            text-[#3D3834]
-          "
-        >
-          {children}
-        </label>
-      );
-    }
-
-   // ============================================================
+// ============================================================
 // FIELD
 // ============================================================
 
@@ -1291,7 +1260,7 @@ function Field({
   return (
     <div>
       {label && (
-        <label className="mb-2 block text-[12px] text-[#6F6259]">
+        <label className="mb-2 block text-[12px] text-gray-600">
           {label}
         </label>
       )}
@@ -1310,8 +1279,8 @@ function Field({
           border-[#E8DED3]
           bg-white
           px-4
-          py-3
-          text-[13px]
+          py-2.5
+          text-[11px] md:text-[12px]
           text-[#3D3834]
           outline-none
           placeholder:text-[#B8AAA0]

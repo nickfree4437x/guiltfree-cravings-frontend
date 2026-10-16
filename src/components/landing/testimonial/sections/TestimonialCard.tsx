@@ -118,8 +118,8 @@ function TestimonialCard({
           mt-5
           flex-1
           text-[12px]
-          leading-[1.5]
-          text-gray-500
+          leading-[1.5] font-light
+          text-gray-600
           sm:text-[13px]
           md:text-[14px]
         "

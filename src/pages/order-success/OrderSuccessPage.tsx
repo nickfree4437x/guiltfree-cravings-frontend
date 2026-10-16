@@ -1,6 +1,4 @@
-import {
-  useLocation,
-} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import type { Order } from "../../api/orderApi";
 
@@ -30,36 +28,18 @@ interface OrderSuccessLocationState {
 function OrderSuccessPage() {
   const location = useLocation();
 
-  /*
-   * =======================================================
-   * LOCATION STATE
-   * =======================================================
-   */
-
   const locationState =
-    location.state as
-      | OrderSuccessLocationState
-      | null;
+    location.state as OrderSuccessLocationState | null;
 
-  /*
-   * =======================================================
-   * ORDER
-   * =======================================================
-   */
-
-  const order =
-    locationState?.order;
+  const order = locationState?.order;
 
   /*
    * =======================================================
    * ORDER INFORMATION MISSING
    * =======================================================
    *
-   * Prevent users from directly opening:
-   *
-   * /order-success
-   *
-   * without a valid order.
+   * Show the fallback UI when order information is
+   * unavailable in the current navigation state.
    */
 
   if (!order) {
@@ -68,51 +48,28 @@ function OrderSuccessPage() {
 
   /*
    * =======================================================
-   * SUCCESS PAGE
+   * ORDER SUCCESS CONTENT
    * =======================================================
    */
 
   return (
-    <main className="min-h-screen bg-[#fffaf5] px-6 py-12 sm:py-16 lg:px-8">
-
-      <div className="mx-auto max-w-4xl">
-
-        {/* =================================================
-            SUCCESS HEADER
-        ================================================= */}
-
+    <main className="min-h-screen bg-white px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+      <div className="mx-auto w-full max-w-4xl">
+        {/* Success Header */}
         <OrderSuccessHeader />
 
-        {/* =================================================
-            ORDER INFORMATION
-        ================================================= */}
+        {/* Order Information */}
+        <OrderSuccessInfo order={order} />
 
-        <OrderSuccessInfo
-          order={order}
-        />
+        {/* Order Summary */}
+        <OrderSuccessSummary order={order} />
 
-        {/* =================================================
-            ORDER SUMMARY
-        ================================================= */}
-
-        <OrderSuccessSummary
-          order={order}
-        />
-
-        {/* =================================================
-            PAYMENT NOTICE
-        ================================================= */}
-
+        {/* Payment Confirmation Notice */}
         <OrderSuccessPaymentNotice />
 
-        {/* =================================================
-            ACTIONS
-        ================================================= */}
-
+        {/* Navigation Actions */}
         <OrderSuccessActions />
-
       </div>
-
     </main>
   );
 }

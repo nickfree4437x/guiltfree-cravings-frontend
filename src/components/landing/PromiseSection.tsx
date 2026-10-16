@@ -13,34 +13,34 @@ function OurPromise() {
       icon: Leaf,
       title: "No Refined Sugar",
       description:
-        "We sweeten our laddoos with jaggery or dates never refined sugar.",
+        "We sweeten our laddoos with jaggery or dates never refined sugar.”",
     },
     {
       number: "02",
       icon: Droplets,
-      title: "No Refined Oils",
+      title: "No Palm Oil. No Refined Oils.",
       description:
-        "Desi ghee is the only fat we use in our laddoos no palm oil or refined oils.",
+        "Desi ghee is the only fat we use in our laddoos no palm oil or refined cooking oils.”",
     },
     {
       number: "03",
       icon: ShieldCheck,
       title: "No Preservatives",
       description:
-        "Made in small batches, with freshness in mind not a long shelf life.",
+        "No artificial additives, no hidden ingredients. Just pure, honest food you can trust.",
     },
     {
       number: "04",
       icon: HandHeart,
       title: "Made in Small Batches",
       description:
-        "Every laddoo is hand-rolled with care, made in small batches and packed fresh.",
+        "Every laddoo is prepared with care, rolled by hand and packed fresh because we would rather make less and make it well.",
     },
   ];
 
   const trustBadges = [
-    { icon: Leaf, label: "100% Natural" },
     { icon: Heart, label: "Made with Love" },
+    { icon: ShieldCheck, label: "No Preservatives" },
     { icon: Droplets, label: "No Palm Oil" },
     { icon: ShieldCheck, label: "No Refined Oil" },
   ];
@@ -67,26 +67,73 @@ function OurPromise() {
         ========================================================= */}
         <div className="mx-auto max-w-3xl text-center">
 
-          {/* Heading */}
           <h2 className="text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide text-[#C9788B] mb-2 leading-snug md:whitespace-nowrap">
             Our Promise, Made with Care
-            
           </h2>
 
-          {/* Description */}
-          <p className="mt-0 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
-            We believe you shouldn't have to read the fine print to know
-            what's going into something you eat.{" "}
-            <span className=" text-[#B5697A]">
-              No shortcuts.
-            </span>
+          <p className="mt-0 text-[12.5px] sm:text-[13.5px] md:text-[14px] font-[350] leading-relaxed tracking-wide max-w-[580px] mx-auto text-[#2c2c2c]">
+            Simple ingredients. Honest recipes. Nothing unnecessary.
           </p>
         </div>
 
         {/* =========================================================
-            PROMISES — 2x2 grid with editorial cards
+            MOBILE VIEW — Compact Horizontal Cards
+            (sirf mobile pe dikhega, sm se upar hide)
         ========================================================= */}
-        <div className="mt-8 grid gap-5 sm:mt-10 sm:grid-cols-2 sm:gap-6 lg:mt-12 lg:gap-7">
+        <div className="mt-7 space-y-3 sm:hidden">
+          {promises.map((promise) => {
+            const Icon = promise.icon;
+
+            return (
+              <div
+                key={promise.number}
+                className="
+                  group relative flex items-start gap-4
+                  overflow-hidden rounded-xl
+                  border border-[#EFE3D2] bg-white
+                  p-4 shadow-sm
+                "
+              >
+                {/* Icon */}
+                <div
+                  className="
+                    flex h-11 w-11 shrink-0 items-center justify-center
+                    rounded-xl bg-[#FBEEF1]
+                  "
+                >
+                  <Icon
+                    className="h-5 w-5 text-[#B5697A]"
+                    strokeWidth={1.9}
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold tracking-[0.15em] text-[#B5697A]/70">
+                      {promise.number}
+                    </span>
+                    <span className="h-px w-4 bg-[#EFE3D2]" />
+                  </div>
+
+                  <h3 className="mt-1 text-[14px] font-semibold leading-tight text-[#1F4A2E]">
+                    {promise.title}
+                  </h3>
+
+                  <p className="mt-1 text-[11.5px] leading-[1.55]  tracking-wide text-slate-600">
+                    {promise.description}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* =========================================================
+            DESKTOP VIEW — Original 2x2 Grid
+            (mobile pe hide, sm se upar dikhe)
+        ========================================================= */}
+        <div className="mt-8 hidden gap-5 sm:mt-10 sm:grid sm:grid-cols-2 sm:gap-6 lg:mt-12 lg:gap-7">
           {promises.map((promise) => {
             const Icon = promise.icon;
 
@@ -100,12 +147,9 @@ function OurPromise() {
                   sm:p-7 lg:p-8
                 "
               >
-
                 <div className="relative">
 
-                  {/* Icon + Number row */}
                   <div className="flex items-center justify-between">
-                    {/* Icon */}
                     <div
                       className="
                         flex h-12 w-12 items-center justify-center
@@ -120,16 +164,13 @@ function OurPromise() {
                     </div>
                   </div>
 
-                  {/* Title */}
                   <h3 className="mt-6 text-[18px] font-semibold leading-[1.2] text-[#1F4A2E] sm:text-[20px] lg:text-[22px]">
                     {promise.title}
                   </h3>
 
-                  {/* Accent underline */}
                   <span className="mt-3 block h-[2px] w-10 rounded-full bg-[#B5697A]/60 transition-all duration-500 group-hover:w-20 group-hover:bg-[#B5697A]" />
 
-                  {/* Description */}
-                  <p className="text-gray-800 text-[11px] mt-3 sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed max-w-[320px] sm:max-w-[600px] mx-auto">
+                  <p className="text-gray-600 text-[11px] mt-3 sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed max-w-[320px] sm:max-w-[600px] mx-auto">
                     {promise.description}
                   </p>
                 </div>
@@ -148,7 +189,6 @@ function OurPromise() {
             px-5 py-5 backdrop-blur-sm sm:mt-10 sm:px-8 sm:py-6
           "
         >
-          {/* Corner accent */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#FBEEF1]/60 blur-[50px]"
@@ -177,7 +217,7 @@ function OurPromise() {
                     />
                   </span>
 
-                  <span className="text-[11px] tracking-wide text-[#5A4A3F] sm:text-[12.5px]">
+                  <span className="text-[11px] font-[350] tracking-wide text-[#5A4A3F] sm:text-[12.5px]">
                     {badge.label}
                   </span>
                 </div>

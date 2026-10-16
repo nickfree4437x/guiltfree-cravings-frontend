@@ -21,7 +21,7 @@ function CouponsErrorState({
         px-6
         py-12
         text-center
-        shadow-[0_10px_35px_rgba(88,55,35,0.04)]
+        shadow-sm
         sm:px-8
       "
     >

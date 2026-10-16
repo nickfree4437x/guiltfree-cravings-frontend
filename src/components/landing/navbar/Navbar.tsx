@@ -491,7 +491,7 @@ function Navbar({
                 flex-1
                 items-center
                 justify-start
-                gap-1.5
+                gap-1.5 font-[350]
                 overflow-hidden
                 whitespace-nowrap
                 text-ellipsis
@@ -509,7 +509,7 @@ function Navbar({
               </span>
 
               <span className="sm:hidden">
-                Free Dwarka delivery above ₹500
+                Free Dwarka, New Delhi delivery above ₹500
               </span>
 
               <span className="hidden md:inline">
@@ -517,7 +517,7 @@ function Navbar({
               </span>
 
               <span className="hidden md:inline">
-                Outside Dwarka via Porter (actuals)
+                Outside Dwarka, New Delhi via Porter (actuals)
               </span>
             </div>
 
@@ -539,7 +539,7 @@ function Navbar({
                 className="
                   flex
                   items-center
-                  gap-1
+                  gap-1 font-[350]
                   whitespace-nowrap
                   text-[10px]
                   transition-opacity
@@ -576,7 +576,7 @@ function Navbar({
                 />
 
                 <span>
-                  FSSAI Lic :- #10823999000142
+                  FSSAI Lic :- #23326006003247
                 </span>
               </a>
             </div>
@@ -848,6 +848,7 @@ function Navbar({
 
       <MobileBottomNavigation
         onMoreClick={handleMoreClick}
+        cartCount={cartItemCount}
       />
     </>
   );

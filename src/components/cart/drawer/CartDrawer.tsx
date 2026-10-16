@@ -385,10 +385,6 @@ function CartDrawer() {
               hover:text-[#B5697A]
 
               focus:outline-none
-              focus:ring-2
-              focus:ring-[#B5697A]/20
-
-              active:scale-95
 
               sm:h-9
               sm:w-9
@@ -505,7 +501,7 @@ function CartDrawer() {
                 border-b
                 border-[#F1E4C8]
 
-                bg-[#FFFCF7]
+                bg-white
 
                 px-4
                 py-3

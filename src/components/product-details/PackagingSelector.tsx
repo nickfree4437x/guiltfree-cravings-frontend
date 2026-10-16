@@ -56,7 +56,7 @@ function PackagingSelector({
                 ${
                   isSelected
                     ? "border-[#B5697A] bg-[#FBEEF1]"
-                    : "border-[#EFE3D2] bg-white hover:border-[#D9C7B8] hover:bg-[#FFFCF7]"
+                    : "border-[#EFE3D2] bg-white hover:border-[#D9C7B8]"
                 }
               `}
             >
@@ -73,7 +73,7 @@ function PackagingSelector({
                 {getPackagingLabel(packaging)}
               </span>
 
-              <span className="mt-1 block text-[10px] text-[#8B7A6C]">
+              <span className="mt-1 block text-[10px] text-gray-500">
                 Select packaging
               </span>
             </button>

@@ -97,11 +97,11 @@ function ProductDetailsInfo({
       <div className="mt-1">
         <p
           className="
-            text-[12.5px] sm:text-[13.5px] md:text-[14px]
-            leading-relaxed
+            text-[12.5px] sm:text-[13.5px] md:text-[13.5px]
+            leading-relaxed font-light
             tracking-wide
             text-justify
-            text-gray-700
+            text-gray-600
           "
         >
           {product.description}

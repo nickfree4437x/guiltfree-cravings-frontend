@@ -50,16 +50,16 @@ function NavbarLogo({
 
         <span
           className="
-            mt-1
-            text-[8px]
-            uppercase
+            mt-1 ml-0.5
+            text-[8.5px]
+            uppercase 
             tracking-[0.08em]
             text-[#B5697A]
-            sm:text-[9px]
-            font-[500]
+            sm:text-[9.5px]
+            font-[450]
           "
         >
-          Laddoo Ordering
+          Sweet bhi Health bhi
         </span>
       </div>
     </Link>

@@ -8,32 +8,26 @@ function OrderItemsList({
   items,
 }: OrderItemsListProps) {
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-3">
       {items.slice(0, 3).map((item) => (
         <div
           key={item.id}
           className="
-            flex
-            items-center
-            justify-between
-            gap-4
+            flex items-center justify-between gap-4
             rounded-xl
-            border
-            border-[#EFE3D2]
-            bg-[#FFFCF7]
-            px-4
-            py-3
-            transition-colors
-            duration-200
-            hover:border-[#E8C8D0]
+            border border-[#EFE3D2]
+            bg-white
+            px-4 py-3.5
+            transition-all duration-200
+            hover:border-[#DDB0BB]
           "
         >
           <div className="min-w-0">
-            <p className="truncate text-[11.5px] font-semibold text-[#5E5148] sm:text-[12px]">
+            <p className="truncate text-[12px] font-semibold text-[#3E3430] sm:text-[13px]">
               {item.productName}
             </p>
 
-            <p className="mt-1 text-[10px] text-[#A39890] sm:text-[11px]">
+            <p className="mt-1.5 text-[10px] text-[#A39890] sm:text-[11px]">
               {item.variantQuantity}
               {item.variantUnit}
               {" • "}
@@ -41,18 +35,16 @@ function OrderItemsList({
             </p>
           </div>
 
-          <p className="shrink-0 text-[12px] font-semibold text-[#5E5148] sm:text-[13px]">
+          <p className="shrink-0 text-[12px] font-semibold text-[#B5697A] sm:text-[13px]">
             ₹{item.subtotal}
           </p>
         </div>
       ))}
 
       {items.length > 3 && (
-        <p className="px-1 pt-1 text-[10px] text-[#A39890] sm:text-[11px]">
+        <p className="px-1 pt-1 text-[10px] font-medium text-[#B5697A] sm:text-[11px]">
           + {items.length - 3} more{" "}
-          {items.length - 3 === 1
-            ? "item"
-            : "items"}
+          {items.length - 3 === 1 ? "item" : "items"}
         </p>
       )}
     </div>

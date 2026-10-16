@@ -5,9 +5,7 @@ interface OrderStatusBadgeProps {
   status: Order["orderStatus"] | Order["paymentStatus"];
 }
 
-function formatStatus(
-  status: string
-) {
+function formatStatus(status: string) {
   return status
     .toLowerCase()
     .replace(/_/g, " ");
@@ -20,36 +18,36 @@ function getClasses(
   if (type === "payment") {
     switch (status) {
       case "PAID":
-        return "bg-[#F7F1E9] text-[#806A4F] border-[#E8DCCB]";
+        return "bg-[#EAF6ED] text-[#287A42] border-[#CDE8D3]";
 
       case "FAILED":
-        return "bg-[#FFF3F3] text-[#C86B6B] border-[#F0D9D9]";
+        return "bg-[#FDECEC] text-[#B42318] border-[#F5CDCA]";
 
       case "REFUNDED":
-        return "bg-[#FBEEF1] text-[#B5697A] border-[#F1DDE2]";
+        return "bg-[#F1ECFA] text-[#6941A5] border-[#DED2F3]";
 
       case "PENDING":
       default:
-        return "bg-[#FFF8ED] text-[#A8793E] border-[#F0E1C8]";
+        return "bg-[#FFF4DB] text-[#986515] border-[#F0DDAF]";
     }
   }
 
   switch (status) {
     case "CONFIRMED":
-      return "bg-[#FBEEF1] text-[#B5697A] border-[#F1DDE2]";
+      return "bg-[#EAF6ED] text-[#287A42] border-[#CDE8D3]";
 
     case "PROCESSING":
-      return "bg-[#F8F2F7] text-[#87647A] border-[#E8DDE5]";
+      return "bg-[#EAF2FF] text-[#285EA8] border-[#CDDEFA]";
 
     case "COMPLETED":
-      return "bg-[#F7F1E9] text-[#806A4F] border-[#E8DCCB]";
+      return "bg-[#EAF6ED] text-[#287A42] border-[#CDE8D3]";
 
     case "CANCELLED":
-      return "bg-[#FFF3F3] text-[#C86B6B] border-[#F0D9D9]";
+      return "bg-[#FDECEC] text-[#B42318] border-[#F5CDCA]";
 
     case "PENDING":
     default:
-      return "bg-[#FFF8ED] text-[#A8793E] border-[#F0E1C8]";
+      return "bg-[#FFF4DB] text-[#986515] border-[#F0DDAF]";
   }
 }
 
@@ -66,16 +64,15 @@ function OrderStatusBadge({
         border
         px-3
         py-1.5
-        text-[9px]
+        text-[10px]
+        md:text-[12px]
         capitalize
         sm:text-[10px]
         ${getClasses(type, status)}
       `}
     >
-      {type === "order"
-        ? "Order"
-        : "Payment"}
-      : {formatStatus(status)}
+      {type === "order" ? "Order" : "Payment"}:{" "}
+      {formatStatus(status)}
     </span>
   );
 }
