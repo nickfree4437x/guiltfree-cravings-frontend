@@ -10,11 +10,11 @@ import AppRoutes from "./routes/AppRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
 
 import CartDrawer from "./components/cart/drawer/CartDrawer";
+import WhatsAppButton from "./components/common/WhatsAppButton";
 
 function App() {
   return (
     <BrowserRouter>
-
       {/* Global Toast */}
       <Toaster
         position="top-center"
@@ -46,6 +46,7 @@ function App() {
         }}
       />
 
+      {/* Application Routes */}
       <Routes>
         <Route
           path="/*"
@@ -58,8 +59,11 @@ function App() {
         />
       </Routes>
 
+      {/* Global Cart Drawer */}
       <CartDrawer />
 
+      {/* Floating WhatsApp Button */}
+      <WhatsAppButton />
     </BrowserRouter>
   );
 }
