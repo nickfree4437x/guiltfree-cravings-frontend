@@ -524,11 +524,11 @@ function Hero() {
             ================================================= */}
 
             <a
-              href="#about"
+              href="#our-story"
               onClick={(event) =>
                 handleSmoothScroll(
                   event,
-                  "about"
+                  "our-story"
                 )
               }
               className="
@@ -578,7 +578,7 @@ function Hero() {
                 </svg>
               </span>
 
-              About Us
+              Our Story
             </a>
           </div>
 
@@ -610,7 +610,7 @@ function Hero() {
             {[
               "No Refined Sugar",
               "No Palm Oil",
-              "No preservatives",
+              "No Preservatives",
             ].map((label) => (
               <div
                 key={label}

@@ -1,7 +1,6 @@
 import {
   Leaf,
   ShieldCheck,
-  Heart,
   Droplets,
   HandHeart,
 } from "lucide-react";
@@ -38,17 +37,11 @@ function OurPromise() {
     },
   ];
 
-  const trustBadges = [
-    { icon: Heart, label: "Made with Love" },
-    { icon: ShieldCheck, label: "No Preservatives" },
-    { icon: Droplets, label: "No Palm Oil" },
-    { icon: ShieldCheck, label: "No Refined Oil" },
-  ];
 
   return (
     <section
       id="our-promise"
-      className="relative overflow-hidden bg-white py-8 md:py-12 scroll-mt-12"
+      className="relative overflow-hidden bg-white -mt-4 -md:mt-4 scroll-mt-12"
     >
       {/* Dotted pattern */}
       <div
@@ -60,7 +53,7 @@ function OurPromise() {
         }}
       />
 
-      <div className="relative mx-auto w-full max-w-[1360px] px-6 sm:px-10 md:px-14 lg:px-20">
+      <div className="relative mx-auto w-full max-w-[1320px] px-6 sm:px-10 md:px-14 lg:px-20">
 
         {/* =========================================================
             SECTION HEADER
@@ -177,53 +170,6 @@ function OurPromise() {
               </div>
             );
           })}
-        </div>
-
-        {/* =========================================================
-            BOTTOM TRUST BAR
-        ========================================================= */}
-        <div
-          className="
-            relative mt-6 overflow-hidden rounded-xl
-            border border-[#EFE3D2] bg-white/60
-            px-5 py-5 backdrop-blur-sm sm:mt-10 sm:px-8 sm:py-6
-          "
-        >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#FBEEF1]/60 blur-[50px]"
-          />
-
-          <div className="relative grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
-            {trustBadges.map((badge) => {
-              const Icon = badge.icon;
-
-              return (
-                <div
-                  key={badge.label}
-                  className="group/badge flex items-center justify-center gap-2.5 sm:gap-3"
-                >
-                  <span
-                    className="
-                      flex h-9 w-9 shrink-0 items-center justify-center
-                      rounded-full bg-[#FBEEF1]
-                      transition-all duration-300
-                      sm:h-10 sm:w-10
-                    "
-                  >
-                    <Icon
-                      className="h-4 w-4 text-[#B5697A] sm:h-[18px] sm:w-[18px]"
-                      strokeWidth={2}
-                    />
-                  </span>
-
-                  <span className="text-[11px] font-[350] tracking-wide text-[#5A4A3F] sm:text-[12.5px]">
-                    {badge.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
         </div>
 
       </div>

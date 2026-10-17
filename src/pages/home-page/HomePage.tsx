@@ -2,12 +2,12 @@ import Hero from "../../components/landing/Hero";
 import About from "../../components/landing/About";
 import FeaturedProducts from "../../components/landing/FeaturedProducts/FeaturedProducts";
 import OurPromise from "../../components/landing/PromiseSection";
-import HowOurLaddoosAreMade from "../../components/landing/HowOurLaddoosAreMade";
+// import HowOurLaddoosAreMade from "../../components/landing/HowOurLaddoosAreMade";
 import ContactIntro from "../../components/landing/contact-us/Contact";
 import TestimonialsSection from "../../components/landing/testimonial/TestimonialsSection";
 import CustomerVideo from "../../components/landing/CustomerVideoStories/CustomerVideoStories";
 // import WhyChooseUs from "../../components/landing/WhyChooseUs";
-//import OurStory from "../../components/landing/StorySection";
+import OurStory from "../../components/landing/StorySection";
 
 function HomePage() {
   return (
@@ -17,12 +17,12 @@ function HomePage() {
         <Hero />
         <About/>
         <FeaturedProducts/>
+        <OurStory/>
         <OurPromise/>
-        <HowOurLaddoosAreMade/>
+        {/* <HowOurLaddoosAreMade/> */}
         <TestimonialsSection/>
         <CustomerVideo/>
         <ContactIntro/>
-        {/* <OurStory/> */}
         {/* <WhyChooseUs/> */}
       </main>
     </>

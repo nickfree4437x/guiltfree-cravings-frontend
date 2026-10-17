@@ -505,7 +505,7 @@ function Navbar({
               </span>
 
               <span className="hidden sm:inline">
-                Free Dwarka delivery on orders above ₹500
+                Free Dwarka, New Delhi delivery on orders above ₹500
               </span>
 
               <span className="sm:hidden">
@@ -517,7 +517,7 @@ function Navbar({
               </span>
 
               <span className="hidden md:inline">
-                Outside Dwarka, New Delhi via Porter (actuals)
+                Outside Dwarka, New Delhi Anywhere in NCR via Porter 
               </span>
             </div>
 

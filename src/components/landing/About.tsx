@@ -146,22 +146,10 @@ function About() {
                 onError={(e) => console.error("Video loading error:", e.currentTarget.error)}
               >
                 <source
-                  src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+                  src="https://res.cloudinary.com/dja5yspwr/video/upload/v1792216319/WhatsApp_Video_2026-10-17_at_11.16.34_AM_hk7h7w.mp4"
                   type="video/mp4"
                 />
               </video>
-            </div>
-
-            {/* Small caption */}
-
-            <div className="mt-4 flex items-center justify-center gap-3">
-              <span className="h-px w-8 bg-[#C9788B]/40" />
-
-              <span className="text-[9px] uppercase tracking-[0.2em] text-[#9A8879]">
-                Our small-batch process
-              </span>
-
-              <span className="h-px w-8 bg-[#C9788B]/40" />
             </div>
           </div>
         </div>

@@ -3,6 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
 import {
+  ShieldCheck,
+  Heart,
+  Droplets,
+} from "lucide-react";
+
+import {
   getProducts,
   type Product,
 } from "../../../api/productApi";
@@ -90,6 +96,13 @@ function FeaturedProducts() {
       return searchableText.includes(query);
     });
   }, [products, activePackaging, searchQuery]);
+
+   const trustBadges = [
+    { icon: Heart, label: "Made with Love" },
+    { icon: ShieldCheck, label: "No Preservatives" },
+    { icon: Droplets, label: "No Palm Oil" },
+    { icon: ShieldCheck, label: "No Refined Oil" },
+  ];
 
   return (
     <section
@@ -276,6 +289,53 @@ function FeaturedProducts() {
         {!loading &&
           !error &&
           products.length === 0 && <ProductEmptyState />}
+
+          {/* =========================================================
+            BOTTOM TRUST BAR
+        ========================================================= */}
+        <div
+          className="
+            relative mt-6 overflow-hidden rounded-xl
+            border border-[#EFE3D2] bg-white/60
+            px-5 py-5 backdrop-blur-sm sm:mt-10 sm:px-8 sm:py-6
+          "
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#FBEEF1]/60 blur-[50px]"
+          />
+
+          <div className="relative grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
+            {trustBadges.map((badge) => {
+              const Icon = badge.icon;
+
+              return (
+                <div
+                  key={badge.label}
+                  className="group/badge flex items-center justify-center gap-2.5 sm:gap-3"
+                >
+                  <span
+                    className="
+                      flex h-9 w-9 shrink-0 items-center justify-center
+                      rounded-full bg-[#FBEEF1]
+                      transition-all duration-300
+                      sm:h-10 sm:w-10
+                    "
+                  >
+                    <Icon
+                      className="h-4 w-4 text-[#B5697A] sm:h-[18px] sm:w-[18px]"
+                      strokeWidth={2}
+                    />
+                  </span>
+
+                  <span className="text-[11px] font-[350] tracking-wide text-gray-600 sm:text-[12.5px]">
+                    {badge.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );

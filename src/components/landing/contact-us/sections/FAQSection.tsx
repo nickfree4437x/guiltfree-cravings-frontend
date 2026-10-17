@@ -10,17 +10,23 @@ const faqs: FAQItem[] = [
   {
     question: "How do I place an order?",
     answer:
-      "Choose your favourite laddoo, select the size and packaging you prefer, add it to your cart, and complete checkout.",
+      `Method 1, Website: browse products, add to cart, click the cart, log in (or
+      quick-register) and pay. Method 2, QR code: scan the QR on our printed catalogue or WhatsApp
+      messages, the digital catalogue opens, select items, log in (or quick-register) and pay. Delivery: within 24
+      to 48 hours.
+`,
   },
   {
     question: "What payment methods do you accept?",
     answer:
-      "You can use the available payment options shown during checkout to securely complete your order.",
+      "You can securely complete your order using the available payment options at checkout, including **Cash on Delivery (COD) and UPI**.",
   },
   {
     question: "How can I track my order?",
     answer:
-      "Once your order has been processed and shipped, the available order tracking details will be shared with you.",
+      `WhatsApp alerts: once dispatched, a tracking link comes by email and
+      WhatsApp. Website account: log in, go to “My Orders”, click the active order for live delivery updates.
+    `,
   },
   {
     question: "Can I cancel or change my order?",
@@ -30,7 +36,7 @@ const faqs: FAQItem[] = [
   {
     question: "How should I store my laddoos?",
     answer:
-      "All the products needs to be stored in room temperature and not be kept in refrigerator. For knowing product specific shelf life please click on Product you want to buy",
+      "All products need to be stored at room temperature, not in the refrigerator. For product-specific shelf life, please click on the product you want to buy.",
   },
   {
     question:
