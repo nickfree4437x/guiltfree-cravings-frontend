@@ -34,7 +34,7 @@ jobs:
 
       - name: Validate frontend environment
         env:
-          VITE_API_URL: https://guiltfreecravings.com/api
+          VITE_API_URL: http://localhost:5000/api
           VITE_MSG91_WIDGET_ID: ${{ vars.VITE_MSG91_WIDGET_ID }}
           VITE_MSG91_WIDGET_TOKEN: ${{ secrets.VITE_MSG91_WIDGET_TOKEN }}
         run: |
@@ -60,14 +60,14 @@ jobs:
       - name: Build frontend
         run: npm run build
         env:
-          VITE_API_URL: https://guiltfreecravings.com/api
+          VITE_API_URL: http://localhost:5000/api
           VITE_MSG91_WIDGET_ID: ${{ vars.VITE_MSG91_WIDGET_ID }}
           VITE_MSG91_WIDGET_TOKEN: ${{ secrets.VITE_MSG91_WIDGET_TOKEN }}
 
       - name: Verify production API URL in build
         run: |
           set -eu
-          if ! grep -R -q 'https://guiltfreecravings.com/api' dist/assets/; then
+          if ! grep -R -q 'http://localhost:5000/api' dist/assets/; then
             echo "::error::Production API URL was not found in the frontend build."
             exit 1
           fi

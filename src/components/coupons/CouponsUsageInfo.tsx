@@ -5,10 +5,9 @@ function CouponsUsageInfo() {
         mt-5
         rounded-xl
         border
-        border-[#EFE3D2]
+        border-gray-200
         bg-white
         p-5
-        shadow-sm
         sm:p-7
       "
     >
@@ -26,7 +25,7 @@ function CouponsUsageInfo() {
             shrink-0
             items-center
             justify-center
-            rounded-2xl
+            rounded-xl
             bg-[#FBEEF1]
           "
         >
@@ -79,7 +78,7 @@ function CouponsUsageInfo() {
               mt-0
               text-[11px]
               leading-5
-              text-[#8B7A6C]
+              text-gray-500
               sm:text-[12px]
               sm:leading-6
             "

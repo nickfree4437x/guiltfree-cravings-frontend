@@ -1,5 +1,6 @@
 import logo from "../../assets/logo.jpg";
 import fssaiLogo from "../../assets/fssai-logo.png";
+import { Link } from "react-router-dom";
 
 function Footer() {
   const handleSmoothScroll = (
@@ -7,19 +8,72 @@ function Footer() {
     targetId: string
   ) => {
     event.preventDefault();
+
     const target = document.getElementById(targetId);
     if (!target) return;
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    target.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
     window.history.replaceState(null, "", `#${targetId}`);
   };
+
+  const quickLinks = [
+    { label: "Home", id: "home" },
+    { label: "About Us", id: "about" },
+    { label: "Products", id: "products" },
+    { label: "Reviews", id: "reviews" },
+  ];
+
+  const customerCareLinks = [
+    { label: "Contact Us", id: "contact" },
+    { label: "FAQs", id: "faq" },
+  ];
+
+  const scrollLinkClass =
+    "inline-flex transition-all duration-200 hover:translate-x-0.5 hover:text-white hover:underline";
+
+  const legalLinkClass =
+    "inline-flex transition-all duration-200 hover:translate-x-0.5 hover:text-white hover:underline";
+
+  const FssaiBadge = () => (
+    <div
+      className="
+        inline-flex max-w-full items-center gap-3
+        rounded-xl border border-white/15 bg-white/[0.06]
+        px-3 py-2.5
+      "
+    >
+      <div
+        className="
+          flex h-10 w-[64px] shrink-0 items-center justify-center
+          overflow-hidden rounded-md bg-white px-1.5
+        "
+      >
+        <img
+          src={fssaiLogo}
+          alt="FSSAI"
+          className="max-h-full max-w-full object-contain"
+        />
+      </div>
+
+      <div className="min-w-0">
+        <p className="text-[9px] uppercase tracking-[0.12em] text-white/50">
+          FSSAI License
+        </p>
+        <p className="mt-0.5 whitespace-nowrap font-[350] text-[10px] text-white sm:text-[11px]">
+          FSSAI Lic :- #23326006003247
+        </p>
+      </div>
+    </div>
+  );
 
   return (
     <footer className="bg-[#824958] pb-[50px] text-white md:pb-0">
       <div className="mx-auto max-w-7xl px-6 py-6 sm:px-8 sm:py-14 lg:px-10 lg:py-14">
-
-        {/* =========================================================
-            MAIN FOOTER
-        ========================================================= */}
+        {/* MAIN FOOTER */}
         <div
           className="
             grid
@@ -30,15 +84,16 @@ function Footer() {
             xl:gap-14
           "
         >
-
-          {/* =====================================================
-              BRAND
-          ===================================================== */}
+          {/* BRAND */}
           <div>
             <a
-              href="#home"
+              href="/#home"
               aria-label="Guilt Free Cravings Home"
-              onClick={(event) => handleSmoothScroll(event, "home")}
+              onClick={(event) => {
+                if (window.location.pathname === "/") {
+                  handleSmoothScroll(event, "home");
+                }
+              }}
               className="group inline-flex items-center gap-3"
             >
               <div
@@ -54,6 +109,7 @@ function Footer() {
                   className="h-full w-full object-cover transition-transform"
                 />
               </div>
+
               <span className="text-[18px] font-semibold tracking-tight text-white md:text-[22px]">
                 GuiltFree Cravings
               </span>
@@ -67,29 +123,25 @@ function Footer() {
             </p>
           </div>
 
-          {/* =====================================================
-              QUICK LINKS + CUSTOMER CARE
-              Mobile: 2 cols | Desktop: alag columns (md:contents)
-          ===================================================== */}
+          {/* QUICK LINKS + CUSTOMER CARE */}
           <div className="grid grid-cols-2 gap-4 md:contents">
-
-            {/* ================= QUICK LINKS ================= */}
+            {/* QUICK LINKS */}
             <div>
               <h3 className="text-[11px] uppercase tracking-[0.18em] text-white">
                 Quick Links
               </h3>
+
               <ul className="mt-6 space-y-3 font-[350] text-[12px] text-white/75 sm:text-[13px]">
-                {[
-                  { label: "Home", id: "home" },
-                  { label: "About Us", id: "about" },
-                  { label: "Products", id: "products" },
-                  { label: "Reviews", id: "reviews" },
-                ].map((link) => (
+                {quickLinks.map((link) => (
                   <li key={link.id}>
                     <a
-                      href={`#${link.id}`}
-                      onClick={(event) => handleSmoothScroll(event, link.id)}
-                      className="inline-flex transition-all duration-200 hover:translate-x-0.5 hover:text-white hover:underline"
+                      href={`/#${link.id}`}
+                      onClick={(event) => {
+                        if (window.location.pathname === "/") {
+                          handleSmoothScroll(event, link.id);
+                        }
+                      }}
+                      className={scrollLinkClass}
                     >
                       {link.label}
                     </a>
@@ -97,12 +149,9 @@ function Footer() {
                 ))}
               </ul>
 
-              {/* =====================================================
-                  SOCIAL ICONS (Facebook + Instagram)
-                  Quick Links column ke neeche — desktop pe FSSAI ke left
-              ===================================================== */}
+              {/* SOCIAL ICONS */}
               <div className="mt-6 flex items-center gap-3">
-                {/* Facebook */}
+                {/* FACEBOOK */}
                 <a
                   href="https://www.facebook.com/profile.php?id=61595572672465"
                   target="_blank"
@@ -111,8 +160,7 @@ function Footer() {
                   className="
                     group flex h-9 w-9 items-center justify-center
                     rounded-full bg-[#1877F2] text-white
-                    shadow-sm
-                    transition-all duration-300
+                    shadow-sm transition-all duration-300
                     hover:scale-105 hover:shadow-md
                     sm:h-10 sm:w-10
                   "
@@ -127,7 +175,7 @@ function Footer() {
                   </svg>
                 </a>
 
-                {/* Instagram */}
+                {/* INSTAGRAM */}
                 <a
                   href="https://instagram.com/guilt.free_cravings?srtk=Ym5yOGxqb3JxYm9k&utm_source=qr"
                   target="_blank"
@@ -135,8 +183,7 @@ function Footer() {
                   aria-label="Follow us on Instagram"
                   className="
                     group flex h-9 w-9 items-center justify-center
-                    rounded-full text-white
-                    shadow-sm
+                    rounded-full text-white shadow-sm
                     transition-all duration-300
                     hover:scale-105 hover:shadow-md
                     sm:h-10 sm:w-10
@@ -164,106 +211,68 @@ function Footer() {
               </div>
             </div>
 
-            {/* ================= CUSTOMER CARE ================= */}
+            {/* CUSTOMER CARE */}
             <div>
               <h3 className="text-[11px] uppercase tracking-[0.18em] text-white">
                 Customer Care
               </h3>
+
               <ul className="mt-6 space-y-3 font-[350] text-[12px] text-white/75 sm:text-[13px]">
-                {[
-                  { label: "Contact Us", id: "contact" },
-                  { label: "FAQs", id: "faq" },
-                  { label: "Privacy Policy", id: "privacy" },
-                  { label: "Terms & Conditions", id: "terms" },
-                ].map((link) => (
+                {customerCareLinks.map((link) => (
                   <li key={link.id}>
                     <a
-                      href={`#${link.id}`}
-                      onClick={(event) => handleSmoothScroll(event, link.id)}
-                      className="inline-flex transition-all duration-200 hover:translate-x-0.5 hover:text-white hover:underline"
+                      href={`/#${link.id}`}
+                      onClick={(event) => {
+                        if (window.location.pathname === "/") {
+                          handleSmoothScroll(event, link.id);
+                        }
+                      }}
+                      className={scrollLinkClass}
                     >
                       {link.label}
                     </a>
                   </li>
                 ))}
+
+                {/* WORKING LEGAL PAGE LINKS */}
+                <li>
+                  <Link
+                    to="/privacy-policy"
+                    className={legalLinkClass}
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    to="/terms-and-conditions"
+                    className={legalLinkClass}
+                  >
+                    Terms &amp; Conditions
+                  </Link>
+                </li>
               </ul>
 
-              {/* FSSAI - Desktop/Tablet ke liye (Customer Care column ke andar) */}
-              <div className="hidden md:block">
-                <div
-                  className="
-                    mt-7 inline-flex max-w-full items-center gap-3
-                    rounded-xl border border-white/15 bg-white/[0.06]
-                    px-3 py-2.5
-                  "
-                >
-                  <div
-                    className="
-                      flex h-10 w-[64px] shrink-0 items-center justify-center
-                      overflow-hidden rounded-md bg-white px-1.5
-                    "
-                  >
-                    <img
-                      src={fssaiLogo}
-                      alt="FSSAI"
-                      className="max-h-full max-w-full object-contain"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[9px] uppercase tracking-[0.12em] text-white/50">
-                      FSSAI License
-                    </p>
-                    <p className="mt-0.5 whitespace-nowrap font-[350] text-[10px] text-white sm:text-[11px]">
-                      FSSAI Lic :- #23326006003247
-                    </p>
-                  </div>
-                </div>
+              {/* FSSAI - DESKTOP/TABLET */}
+              <div className="mt-7 hidden md:block">
+                <FssaiBadge />
               </div>
             </div>
 
-            {/* FSSAI - Mobile ke liye (dono columns ke neeche full width) */}
+            {/* FSSAI - MOBILE */}
             <div className="col-span-2 md:hidden">
-              <div
-                className="
-                  mt-2 inline-flex max-w-full items-center gap-3
-                  rounded-xl border border-white/15 bg-white/[0.06]
-                  px-3 py-2.5
-                "
-              >
-                <div
-                  className="
-                    flex h-10 w-[64px] shrink-0 items-center justify-center
-                    overflow-hidden rounded-md bg-white px-1.5
-                  "
-                >
-                  <img
-                    src={fssaiLogo}
-                    alt="FSSAI"
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[9px] uppercase tracking-[0.12em] text-white/50">
-                    FSSAI License
-                  </p>
-                  <p className="mt-0.5 whitespace-nowrap font-[350] text-[10px] text-white sm:text-[11px]">
-                    FSSAI Lic :- #23326006003247
-                  </p>
-                </div>
-              </div>
+              <FssaiBadge />
             </div>
           </div>
 
-          {/* =====================================================
-              GET IN TOUCH
-          ===================================================== */}
+          {/* GET IN TOUCH */}
           <div>
             <h3 className="text-[11px] uppercase tracking-[0.18em] text-white">
               Get in Touch
             </h3>
 
             <div className="mt-6 space-y-5">
-
               {/* EMAIL */}
               <a
                 href="mailto:guiltfreecravings24@gmail.com"
@@ -284,6 +293,7 @@ function Footer() {
                     <path d="m3 7 9 6 9-6" />
                   </svg>
                 </span>
+
                 <span>
                   <span className="block text-[10px] uppercase tracking-[0.14em] text-white/50">
                     Email
@@ -296,7 +306,7 @@ function Footer() {
 
               {/* PHONE */}
               <a
-                href="tel:+91XXXXXXXXXX"
+                href="tel:+919667760119"
                 className="group flex items-start gap-3"
               >
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
@@ -313,6 +323,7 @@ function Footer() {
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z" />
                   </svg>
                 </span>
+
                 <span>
                   <span className="block text-[10px] uppercase tracking-[0.14em] text-white/50">
                     Phone
@@ -340,13 +351,14 @@ function Footer() {
                     <circle cx="12" cy="10" r="2.5" />
                   </svg>
                 </span>
+
                 <span>
                   <span className="block text-[10px] uppercase tracking-[0.14em] text-white/50">
                     Address
                   </span>
                   <span className="mt-1 block text-[12px] font-[350] leading-relaxed text-white/85 sm:text-[12.5px]">
-                    RZ-E-60 Chanakya Place Part - 1 , DABRI ,
-                    Janakpuri, West , Delhi-110059
+                    RZ-E-60 Chanakya Place Part - 1, DABRI, Janakpuri, West,
+                    Delhi-110059
                   </span>
                 </span>
               </div>
@@ -360,9 +372,13 @@ function Footer() {
         {/* BOTTOM FOOTER */}
         <div className="flex flex-col gap-3 pt-4 text-[11px] font-[350] sm:flex-row sm:items-center sm:justify-between sm:text-xs">
           <p className="text-white/60">
-            © {new Date().getFullYear()} GuiltFree Cravings. All rights reserved.
+            © {new Date().getFullYear()} GuiltFree Cravings. All rights
+            reserved.
           </p>
-          <p className="text-white/50 font-[350]">Made with care for every craving.</p>
+
+          <p className="font-[350] text-white/50">
+            Made with care for every craving.
+          </p>
         </div>
       </div>
     </footer>

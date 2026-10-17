@@ -25,8 +25,7 @@ function ContactIntro() {
 
         {/* Description */}
         <p className="mx-auto mt-2 max-w-[580px] text-[12.5px] font-[350] leading-relaxed tracking-wide text-gray-600 sm:text-[13.5px] md:text-[14px]">
-          Questions about your order, our laddoos, or anything else?
-          We're here to help always happy to chat.
+          Questions about your order or our laddoos? We’re always happy to help!
         </p>
 
         {/* Gift & Bulk Orders */}
@@ -34,14 +33,14 @@ function ContactIntro() {
           For gift &amp; bulk orders, contact us at{" "}
           <a
             href="tel:+919667760119"
-            className="font-medium text-[#C9788B] transition-colors hover:text-[#B8667B]"
+            className="hover:underline text-[#C9788B] transition-colors hover:text-[#B8667B]"
           >
             +91-9667760119
           </a>
           {" "}or{" "}
           <a
             href="mailto:guiltfreecravings24@gmail.com"
-            className="break-all font-medium text-[#C9788B] transition-colors hover:text-[#B8667B]"
+            className="break-all hover:underline text-[#C9788B] transition-colors hover:text-[#B8667B]"
           >
             guiltfreecravings24@gmail.com
           </a>

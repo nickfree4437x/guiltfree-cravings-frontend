@@ -41,7 +41,7 @@ function OurPromise() {
   return (
     <section
       id="our-promise"
-      className="relative overflow-hidden bg-white -mt-4 -md:mt-4 scroll-mt-12"
+      className="relative overflow-hidden bg-white -mt-4 -md:mt-4 scroll-mt-20"
     >
       {/* Dotted pattern */}
       <div
@@ -60,7 +60,7 @@ function OurPromise() {
         ========================================================= */}
         <div className="mx-auto max-w-3xl text-center">
 
-          <h2 className="text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide text-[#C9788B] mb-2 leading-snug md:whitespace-nowrap">
+          <h2 className="text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide text-[#C9788B] mb-1 leading-snug md:whitespace-nowrap">
             Our Promise, Made with Care
           </h2>
 
@@ -73,7 +73,7 @@ function OurPromise() {
             MOBILE VIEW — Compact Horizontal Cards
             (sirf mobile pe dikhega, sm se upar hide)
         ========================================================= */}
-        <div className="mt-7 space-y-3 sm:hidden">
+        <div className="mt-5 space-y-3 sm:hidden">
           {promises.map((promise) => {
             const Icon = promise.icon;
 
@@ -157,7 +157,7 @@ function OurPromise() {
                     </div>
                   </div>
 
-                  <h3 className="mt-6 text-[18px] font-semibold leading-[1.2] text-[#1F4A2E] sm:text-[20px] lg:text-[22px]">
+                  <h3 className="mt-6 text-[18px] font-semibold leading-[1.2] text-gray-700 sm:text-[20px] lg:text-[22px]">
                     {promise.title}
                   </h3>
 

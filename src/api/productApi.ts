@@ -69,7 +69,7 @@ interface ProductResponse {
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
-    "https://guiltfreecravings.com/api",
+    "http://localhost:5000/api",
 
   headers: {
     "Content-Type": "application/json",

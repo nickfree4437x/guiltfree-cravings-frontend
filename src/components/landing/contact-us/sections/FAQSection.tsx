@@ -19,7 +19,7 @@ const faqs: FAQItem[] = [
   {
     question: "What payment methods do you accept?",
     answer:
-      "You can securely complete your order using the available payment options at checkout, including **Cash on Delivery (COD) and UPI**.",
+      "You can securely complete your order using the available payment options at checkout, including Cash on Delivery (COD) and UPI.",
   },
   {
     question: "How can I track my order?",

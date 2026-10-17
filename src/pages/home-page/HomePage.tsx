@@ -5,7 +5,7 @@ import OurPromise from "../../components/landing/PromiseSection";
 // import HowOurLaddoosAreMade from "../../components/landing/HowOurLaddoosAreMade";
 import ContactIntro from "../../components/landing/contact-us/Contact";
 import TestimonialsSection from "../../components/landing/testimonial/TestimonialsSection";
-import CustomerVideo from "../../components/landing/CustomerVideoStories/CustomerVideoStories";
+//import CustomerVideo from "../../components/landing/CustomerVideoStories/CustomerVideoStories";
 // import WhyChooseUs from "../../components/landing/WhyChooseUs";
 import OurStory from "../../components/landing/StorySection";
 
@@ -21,7 +21,7 @@ function HomePage() {
         <OurPromise/>
         {/* <HowOurLaddoosAreMade/> */}
         <TestimonialsSection/>
-        <CustomerVideo/>
+        {/* <CustomerVideo/> */}
         <ContactIntro/>
         {/* <WhyChooseUs/> */}
       </main>

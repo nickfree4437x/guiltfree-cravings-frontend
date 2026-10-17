@@ -292,50 +292,73 @@ function FeaturedProducts() {
 
           {/* =========================================================
             BOTTOM TRUST BAR
-        ========================================================= */}
-        <div
-          className="
-            relative mt-6 overflow-hidden rounded-xl
-            border border-[#EFE3D2] bg-white/60
-            px-5 py-5 backdrop-blur-sm sm:mt-10 sm:px-8 sm:py-6
-          "
-        >
+           ========================================================= */}
+        
           <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-[#FBEEF1]/60 blur-[50px]"
-          />
+            className="
+              relative mt-6 overflow-hidden rounded-lg
+              border border-gray-100 bg-white
+              px-3 py-4
+              sm:mt-10 sm:px-6 sm:py-6
+              md:px-8
+            "
+          >
 
-          <div className="relative grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
-            {trustBadges.map((badge) => {
-              const Icon = badge.icon;
+            <div
+              className="
+                relative grid grid-cols-2
+                gap-x-3 gap-y-5
+                sm:gap-x-6 sm:gap-y-6
+                md:grid-cols-4 md:gap-5
+              "
+            >
+              {trustBadges.map((badge) => {
+                const Icon = badge.icon;
 
-              return (
-                <div
-                  key={badge.label}
-                  className="group/badge flex items-center justify-center gap-2.5 sm:gap-3"
-                >
-                  <span
+                return (
+                  <div
+                    key={badge.label}
                     className="
-                      flex h-9 w-9 shrink-0 items-center justify-center
-                      rounded-full bg-[#FBEEF1]
-                      transition-all duration-300
-                      sm:h-10 sm:w-10
+                      flex min-w-0 items-center justify-start
+                      gap-2 sm:justify-center sm:gap-3
+                      md:gap-2.5 lg:gap-3
                     "
                   >
-                    <Icon
-                      className="h-4 w-4 text-[#B5697A] sm:h-[18px] sm:w-[18px]"
-                      strokeWidth={2}
-                    />
-                  </span>
+                    <span
+                      className="
+                        flex h-6 w-6 shrink-0 items-center justify-center
+                        rounded-full bg-[#FBEEF1]
+                        transition-colors duration-300
+                        sm:h-8 sm:w-8
+                        group-hover/badge:bg-[#F5DDE3]
+                      "
+                    >
+                      <Icon
+                        className="h-3 w-3 text-[#C9788B] sm:h-[16px] sm:w-[16px]"
+                        strokeWidth={2}
+                        aria-hidden="true"
+                      />
+                    </span>
 
-                  <span className="text-[11px] font-[350] tracking-wide text-gray-600 sm:text-[12.5px]">
-                    {badge.label}
-                  </span>
-                </div>
-              );
-            })}
+                    <span
+                      className="
+                        min-w-0 text-left
+                        text-[11px] font-normal leading-snug
+                        text-gray-600
+                        [overflow-wrap:anywhere]
+                        sm:text-[12.5px]
+                        md:text-center
+                        lg:text-left
+                      "
+                    >
+                      {badge.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+
       </div>
     </section>
   );

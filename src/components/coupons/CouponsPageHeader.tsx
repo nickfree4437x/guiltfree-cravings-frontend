@@ -35,9 +35,7 @@ function CouponsPageHeader() {
             text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed tracking-wide max-w-[550px] mx-auto text-gray-600
           "
         >
-          Discover the offers available for you
-          and enjoy a little extra goodness with
-          your next order.
+          Explore our offers and enjoy extra savings on your next order.
         </p>
       </div>
     </header>

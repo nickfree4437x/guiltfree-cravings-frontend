@@ -13,6 +13,8 @@ import ProfilePage from "../pages/profile/ProfilePage";
 import LoginPage from "../pages/login/LoginPage";
 import WishlistPage from "../pages/wishlist/WishlistPage";
 import CouponsPage from "../pages/coupons/CouponsPage";
+import PrivacyPolicyPage from "../pages/privacy-policy/PrivacyPolicyPage";
+import TermsAndConditionsPage from "../pages/terms-and-conditions/TermsAndConditionsPage";
 
 // Account
 import AccountPage from "../components/landing/navbar/AccountPage";
@@ -95,6 +97,18 @@ const AppRoutes = () => {
         <Route
           path="/coupons"
           element={<CouponsPage />}
+        />
+
+        {/* Privacy Policy */}
+        <Route
+          path="/privacy-policy"
+          element={<PrivacyPolicyPage />}
+        />
+
+        {/* Terms & Conditions */}
+        <Route
+          path="/terms-and-conditions"
+          element={<TermsAndConditionsPage />}
         />
 
       </Route>

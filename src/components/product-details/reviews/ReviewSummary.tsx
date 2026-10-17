@@ -60,11 +60,11 @@ function ReviewSummary({
         >
           <div
             className="
-              text-[42px]
+              text-[35px]
               font-semibold
               leading-[1.1]
               tracking-tight
-              text-[#2C2C2C]
+              text-gray-700
             "
           >
             {Number(
@@ -85,7 +85,7 @@ function ReviewSummary({
             className="
               mt-2
               text-[12px]
-              text-[#8B7A6C]
+              text-slate-500
             "
           >
             {totalReviews}{" "}
@@ -130,8 +130,7 @@ function ReviewSummary({
                       w-8
                       text-right
                       text-[12px]
-                      font-medium
-                      text-[#6D5844]
+                      text-slate-500
                     "
                   >
                     {rating}

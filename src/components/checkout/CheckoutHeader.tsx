@@ -10,7 +10,7 @@ function CheckoutHeader() {
           Checkout
         </h1>
 
-        <p className="mx-auto mt-2 max-w-2xl text-[12px] md:sm:text-[15px] leading-relaxed text-slate-600">
+        <p className="mx-auto mt-2 max-w-2xl text-[12px] md:sm:text-[14px] leading-relaxed text-slate-600">
           Enter your details and review your selected
           cravings before placing your order.
         </p>

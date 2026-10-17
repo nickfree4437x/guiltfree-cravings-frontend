@@ -37,7 +37,7 @@ function ReviewItem({
           {/* CUSTOMER + VERIFIED */}
 
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <h3 className="text-[13px] font-medium text-[#2C2C2C]">
+            <h3 className="text-[13px] font-medium text-gray-700">
               {displayName}
             </h3>
 
@@ -76,7 +76,7 @@ function ReviewItem({
       ====================================================== */}
 
       {review.title?.trim() && (
-        <h4 className="mt-3 text-[13px] font-medium leading-5 text-[#2C2C2C] sm:text-[14px]">
+        <h4 className="mt-2 text-[13px] font-medium leading-relaxed text-gray-600 sm:text-[14px]">
           {review.title}
         </h4>
       )}
@@ -85,7 +85,7 @@ function ReviewItem({
           REVIEW COMMENT
       ====================================================== */}
 
-      <p className="mt-1.5 text-[12px] leading-relaxed text-justify text-gray-700 sm:text-[13px]">
+      <p className="mt-1.5 text-[11px] leading-relaxed text-justify text-slate-500 sm:text-[12px]">
         {review.comment}
       </p>
     </article>

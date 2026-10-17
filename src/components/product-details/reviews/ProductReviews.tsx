@@ -1,12 +1,15 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import {
   Loader2,
   MessageSquarePlus,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -30,6 +33,8 @@ interface ProductReviewsProps {
   productName: string;
   onLoginRequired: () => void;
 }
+
+const REVIEWS_PER_PAGE = 5;
 
 function ProductReviews({
   productId,
@@ -75,6 +80,12 @@ function ProductReviews({
   const [error, setError] =
     useState("");
 
+  /* ==========================================================
+     PAGINATION STATE
+  ========================================================== */
+  const [currentPage, setCurrentPage] =
+    useState(1);
+
   /**
    * ============================================================
    * LOAD PUBLIC REVIEWS
@@ -92,6 +103,7 @@ function ProductReviews({
 
         setReviews(data.reviews);
         setSummary(data.summary);
+        setCurrentPage(1); // Reset page on new data
       } catch (loadError) {
         console.error(
           "Failed to load product reviews:",
@@ -154,6 +166,44 @@ function ProductReviews({
   useEffect(() => {
     void loadMyReview();
   }, [loadMyReview]);
+
+  /**
+   * ============================================================
+   * PAGINATION LOGIC
+   * ============================================================
+   */
+
+  const totalPages = Math.ceil(
+    reviews.length / REVIEWS_PER_PAGE
+  );
+
+  const paginatedReviews = useMemo(() => {
+    const startIndex =
+      (currentPage - 1) * REVIEWS_PER_PAGE;
+
+    return reviews.slice(
+      startIndex,
+      startIndex + REVIEWS_PER_PAGE
+    );
+  }, [reviews, currentPage]);
+
+  const goToPage = (page: number) => {
+    if (page < 1 || page > totalPages) {
+      return;
+    }
+
+    setCurrentPage(page);
+
+    // Scroll to reviews section top (optional but good UX)
+    const section =
+      document.getElementById("reviews-list");
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
 
   /**
    * ============================================================
@@ -257,11 +307,11 @@ function ProductReviews({
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-[18px] font-semibold tracking-wide text-[#2C2C2C] sm:text-[21px]">
+          <h2 className="text-[18px] font-semibold tracking-wide text-gray-700 sm:text-[20px]">
             Customer Reviews
           </h2>
 
-          <p className="mt-0 text-[12px] leading-relaxed text-[#8B7A6C] sm:text-[13px]">
+          <p className="mt-0 text-[11px] leading-relaxed text-slate-500 sm:text-[12px]">
             Honest thoughts from customers who
             have tried it.
           </p>
@@ -306,7 +356,7 @@ function ProductReviews({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-[12px] font-medium text-[#2C2C2C]">
+                  <p className="text-[12px] font-medium text-gray-700">
                     Your review
                   </p>
 
@@ -331,7 +381,7 @@ function ProductReviews({
                   </span>
                 </div>
 
-                <p className="mt-1 text-[11px] leading-relaxed text-[#8B7A6C]">
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
                   {myReview.status ===
                   "VERIFIED"
                     ? "Your review is visible publicly."
@@ -389,7 +439,10 @@ function ProductReviews({
           REVIEWS LIST
       ====================================================== */}
 
-      <div className="mt-7 rounded-xl border border-[#F0DDE2] bg-white p-5 shadow-[0_2px_12px_rgba(181,105,122,0.04)] sm:p-6">
+      <div
+        id="reviews-list"
+        className="mt-7 rounded-xl border border-[#F0DDE2] bg-white p-5 shadow-[0_2px_12px_rgba(181,105,122,0.04)] sm:p-6"
+      >
         {isLoading ? (
           <div className="flex min-h-[180px] items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-[#B5697A]" />
@@ -418,14 +471,175 @@ function ProductReviews({
             </button>
           </div>
         ) : (
-          <div>
-            {reviews.map((review) => (
-              <ReviewItem
-                key={review.id}
-                review={review}
-              />
-            ))}
-          </div>
+          <>
+            <div>
+              {paginatedReviews.map((review) => (
+                <ReviewItem
+                  key={review.id}
+                  review={review}
+                />
+              ))}
+            </div>
+
+            {/* ==================================================
+                PAGINATION
+            ================================================== */}
+
+            {totalPages > 1 && (
+              <div
+                className="
+                  mt-6
+                  flex
+                  flex-col
+                  items-center
+                  justify-between
+                  gap-3
+                  border-t
+                  border-[#F5EBEF]
+                  pt-5
+                  sm:flex-row
+                "
+              >
+                {/* Page Info */}
+                <p className="text-[11px] text-slate-500 sm:text-[12px]">
+                  Showing{" "}
+                  <span className="font-semibold text-gray-700">
+                    {(currentPage - 1) * REVIEWS_PER_PAGE + 1}
+                  </span>
+                  {" – "}
+                  <span className="font-semibold text-gray-700">
+                    {Math.min(
+                      currentPage * REVIEWS_PER_PAGE,
+                      reviews.length
+                    )}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold text-gray-700">
+                    {reviews.length}
+                  </span>{" "}
+                  reviews
+                </p>
+
+                {/* Controls */}
+                <div className="flex items-center gap-1.5">
+                  {/* Previous */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goToPage(currentPage - 1)
+                    }
+                    disabled={currentPage === 1}
+                    aria-label="Previous page"
+                    className="
+                      inline-flex
+                      h-8
+                      w-8
+                      items-center
+                      justify-center
+                      rounded-lg
+                      border
+                      border-[#EADFD3]
+                      bg-white
+                      text-[#B5697A]
+                      transition-all
+                      duration-200
+                      hover:border-[#B5697A]
+                      hover:bg-[#FBEEF1]
+                      focus:outline-none
+                      disabled:cursor-not-allowed
+                      disabled:opacity-40
+                      disabled:hover:border-[#EADFD3]
+                      disabled:hover:bg-white
+                    "
+                  >
+                    <ChevronLeft
+                      size={15}
+                      strokeWidth={2}
+                    />
+                  </button>
+
+                  {/* Page Numbers */}
+                  {Array.from(
+                    { length: totalPages },
+                    (_, i) => i + 1
+                  ).map((page) => (
+                    <button
+                      key={page}
+                      type="button"
+                      onClick={() =>
+                        goToPage(page)
+                      }
+                      aria-label={`Go to page ${page}`}
+                      aria-current={
+                        page === currentPage
+                          ? "page"
+                          : undefined
+                      }
+                      className={`
+                        inline-flex
+                        h-8
+                        min-w-[32px]
+                        items-center
+                        justify-center
+                        rounded-lg
+                        border
+                        px-2
+                        text-[12px]
+                        transition-all
+                        duration-200
+                        focus:outline-none
+                        ${
+                          page === currentPage
+                            ? "border-[#B5697A] bg-[#B5697A] text-white shadow-sm"
+                            : "border-[#EADFD3] bg-white text-[#6F6259] hover:border-[#B5697A] hover:text-[#B5697A]"
+                        }
+                      `}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  {/* Next */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      goToPage(currentPage + 1)
+                    }
+                    disabled={
+                      currentPage === totalPages
+                    }
+                    aria-label="Next page"
+                    className="
+                      inline-flex
+                      h-8
+                      w-8
+                      items-center
+                      justify-center
+                      rounded-lg
+                      border
+                      border-[#EADFD3]
+                      bg-white
+                      text-[#B5697A]
+                      transition-all
+                      duration-200
+                      hover:border-[#B5697A]
+                      hover:bg-[#FBEEF1]
+                      focus:outline-none
+                      disabled:cursor-not-allowed
+                      disabled:opacity-40
+                      disabled:hover:border-[#EADFD3]
+                      disabled:hover:bg-white
+                    "
+                  >
+                    <ChevronRight
+                      size={15}
+                      strokeWidth={2}
+                    />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

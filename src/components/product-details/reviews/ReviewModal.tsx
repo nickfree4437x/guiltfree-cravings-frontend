@@ -377,7 +377,7 @@ function ReviewModal({
                 text-[21px]
                 font-semibold
                 tracking-wide
-                text-[#2C2C2C]
+                text-gray-700
               "
             >
               {isEditing
@@ -391,7 +391,7 @@ function ReviewModal({
                 max-w-[340px]
                 text-[12px]
                 leading-[1.7]
-                text-[#8B7A6C]
+                text-slate-500
                 sm:text-[13px]
               "
             >
@@ -444,7 +444,7 @@ function ReviewModal({
                   text-[20px]
                   font-semibold
                   tracking-wide
-                  text-[#2C2C2C]
+                  text-gray-700
                   sm:text-[22px]
                 "
               >
@@ -455,11 +455,11 @@ function ReviewModal({
 
               <p
                 className="
-                  mt-1
+                  mt-0
                   text-center
                   text-[11px]
                   leading-relaxed
-                  text-[#8B7A6C]
+                  text-slate-500
                   sm:text-[12px]
                 "
               >
@@ -499,7 +499,7 @@ function ReviewModal({
                   className="
                     text-center
                     text-[12px]
-                    text-[#6D5844]
+                    text-slate-500
                   "
                 >
                   How would you rate it?
@@ -560,19 +560,19 @@ function ReviewModal({
                     border-[#EADBD0]
                     bg-white
                     px-4
-                    py-3
-                    text-[12px]
-                    text-gray-600
+                    py-2.5
+                    text-[11px] md:text-[12px]
+                    text-gray-500
                     outline-none
                     transition-all
                     duration-200
-                    placeholder:text-gray-600
+                    placeholder:text-gray-500
                     focus:border-[#B5697A]
                   "
                 />
 
                 <div className="mt-1 flex justify-end">
-                  <span className="text-[9px] text-[#A89486]">
+                  <span className="text-[9px] text-slate-500">
                     {title.length}/120
                   </span>
                 </div>
@@ -604,19 +604,19 @@ function ReviewModal({
                     bg-white
                     px-4
                     py-3
-                    text-[12px]
+                    text-[11px] md:text-[12px]
                     leading-[1.65]
-                    text-gray-600
+                    text-gray-500
                     outline-none
                     transition-all
                     duration-200
-                    placeholder:text-gray-600
+                    placeholder:text-gray-500
                     focus:border-[#B5697A]
                   "
                 />
 
                 <div className="mt-0 flex justify-end">
-                  <span className="text-[9px] text-[#A89486]">
+                  <span className="text-[9px] text-slate-500">
                     {comment.length}/1000
                   </span>
                 </div>
@@ -655,13 +655,13 @@ function ReviewModal({
                     border-[#EADBD0]
                     bg-white
                     px-4
-                    py-3
-                    text-[12px]
-                    text-gray-600
+                    py-2.5
+                    text-[11px] md:text-[12px]
+                    text-gray-500
                     outline-none
                     transition-all
                     duration-200
-                    placeholder:text-gray-600
+                    placeholder:text-gray-500
                     focus:border-[#B5697A]
                   "
                 />
@@ -686,13 +686,13 @@ function ReviewModal({
                     border-[#EADBD0]
                     bg-white
                     px-4
-                    py-3
-                    text-[12px]
-                    text-gray-600
+                    py-2.5
+                    text-[11px] md:text-[12px]
+                    text-gray-500
                     outline-none
                     transition-all
                     duration-200
-                    placeholder:text-gray-600
+                    placeholder:text-gray-500
                     focus:border-[#B5697A]
                   "
                 />
@@ -702,7 +702,7 @@ function ReviewModal({
                 className="
                   mt-1.5
                   text-[9px]
-                  text-[#A89486]
+                  text-slate-500
                 "
               >
                 Your email will not be shown
@@ -767,7 +767,7 @@ function ReviewModal({
                   mt-2.5
                   text-center
                   text-[10px]
-                  text-[#A89486]
+                  text-slate-500
                 "
               >
                 Reviews are checked before

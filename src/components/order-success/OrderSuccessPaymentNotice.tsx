@@ -25,7 +25,7 @@ function OrderSuccessPaymentNotice() {
             </span>
           </div>
 
-          <p className="mt-2 text-[12px] font-light sm:text-[13px] md:text-[13.5px] leading-relaxed tracking-wide mx-auto text-gray-600">
+          <p className="mt-2 text-[11px] font-light sm:text-[13px] md:text-[13px] leading-relaxed tracking-wide mx-auto text-gray-600">
             Your order has been created, but payment has not been
             confirmed yet. Razorpay integration is currently not
             connected in this development/testing flow, so this
@@ -39,7 +39,7 @@ function OrderSuccessPaymentNotice() {
               aria-hidden="true"
             />
 
-            <p className="text-xs leading-5 text-slate-500">
+            <p className="text-[10px] md:text-[12px] leading-relaxed text-slate-600">
               This is a testing notice. Payment confirmation will
               require the payment gateway integration to be
               configured and verified.

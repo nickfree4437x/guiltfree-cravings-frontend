@@ -27,7 +27,7 @@ export default function OurStory() {
 
             {/* Story content — original copy only */}
             <div className="relative mx-auto max-w-4xl pt-7 sm:pt-9">
-              <p className="text-center text-[13px] font-[350] leading-relaxed text-gray-600 md:text-[16px] lg:leading-relaxed">
+              <p className="text-center text-[12px] font-[350] leading-relaxed text-gray-600 md:text-[16px] lg:leading-relaxed">
                 Somewhere between “I shouldn’t” and “just one bite,” we found a
                 better answer:{" "}
                 <span className="text-[#C9788B]">

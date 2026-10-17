@@ -213,7 +213,7 @@ function OrderSuccessHeader() {
         </div>
 
         {/* Closing Note */}
-        <p className="mt-4 text-[11px] sm:text-[13.5px] md:text-[13.5px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-600">
+        <p className="mt-4 text-[9.5px] sm:text-[13.5px] md:text-[13px] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-600">
           We appreciate your order. Thank you for shopping with us!
         </p>
       </div>

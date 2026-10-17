@@ -67,16 +67,13 @@ function CouponCard({
         <div
           className="
             flex
-            h-10
-            w-10
+            h-8
+            w-8
             shrink-0
             items-center
             justify-center
             rounded-xl
             bg-[#FBEEF1]
-            transition-colors
-            duration-200
-            group-hover:bg-[#F8E5EA]
           "
         >
           <svg
@@ -85,8 +82,8 @@ function CouponCard({
             stroke="currentColor"
             strokeWidth="1.7"
             className="
-              h-5
-              w-5
+              h-4
+              w-4
               text-[#B5697A]
             "
             aria-hidden="true"
@@ -132,12 +129,12 @@ function CouponCard({
       <h2
         className="
           relative
-          mt-3
-          text-[15px]
+          mt-2
+          text-[14px]
           font-semibold
           tracking-tight
-          text-[#3E3430]
-          sm:text-[17px]
+          text-gray-600
+          sm:text-[16px]
         "
       >
         {coupon.title}
@@ -152,10 +149,10 @@ function CouponCard({
           relative
           mt-0
           text-[11.5px]
-          leading-5
-          text-[#8B7A6C]
+          leading-relaxed
+          text-slate-500
           sm:text-[12px]
-          sm:leading-6
+          sm:leading-relaxed
         "
       >
         {coupon.description}
@@ -175,8 +172,8 @@ function CouponCard({
           rounded-xl
           border
           border-[#E2C4CC]
-          bg-[#FFFCF7]
-          p-1.5
+          bg-[#fffbfc]
+          p-1
           transition-colors
           duration-200
           group-hover:border-[#D9AAB5]
@@ -191,11 +188,11 @@ function CouponCard({
             className="
               mt-0
               truncate
-              text-[13px]
+              text-[12px]
               font-bold
               tracking-wider
               text-[#B5697A]
-              sm:text-sm
+              sm:text-[13px]
             "
           >
             {coupon.code}
@@ -212,15 +209,13 @@ function CouponCard({
             rounded-xl
             bg-[#B5697A]
             px-4
-            py-2.5
+            py-2
             text-[11px]
             text-white
             shadow-sm
             transition-all
             duration-200
             hover:bg-[#A55F70]
-            hover:shadow-md
-            active:scale-[0.97]
             focus:outline-none
             focus-visible:ring-2
             focus-visible:ring-[#B5697A]/30
@@ -247,7 +242,7 @@ function CouponCard({
             gap-y-2
             text-[10px]
             leading-5
-            text-[#A39890]
+            text-slate-500
             sm:text-[11px]
           "
         >
@@ -256,7 +251,7 @@ function CouponCard({
               Minimum order:{" "}
               <strong
                 className="
-                  text-[#6F625A]
+                  text-gray-600
                 "
               >
                 {coupon.minimumOrder}
@@ -269,7 +264,7 @@ function CouponCard({
               Valid until:{" "}
               <strong
                 className="
-                  text-[#6F625A]
+                  text-gray-600
                 "
               >
                 {coupon.expiry}

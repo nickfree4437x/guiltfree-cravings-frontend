@@ -93,7 +93,7 @@ function CheckoutOrderSummary({
         <div className="px-5 pt-3 sm:px-6">
           <div className="rounded-lg border border-[#F0E2E5] p-4">
             <div className="mb-1 flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-[#2C2C2C]">
+              <h3 className="text-[12px] md:text-[13px] font-semibold text-gray-600">
                 Apply Coupon Code
               </h3>
             </div>
@@ -101,7 +101,7 @@ function CheckoutOrderSummary({
             {appliedCouponCode ? (
               <div className="flex items-center justify-between gap-3 rounded-md border border-green-200 bg-green-50 p-3">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-green-800">
+                  <p className="text-[10px] md:text-[11px] font-semibold text-green-700">
                     {appliedCouponCode}
                   </p>
                   <p className="mt-1 text-[11px] text-green-700">
@@ -116,7 +116,6 @@ function CheckoutOrderSummary({
                   className="flex shrink-0 items-center gap-1 text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
                 >
                   <X className="h-3.5 w-3.5" />
-                  Remove
                 </button>
               </div>
             ) : (
@@ -139,7 +138,7 @@ function CheckoutOrderSummary({
                     disabled={isSubmitting || isApplyingCoupon}
                     aria-label="Coupon code"
                     aria-invalid={Boolean(couponError)}
-                    className="min-w-0 flex-1 rounded-md border border-[#E8D9DD] px-3 py-2.5 text-xs uppercase text-[#2C2C2C] outline-none transition focus:border-[#B5697A] disabled:bg-slate-50"
+                    className="min-w-0 flex-1 rounded-md border border-[#E8D9DD] px-3 py-2 font-[350] text-[11px] md:text-[12px] uppercase text-gray-600 outline-none transition focus:border-[#B5697A] disabled:bg-slate-50"
                   />
 
                   <button
@@ -157,13 +156,13 @@ function CheckoutOrderSummary({
                 </div>
 
                 {couponError && (
-                  <p role="alert" className="mt-2 text-xs text-red-600">
+                  <p role="alert" className="mt-1 text-[10px] md:text-[11px] text-red-600">
                     {couponError}
                   </p>
                 )}
 
                 {!couponError && couponMessage && (
-                  <p className="mt-2 text-xs text-green-700">
+                  <p className="mt-1 text-[10px] md:text-[11px] text-green-700">
                     {couponMessage}
                   </p>
                 )}
