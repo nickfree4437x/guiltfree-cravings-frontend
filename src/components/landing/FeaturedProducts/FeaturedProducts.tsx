@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
@@ -68,6 +67,7 @@ function FeaturedProducts() {
     const query = searchQuery.trim().toLowerCase();
 
     return products.filter((product) => {
+      // 1. PACKAGING FILTER
       const matchesPackaging =
         product.variants.some(
           (variant) => variant.packaging === activePackaging
@@ -81,10 +81,16 @@ function FeaturedProducts() {
       if (!matchesPackaging) return false;
       if (!query) return true;
 
+      // 2. SEARCH FILTER (Name + Flavour + Description + Category + Variants)
       const searchableText = [
         product.name,
+        // Flavour field (agar product object mein direct hai)
+        (product as any).flavour || "",
+        // Description aur Category
         "description" in product ? product.description : "",
         "category" in product ? product.category : "",
+        // Variants ke andar agar flavour ya packaging ka naam hai
+        ...product.variants.map((v: any) => v.flavour || ""),
       ]
         .filter(
           (value): value is string =>
@@ -97,11 +103,11 @@ function FeaturedProducts() {
     });
   }, [products, activePackaging, searchQuery]);
 
-   const trustBadges = [
+  const trustBadges = [
     { icon: Heart, label: "Made with Love" },
     { icon: ShieldCheck, label: "No Preservatives" },
     { icon: Droplets, label: "No Palm Oil" },
-    { icon: ShieldCheck, label: "No Refined Oil" },
+    { icon: ShieldCheck, label: "No Refined Sugar" },
   ];
 
   return (
@@ -121,70 +127,9 @@ function FeaturedProducts() {
 
         {/* SEARCH BAR + PACKAGING TABS */}
         {!loading && !error && products.length > 0 && (
-          <div className="relative mx-auto mt-5 w-full sm:mt-7 lg:mt-8">
-            {/* SEARCH BAR
-                Mobile: Full width, above tabs
-                Desktop: Compact, right side
-            */}
-            <div
-              className="
-                relative mx-auto mb-4 w-64
-                sm:mb-5 sm:max-w-md
-                lg:absolute lg:right-0 lg:top-1/2
-                lg:mb-0 lg:mx-0 lg:w-64
-                lg:-translate-y-1/2
-                xl:w-72
-              "
-            >
-
-              <div
-                className="
-                  group flex h-[36px] w-full items-center gap-2.5
-                  rounded-xl border border-[#EADBD0]
-                  bg-white px-3.5
-                  shadow-sm
-                  transition-all duration-200
-                  focus-within:border-[#B5697A]
-                  sm:h-10 sm:px-4
-                  lg:h-11 lg:rounded-xl lg:px-3
-                "
-              >
-                <Search
-                  size={17}
-                  strokeWidth={1.8}
-                  className="
-                    shrink-0 text-[#9A887B]
-                    transition-colors
-                    group-focus-within:text-[#B5697A]
-                  "
-                  aria-hidden="true"
-                />
-
-                <input
-                  id="featured-product-search"
-                  type="search"
-                  value={searchQuery}
-                  onChange={(event) =>
-                    setSearchQuery(event.target.value)
-                  }
-                  placeholder="Search laddoos and products..."
-                  autoComplete="off"
-                  className="
-                    h-full min-w-0 flex-1
-                    border-0 bg-transparent
-                    text-[12px] text-[#2C2C2C]
-                    outline-none
-                    placeholder:text-[#B6A99D]
-                    placeholder:font-[350]
-                    focus:outline-none
-                    sm:text-[13px]
-                  "
-                />
-
-              </div>
-            </div>
-
-            {/* PACKAGING TABS — ALWAYS CENTERED */}
+          <div className="mx-auto mt-5 w-full sm:mt-7 lg:mt-8">
+            
+            {/* PACKAGING TABS — CENTERED */}
             <div className="flex w-full justify-center">
               <div
                 className="
@@ -226,6 +171,53 @@ function FeaturedProducts() {
                 })}
               </div>
             </div>
+
+            {/* SEARCH BAR — Tabs ke neeche */}
+            <div className="mx-auto mt-4 w-full max-w-md sm:mt-5">
+              <div
+                className="
+                  group flex h-9 w-full items-center gap-2.5
+                  rounded-xl border border-[#EADBD0]
+                  bg-white px-3.5
+                  shadow-sm
+                  transition-all duration-200
+                  focus-within:border-[#B5697A]
+                  sm:h-10 sm:px-4
+                "
+              >
+                <Search
+                  size={17}
+                  strokeWidth={1.8}
+                  className="
+                    shrink-0 text-[#9A887B]
+                    transition-colors
+                    group-focus-within:text-[#B5697A]
+                  "
+                  aria-hidden="true"
+                />
+
+                <input
+                  id="featured-product-search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) =>
+                    setSearchQuery(event.target.value)
+                  }
+                  placeholder="Search by name or flavour..."
+                  autoComplete="off"
+                  className="
+                    h-full min-w-0 flex-1
+                    border-0 bg-transparent
+                    text-[12px] text-[#2C2C2C]
+                    outline-none
+                    placeholder:text-[#B6A99D]
+                    placeholder:font-[350]
+                    focus:outline-none
+                    sm:text-[13px]
+                  "
+                />
+              </div>
+            </div>
           </div>
         )}
 
@@ -259,7 +251,7 @@ function FeaturedProducts() {
                 <Search size={21} strokeWidth={1.8} />
               </div>
 
-              <h3 className="mt-4text-lg font-semibold text-[#1F4A2E]">
+              <h3 className="mt-4 text-lg font-semibold text-[#1F4A2E]">
                 No products found
               </h3>
 

@@ -345,12 +345,12 @@ function Hero() {
               xl:text-[50px]
             "
           >
-            Wholesome Goodness,
+            Order Homemade
             <br />
 
             <span className="relative inline-block">
               <span className="bg-clip-text font-normal text-[#E7A1B0]">
-                Irresistibly Delicious.
+                Laddoos Online.
               </span>
             </span>
           </h1>

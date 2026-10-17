@@ -25,7 +25,7 @@ function ContactIntro() {
 
         {/* Description */}
         <p className="mx-auto mt-2 max-w-[580px] text-[12.5px] font-[350] leading-relaxed tracking-wide text-gray-600 sm:text-[13.5px] md:text-[14px]">
-          Questions about your order or our laddoos? We’re always happy to help!
+          Have questions about your order or our handcrafted laddoos? Let's talk.
         </p>
 
         {/* Gift & Bulk Orders */}
