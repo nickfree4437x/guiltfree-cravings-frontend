@@ -109,11 +109,11 @@ function SummaryCard({
 
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[12px] text-[#7B6D63]">
+          <p className="text-[12px] text-gray-600">
             {label}
           </p>
 
-          <p className="mt-3 text-[28px] font-bold leading-none tracking-[-0.02em] text-gray-500">
+          <p className="mt-3 text-[24px]  md:text-[28px] font-semibold leading-none tracking-[-0.02em] text-gray-700">
             {value.toLocaleString("en-IN")}
           </p>
         </div>

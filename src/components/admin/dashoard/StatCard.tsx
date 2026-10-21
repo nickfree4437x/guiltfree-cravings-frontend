@@ -113,12 +113,12 @@ function StatCard({
           <p
             className="
               mt-3
-              text-[28px]
-              font-bold
+              text-[20px]
+              font-semibold
               leading-none
               tracking-[-0.02em]
-              text-[#1F2937]
-              sm:text-[30px]
+              text-gray-700
+              sm:text-[25px]
             "
           >
             {value.toLocaleString("en-IN")}

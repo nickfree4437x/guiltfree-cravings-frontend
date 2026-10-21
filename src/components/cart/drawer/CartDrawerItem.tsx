@@ -38,8 +38,7 @@ function CartDrawerItem({
    * =========================================================
    */
 
-  const itemTotal =
-    Number(variant.price) * quantity;
+  const itemTotal = Number(variant.price) * quantity;
 
   /*
    * =========================================================
@@ -106,7 +105,7 @@ function CartDrawerItem({
     >
       <div className="flex gap-3">
         {/* =================================================
-            IMAGE
+            VARIANT-SPECIFIC IMAGE
         ================================================== */}
 
         <div
@@ -125,6 +124,7 @@ function CartDrawerItem({
                 | "Glass Jar"
                 | "Cardboard Box"
             }
+            variant={variant}
             compact
           />
         </div>
@@ -179,7 +179,7 @@ function CartDrawerItem({
                 rounded-full
                 transition
                 bg-[#F8EDEF]
-              text-[#B5697A]
+                text-[#B5697A]
               "
             >
               <Trash2

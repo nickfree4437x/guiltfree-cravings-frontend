@@ -40,6 +40,15 @@ export interface Product {
   glassJarImage: string | null;
   cardboardBoxImage: string | null;
 
+  // Product information and dietary details
+  ingredients: string | null;
+  allergenInfo: string | null;
+  medicalDisclaimer: string | null;
+  benefits: string | null;
+  usageSuggestions: string | null;
+  storageInstructions: string | null;
+  shelfLife: string | null;
+
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -83,9 +92,7 @@ const api = axios.create({
 ========================================================= */
 
 export const getProducts = async (): Promise<Product[]> => {
-  const response = await api.get<ProductsResponse>(
-    "/products"
-  );
+  const response = await api.get<ProductsResponse>("/products");
 
   if (!response.data.success) {
     throw new Error("Failed to fetch products.");
@@ -105,9 +112,7 @@ export const getProductById = async (
     throw new Error("Invalid product ID.");
   }
 
-  const response = await api.get<ProductResponse>(
-    `/products/${id}`
-  );
+  const response = await api.get<ProductResponse>(`/products/${id}`);
 
   if (!response.data.success) {
     throw new Error("Failed to fetch product.");

@@ -40,7 +40,7 @@ function OrdersToolbar({
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
             placeholder="Search order, customer or phone..."
-            className="h-[45px] w-full rounded-xl border border-[#EADFD4] bg-white pl-11 pr-11 text-sm text-[#493D35] outline-none transition placeholder:text-[#B4A69A] focus:border-[#B5697A]"
+            className="h-[42px] w-full rounded-xl border border-[#EADFD4] bg-white pl-11 pr-11 text-[11px] md:text-[12px] text-[#493D35] outline-none transition placeholder:text-[#B4A69A] focus:border-[#B5697A]"
           />
 
           {search && (
@@ -50,7 +50,7 @@ function OrdersToolbar({
               aria-label="Clear search"
               className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#A99A8D] transition hover:bg-[#FBECEF] hover:text-[#B5697A]"
             >
-              <X size={16} />
+              <X size={15} />
             </button>
           )}
         </div>
@@ -64,7 +64,7 @@ function OrdersToolbar({
                 event.target.value as OrderStatus | ""
               )
             }
-            className="h-[45px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-sm text-[#6F6259] outline-none transition focus:border-[#B5697A]"
+            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] md:text-[12px] text-[#6F6259] outline-none transition focus:border-[#B5697A]"
           >
             <option value="">All Status</option>
             <option value="PENDING">Pending</option>
@@ -90,7 +90,7 @@ function OrdersToolbar({
                 event.target.value as PaymentStatus | ""
               )
             }
-            className="h-[45px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-sm text-[#6F6259] outline-none transition focus:border-[#B5697A]"
+            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] md:text-[12px] text-[#6F6259] outline-none transition focus:border-[#B5697A]"
           >
             <option value="">All Payments</option>
             <option value="PENDING">Pending</option>
@@ -111,7 +111,7 @@ function OrdersToolbar({
           <button
             type="button"
             onClick={onClearFilters}
-            className="inline-flex h-[45px] shrink-0 items-center justify-center gap-2 rounded-xl border border-[#E8CDD3] bg-[#FFF7F8] px-4 text-sm text-[#B5697A] transition hover:bg-[#FBECEF]"
+            className="inline-flex h-[42px] shrink-0 items-center justify-center gap-2 rounded-xl border border-[#E8CDD3] bg-[#FFF7F8] px-4 text-sm text-[#B5697A] transition hover:bg-[#FBECEF]"
           >
             <X size={16} />
             Clear

@@ -89,24 +89,24 @@ function ProductMobileList({
             <div className="mt-5 grid grid-cols-2 gap-3">
               {/* VARIANTS */}
 
-              <div className="rounded-lg border border-[#EFE3D2] bg-[#FFFCF8] p-3.5">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
+              <div className="rounded-lg border border-[#EFE3D2] bg-[#fffbfc] p-3.5">
+                <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
                   Variants
                 </p>
 
-                <p className="mt-1.5 text-[15px] text-[#3D3834]">
+                <p className="mt-1 text-[14px] text-gray-600">
                   {product.variants.length}
                 </p>
               </div>
 
               {/* STARTING PRICE */}
 
-              <div className="rounded-lg border border-[#EFE3D2] bg-[#FFFCF8] p-3.5">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
+              <div className="rounded-lg border border-[#EFE3D2] bg-[#fffbfc] p-3.5">
+                <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
                   Starting Price
                 </p>
 
-                <p className="mt-1.5 text-[15px] text-[#1F4A2E]">
+                <p className="mt-1 text-[14px] text-gray-600">
                   {startingPrice !== null
                     ? formatPrice(startingPrice)
                     : "—"}

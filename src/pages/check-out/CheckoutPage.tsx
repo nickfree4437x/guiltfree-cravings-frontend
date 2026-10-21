@@ -360,6 +360,7 @@ function CheckoutPage() {
         quantity: item.quantity,
       }));
 
+      
       // 4. DELIVERY ADDRESS
       const addressPayload = {
         addressLine1: deliveryAddress.addressLine1.trim(),
@@ -368,7 +369,9 @@ function CheckoutPage() {
         city: deliveryAddress.city.trim(),
         state: deliveryAddress.state.trim(),
         pincode: deliveryAddress.pincode.trim(),
+        selectedZone: deliveryAddress.selectedZone,
       };
+
 
       // 5. CREATE ORDER
       // Backend must revalidate this coupon and calculate the final total.

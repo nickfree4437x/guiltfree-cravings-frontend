@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 
 function ContactIntro() {
   return (
-    <section className="relative overflow-hidden bg-white px-6 pt-2 sm:px-10 sm:pt-2 md:px-14 md:pt-6 lg:px-20">
+    <section className="relative overflow-hidden bg-white px-6 pt-4 sm:px-10 sm:pt-2 md:px-14 md:pt-6 lg:px-20">
       {/* Floating sparkles (decoration) */}
       <Sparkles
         className="pointer-events-none absolute left-[8%] top-[30%] hidden h-4 w-4 text-[#B5697A]/25 md:block"
@@ -29,7 +29,7 @@ function ContactIntro() {
         </p>
 
         {/* Gift & Bulk Orders */}
-        <p className="mt-3 text-xs leading-relaxed text-gray-600 sm:text-sm">
+        <p className="mt-3 text-[12px] leading-relaxed text-gray-600 sm:text-[13px">
           For gift &amp; bulk orders, contact us at{" "}
           <a
             href="tel:+919667760119"

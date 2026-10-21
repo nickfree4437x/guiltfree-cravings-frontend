@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 /*
@@ -30,6 +31,7 @@ export interface DeliveryAddressPayload {
   city: string;
   state: string;
   pincode: string;
+  selectedZone: DeliveryZone;
 }
 
 /*
@@ -55,21 +57,17 @@ export type DeliveryStatus =
  * =========================================================
  *
  * The frontend sends customer details, delivery address,
- * product/variant IDs, quantities, and an optional offer code.
+ * selected delivery zone, product/variant IDs, quantities,
+ * and an optional offer code.
  *
- * Delivery zone and delivery charge must be determined
- * and validated by the backend.
- *
- * Frontend values are never trusted for pricing.
+ * The backend must validate the delivery zone and calculate
+ * the authoritative delivery charge.
  */
 
 export interface CreateOrderPayload {
   customer: CreateOrderCustomer;
-
   deliveryAddress: DeliveryAddressPayload;
-
   items: CreateOrderItem[];
-
   offerCode?: string | null;
 }
 
@@ -81,7 +79,6 @@ export interface CreateOrderPayload {
 
 export interface OrderItem {
   id: number;
-
   productId: number;
   variantId: number;
 
@@ -170,7 +167,6 @@ export interface Order {
 
   /*
    * Final order amount returned by the backend.
-   * Delivery-charge inclusion depends on backend logic.
    */
 
   totalAmount: number;
@@ -243,12 +239,6 @@ const getAuthToken = (): string | null => {
  * =========================================================
  * REQUEST INTERCEPTOR
  * =========================================================
- *
- * Automatically attaches:
- *
- * Authorization: Bearer <token>
- *
- * to authenticated order requests.
  */
 
 api.interceptors.request.use(
@@ -261,30 +251,13 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 /*
  * =========================================================
  * CREATE ORDER
  * =========================================================
- *
- * Backend responsibilities:
- *
- * - Authenticate the user
- * - Validate customer and delivery address
- * - Validate products and variants
- * - Calculate product prices and subtotal
- * - Validate the offer
- * - Calculate the discount
- * - Determine delivery eligibility
- * - Calculate delivery charges
- * - Create the order and its items
- *
- * The frontend must never determine the authoritative
- * delivery charge or final payable amount.
  */
 
 export const createOrder = async (

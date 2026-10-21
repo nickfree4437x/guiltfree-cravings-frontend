@@ -28,14 +28,14 @@ function RecentOrders({ orders }: RecentOrdersProps) {
     .slice(0, 5);
 
   return (
-    <section className="mt-8 overflow-hidden bg-white shadow-sm">
+    <section className="mt-4 md:mt-6 overflow-hidden bg-white shadow-sm">
       {/* =================================================
           SECTION HEADER
       ================================================= */}
 
       <div className="flex flex-col gap-1 border-b border-[#EFE3D2] py-1 sm:py-1.5">
         <div className="flex items-center gap-2">
-          <h2 className="text-[18px] font-semibold tracking-[-0.01em] text-[#1F4A2E]">
+          <h2 className="text-[16px] md:text-[18px] font-semibold tracking-[-0.01em] text-gray-700">
             Recent Orders
           </h2>
         </div>
@@ -74,38 +74,38 @@ function RecentOrders({ orders }: RecentOrdersProps) {
 
             <thead>
               <tr className="border-b border-[#B5697A] bg-[#B5697A]">
-                <th className="px-6 py-3 text-left">
-                  <span className="text-[11px] uppercase tracking-wide text-white/80">
+                <th className="px-6 py-2.5 text-left">
+                  <span className="text-[11px] font-[450] uppercase tracking-wide text-white">
                     Order
                   </span>
                 </th>
 
-                <th className="px-6 py-3 text-left">
-                  <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                <th className="px-6 py-2.5 text-left">
+                  <span className="text-[11px] font-[450] uppercase tracking-wide text-white">
                     Customer
                   </span>
                 </th>
 
-                <th className="px-6 py-3 text-left">
-                  <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                <th className="px-6 py-2.5 text-left">
+                  <span className="text-[11px] font-[450] uppercase tracking-wide text-white">
                     Amount
                   </span>
                 </th>
 
-                <th className="px-6 py-3 text-left">
-                  <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                <th className="px-6 py-2.5 text-left">
+                  <span className="text-[11px] font-[450] uppercase tracking-wide text-white">
                     Order Status
                   </span>
                 </th>
 
-                <th className="px-6 py-3 text-left">
-                  <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                <th className="px-6 py-2.5 text-left">
+                  <span className="text-[11px] font-[450] uppercase tracking-wide text-white">
                     Payment
                   </span>
                 </th>
 
-                <th className="px-6 py-3 text-left">
-                  <span className="text-[11px] uppercase tracking-[0.08em] text-white/80">
+                <th className="px-6 py-2.5 text-left">
+                  <span className="text-[11px] font-[450] uppercase tracking-wide text-white">
                     Date
                   </span>
                 </th>
@@ -126,12 +126,12 @@ function RecentOrders({ orders }: RecentOrdersProps) {
                     transition-colors
                     duration-200
                     last:border-0
-                    hover:bg-[#FFFBF8]
+                    hover:bg-[#fffbfc]
                   "
                 >
                   {/* Order */}
                   <td className="px-6 py-3">
-                    <span className="inline-flex rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[11px] tracking-[0.01em] text-[#A85F70]">
+                    <span className="inline-flex rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[10px] md:text-[11px] tracking-[0.01em] text-[#A85F70]">
                       {order.orderNumber}
                     </span>
                   </td>
@@ -139,11 +139,11 @@ function RecentOrders({ orders }: RecentOrdersProps) {
                   {/* Customer */}
                   <td className="px-6 py-3">
                     <div>
-                      <p className="text-[12.5px] text-[#3D3834]">
+                      <p className="text-[12px] md:text-[13px] text-[#3D3834]">
                         {order.customerName}
                       </p>
 
-                      <p className="mt-1 text-[11px] text-[#9A8D82]">
+                      <p className="mt-1 text-[11px] text-slate-500">
                         {order.customerPhone}
                       </p>
                     </div>
@@ -151,7 +151,7 @@ function RecentOrders({ orders }: RecentOrdersProps) {
 
                   {/* Amount */}
                   <td className="px-6 py-3">
-                    <span className="text-[13px] text-[#1F4A2E]">
+                    <span className="text-[12px] md:text-[13px] text-[#1F4A2E]">
                       {formatCurrency(order.totalAmount)}
                     </span>
                   </td>
@@ -168,7 +168,7 @@ function RecentOrders({ orders }: RecentOrdersProps) {
 
                   {/* Date */}
                   <td className="px-6 py-3">
-                    <span className="text-[13px] text-[#766A61]">
+                    <span className="text-[13px] text-gray-500">
                       {formatDate(order.createdAt)}
                     </span>
                   </td>

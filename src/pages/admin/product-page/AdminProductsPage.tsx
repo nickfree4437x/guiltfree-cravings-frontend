@@ -103,15 +103,12 @@ function AdminProductsPage() {
         <div className="mx-auto max-w-7xl">
 
           <div>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#8b542f]">
-              Catalogue
-            </span>
 
-            <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            <h1 className="mt-2 text-[18px] font-bold tracking-tight text-slate-700 md:text-[22px]">
               Products
             </h1>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-0 max-w-xl text-[11px] md:text-[12px] font-[350] leading-relaxed text-slate-500">
               Manage your products and their basic
               information.
             </p>

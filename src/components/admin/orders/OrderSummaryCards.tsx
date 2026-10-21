@@ -83,20 +83,16 @@ function OrderSummaryCards({
 
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[12px] tracking-[0.08em] text-[#9A8D82]">
+                <p className="text-[11px] md:text-[12px] tracking-[0.05em] text-gray-600">
                   {card.label}
                 </p>
 
                 <p
-                  className={`mt-3 text-[29px] font-bold leading-none tracking-[-0.02em] ${card.valueColor}`}
+                  className={`mt-3 text-[20px] md:text-[24px] font-semibold leading-none tracking-[-0.02em] ${card.valueColor}`}
                 >
                   {values[card.key].toLocaleString(
                     "en-IN"
                   )}
-                </p>
-
-                <p className="mt-2 text-[12px] text-[#8B7A6C]">
-                  {card.description}
                 </p>
               </div>
 
@@ -104,7 +100,7 @@ function OrderSummaryCards({
                 className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${card.iconBg} ${card.iconColor}`}
               >
                 <Icon
-                  className="h-[21px] w-[21px]"
+                  className="h-[20px] w-[20px]"
                   strokeWidth={1.8}
                   aria-hidden="true"
                 />

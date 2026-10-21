@@ -1,6 +1,3 @@
-import {
-  ShieldCheck,
-} from "lucide-react";
 
 import type { DeliveryZone } from "./CartDrawer";
 
@@ -62,7 +59,7 @@ function CartDrawerSummary({
             sm:text-[13px]
           "
         >
-          <span className="text-[#6F6259]">
+          <span className="text-gray-600">
             Subtotal
           </span>
 
@@ -70,7 +67,7 @@ function CartDrawerSummary({
             className="
               shrink-0
               font-medium
-              text-[#2C2C2C]
+              text-gray-600
             "
           >
             ₹{cartTotal.toFixed(0)}
@@ -91,7 +88,7 @@ function CartDrawerSummary({
             sm:text-[13px]
           "
         >
-          <span className="text-[#6F6259]">
+          <span className="text-gray-600">
             Delivery Charges
           </span>
 
@@ -243,23 +240,6 @@ function CartDrawerSummary({
           sm:mt-2.5
         "
       >
-        <ShieldCheck
-          size={13}
-          strokeWidth={1.8}
-          className="shrink-0 text-[#B5697A]"
-        />
-
-        <p
-          className="
-            text-[9px]
-            leading-4
-            text-slate-500
-
-            sm:text-[10px]
-          "
-        >
-          Secure checkout & protected payment
-        </p>
       </div>
     </div>
   );

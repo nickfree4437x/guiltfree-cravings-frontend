@@ -602,12 +602,14 @@ function ChangePasswordSection({
             ACTION
             =================================================== */}
 
-        <div className="mt-5 flex justify-end">
+        <div className="mt-4 flex w-full justify-end sm:w-auto">
           <button
             type="submit"
             disabled={isLoading}
             className="
               inline-flex
+              w-full
+              sm:w-auto
               h-10
               md:h-11
               items-center
@@ -615,27 +617,28 @@ function ChangePasswordSection({
               rounded-xl
               bg-[#B5697A]
               px-5
-              text-[13px]
+              text-[12px]
+              sm:text-[13px]
               text-white
+              shadow-sm
               transition-all
               duration-200
               hover:bg-[#A85F70]
-              hover:shadow-sm
+              hover:shadow-md
               focus:outline-none
               disabled:cursor-not-allowed
               disabled:opacity-60
-              disabled:hover:translate-y-0
             "
           >
             {isLoading ? (
               <>
-                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                <span className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                 Updating...
               </>
             ) : (
               <>
                 <KeyRound
-                  className="mr-2 h-4 w-4"
+                  className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4"
                   strokeWidth={1.8}
                   aria-hidden="true"
                 />
@@ -643,7 +646,7 @@ function ChangePasswordSection({
               </>
             )}
           </button>
-        </div>
+       </div>
 
       </form>
     </section>

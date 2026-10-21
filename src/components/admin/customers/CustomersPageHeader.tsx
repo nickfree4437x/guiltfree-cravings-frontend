@@ -4,7 +4,7 @@ function CustomersPageHeader() {
   return (
     <div className="">
 
-      <h1 className="mmt-2 text-[18px] font-bold tracking-tight text-slate-700 md:text-[22px]">
+      <h1 className="mt-2 text-[18px] font-bold tracking-tight text-slate-700 md:text-[22px]">
         Customers
       </h1>
 

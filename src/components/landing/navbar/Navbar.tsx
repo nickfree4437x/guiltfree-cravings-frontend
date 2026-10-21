@@ -576,7 +576,7 @@ function Navbar({
                 />
 
                 <span>
-                  FSSAI Lic :- #23326006003247
+                  FSSAI Reg :- #23326006003247
                 </span>
               </a>
             </div>

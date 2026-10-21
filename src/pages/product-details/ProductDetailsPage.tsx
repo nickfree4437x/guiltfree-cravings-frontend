@@ -1,9 +1,12 @@
 
+import { useEffect, useMemo, useState } from "react";
+
 import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+  ArrowLeft,
+  BookOpen,
+  ShieldCheck,
+  Clock,
+} from "lucide-react";
 
 import {
   useLocation,
@@ -25,7 +28,6 @@ import OtpAuthModal from "../../components/auth/OtpAuthModal";
 import ProductDetailsImage from "../../components/product-details/ProductDetailsImage";
 import ProductDetailsInfo from "../../components/product-details/ProductDetailsInfo";
 import ProductPickerGuide from "../../components/product-details/ProductPickerGuide";
-// import CustomerStories from "../../components/product-details/CustomerStories";
 import CustomerReviews from "../../components/product-details/reviews/ProductReviews";
 import RecommendedProducts from "../../components/product-details/RecommendedProducts";
 
@@ -34,6 +36,30 @@ type PackagingOption =
   | "Cardboard Box"
   | "Glass Jar";
 
+interface ProductDetailsData {
+  ingredients?: string | null;
+  allergenInfo?: string | null;
+  medicalDisclaimer?: string | null;
+  benefits?: string | null;
+  usageSuggestions?: string | null;
+  storageInstructions?: string | null;
+  shelfLife?: string | null;
+}
+
+type DetailedProduct = Product & ProductDetailsData;
+
+interface ProductNavigationState {
+  packaging?: unknown;
+  selectedVariantId?: unknown;
+  selectedVariantQuantity?: unknown;
+}
+
+const ALLOWED_WEIGHTS: Record<PackagingOption, number[]> = {
+  "Plastic Box": [250],
+  "Cardboard Box": [500],
+  "Glass Jar": [350, 500],
+};
+
 function isPackagingOption(
   packaging: unknown
 ): packaging is PackagingOption {
@@ -41,6 +67,17 @@ function isPackagingOption(
     packaging === "Plastic Box" ||
     packaging === "Cardboard Box" ||
     packaging === "Glass Jar"
+  );
+}
+
+function isAllowedVariant(variant: ProductVariant): boolean {
+  if (!isPackagingOption(variant.packaging)) {
+    return false;
+  }
+
+  return (
+    variant.unit === "g" &&
+    ALLOWED_WEIGHTS[variant.packaging].includes(variant.quantity)
   );
 }
 
@@ -54,17 +91,60 @@ function sortVariants(variants: ProductVariant[]) {
   });
 }
 
+function getAllowedVariants(product: Product): ProductVariant[] {
+  return sortVariants(product.variants.filter(isAllowedVariant));
+}
+
+function ProductDetailSection({
+  title,
+  content,
+  icon,
+}: {
+  title: string;
+  content?: string | null;
+  icon: "book" | "shield" | "clock";
+}) {
+  if (!content?.trim()) {
+    return null;
+  }
+
+  const Icon =
+    icon === "book"
+      ? BookOpen
+      : icon === "shield"
+        ? ShieldCheck
+        : Clock;
+
+  return (
+    <section className="rounded-xl border border-[#EFE3D2] bg-white p-4 sm:p-5">
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FBEEF1] text-[#B5697A]">
+          <Icon size={16} strokeWidth={1.8} />
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[12px] font-semibold text-gray-600 sm:text-[15px]">
+            {title}
+          </h3>
+
+          <p
+            className="mt-1 text-[11px] leading-relaxed font-light tracking-wide text-gray-600 sm:text-[12.5px] md:text-[13px]"
+          >
+            {content}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ProductDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
 
-  /*
-   * Read packaging selected on the landing/product listing page.
-   */
-  const navigationState = location.state as {
-    packaging?: unknown;
-  } | null;
+  const navigationState =
+    location.state as ProductNavigationState | null;
 
   const requestedPackaging = isPackagingOption(
     navigationState?.packaging
@@ -72,17 +152,21 @@ function ProductDetailsPage() {
     ? navigationState.packaging
     : null;
 
-  /* =========================================================
-     PRODUCT STATE
-  ========================================================= */
+  const requestedVariantId =
+    typeof navigationState?.selectedVariantId === "number" &&
+    Number.isInteger(navigationState.selectedVariantId)
+      ? navigationState.selectedVariantId
+      : null;
 
-  const [product, setProduct] = useState<Product | null>(null);
+  const requestedVariantQuantity =
+    typeof navigationState?.selectedVariantQuantity === "number" &&
+    Number.isFinite(navigationState.selectedVariantQuantity)
+      ? navigationState.selectedVariantQuantity
+      : null;
+
+  const [product, setProduct] = useState<DetailedProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  /* =========================================================
-     PRODUCT SELECTION STATE
-  ========================================================= */
 
   const [selectedPackaging, setSelectedPackaging] =
     useState<PackagingOption>("Plastic Box");
@@ -92,20 +176,11 @@ function ProductDetailsPage() {
 
   const [quantity, setQuantity] = useState(1);
 
-  /* =========================================================
-     AUTH STATE
-  ========================================================= */
-
-  const [isAuthModalOpen, setIsAuthModalOpen] =
-    useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const isAuthenticated = useAuthStore(
     (state) => state.isAuthenticated
   );
-
-  /* =========================================================
-     CART STORE
-  ========================================================= */
 
   const addToCart = useCartStore(
     (state) => state.addToCart
@@ -123,9 +198,9 @@ function ProductDetailsPage() {
     (state) => state.openCartDrawer
   );
 
-  /* =========================================================
-     FETCH PRODUCT
-  ========================================================= */
+  // ------------------------------------------------------------
+  // FETCH PRODUCT AND RESTORE THE REQUESTED VARIANT
+  // ------------------------------------------------------------
 
   useEffect(() => {
     let cancelled = false;
@@ -137,10 +212,7 @@ function ProductDetailsPage() {
 
         const productId = Number(id);
 
-        if (
-          !Number.isInteger(productId) ||
-          productId <= 0
-        ) {
+        if (!Number.isInteger(productId) || productId <= 0) {
           throw new Error("Invalid product ID.");
         }
 
@@ -150,50 +222,66 @@ function ProductDetailsPage() {
           return;
         }
 
-        setProduct(data);
+        const allowedVariants = getAllowedVariants(data);
 
-        /*
-         * Initial selection priority:
-         * 1. Packaging requested from navigation, if available.
-         * 2. Plastic Box.
-         * 3. Cardboard Box.
-         * 4. Glass Jar.
-         *
-         * Smallest available size is selected first.
-         */
-
-        const sortedVariants = sortVariants(data.variants);
-
-        const initialVariant =
-          (
-            requestedPackaging
-              ? sortedVariants.find(
-                  (variant) =>
-                    variant.packaging === requestedPackaging
-                )
-              : undefined
-          ) ??
-          sortedVariants.find(
-            (variant) => variant.packaging === "Plastic Box"
-          ) ??
-          sortedVariants.find(
-            (variant) => variant.packaging === "Cardboard Box"
-          ) ??
-          sortedVariants.find(
-            (variant) => variant.packaging === "Glass Jar"
-          );
-
-        if (initialVariant) {
-          setSelectedPackaging(
-            initialVariant.packaging as PackagingOption
-          );
-
-          setSelectedVariantId(initialVariant.id);
-        } else {
+        if (allowedVariants.length === 0) {
+          setProduct(data as DetailedProduct);
           setSelectedPackaging("Plastic Box");
           setSelectedVariantId(null);
+          setQuantity(1);
+          return;
         }
 
+        // First preference: exact variant ID from the listing card.
+        const variantById =
+          requestedVariantId !== null
+            ? allowedVariants.find(
+                (variant) =>
+                  variant.id === requestedVariantId &&
+                  (!requestedPackaging ||
+                    variant.packaging === requestedPackaging)
+              )
+            : undefined;
+
+        // Fallback: match the requested packaging and weight.
+        const variantByQuantity =
+          !variantById &&
+          requestedPackaging &&
+          requestedVariantQuantity !== null
+            ? allowedVariants.find(
+                (variant) =>
+                  variant.packaging === requestedPackaging &&
+                  variant.quantity === requestedVariantQuantity
+              )
+            : undefined;
+
+        // Fallback for older links that only pass packaging.
+        const variantByPackaging = requestedPackaging
+          ? allowedVariants.find(
+              (variant) => variant.packaging === requestedPackaging
+            )
+          : undefined;
+
+        const initialVariant =
+          variantById ??
+          variantByQuantity ??
+          variantByPackaging ??
+          allowedVariants.find(
+            (variant) => variant.packaging === "Plastic Box"
+          ) ??
+          allowedVariants.find(
+            (variant) => variant.packaging === "Cardboard Box"
+          ) ??
+          allowedVariants.find(
+            (variant) => variant.packaging === "Glass Jar"
+          ) ??
+          allowedVariants[0];
+
+        setProduct(data as DetailedProduct);
+        setSelectedPackaging(
+          initialVariant.packaging as PackagingOption
+        );
+        setSelectedVariantId(initialVariant.id);
         setQuantity(1);
       } catch (fetchError) {
         if (cancelled) {
@@ -216,60 +304,53 @@ function ProductDetailsPage() {
     return () => {
       cancelled = true;
     };
-  }, [id, requestedPackaging]);
+  }, [
+    id,
+    requestedPackaging,
+    requestedVariantId,
+    requestedVariantQuantity,
+  ]);
 
-  /* =========================================================
-     AVAILABLE PACKAGING OPTIONS
-  ========================================================= */
+  // ------------------------------------------------------------
+  // AVAILABLE PACKAGING OPTIONS
+  // ------------------------------------------------------------
+
+  const allowedVariants = useMemo(
+    () => (product ? getAllowedVariants(product) : []),
+    [product]
+  );
 
   const availablePackagings = useMemo<PackagingOption[]>(() => {
-    if (!product) {
-      return [];
-    }
-
     const options: PackagingOption[] = [];
 
-    const hasPackaging = (packaging: PackagingOption) =>
-      product.variants.some(
-        (variant) => variant.packaging === packaging
-      );
-
-    if (hasPackaging("Plastic Box")) {
-      options.push("Plastic Box");
-    }
-
-    if (hasPackaging("Cardboard Box")) {
-      options.push("Cardboard Box");
-    }
-
-    if (hasPackaging("Glass Jar")) {
-      options.push("Glass Jar");
+    for (const packaging of [
+      "Plastic Box",
+      "Cardboard Box",
+      "Glass Jar",
+    ] as const) {
+      if (
+        allowedVariants.some(
+          (variant) => variant.packaging === packaging
+        )
+      ) {
+        options.push(packaging);
+      }
     }
 
     return options;
-  }, [product]);
+  }, [allowedVariants]);
 
-  /* =========================================================
-     VARIANTS FOR SELECTED PACKAGING
+  // ------------------------------------------------------------
+  // VARIANTS FOR SELECTED PACKAGING
+  // ------------------------------------------------------------
 
-     Only variants matching the selected packaging are shown.
-  ========================================================= */
-
-  const packagingVariants = useMemo(() => {
-    if (!product) {
-      return [];
-    }
-
-    return sortVariants(
-      product.variants.filter(
+  const packagingVariants = useMemo(
+    () =>
+      allowedVariants.filter(
         (variant) => variant.packaging === selectedPackaging
-      )
-    );
-  }, [product, selectedPackaging]);
-
-  /* =========================================================
-     SELECTED VARIANT
-  ========================================================= */
+      ),
+    [allowedVariants, selectedPackaging]
+  );
 
   const selectedVariant =
     packagingVariants.find(
@@ -278,10 +359,7 @@ function ProductDetailsPage() {
     packagingVariants[0] ??
     null;
 
-  /*
-   * Keep selection valid if the packaging changes or the
-   * current variant is no longer available.
-   */
+  // Keep the selected variant valid when packaging changes.
   useEffect(() => {
     const currentVariantExists = packagingVariants.some(
       (variant) => variant.id === selectedVariantId
@@ -293,32 +371,38 @@ function ProductDetailsPage() {
     }
   }, [packagingVariants, selectedVariantId]);
 
-  /* =========================================================
-     CHANGE PACKAGING
-  ========================================================= */
+  // ------------------------------------------------------------
+  // CHANGE PACKAGING
+  // ------------------------------------------------------------
 
   const handlePackagingChange = (packaging: string) => {
-    if (!isPackagingOption(packaging) || !product) {
+    if (!isPackagingOption(packaging)) {
       return;
     }
 
-    const matchingVariants = sortVariants(
-      product.variants.filter(
-        (variant) => variant.packaging === packaging
-      )
+    const matchingVariants = allowedVariants.filter(
+      (variant) => variant.packaging === packaging
     );
 
+    if (matchingVariants.length === 0) {
+      return;
+    }
+
     setSelectedPackaging(packaging);
-    setSelectedVariantId(matchingVariants[0]?.id ?? null);
+    setSelectedVariantId(matchingVariants[0].id);
     setQuantity(1);
   };
 
-  /* =========================================================
-     CHANGE VARIANT
-  ========================================================= */
+  // ------------------------------------------------------------
+  // CHANGE VARIANT
+  // ------------------------------------------------------------
 
   const handleVariantChange = (variant: ProductVariant) => {
-    if (variant.packaging !== selectedPackaging) {
+    if (
+      variant.packaging !== selectedPackaging ||
+      !isAllowedVariant(variant) ||
+      !packagingVariants.some((item) => item.id === variant.id)
+    ) {
       return;
     }
 
@@ -326,29 +410,40 @@ function ProductDetailsPage() {
     setQuantity(1);
   };
 
-  /* =========================================================
-     QUANTITY
-  ========================================================= */
+  // ------------------------------------------------------------
+  // QUANTITY
+  // ------------------------------------------------------------
 
   const handleQuantityChange = (nextQuantity: number) => {
-    setQuantity(Math.max(1, nextQuantity));
+    if (!Number.isFinite(nextQuantity)) {
+      return;
+    }
+
+    setQuantity(Math.max(1, Math.floor(nextQuantity)));
   };
 
-  /* =========================================================
-     ADD TO CART
-  ========================================================= */
+  // ------------------------------------------------------------
+  // ADD TO CART
+  // ------------------------------------------------------------
 
   const handleAddToCart = () => {
     if (!product || !selectedVariant || quantity <= 0) {
       return;
     }
 
-    if (selectedVariant.packaging !== selectedPackaging) {
+    if (
+      selectedVariant.packaging !== selectedPackaging ||
+      !isAllowedVariant(selectedVariant) ||
+      !packagingVariants.some(
+        (variant) => variant.id === selectedVariant.id
+      )
+    ) {
       return;
     }
 
     if (isAuthenticated) {
       addToCart(product, selectedVariant, quantity);
+      openCartDrawer();
       return;
     }
 
@@ -356,31 +451,46 @@ function ProductDetailsPage() {
     setIsAuthModalOpen(true);
   };
 
-  /* =========================================================
-     AUTH SUCCESS
-  ========================================================= */
+  // ------------------------------------------------------------
+  // AUTH SUCCESS
+  // ------------------------------------------------------------
 
   const handleAuthSuccess = () => {
     addPendingCartItem();
     setIsAuthModalOpen(false);
+    openCartDrawer();
   };
-
-  /* =========================================================
-     REVIEW LOGIN
-  ========================================================= */
 
   const handleReviewLoginRequired = () => {
     setIsAuthModalOpen(true);
   };
 
-  /* =========================================================
-     LOADING
-  ========================================================= */
+  const handleBackToHome = () => {
+    navigate("/");
+  };
+
+  // ------------------------------------------------------------
+  // LOADING
+  // ------------------------------------------------------------
 
   if (loading) {
     return (
-      <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-12 sm:px-8 lg:px-12">
+      <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-20">
         <div className="mx-auto max-w-6xl">
+          <button
+            type="button"
+            onClick={handleBackToHome}
+            className="group mb-6 inline-flex min-h-10 items-center gap-2 rounded-lg pr-3 text-sm font-medium text-[#28583B] transition-colors hover:text-[#B5697A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]/40 focus-visible:ring-offset-2"
+            aria-label="Back to Home"
+          >
+            <ArrowLeft
+              size={18}
+              strokeWidth={1.8}
+              className="transition-transform duration-200 group-hover:-translate-x-1"
+            />
+            <span>Back to Home</span>
+          </button>
+
           <div className="grid animate-pulse gap-8 lg:grid-cols-2 lg:gap-14">
             <div className="min-h-[420px] rounded-2xl bg-[#F5EFE6]" />
 
@@ -397,54 +507,99 @@ function ProductDetailsPage() {
     );
   }
 
-  /* =========================================================
-     ERROR
-  ========================================================= */
+  // ------------------------------------------------------------
+  // ERROR
+  // ------------------------------------------------------------
 
   if (error || !product) {
     return (
-      <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-16 sm:px-8 lg:px-12">
-        <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-          <h1 className="text-2xl font-semibold text-[#1F4A2E]">
-            Product Not Found
-          </h1>
-
-          <p className="mt-3 text-sm leading-6 text-[#8B7A6C]">
-            {error ||
-              "The product you are looking for is no longer available."}
-          </p>
-
+      <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+        <div className="mx-auto max-w-6xl">
           <button
             type="button"
-            onClick={() => navigate("/")}
-            className="
-              mt-7 rounded-xl bg-[#B5697A] px-6 py-3
-              text-sm font-medium text-white transition-colors
-              hover:bg-[#A55F70] focus:outline-none
-              focus:ring-2 focus:ring-[#B5697A]/30 focus:ring-offset-2
-            "
+            onClick={handleBackToHome}
+            className="group inline-flex min-h-10 items-center gap-2 rounded-lg pr-3 text-sm font-medium text-[#28583B] transition-colors hover:text-[#B5697A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]/40 focus-visible:ring-offset-2"
+            aria-label="Back to Home"
           >
-            Back to Home
+            <ArrowLeft
+              size={18}
+              strokeWidth={1.8}
+              className="transition-transform duration-200 group-hover:-translate-x-1"
+            />
+            <span>Back to Home</span>
           </button>
+
+          <div className="mx-auto mt-10 flex max-w-xl flex-col items-center text-center">
+            <h1 className="text-2xl font-semibold text-[#1F4A2E]">
+              Product Not Found
+            </h1>
+
+            <p className="mt-3 text-sm leading-6 text-[#8B7A6C]">
+              {error ||
+                "The product you are looking for is no longer available."}
+            </p>
+
+            <button
+              type="button"
+              onClick={handleBackToHome}
+              className="mt-7 rounded-xl bg-[#B5697A] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#A55F70] focus:outline-none focus:ring-2 focus:ring-[#B5697A]/30 focus:ring-offset-2"
+            >
+              Back to Home
+            </button>
+          </div>
         </div>
       </main>
     );
   }
 
-  /* =========================================================
-     PAGE
-  ========================================================= */
+  // ------------------------------------------------------------
+  // PRODUCT DETAILS DATA
+  // ------------------------------------------------------------
+
+  const details = product as DetailedProduct;
+
+  const hasProductDetails = Boolean(
+    details.ingredients ||
+      details.allergenInfo ||
+      details.medicalDisclaimer ||
+      details.benefits ||
+      details.usageSuggestions ||
+      details.storageInstructions ||
+      details.shelfLife
+  );
+
+  // ------------------------------------------------------------
+  // PAGE
+  // ------------------------------------------------------------
 
   return (
     <>
-      <main className="bg-white px-5 py-28 sm:px-8 sm:py-28 lg:px-12 lg:py-32">
+      <main className="bg-white px-5 pb-10 pt-[85px] sm:px-8 sm:pb-12 sm:pt-24 lg:px-12 lg:pb-14 lg:pt-28">
         <div className="mx-auto w-full max-w-6xl">
-          {/* PRODUCT SECTION */}
+          {/* BACK TO HOME */}
+          <div className="mb-2 sm:mb-4">
+            <button
+              type="button"
+              onClick={handleBackToHome}
+              className="group inline-flex min-h-10 items-center gap-1 rounded-lg pr-3 text-[11px] text-[#B5697A] transition-colors duration-200 hover:underline focus:outline-none md:text-[12px]"
+              aria-label="Back to Home"
+            >
+              <ArrowLeft
+                size={16}
+                strokeWidth={1.8}
+                className="transition-transform duration-200 group-hover:-translate-x-0.5"
+              />
+              <span>Back to Home</span>
+            </button>
+          </div>
+
+          {/* MAIN PRODUCT SECTION */}
           <div className="overflow-hidden rounded-2xl border border-[#EFE3D2] bg-white shadow-sm">
             <div className="grid lg:grid-cols-[1fr_1fr]">
               <ProductDetailsImage
                 product={product}
                 packaging={selectedPackaging}
+                variant={selectedVariant}
               />
 
               <ProductDetailsInfo
@@ -463,29 +618,94 @@ function ProductDetailsPage() {
             </div>
           </div>
 
-          {/* PRODUCT PICKER GUIDE */}
-          <div className="px-5 py-6 sm:px-8 sm:py-7 lg:px-12 lg:py-8">
+          {/* PRODUCT INFORMATION */}
+          {hasProductDetails && (
+            <section
+              className="mt-8 sm:mt-10"
+              aria-labelledby="product-details-heading"
+            >
+              <div className="mb-3 sm:mb-4">
+                <h2
+                  id="product-details-heading"
+                  className="mt-2 text-[20px] font-semibold tracking-tight text-gray-700 sm:text-[26px]"
+                >
+                  Product Details
+                </h2>
+
+                <p className="mt-0 max-w-2xl text-[11px] leading-relaxed text-gray-600 md:text-[13.5px]">
+                  Ingredients, allergen information, serving ideas and
+                  storage guidance for {product.name}.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+                <ProductDetailSection
+                  title="Ingredients"
+                  content={details.ingredients}
+                  icon="book"
+                />
+
+                <ProductDetailSection
+                  title="Allergen Information"
+                  content={details.allergenInfo}
+                  icon="shield"
+                />
+
+                <ProductDetailSection
+                  title="Benefits"
+                  content={details.benefits}
+                  icon="book"
+                />
+
+                <ProductDetailSection
+                  title="Usage Suggestions"
+                  content={details.usageSuggestions}
+                  icon="book"
+                />
+
+                <ProductDetailSection
+                  title="Storage Instructions"
+                  content={details.storageInstructions}
+                  icon="clock"
+                />
+
+                <ProductDetailSection
+                  title="Shelf Life"
+                  content={details.shelfLife}
+                  icon="clock"
+                />
+              </div>
+
+              {details.medicalDisclaimer && (
+                <div className="mt-4 rounded-xl border border-[#E8D6B9] bg-[#FFFCF7] p-4 sm:p-5">
+                  <h3 className="text-sm font-semibold text-gray-600">
+                    Medical Disclaimer
+                  </h3>
+
+                  <p className="text-[11.5px] leading-relaxed font-light tracking-wide text-justify text-gray-500 sm:text-[13.5px] md:text-[13px]">
+                    {details.medicalDisclaimer}
+                  </p>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* PICKER GUIDE */}
+          <div className="px-0 py-6 sm:px-8 sm:py-7 lg:px-12 lg:py-8">
             <div className="mx-auto w-full max-w-2xl">
               <ProductPickerGuide />
             </div>
           </div>
 
-          {/* CUSTOMER STORIES - PRESERVED AS COMMENTED IN YOUR CODE */}
-          {/* <div className="px-5 pb-8 sm:px-8 sm:pb-10 lg:px-12 lg:pb-12">
-            <div className="mx-auto w-full max-w-6xl">
-              <CustomerStories productName={product.name} />
-            </div>
-          </div> */}
-
           {/* RECOMMENDED PRODUCTS */}
-          <div className="px-5 pb-10 sm:px-8 sm:pb-12 lg:px-12 lg:pb-14">
+          <div className="pb-10 sm:pb-12 lg:pb-14">
             <div className="mx-auto w-full max-w-6xl">
               <RecommendedProducts currentProductId={product.id} />
             </div>
           </div>
 
           {/* CUSTOMER REVIEWS */}
-          <div className="px-5 pb-10 sm:px-8 sm:pb-12 lg:px-12 lg:pb-14">
+          <div className="pb-10 sm:pb-12 lg:pb-14">
             <div className="mx-auto w-full max-w-6xl">
               <CustomerReviews
                 productId={product.id}
@@ -497,7 +717,7 @@ function ProductDetailsPage() {
         </div>
       </main>
 
-      {/* EXISTING OTP AUTH MODAL */}
+      {/* OTP AUTH MODAL */}
       {isAuthModalOpen && (
         <OtpAuthModal
           onClose={() => setIsAuthModalOpen(false)}

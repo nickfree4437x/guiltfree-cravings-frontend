@@ -17,7 +17,7 @@ function PaymentStatusBadge({
 }: PaymentStatusBadgeProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] tracking-[0.01em] ${getPaymentStatusClass(
+      className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] tracking-[0.01em] ${getPaymentStatusClass(
         status
       )}`}
     >

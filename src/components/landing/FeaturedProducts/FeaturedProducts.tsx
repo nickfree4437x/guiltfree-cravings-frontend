@@ -115,9 +115,9 @@ function FeaturedProducts() {
       id="products"
       className="
         scroll-mt-12 overflow-hidden
-        bg-[#FFF9F5]
-        px-4 py-6
-        sm:px-8 sm:py-8
+        bg-white
+        px-4 py-10
+        sm:px-8 sm:py-12
         lg:px-12
       "
     >

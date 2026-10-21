@@ -201,8 +201,8 @@ function TestimonialsSection() {
         className="
           relative
           overflow-hidden
-          bg-white
-          py-10
+          bg-[#fffbfc]
+          py-8
           md:py-12
           scroll-mt-12
         "

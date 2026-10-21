@@ -53,10 +53,10 @@ const quickActions: QuickAction[] = [
 
 function QuickActions() {
   return (
-    <section className="mt-6 rounded-lg bg-white">
+    <section className="mt-4 md:mt-6 rounded-lg bg-white">
       {/* Section Header */}
       <div className="mb-2">
-        <h2 className="text-[18px] font-semibold tracking-[-0.01em] text-[#1F4A2E]">
+        <h2 className="text-[16px] md:text-[18px] font-semibold tracking-[-0.01em] text-[#1F4A2E]">
           Quick Actions
         </h2>
       </div>
@@ -73,7 +73,7 @@ function QuickActions() {
               className={`
                 group
                 flex
-                min-h-[168px]
+                min-h-[140px]
                 flex-col
                 items-center
                 justify-center
@@ -82,7 +82,7 @@ function QuickActions() {
                 border-[#E8E1D9]
                 bg-white
                 px-5
-                py-5
+                py-4
                 text-center
                 transition-all
                 duration-300
@@ -111,7 +111,7 @@ function QuickActions() {
               </div>
 
               {/* Label */}
-              <h3 className="mt-2 text-[15px] tracking-[-0.01em] text-[#31415A]">
+              <h3 className="mt-2 text-[12px] md:text-[14px] tracking-[-0.01em] text-gray-600">
                 {action.label}
               </h3>
 

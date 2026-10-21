@@ -1,14 +1,17 @@
-// src/pages/admin/orders/AdminOrdersPage.tsx
 
 import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
 import {
   AlertCircle,
+  Layers,
+  MapPin,
+  MapPinned,
   RefreshCw,
 } from "lucide-react";
 
@@ -17,9 +20,7 @@ import OrderSummaryCards from "../../../components/admin/orders/OrderSummaryCard
 import OrdersToolbar from "../../../components/admin/orders/OrdersToolbar";
 import OrdersList from "../../../components/admin/orders/OrdersList";
 
-import {
-  getAdminOrders,
-} from "../../../api/adminOrderApi";
+import { getAdminOrders } from "../../../api/adminOrderApi";
 
 import type {
   AdminOrder,
@@ -27,194 +28,194 @@ import type {
   PaymentStatus,
 } from "../../../components/admin/orders/types";
 
-/*
- * =========================================================
- * ADMIN ORDERS PAGE
- * =========================================================
- */
+type AreaFilter = "ALL" | "WITHIN_DWARKA" | "OUTSIDE_DWARKA";
+
+const ORDERS_POLL_INTERVAL = 15_000;
+
+function isWithinDwarka(order: AdminOrder): boolean {
+  return order.deliveryZone?.trim().toUpperCase() === "WITHIN_DWARKA";
+}
+
+function isOutsideDwarka(order: AdminOrder): boolean {
+  return order.deliveryZone?.trim().toUpperCase() === "OUTSIDE_DWARKA";
+}
 
 function AdminOrdersPage() {
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
+  const [orderStatus, setOrderStatus] = useState<OrderStatus | "">("");
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | "">("");
+  const [areaFilter, setAreaFilter] = useState<AreaFilter>("ALL");
 
-  const [orderStatus, setOrderStatus] =
-    useState<OrderStatus | "">("");
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState("");
 
-  const [paymentStatus, setPaymentStatus] =
-    useState<PaymentStatus | "">("");
+  const requestInProgress = useRef(false);
+  const mountedRef = useRef(false);
 
-  const [orders, setOrders] =
-    useState<AdminOrder[]>([]);
+  const loadOrders = useCallback(async (showRefreshLoader = false) => {
+    // Avoid overlapping requests.
+    if (requestInProgress.current) return;
 
-  const [isLoading, setIsLoading] =
-    useState(true);
+    requestInProgress.current = true;
 
-  const [isRefreshing, setIsRefreshing] =
-    useState(false);
+    try {
+      if (showRefreshLoader) {
+        setIsRefreshing(true);
+      }
 
-  const [error, setError] =
-    useState("");
+      setError("");
 
-  /*
-   * =======================================================
-   * LOAD ORDERS
-   * =======================================================
-   */
+      const data = await getAdminOrders();
 
-  const loadOrders = useCallback(
-    async (
-      showRefreshLoader = false
-    ) => {
-      try {
-        if (showRefreshLoader) {
-          setIsRefreshing(true);
-        } else {
-          setIsLoading(true);
-        }
-
-        setError("");
-
-        const data =
-          await getAdminOrders();
-
+      if (mountedRef.current) {
         setOrders(data);
-      } catch (error) {
-        console.error(
-          "Failed to load admin orders:",
-          error
-        );
+      }
+    } catch (err: unknown) {
+      console.error("Failed to load admin orders:", err);
 
+      if (mountedRef.current) {
         setError(
-          error instanceof Error
-            ? error.message
+          err instanceof Error
+            ? err.message
             : "Unable to load orders. Please try again."
         );
-      } finally {
+      }
+    } finally {
+      requestInProgress.current = false;
+
+      if (mountedRef.current) {
         setIsLoading(false);
         setIsRefreshing(false);
       }
-    },
-    []
-  );
-
-  /*
-   * =======================================================
-   * INITIAL LOAD
-   * =======================================================
-   */
+    }
+  }, []);
 
   useEffect(() => {
+    mountedRef.current = true;
+
     void loadOrders();
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        void loadOrders(true);
+      }
+    }, ORDERS_POLL_INTERVAL);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void loadOrders(true);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      mountedRef.current = false;
+      window.clearInterval(intervalId);
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+    };
   }, [loadOrders]);
 
-  /*
-   * =======================================================
-   * SUMMARY COUNTS
-   * =======================================================
-   */
+  const totalOrders = orders.length;
 
-  const totalOrders =
-    orders.length;
+  const pendingOrders = orders.filter(
+    (order) => order.orderStatus === "PENDING"
+  ).length;
 
-  const pendingOrders =
-    orders.filter(
-      (order) =>
-        order.orderStatus ===
-        "PENDING"
-    ).length;
+  const paidOrders = orders.filter(
+    (order) => order.paymentStatus === "PAID"
+  ).length;
 
-  const paidOrders =
-    orders.filter(
-      (order) =>
-        order.paymentStatus ===
-        "PAID"
-    ).length;
+  const completedOrders = orders.filter(
+    (order) => order.orderStatus === "COMPLETED"
+  ).length;
 
-  const completedOrders =
-    orders.filter(
-      (order) =>
-        order.orderStatus ===
-        "COMPLETED"
-    ).length;
+  const areaCounts = useMemo(() => {
+    const withinDwarka = orders.filter(isWithinDwarka).length;
+    const outsideDwarka = orders.filter(isOutsideDwarka).length;
 
-  /*
-   * =======================================================
-   * FILTER ORDERS
-   * =======================================================
-   */
+    return {
+      all: orders.length,
+      withinDwarka,
+      outsideDwarka,
+    };
+  }, [orders]);
 
-  const filteredOrders =
-    useMemo(() => {
-      const query =
-        search
-          .trim()
-          .toLowerCase();
+  const areaFilteredOrders = useMemo(() => {
+    switch (areaFilter) {
+      case "WITHIN_DWARKA":
+        return orders.filter(isWithinDwarka);
 
-      return orders.filter(
-        (order) => {
-          const matchesSearch =
-            !query ||
-            order.orderNumber
-              .toLowerCase()
-              .includes(query) ||
-            order.customerName
-              .toLowerCase()
-              .includes(query) ||
-            order.customerPhone
-              .toLowerCase()
-              .includes(query) ||
-            order.customerEmail
-              ?.toLowerCase()
-              .includes(query);
+      case "OUTSIDE_DWARKA":
+        return orders.filter(isOutsideDwarka);
 
-          const matchesOrderStatus =
-            !orderStatus ||
-            order.orderStatus ===
-              orderStatus;
+      case "ALL":
+      default:
+        return orders;
+    }
+  }, [orders, areaFilter]);
 
-          const matchesPaymentStatus =
-            !paymentStatus ||
-            order.paymentStatus ===
-              paymentStatus;
+  const filteredOrders = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-          return (
-            matchesSearch &&
-            matchesOrderStatus &&
-            matchesPaymentStatus
-          );
-        }
+    return areaFilteredOrders.filter((order) => {
+      const matchesSearch =
+        !query ||
+        order.orderNumber.toLowerCase().includes(query) ||
+        order.customerName.toLowerCase().includes(query) ||
+        order.customerPhone.toLowerCase().includes(query) ||
+        Boolean(order.customerEmail?.toLowerCase().includes(query));
+
+      const matchesOrderStatus =
+        !orderStatus || order.orderStatus === orderStatus;
+
+      const matchesPaymentStatus =
+        !paymentStatus || order.paymentStatus === paymentStatus;
+
+      return (
+        matchesSearch &&
+        matchesOrderStatus &&
+        matchesPaymentStatus
       );
-    }, [
-      orders,
-      search,
-      orderStatus,
-      paymentStatus,
-    ]);
-
-  /*
-   * =======================================================
-   * CLEAR FILTERS
-   * =======================================================
-   */
+    });
+  }, [areaFilteredOrders, search, orderStatus, paymentStatus]);
 
   const clearFilters = () => {
     setSearch("");
     setOrderStatus("");
     setPaymentStatus("");
+    setAreaFilter("ALL");
   };
 
-  const hasActiveFilters =
-    Boolean(
-      search.trim() ||
-        orderStatus ||
-        paymentStatus
-    );
+  const hasActiveFilters = Boolean(
+    search.trim() || orderStatus || paymentStatus
+  );
 
-  /*
-   * =======================================================
-   * LOADING STATE
-   * =======================================================
-   */
+  const areaTabs = [
+    {
+      id: "ALL" as const,
+      label: "All Areas",
+      count: areaCounts.all,
+      Icon: Layers,
+    },
+    {
+      id: "WITHIN_DWARKA" as const,
+      label: "Within Dwarka",
+      count: areaCounts.withinDwarka,
+      Icon: MapPin,
+    },
+    {
+      id: "OUTSIDE_DWARKA" as const,
+      label: "Outside Dwarka",
+      count: areaCounts.outsideDwarka,
+      Icon: MapPinned,
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -223,71 +224,51 @@ function AdminOrdersPage() {
           <OrdersPageHeader />
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {[1, 2, 3, 4].map(
-              (item) => (
-                <div
-                  key={item}
-                  className="h-[138px] animate-pulse rounded-2xl border border-[#EFE3D2] bg-white"
-                />
-              )
-            )}
+            {[1, 2, 3, 4].map((item) => (
+              <div
+                key={item}
+                className="h-[138px] animate-pulse rounded-2xl border border-[#EFE3D2] bg-white"
+              />
+            ))}
           </div>
 
-          <div className="mt-8 overflow-hidden rounded-2xl border border-[#EFE3D2] bg-white">
-            <div className="h-[112px] animate-pulse border-b border-[#EFE3D2] bg-[#FFFCF8]" />
-
-            <div className="space-y-0">
-              {[1, 2, 3, 4, 5].map(
-                (item) => (
-                  <div
-                    key={item}
-                    className="h-[82px] animate-pulse border-b border-[#F1E9E1] bg-white"
-                  />
-                )
-              )}
-            </div>
+          <div className="mt-8 space-y-0 overflow-hidden rounded-2xl border border-[#EFE3D2] bg-white">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <div
+                key={item}
+                className="h-[82px] animate-pulse border-b border-[#F1E9E1] bg-white"
+              />
+            ))}
           </div>
         </div>
       </main>
     );
   }
 
-  /*
-   * =======================================================
-   * ERROR STATE
-   * =======================================================
-   */
-
-  if (error) {
+  if (error && orders.length === 0) {
     return (
       <main className="min-h-full bg-white px-5 py-8 sm:px-6 lg:px-8 lg:py-10">
         <div className="mx-auto max-w-7xl">
           <OrdersPageHeader />
 
-          <section className="mt-8 flex min-h-[360px] items-center justify-center rounded-2xl border border-[#EFE3D2] bg-white px-6 py-12 text-center shadow-[0_2px_10px_rgba(31,74,46,0.035)]">
+          <section className="mt-8 flex min-h-[360px] items-center justify-center rounded-2xl border border-[#EFE3D2] bg-white px-6 py-12 text-center">
             <div className="max-w-md">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FBECEF] text-[#B5697A]">
-                <AlertCircle
-                  className="h-7 w-7"
-                  strokeWidth={1.8}
-                  aria-hidden="true"
-                />
+                <AlertCircle className="h-7 w-7" />
               </div>
 
-              <h2 className="mt-5 text-[18px] font-semibold text-[#1F4A2E]">
+              <h2 className="mt-5 text-lg font-semibold text-[#1F4A2E]">
                 Unable to Load Orders
               </h2>
 
-              <p className="mt-2 text-[13px] leading-6 text-[#8B7A6C]">
+              <p className="mt-2 text-sm leading-6 text-[#8B7A6C]">
                 {error}
               </p>
 
               <button
                 type="button"
-                onClick={() =>
-                  void loadOrders()
-                }
-                className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-[#B5697A] px-5 text-[13px] text-white transition-all duration-200 hover:bg-[#A85F70] hover:shadow-[0_6px_18px_rgba(181,105,122,0.18)] focus:outline-none focus:ring-2 focus:ring-[#B5697A]/20 focus:ring-offset-2"
+                onClick={() => void loadOrders()}
+                className="mt-6 rounded-xl bg-[#B5697A] px-5 py-2.5 text-sm text-white hover:bg-[#A85F70]"
               >
                 Try Again
               </button>
@@ -298,102 +279,128 @@ function AdminOrdersPage() {
     );
   }
 
-  /*
-   * =======================================================
-   * RENDER
-   * =======================================================
-   */
-
   return (
     <main className="min-h-full bg-white px-5 py-2 sm:px-6 lg:px-8 lg:py-4">
       <div className="mx-auto max-w-7xl">
-
-        {/* PAGE HEADER */}
-
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <OrdersPageHeader />
 
           <button
             type="button"
-            onClick={() =>
-              void loadOrders(true)
-            }
             disabled={isRefreshing}
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 self-start rounded-xl border border-[#E8DED3] bg-white px-4 text-[13px] text-[#6F6259] shadow-sm transition-all duration-200 hover:border-[#D9B8C1] hover:bg-[#FDF4F6] hover:text-[#B5697A] disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
+            onClick={() => void loadOrders(true)}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-[#E8DED3] bg-white px-3 py-2 text-[11px] text-slate-500 shadow-sm hover:border-[#D9B8C1] hover:bg-[#FDF4F6] hover:text-[#B5697A] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-[12px]"
           >
             <RefreshCw
-              className={`h-4 w-4 ${
+              className={
                 isRefreshing
-                  ? "animate-spin"
-                  : ""
-              }`}
+                  ? "h-3.5 w-3.5 animate-spin sm:h-4 sm:w-4"
+                  : "h-3.5 w-3.5 sm:h-4 sm:w-4"
+              }
               strokeWidth={1.8}
-              aria-hidden="true"
             />
-            Refresh
+            {isRefreshing ? "Refreshing..." : "Refresh"}
           </button>
         </div>
 
-        {/* SUMMARY CARDS */}
+        {/* Non-blocking refresh error */}
+        {error && orders.length > 0 && (
+          <div
+            role="status"
+            className="mt-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <span className="flex items-start gap-2">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              Could not refresh orders. Showing previously loaded data.
+            </span>
 
+            <button
+              type="button"
+              onClick={() => void loadOrders(true)}
+              className="shrink-0 font-semibold underline underline-offset-2"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {/* SUMMARY CARDS */}
         <OrderSummaryCards
           totalOrders={totalOrders}
-          pendingOrders={
-            pendingOrders
-          }
-          paidOrders={
-            paidOrders
-          }
-          completedOrders={
-            completedOrders
-          }
+          pendingOrders={pendingOrders}
+          paidOrders={paidOrders}
+          completedOrders={completedOrders}
         />
 
+        {/* SEARCH AND STATUS FILTERS */}
         <OrdersToolbar
-            search={search}
-            filteredCount={
-              filteredOrders.length
-            }
-            totalCount={orders.length}
-            orderStatus={
-              orderStatus
-            }
-            paymentStatus={
-              paymentStatus
-            }
-            hasActiveFilters={
-              hasActiveFilters
-            }
-            onSearchChange={
-              setSearch
-            }
-            onOrderStatusChange={
-              setOrderStatus
-            }
-            onPaymentStatusChange={
-              setPaymentStatus
-            }
-            onClearFilters={
-              clearFilters
-            }
-          />
+          search={search}
+          filteredCount={filteredOrders.length}
+          totalCount={areaFilteredOrders.length}
+          orderStatus={orderStatus}
+          paymentStatus={paymentStatus}
+          hasActiveFilters={hasActiveFilters}
+          onSearchChange={setSearch}
+          onOrderStatusChange={setOrderStatus}
+          onPaymentStatusChange={setPaymentStatus}
+          onClearFilters={() => {
+            setSearch("");
+            setOrderStatus("");
+            setPaymentStatus("");
+          }}
+        />
+
+        {/* DELIVERY AREA TABS */}
+        <section
+          aria-label="Filter orders by delivery area"
+          className="mt-5"
+        >
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {areaTabs.map(({ id, label, count, Icon }) => {
+              const active = areaFilter === id;
+
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setAreaFilter(id)}
+                  aria-pressed={active}
+                  className={`flex min-h-[40px] items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition ${
+                    active
+                      ? "border-[#fffbfc] bg-[#F8EBEF] text-[#824958]"
+                      : "border-[#EFE3D2] bg-white text-[#6E5C61] hover:border-[#DABBC3] hover:bg-[#fffbfc]"
+                  }`}
+                >
+                  <span className="flex items-center gap-3">
+                    <Icon size={18} strokeWidth={1.8} />
+
+                    <span className="text-[11px] md:text-[12px]">
+                      {label}
+                    </span>
+                  </span>
+
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-xs ${
+                      active
+                        ? "bg-white text-[#824958]"
+                        : "bg-[#F8F3F0] text-[#76666A]"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* ORDERS */}
-
         <section className="mt-5 overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
-
           <OrdersList
-            orders={
-              filteredOrders
-            }
-            hasSearch={
-              hasActiveFilters
-            }
-            onClearSearch={
-              clearFilters
-            }
+            orders={filteredOrders}
+            hasSearch={hasActiveFilters || areaFilter !== "ALL"}
+            onClearSearch={clearFilters}
           />
-
         </section>
       </div>
     </main>

@@ -18,6 +18,7 @@ import AdminReviewsPage from "../pages/admin/reviews/AdminReviewsPage";
 
 import AdminLayout from "../pages/admin/layout/AdminLayout";
 import AdminProtectedRoute from "../protected-routes/AdminProtectedRoute";
+import AdminOrderDetailsPage from "../pages/admin/orders/AdminOrderDetailsPage";
 
 function AdminRoutes() {
   return (
@@ -54,6 +55,11 @@ function AdminRoutes() {
           <Route
             path="orders"
             element={<AdminOrdersPage />}
+          />
+
+          <Route
+            path="orders/:id"
+            element={<AdminOrderDetailsPage />}
           />
 
           {/* Payments */}

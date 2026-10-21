@@ -4,13 +4,12 @@ function OrdersPageHeader() {
   return (
     <div>
 
-      <h1 className="mt-2 text-[18px] md:text-[24px] font-bold tracking-tight text-slate-900">
+      <h1 className="mt-2 text-[18px] font-bold tracking-tight text-slate-700 md:text-[22px]">
         Orders
       </h1>
 
-      <p className="mt-0 max-w-xl text-sm leading-relaxed text-slate-500">
-        View and manage customer orders from your
-        GuiltFree Cravings store.
+      <p className="mt-0 max-w-xl text-[11px] md:text-[12px] font-[350] leading-relaxed text-slate-500">
+        Manage customer orders from your store.
       </p>
     </div>
   );

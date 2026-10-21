@@ -1,218 +1,161 @@
-import {
-  House,
-  Leaf,
-  ShieldCheck,
-  Droplet,
-  Baby,
-  HeartHandshake,
-  Zap,
-} from "lucide-react";
+"use client";
+
+import { Baby, HeartHandshake, Zap } from "lucide-react";
 
 function About() {
-  const values = [
+  const disciplinePoints = [
     {
-      icon: House,
-      title: "Made at Home",
+      title: "Structured Kitchen Standards:",
       description:
-        "Hand-rolled in small batches with genuine care, comfort, and attention to detail.",
+        " Backed by years of operational management experience, we treat kitchen hygiene, measurement precision, and batch consistency with absolute discipline.",
     },
     {
-      icon: Leaf,
-      title: "No Refined Sugar",
+      title: "Small-Batch Handcrafted:",
       description:
-        "Sweetened naturally with raw jaggery and dates instead of refined sugar.",
+        " Prepared entirely by local homemakers, ensuring the authentic taste, care, and ingredient integrity of a true home kitchen.",
     },
     {
-      icon: ShieldCheck,
-      title: "No Preservatives",
+      title: "Transparent Ingredients:",
       description:
-        "Freshly made without artificial preservatives or unnecessary additives.",
-    },
-    {
-      icon: Droplet,
-      title: "No Palm Oil",
-      description:
-        "Made with authentic Desi Ghee and without palm oil or hydrogenated fats.",
+        " Zero artificial preservatives. Zero hidden stabilizers. Zero cheap seed oils. We cook only with what we know and trust.",
     },
   ];
 
   const goodnessCards = [
-  {
-    icon: Baby,
-    label: "FOR KIDS",
-    title: "For Growing Kids",
-    description:
-      "A wholesome burst of natural energy for growing minds and active days.",
-  },
-  {
-    icon: HeartHandshake,
-    label: "FOR WOMEN",
-    title: "For Busy Women",
-    description:
-      "A nourishing little break when the day gets long, busy, and demanding.",
-  },
-  {
-    icon: Zap,
-    label: "FOR MEN",
-    title: "For Busy Men",
-    description:
-      "A wholesome bite between meetings, workouts, and everyday moments.",
-  },
- ];
+    {
+      icon: Baby,
+      title: "For Growing Kids",
+      description:
+        "A wholesome burst of natural energy for growing minds and active days.",
+    },
+    {
+      icon: HeartHandshake,
+      title: "For Busy Women",
+      description:
+        "A nourishing little break when the day gets long, busy, and demanding.",
+    },
+    {
+      icon: Zap,
+      title: "For Busy Men",
+      description:
+        "A wholesome bite between meetings, workouts, and everyday moments.",
+    },
+  ];
 
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-white pb-10"
+      className="relative overflow-hidden scroll-mt-10 pb-10 bg-[#fffbfc]"
     >
+      <div className="mx-auto w-full max-w-[1280px] px-5 sm:px-10 lg:px-12">
+        {/* About Us: Content + Video */}
+        <div className="grid items-stretch gap-8 py-2 sm:py-12 lg:grid-cols-2 lg:gap-14 lg:py-14">
+          {/* Left Content */}
+          <div className="flex flex-col justify-center md:-mt-6">
 
-      {/* =====================================================
-          MAIN CONTAINER
-      ===================================================== */}
-
-      <div className="relative mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-12">
-
-        {/* ===================================================
-            TOP — STORY + VIDEO
-        =================================================== */}
-
-        <div className="grid items-center gap-6 py-10 sm:py-24 lg:grid-cols-2 lg:gap-14">
-
-          {/* =================================================
-              LEFT CONTENT
-          ================================================= */}
-
-          <div className="text-center lg:px-4">
-
-            {/* Main heading */}
-
-            <h2 className="text-[18px] sm:text-[24px] md:text-[22px] font-[600] text-[#C9788B] tracking-wide leading-snug mb-1">
-              Our Promise, Made with Care
+            <h2 className="mb-2 text-[22px] font-semibold text-center tracking-wide text-[#C9788B] sm:text-[26px] md:text-[30px]">
+              About Us
             </h2>
 
-            {/* Intro description */}
+            <div className="space-y-4 text-[12px] font-[350] leading-relaxed text-gray-600 md:text-[14px] lg:leading-relaxed text-justify">
+              <p>
+                We are a small team of process-driven planners and home-chefs
+                grounding healthy snacking in real kitchen discipline.
+              </p>
 
-            <p className="text-gray-600 text-[11px] sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed mb-3 max-w-[320px] sm:max-w-[600px] mx-auto">
-              Homemade laddoos crafted with thoughtfully selected
-              ingredients, comforting flavours, and lots of love.
-            </p>
+              <p>
+                We combined a decade of operational management experience with
+                traditional homemade care to fix a simple problem: making
+                snacks that are genuinely clean, consistent, and safe.
+              </p>
+            </div>
 
-            {/* =================================================
-                VALUE CONTENT
-            ================================================= */}
+            {/* Discipline Behind Every Batch */}
+            <div className="mt-4 sm:mt-6">
+              <h3 className="mb- md:mb-2 text-center text-[18px] font-semibold leading-snug text-gray-700 sm:text-[20px] lg:text-left">
+                The Discipline Behind Every Batch
+              </h3>
 
-            <div className="mx-auto md:mt-7 max-w-[620px] md:space-y-6">
+              <ul className="space-y-3 text-[12px] font-[350] leading-relaxed text-gray-600 md:text-[14px] lg:leading-relaxed text-justify">
+                {disciplinePoints.map((point) => (
+                  <li
+                    key={point.title}
+                    className="flex items-start gap-3"
+                  >
+                    {/* Pink Bullet */}
+                    <span
+                      aria-hidden="true"
+                      className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-[#C9788B]"
+                    />
 
-              {values.map((value) => {
-                // const Icon = value.icon;
-
-                return (
-                  <div key={value.title}>
-
-                    {/* Small heading */}
-
-                    <div className="flex items-center justify-center gap-2">
-
-                      <h3 className="text-[#C9788B] font-medium text-[13px] sm:text-[14px] md:text-[15px] mb-1">
-                        {value.title}
-                      </h3>
-                    </div>
-
-                    {/* Description */}
-
-                    <p className="text-gray-700 text-[11px] sm:text-[13px] md:text-[13px] tracking-wide leading-relaxed mb-3 max-w-[320px] sm:max-w-[600px] mx-auto">
-                      {value.description}
+                    {/* Paragraph */}
+                    <p className="min-w-0 flex-1">
+                      <span className="font-[400] text-[#C9788B]">
+                        {point.title}
+                      </span>
+                      {point.description}
                     </p>
-                  </div>
-                );
-              })}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* =================================================
-              RIGHT — VIDEO
-          ================================================= */}
-
-          <div className="relative">
-            <div className="relative max-w-[340px] sm:max-w-[420px] md:max-w-[500px] h-[230px] sm:h-[360px] md:h-[370px] overflow-hidden border border-[#E8DCCF] bg-[#F5EEE5]">
+          {/* Right Video */}
+          <div className="flex w-full items-stretch justify-center lg:justify-end">
+            <div className="relative h-[260px] w-full max-w-[500px] rounded-md overflow-hidden border border-[#E8DCCF] bg-[#F5EEE5] sm:h-[350px] md:h-[400px] lg:h-auto lg:min-h-[430px]">
               <video
-                className="h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
                 autoPlay
                 muted
                 loop
                 playsInline
-                preload="auto"
-                onCanPlay={() => console.log("Video ready to play")}
-                onError={(e) => console.error("Video loading error:", e.currentTarget.error)}
+                preload="metadata"
+                aria-label="Behind-the-scenes look at homemade laddoo preparation"
               >
                 <source
                   src="https://res.cloudinary.com/dja5yspwr/video/upload/v1792216319/WhatsApp_Video_2026-10-17_at_11.16.34_AM_hk7h7w.mp4"
                   type="video/mp4"
                 />
+                Your browser does not support the video tag.
               </video>
             </div>
           </div>
         </div>
 
-        {/* ===================================================
-            WHOLESOME GOODNESS
-        =================================================== */}
-
-        <div className="relative md:-mt-8  py-0 sm:py-1 lg:py-2">
-
-          {/* =================================================
-              SECTION HEADING
-          ================================================= */}
-
-          <div className="relative mx-auto max-w-2xl text-center">
-
-            <h3 className="text-[20px] sm:text-[24px] md:text-[22px] font-[550] text-[#C9788B] tracking-wide leading-snug">
+        {/* Wholesome Goodness */}
+        <div className="relative py-6 sm:py-4">
+          <div className="mx-auto max-w-2xl text-center">
+            <h3 className="text-[18px] font-semibold leading-snug tracking-wide text-[#C9788B] sm:text-[22px]">
               Wholesome Goodness For Everyone
             </h3>
           </div>
 
-          {/* =================================================
-              GOODNESS CONTENT
-          ================================================= */}
-
-          <div className="relative mt-6 grid md:grid-cols-3">
-
+          <div className="mt-6 grid gap-5 md:grid-cols-3 md:gap-0">
             {goodnessCards.map((card, index) => {
               const Icon = card.icon;
 
               return (
                 <div
                   key={card.title}
-                  className={`
-                    px-6 py-2 text-center sm:px-10
-                    ${
-                      index !== 0
-                        ? "mt-2 pt-4 md:mt-0 md:pt-2"
-                        : ""
-                    }
-                  `}
+                  className={`px-5 py-3 text-center sm:px-8 ${
+                    index !== 0
+                      ? "mt-2 border-t border-[#E8DCCF] pt-6 md:mt-0 md:border-l md:border-t-0 md:pt-3"
+                      : ""
+                  }`}
                 >
-
                   {/* Icon */}
-
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F8E8EC] text-[#C9788B]">
-                    <Icon
-                      size={21}
-                      strokeWidth={1.7}
-                    />
+                    <Icon size={21} strokeWidth={1.7} />
                   </div>
 
-
                   {/* Title */}
-
-                  <h4 className="mt-2 text-[17px] font-semibold text-[#1F4A2E] sm:text-[18px]">
+                  <h4 className="mt-3 text-[16px] font-semibold text-gray-700 sm:text-[18px]">
                     {card.title}
                   </h4>
 
                   {/* Description */}
-
-                  <p className="text-gray-600 text-[12px] font-[350] sm:text-[13px] md:text-[13px] 
-                           leading-relaxed tracking-wide">
+                  <p className="mx-auto mt-1 max-w-[320px] text-[12px] leading-relaxed tracking-wide font-[350] text-gray-600 sm:text-[13px]">
                     {card.description}
                   </p>
                 </div>

@@ -50,7 +50,7 @@ function OurPromise() {
   return (
     <section
       id="our-promise"
-      className="relative overflow-hidden bg-white -mt-4 -md:mt-4 scroll-mt-20"
+      className="relative overflow-hidden bg-white py-8 md:py-0 -md:mt-4 scroll-mt-20"
     >
       {/* Dotted pattern */}
       <div

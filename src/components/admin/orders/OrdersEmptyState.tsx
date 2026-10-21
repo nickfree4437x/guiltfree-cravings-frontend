@@ -41,7 +41,7 @@ function OrdersEmptyState({
             : "No Orders Yet"}
         </h3>
 
-        <p className="mx-auto mt-2 max-w-md text-[13px] leading-6 text-[#8B7A6C]">
+        <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-slate-500">
           {hasSearch
             ? "No orders match your current search or filters. Try adjusting your filters."
             : "Customer orders will appear here once orders are created."}

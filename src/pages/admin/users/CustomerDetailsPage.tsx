@@ -11,6 +11,8 @@ import {
   ShoppingBag,
   UserRound,
   XCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
@@ -35,6 +37,8 @@ function formatOrderDate(date: string) {
   });
 }
 
+const ORDERS_PER_PAGE = 5;
+
 function CustomerDetailsPage() {
   const { id } = useParams<{ id: string }>();
 
@@ -43,6 +47,9 @@ function CustomerDetailsPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [pageError, setPageError] = useState("");
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let mounted = true;
@@ -64,6 +71,7 @@ function CustomerDetailsPage() {
 
         if (mounted) {
           setCustomer(result);
+          setCurrentPage(1); // Reset page on new customer load
         }
       } catch (error: any) {
         console.error("Failed to load customer details:", error);
@@ -105,6 +113,36 @@ function CustomerDetailsPage() {
     () => customer?.orders?.[0] || null,
     [customer]
   );
+
+  // Pagination Logic for Orders
+  const orders = customer?.orders || [];
+  const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+
+  const paginatedOrders = useMemo(() => {
+    const startIndex = (currentPage - 1) * ORDERS_PER_PAGE;
+    return orders.slice(startIndex, startIndex + ORDERS_PER_PAGE);
+  }, [orders, currentPage]);
+
+  const goToPage = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  const pageNumbers = useMemo(() => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  }, [currentPage, totalPages]);
 
   if (isLoading) {
     return (
@@ -182,7 +220,7 @@ function CustomerDetailsPage() {
 
               <div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-[22px] font-semibold tracking-[-0.02em] text-[#1F4A2E] sm:text-[25px]">
+                  <h1 className="text-[18px] font-semibold tracking-[-0.02em] text-[#1F4A2E] sm:text-[24px]">
                     {customer.name || "Unnamed Customer"}
                   </h1>
 
@@ -191,7 +229,7 @@ function CustomerDetailsPage() {
                   />
                 </div>
 
-                <p className="mt-1 text-[12px] text-[#9A8D82]">
+                <p className="mt-0 text-[11px] md:text-[12px] text-slate-500">
                   Customer #{customer.id}
                 </p>
               </div>
@@ -209,11 +247,11 @@ function CustomerDetailsPage() {
 
         {/* CUSTOMER INFORMATION */}
         <section className="mt-5 rounded-xl border border-[#EFE3D2] bg-white p-4 shadow-sm sm:p-5">
-          <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
+          <h2 className="text-[14px] md:text-[16px] font-semibold text-gray-700">
             Customer Information
           </h2>
 
-          <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-2 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <InfoItem
               icon={UserRound}
               label="Full Name"
@@ -321,70 +359,71 @@ function CustomerDetailsPage() {
 
         {/* LATEST ORDER */}
         {latestOrder && (
-          <section className="mt-4 rounded-xl border border-[#EFE3D2] bg-white p-4 shadow-sm sm:p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
-                  Latest Order
-                </h2>
+  <section className="mt-4 rounded-xl border border-[#EFE3D2] bg-white p-4 shadow-sm sm:p-5">
+    {/* Header */}
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 className="text-[14px] md:text-[16px] font-semibold text-gray-700">
+          Latest Order
+        </h2>
+        <p className="mt-0.5 text-[11px] md:text-[12px] text-gray-500">
+          Most recent order placed by this customer.
+        </p>
+      </div>
 
-                <p className="mt-0.5 text-[12px] text-[#8B7A6C]">
-                  Most recent order placed by this customer.
-                </p>
-              </div>
+      <span className="inline-flex w-fit items-center rounded-md bg-[#FBECEF] px-2.5 py-1 text-[11px] font-medium text-[#A85F70] sm:text-[12px]">
+        {latestOrder.orderNumber}
+      </span>
+    </div>
 
-              <span className="text-[12px] text-[#B5697A]">
-                {latestOrder.orderNumber}
-              </span>
-            </div>
+    {/* Stats Grid */}
+    <div className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-3 sm:gap-4">
+      {/* AMOUNT */}
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-[#F0E7DF] bg-[#fffbfc] p-3.5 sm:p-4">
+        <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
+          Amount
+        </p>
+        <p className="text-[15px] font-semibold text-[#1F4A2E] sm:text-[16px]">
+          {formatCurrency(latestOrder.totalAmount)}
+        </p>
+      </div>
 
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-xl bg-[#FFFCF8] p-4">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
-                  Amount
-                </p>
+      {/* PAYMENT */}
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-3.5 sm:p-4">
+        <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
+          Payment
+        </p>
+        <div className="shrink-0">
+          <StatusBadge status={latestOrder.paymentStatus} />
+        </div>
+      </div>
 
-                <p className="mt-1.5 text-[16px] text-[#1F4A2E]">
-                  {formatCurrency(latestOrder.totalAmount)}
-                </p>
-              </div>
+      {/* ORDER STATUS */}
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-3.5 sm:p-4">
+        <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
+          Status
+        </p>
+        <div className="shrink-0">
+          <StatusBadge status={latestOrder.orderStatus} />
+        </div>
+      </div>
+    </div>
+  </section>
+)}
 
-              <div className="rounded-xl bg-[#FFFCF8] p-4">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
-                  Payment
-                </p>
-
-                <div className="mt-2">
-                  <StatusBadge status={latestOrder.paymentStatus} />
-                </div>
-              </div>
-
-              <div className="rounded-xl bg-[#FFFCF8] p-4">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
-                  Order Status
-                </p>
-
-                <div className="mt-2">
-                  <StatusBadge status={latestOrder.orderStatus} />
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ORDER HISTORY */}
+        {/* ORDER HISTORY WITH PAGINATION */}
         <section className="mt-6 overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
-          <div className="border-b border-[#EFE3D2] px-5 py-5 sm:px-6">
-            <h2 className="text-[17px] font-semibold text-[#1F4A2E]">
+          <div className="border-b border-[#EFE3D2] px-5 py-3 sm:px-6">
+            <h2 className="text-[14px] md:text-[16px] font-semibold text-gray-700">
               Order History
             </h2>
 
-            <p className="text-[12px] text-[#8B7A6C]">
+            <p className="text-[11px] md:text-[12px] text-gray-500">
               All orders placed by this customer.
             </p>
           </div>
 
-          {customer.orders.length === 0 ? (
+          {orders.length === 0 ? (
             <div className="flex min-h-[220px] items-center justify-center px-6 py-12 text-center">
               <div>
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FBECEF] text-[#B5697A]">
@@ -394,7 +433,7 @@ function CustomerDetailsPage() {
                   />
                 </div>
 
-                <p className="mt-4 text-sm font-semibold text-[#514840]">
+                <p className="mt-4 text-xs md:text-sm text-ray-600">
                   No orders yet
                 </p>
 
@@ -404,83 +443,185 @@ function CustomerDetailsPage() {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px]">
-                <thead>
-                  <tr className="border-b border-[#B5697A] bg-[#B5697A]">
-                    <th className="px-6 py-3 text-left text-[11px] uppercase tracking-[0.08em] text-white/80">
-                      Order
-                    </th>
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[900px]">
+                  <thead>
+                    <tr className="border-b border-[#B5697A] bg-[#B5697A]">
+                      <th className="px-6 py-2.5 text-left text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
+                        Order
+                      </th>
 
-                    <th className="px-6 py-3 text-left text-[11px] uppercase tracking-[0.08em] text-white/80">
-                      Items
-                    </th>
+                      <th className="px-6 py-2.5 text-left text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
+                        Items
+                      </th>
 
-                    <th className="px-6 py-3 text-left text-[11px] uppercase tracking-[0.08em] text-white/80">
-                      Amount
-                    </th>
+                      <th className="px-6 py-2.5 text-left text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
+                        Amount
+                      </th>
 
-                    <th className="px-6 py-3 text-left text-[11px] uppercase tracking-[0.08em] text-white/80">
-                      Payment
-                    </th>
+                      <th className="px-6 py-2.5 text-left text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
+                        Payment
+                      </th>
 
-                    <th className="px-6 py-3 text-left text-[11px] uppercase tracking-[0.08em] text-white/80">
-                      Status
-                    </th>
+                      <th className="px-6 py-2.5 text-left text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
+                        Status
+                      </th>
 
-                    <th className="px-6 py-3 text-left text-[11px] uppercase tracking-[0.08em] text-white/80">
-                      Date
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {customer.orders.map((order) => (
-                    <tr
-                      key={order.id}
-                      className="border-b border-[#F1E9E1] last:border-0 hover:bg-[#FFFBF8]"
-                    >
-                      <td className="px-6 py-5">
-                        <span className="rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[11px] text-[#A85F70]">
-                          {order.orderNumber}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-5">
-                        <div>
-                          <p className="text-[13px] font-semibold text-[#3D3834]">
-                            {order.items.length}{" "}
-                            {order.items.length === 1 ? "item" : "items"}
-                          </p>
-
-                          <p className="mt-1 max-w-[260px] truncate text-[11px] text-[#9A8D82]">
-                            {order.items
-                              .map((item) => item.productName)
-                              .join(", ") || "No items"}
-                          </p>
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-5 text-[14px] font-semibold text-[#1F4A2E]">
-                        {formatCurrency(order.totalAmount)}
-                      </td>
-
-                      <td className="px-6 py-5">
-                        <StatusBadge status={order.paymentStatus} />
-                      </td>
-
-                      <td className="px-6 py-5">
-                        <StatusBadge status={order.orderStatus} />
-                      </td>
-
-                      <td className="px-6 py-5 text-[13px] text-[#766A61]">
-                        {formatOrderDate(order.createdAt)}
-                      </td>
+                      <th className="px-6 py-2.5 text-left text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
+                        Date
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+
+                  <tbody>
+                    {paginatedOrders.map((order) => (
+                      <tr
+                        key={order.id}
+                        className="border-b border-[#F1E9E1] last:border-0 hover:bg-[#FFFBF8]"
+                      >
+                        <td className="px-6 py-4">
+                          <span className="rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[9px] md:text-[10px] text-[#A85F70]">
+                            {order.orderNumber}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="text-[12px] md:text-[13px] text-gray-600">
+                              {order.items.length}{" "}
+                              {order.items.length === 1 ? "item" : "items"}
+                            </p>
+
+                            <p className="mt-1 max-w-[260px] truncate text-[11px] text-gray-500">
+                              {order.items
+                                .map((item) => item.productName)
+                                .join(", ") || "No items"}
+                            </p>
+                          </div>
+                        </td>
+
+                        <td className="px-6 py-4 text-[12px] md:text-[13px] text-gray-500">
+                          {formatCurrency(order.totalAmount)}
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <StatusBadge status={order.paymentStatus} />
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <StatusBadge status={order.orderStatus} />
+                        </td>
+
+                        <td className="px-6 py-4 text-[12px] text-gray-500">
+                          {formatOrderDate(order.createdAt)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* PAGINATION CONTROLS */}
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#F1E9E1] bg-white px-4 py-4 sm:px-6">
+                  {/* Showing Info */}
+                  <p className="text-[11px] sm:text-[12px] text-gray-500">
+                    Showing{" "}
+                    <span className="font-semibold text-gray-700">
+                      {(currentPage - 1) * ORDERS_PER_PAGE + 1}
+                    </span>{" "}
+                    to{" "}
+                    <span className="font-semibold text-gray-700">
+                      {Math.min(currentPage * ORDERS_PER_PAGE, orders.length)}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-semibold text-gray-700">
+                      {orders.length}
+                    </span>{" "}
+                    orders
+                  </p>
+
+                  {/* Buttons */}
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    {/* Previous */}
+                    <button
+                      type="button"
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      aria-label="Previous page"
+                      className="
+                        inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center
+                        rounded-lg border border-[#EADFD3] bg-white
+                        text-[#B5697A]
+                        hover:border-[#B5697A] hover:bg-[#FBEEF1]
+                        focus:outline-none
+                        disabled:cursor-not-allowed disabled:opacity-40
+                        disabled:hover:border-[#EADFD3] disabled:hover:bg-white
+                      "
+                    >
+                      <ChevronLeft size={16} strokeWidth={2} />
+                    </button>
+
+                    {/* Page Numbers */}
+                    {pageNumbers.map((page, index) => {
+                      if (page === "...") {
+                        return (
+                          <span
+                            key={`ellipsis-${index}`}
+                            className="flex h-8 w-6 sm:h-9 sm:w-8 items-center justify-center text-[12px] text-gray-400"
+                          >
+                            ...
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={page}
+                          type="button"
+                          onClick={() => goToPage(page)}
+                          aria-label={`Go to page ${page}`}
+                          aria-current={page === currentPage ? "page" : undefined}
+                          className={`
+                            inline-flex h-8 min-w-[32px] sm:h-9 sm:min-w-[36px]
+                            items-center justify-center rounded-lg border px-2
+                            text-[12px]
+                            focus:outline-none
+                            ${
+                              page === currentPage
+                                ? "border-[#B5697A] bg-[#B5697A] text-white shadow-sm"
+                                : "border-[#EADFD3] bg-white text-[#6F6259] hover:border-[#B5697A] hover:text-[#B5697A]"
+                            }
+                          `}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
+
+                    {/* Next */}
+                    <button
+                      type="button"
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      aria-label="Next page"
+                      className="
+                        inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center
+                        rounded-lg border border-[#EADFD3] bg-white
+                        text-[#B5697A]
+                        hover:border-[#B5697A] hover:bg-[#FBEEF1]
+                        focus:outline-none
+                        disabled:cursor-not-allowed disabled:opacity-40
+                        disabled:hover:border-[#EADFD3] disabled:hover:bg-white
+                      "
+                    >
+                      <ChevronRight size={16} strokeWidth={2} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </section>
       </div>
@@ -496,21 +637,16 @@ interface InfoItemProps {
   value: string;
 }
 
-function InfoItem({ icon: Icon, label, value }: InfoItemProps) {
+function InfoItem({ label, value }: InfoItemProps) {
   return (
-    <div className="rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-4">
+    <div className="rounded-xl border border-[#F0E7DF] bg-[#fffbfc] p-4">
       <div className="flex items-center gap-2">
-        <Icon
-          className="h-4 w-4 text-[#B5697A]"
-          strokeWidth={1.7}
-        />
-
-        <p className="text-[10px] uppercase tracking-[0.08em] text-[#9A8D82]">
+        <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
           {label}
         </p>
       </div>
 
-      <p className="mt-2 truncate text-[13px] text-[#3D3834]">
+      <p className="mt-0.5 truncate text-[13px] text-[#3D3834]">
         {value}
       </p>
     </div>
@@ -538,11 +674,11 @@ function CustomerStat({
     <div className="rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.08em] text-[#9A8D82]">
+          <p className="text-[11px] uppercase tracking-[0.08em] text-slate-600">
             {label}
           </p>
 
-          <p className="mt-3 text-[25px] font-semibold leading-none tracking-[-0.02em] text-[#1F2937]">
+          <p className="mt-2 text-[18px] md:text-[24px] font-semibold leading-none tracking-[-0.02em] text-gray-700">
             {typeof value === "number"
               ? value.toLocaleString("en-IN")
               : value}
@@ -550,10 +686,10 @@ function CustomerStat({
         </div>
 
         <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}
         >
           <Icon
-            className="h-[20px] w-[20px]"
+            className="h-[18px] w-[18px]"
             strokeWidth={1.8}
           />
         </div>

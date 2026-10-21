@@ -81,8 +81,8 @@ function ProductDetailsInfo({
       <div>
         <h1
           className="
-            text-[20px] sm:text-[24px] md:text-[28px]
-            font-semibold md:-mt-4 -mt-7
+            text-[20px] sm:text-[24px] md:text-[26px]
+            font-semibold md:-mt-4 -mt-5
             tracking-wide
             text-[#C9788B]
             leading-snug
@@ -97,11 +97,11 @@ function ProductDetailsInfo({
       <div className="mt-1">
         <p
           className="
-            text-[12.5px] sm:text-[13.5px] md:text-[13.5px]
+            text-[12px] sm:text-[13.5px] md:text-[13.5px]
             leading-relaxed font-light
             tracking-wide
             text-justify
-            text-gray-600
+            text-gray-500
           "
         >
           {product.description}
@@ -141,7 +141,7 @@ function ProductDetailsInfo({
               text-[11px]
               font-semibold
               leading-4
-              text-[#1F4A2E]
+              text-gray-600
               sm:text-xs
             "
           >
@@ -172,7 +172,7 @@ function ProductDetailsInfo({
               text-[11px]
               font-semibold
               leading-4
-              text-[#1F4A2E]
+              text-gray-600
               sm:text-xs
             "
           >
@@ -203,7 +203,7 @@ function ProductDetailsInfo({
               text-[11px]
               font-semibold
               leading-4
-              text-[#1F4A2E]
+              text-gray-600
               sm:text-xs
             "
           >
@@ -234,7 +234,7 @@ function ProductDetailsInfo({
               text-[11px]
               font-semibold
               leading-4
-              text-[#1F4A2E]
+              text-gray-600
               sm:text-xs
             "
           >
@@ -289,7 +289,7 @@ function ProductDetailsInfo({
                   className="
                     text-[14px]
                     font-semibold
-                    text-[#1F4A2E]
+                    text-gray-600
                     md:text-[17px]
                   "
                 >

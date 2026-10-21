@@ -1,6 +1,5 @@
-import {
-  X,
-} from "lucide-react";
+import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import OtpAuthHeader from "./OtpAuthHeader";
 import OtpPhoneStep from "./OtpPhoneStep";
@@ -53,185 +52,197 @@ function OtpAuthModal({
   };
 
   return (
-    <div
-      className="
-        fixed inset-0 z-[100]
-        flex items-center justify-center
-        bg-[#2C2226]/45
-        px-4 py-5
-        backdrop-blur-[4px]
-        sm:px-6
-      "
-      onMouseDown={handleBackdropMouseDown}
-      role="presentation"
-    >
-      {/* ====================================================
-          MODAL
-      ===================================================== */}
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-5 sm:px-6">
+        
+        {/* ====================================================
+            BACKDROP (Smooth Fade)
+        ==================================================== */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          className="absolute inset-0 bg-[#2C2226]/45 backdrop-blur-[4px]"
+          onMouseDown={handleBackdropMouseDown}
+          role="presentation"
+        />
 
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="otp-auth-title"
-        className="
-          relative
-          flex w-full max-w-[460px]
-          max-h-[calc(100vh-40px)]
-          flex-col
-          overflow-hidden
-          rounded-2xl
-          border border-[#F0E3E6]
-          bg-white
-          shadow-sm
-          animate-[otpModalIn_220ms_ease-out]
-          sm:max-h-[calc(100vh-64px)]
-        "
-      >
-        {/* ==================================================
-            CLOSE BUTTON
-        =================================================== */}
-
-        <button
-          type="button"
-          onClick={onClose}
-          disabled={loading}
-          aria-label="Close authentication"
+        {/* ====================================================
+            MODAL (Smooth Scale Up + Fade)
+        ==================================================== */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          transition={{ 
+            type: "tween", 
+            duration: 0.35, 
+            ease: [0.32, 0.72, 0, 1] 
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="otp-auth-title"
           className="
-            absolute right-4 top-4 z-30
-            flex h-8 w-8 md:h-9 md:w-9
-            items-center justify-center
-            rounded-full
-            border border-[#EEE1E4]
-            bg-white
-            text-[#9A8D90]
-            shadow-sm
-            hover:border-[#DDBCC5]
-            hover:bg-[#FFF7F9]
-            hover:text-[#B5697A]
-            focus:outline-none
-            disabled:cursor-not-allowed
-            disabled:opacity-50
-            sm:right-5 sm:top-5
-          "
-        >
-          <X
-            size={15}
-            strokeWidth={1.8}
-          />
-        </button>
-
-        {/* ==================================================
-            AUTH PANEL
-        =================================================== */}
-
-        <section
-          className="
-            flex min-h-0
-            w-full flex-1
+            relative
+            flex w-full max-w-[460px]
+            max-h-[calc(100vh-40px)]
             flex-col
-            overflow-y-auto
+            overflow-hidden
+            rounded-2xl
+            border border-[#F0E3E6]
             bg-white
+            shadow-2xl shadow-black/10
+            sm:max-h-[calc(100vh-64px)]
           "
         >
-          <div
+          {/* ==================================================
+              CLOSE BUTTON
+          =================================================== */}
+
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            aria-label="Close authentication"
             className="
-              mx-auto
-              flex w-full max-w-[420px]
-              flex-1 flex-col
-              px-6 py-7
-              sm:px-8 sm:py-8
+              absolute right-4 top-4 z-30
+              flex h-8 w-8 md:h-9 md:w-9
+              items-center justify-center
+              rounded-full
+              border border-[#EEE1E4]
+              bg-white
+              text-[#9A8D90]
+              shadow-sm
+              transition-colors duration-200
+              hover:border-[#DDBCC5]
+              hover:bg-[#FFF7F9]
+              hover:text-[#B5697A]
+              focus:outline-none
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+              sm:right-5 sm:top-5
             "
           >
-            {/* =================================================
-                HEADER
-            ================================================== */}
+            <X
+              size={15}
+              strokeWidth={1.8}
+            />
+          </button>
 
-            <div
-              id="otp-auth-title"
-              className="pr-8"
-            >
-              <OtpAuthHeader step={step} />
-            </div>
+          {/* ==================================================
+              AUTH PANEL
+          =================================================== */}
 
-            {/* =================================================
-                CONTENT
-            ================================================== */}
-
-            <div className="mt-5 flex-1 sm:mt-8">
-              {/* ===============================================
-                  PHONE STEP
-              ================================================ */}
-
-              {step === "phone" && (
-                <OtpPhoneStep
-                  phone={phone}
-                  error={error}
-                  loading={loading}
-                  onPhoneChange={handlePhoneChange}
-                  onSendOtp={handleSendOtp}
-                  onKeyDown={handleKeyDown}
-                />
-              )}
-
-              {/* ===============================================
-                  OTP STEP
-              ================================================ */}
-
-              {step === "otp" && (
-                <OtpVerificationStep
-                  phone={phone}
-                  otp={otp}
-                  loading={loading}
-                  resendCountdown={
-                    resendCountdown
-                  }
-                  otpInputRef={otpInputRef}
-                  onOtpChange={handleOtpChange}
-                  onVerifyOtp={handleVerifyOtp}
-                  onResendOtp={handleResendOtp}
-                  onBackToPhone={
-                    handleBackToPhone
-                  }
-                  onKeyDown={handleKeyDown}
-                />
-              )}
-            </div>
-
-            {/* =================================================
-                FOOTER
-            ================================================== */}
-
+          <section
+            className="
+              flex min-h-0
+              w-full flex-1
+              flex-col
+              overflow-y-auto
+              bg-white
+            "
+          >
             <div
               className="
-                mt-8
-                border-t border-[#F1E5E8]
-                pt-5
+                mx-auto
+                flex w-full max-w-[420px]
+                flex-1 flex-col
+                px-6 py-7
+                sm:px-8 sm:py-8
               "
             >
-              <p
+              {/* =================================================
+                  HEADER
+              ================================================== */}
+
+              <div
+                id="otp-auth-title"
+                className="pr-8"
+              >
+                <OtpAuthHeader step={step} />
+              </div>
+
+              {/* =================================================
+                  CONTENT
+              ================================================== */}
+
+              <div className="mt-5 flex-1 sm:mt-8">
+                {/* ===============================================
+                    PHONE STEP
+                ================================================ */}
+
+                {step === "phone" && (
+                  <OtpPhoneStep
+                    phone={phone}
+                    error={error}
+                    loading={loading}
+                    onPhoneChange={handlePhoneChange}
+                    onSendOtp={handleSendOtp}
+                    onKeyDown={handleKeyDown}
+                  />
+                )}
+
+                {/* ===============================================
+                    OTP STEP
+                ================================================ */}
+
+                {step === "otp" && (
+                  <OtpVerificationStep
+                    phone={phone}
+                    otp={otp}
+                    loading={loading}
+                    resendCountdown={
+                      resendCountdown
+                    }
+                    otpInputRef={otpInputRef}
+                    onOtpChange={handleOtpChange}
+                    onVerifyOtp={handleVerifyOtp}
+                    onResendOtp={handleResendOtp}
+                    onBackToPhone={
+                      handleBackToPhone
+                    }
+                    onKeyDown={handleKeyDown}
+                  />
+                )}
+              </div>
+
+              {/* =================================================
+                  FOOTER
+              ================================================== */}
+
+              <div
                 className="
-                  text-center
-                  text-[10px]
-                  leading-relaxed
-                  text-[#A49A9C]
-                  sm:text-[11px]
+                  mt-8
+                  border-t border-[#F1E5E8]
+                  pt-5
                 "
               >
-                By continuing, you agree to our{" "}
-                <span className="text-[#B5697A]">
-                  Terms of Use
-                </span>{" "}
-                and{" "}
-                <span className="text-[#B5697A]">
-                  Privacy Policy
-                </span>
-                .
-              </p>
+                <p
+                  className="
+                    text-center
+                    text-[10px]
+                    leading-relaxed
+                    text-[#A49A9C]
+                    sm:text-[11px]
+                  "
+                >
+                  By continuing, you agree to our{" "}
+                  <span className="text-[#B5697A]">
+                    Terms of Use
+                  </span>{" "}
+                  and{" "}
+                  <span className="text-[#B5697A]">
+                    Privacy Policy
+                  </span>
+                  .
+                </p>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </motion.div>
       </div>
-    </div>
+    </AnimatePresence>
   );
 }
 

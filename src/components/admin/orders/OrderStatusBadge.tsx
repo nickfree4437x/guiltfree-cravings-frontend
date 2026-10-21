@@ -17,7 +17,7 @@ function OrderStatusBadge({
 }: OrderStatusBadgeProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] tracking-[0.01em] ${getOrderStatusClass(
+      className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] tracking-[0.01em] ${getOrderStatusClass(
         status
       )}`}
     >

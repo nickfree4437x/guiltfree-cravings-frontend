@@ -3,7 +3,6 @@
 import type { AdminOrder } from "./types";
 
 import OrdersEmptyState from "./OrdersEmptyState";
-import OrdersMobileList from "./OrdersMobileList";
 import OrdersTable from "./OrdersTable";
 
 interface OrdersListProps {
@@ -27,15 +26,11 @@ function OrdersList({
   }
 
   return (
-    <>
+    <div className="rounded-xl">
       <OrdersTable
         orders={orders}
       />
-
-      <OrdersMobileList
-        orders={orders}
-      />
-    </>
+    </div>
   );
 }
 

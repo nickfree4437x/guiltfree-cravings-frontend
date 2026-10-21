@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 
 import type {
@@ -26,6 +27,9 @@ function ProductCard({
   const [isAuthModalOpen, setIsAuthModalOpen] =
     useState(false);
 
+  const [selectedVariant, setSelectedVariant] =
+    useState<ProductVariant | null>(null);
+
   const isAuthenticated = useAuthStore(
     (state) => state.isAuthenticated
   );
@@ -46,9 +50,33 @@ function ProductCard({
     (state) => state.openCartDrawer
   );
 
-  /* =========================================================
-     ADD TO CART
-  ========================================================= */
+  /*
+   * =========================================================
+   * SELECTED VARIANT
+   * =========================================================
+   */
+
+  const handleVariantChange = useCallback(
+    (variant: ProductVariant | null) => {
+      setSelectedVariant((current) => {
+        if (
+          current?.id === variant?.id &&
+          current?.productId === variant?.productId
+        ) {
+          return current;
+        }
+
+        return variant;
+      });
+    },
+    []
+  );
+
+  /*
+   * =========================================================
+   * ADD TO CART
+   * =========================================================
+   */
 
   const handleAddToCart = (
     variant: ProductVariant,
@@ -58,27 +86,21 @@ function ProductCard({
       return;
     }
 
-    /*
-     * LOGGED IN:
-     * Add item directly and open cart drawer.
-     */
     if (isAuthenticated) {
       addToCart(product, variant, quantity);
       openCartDrawer();
       return;
     }
 
-    /*
-     * LOGGED OUT:
-     * Save pending item and open OTP authentication.
-     */
     setPendingCartItem(product, variant, quantity);
     setIsAuthModalOpen(true);
   };
 
-  /* =========================================================
-     AUTH SUCCESS
-  ========================================================= */
+  /*
+   * =========================================================
+   * AUTH SUCCESS
+   * =========================================================
+   */
 
   const handleAuthSuccess = () => {
     addPendingCartItem();
@@ -86,27 +108,40 @@ function ProductCard({
     openCartDrawer();
   };
 
+  /*
+   * =========================================================
+   * IMAGE VARIANT
+   * =========================================================
+   */
+
+  const imageVariant =
+    selectedVariant?.productId === product.id &&
+    selectedVariant.packaging === packaging
+      ? selectedVariant
+      : null;
+
   return (
     <>
-      {/* PRODUCT CARD */}
       <article
         className="
           group relative flex h-full flex-col
-          rounded-md
+          rounded-lg
+          border border-[#C9788B]/20
           bg-white
-          shadow-[0_8px_30px_-18px_rgba(82,55,43,0.22)]
         "
       >
         {/* IMAGE AREA */}
-        <Link
+        <Link 
           to={`/products/${product.id}`}
-          state={{ packaging }}
+          state={{
+            packaging,
+            selectedVariantId: selectedVariant?.id ?? null,
+            selectedVariantQuantity: selectedVariant?.quantity ?? null,
+          }}
           aria-label={`View details for ${product.name}`}
           className="
             group/image relative block cursor-pointer
-            overflow-hidden
-            rounded-xl
-            bg-[#FBF7F2]
+            overflow-hidden rounded-xl bg-[#FBF7F2]
             focus:outline-none
             focus-visible:ring-2
             focus-visible:ring-inset
@@ -130,16 +165,16 @@ function ProductCard({
               pointer-events-none
               absolute -bottom-20 -left-16 z-0
               h-40 w-40 rounded-full
-              bg-[#F5E9D9]/60
-              blur-3xl
+              bg-[#F5E9D9]/60 blur-3xl
             "
           />
 
-          {/* Product image */}
+          {/* Variant-aware product image */}
           <div className="relative z-10">
             <ProductCardImage
               product={product}
               packaging={packaging}
+              variant={imageVariant}
             />
           </div>
 
@@ -162,8 +197,7 @@ function ProductCard({
               bg-gradient-to-t
               from-[#B5697A]/[0.08]
               via-transparent to-transparent
-              opacity-0
-              transition-opacity duration-500
+              opacity-0 transition-opacity duration-500
               group-hover/image:opacity-100
             "
           />
@@ -175,6 +209,7 @@ function ProductCard({
             product={product}
             packaging={packaging}
             onAddToCart={handleAddToCart}
+            onVariantChange={handleVariantChange}
           />
         </div>
       </article>

@@ -1,10 +1,9 @@
-
 export default function OurStory() {
   return (
     <section
       id="our-story"
       aria-labelledby="our-story-heading"
-      className="relative isolate overflow-hidden scroll-mt-12 bg-white px-5 py-16 sm:px-8 md:py-20"
+      className="relative isolate overflow-hidden scroll-mt-12 bg-white px-5 py-2 sm:px-8 md:py-16"
     >
 
       <div className="mx-auto max-w-6xl">
@@ -16,11 +15,24 @@ export default function OurStory() {
             className="h-1.5 w-full bg-[#C9788B]"
           />
 
-          <div className="relative px-6 py-10 sm:px-12 sm:py-14 lg:px-20 lg:py-16">
+          <div className="relative px-6 py-4 sm:px-12 md:py-10 lg:px-20">
+            
+            {/* =========================================================
+                NEW SECTION HEADING & DESCRIPTION
+            ========================================================= */}
+            <div className="mx-auto mb-2 max-w-3xl text-center sm:mb-4">
+              <h2 className="text-[22px] font-semibold tracking-wide text-[#C9788B] sm:text-[26px] md:text-[30px]">
+                Our Story
+              </h2>
+              <p className="mt-2 text-[12px] font-[350] leading-relaxed text-slate-500 sm:text-[14px]">
+                From our kitchen to your home, discover the journey of crafting guilt-free goodness.
+              </p>
+            </div>
+
             {/* Decorative quotation mark */}
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute left-5 top-5 select-none font-serif text-7xl leading-none text-[#C9788B]/15 sm:left-10 sm:top-7 sm:text-8xl lg:left-14"
+              className="pointer-events-none absolute left-5 top-24 select-none font-serif text-7xl leading-none text-[#C9788B]/15 sm:left-10 sm:top-32 sm:text-8xl lg:left-14 lg:top-36"
             >
               “
             </span>

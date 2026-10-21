@@ -235,10 +235,10 @@ function AdminHeader({
             <span
               className={`
                 
-                text-[14px]
+                text-[16px]
                 font-bold
                 tracking-[-0.04em]
-                sm:text-[16px]
+                sm:text-[18px]
                 text-gray-600
               `}
             >

@@ -1,3 +1,4 @@
+
 import type {
   Product,
   ProductVariant,
@@ -5,12 +6,20 @@ import type {
 
 import ProductCardPricing from "./ProductCardPricing";
 
+type PackagingOption =
+  | "Plastic Box"
+  | "Glass Jar"
+  | "Cardboard Box";
+
 interface ProductCardContentProps {
   product: Product;
-  packaging?: "Plastic Box" | "Glass Jar" | "Cardboard Box";
+  packaging?: PackagingOption;
   onAddToCart: (
     variant: ProductVariant,
     quantity: number
+  ) => void;
+  onVariantChange?: (
+    variant: ProductVariant | null
   ) => void;
 }
 
@@ -18,10 +27,10 @@ function ProductCardContent({
   product,
   packaging = "Plastic Box",
   onAddToCart,
+  onVariantChange,
 }: ProductCardContentProps) {
   return (
     <div className="flex flex-1 flex-col p-3 sm:p-5 md:p-5">
-
       {/* TITLE */}
       <h3
         className="
@@ -44,32 +53,12 @@ function ProductCardContent({
         {product.name}
       </h3>
 
-      {/* DESCRIPTION — mobile pe hidden, md+ (desktop) pe visible */}
-      {/* <p
-        className="
-          hidden md:block
-          mt-1
-          text-[12.5px]
-          leading-[1.65]
-          text-[#7A6A5C]
-          md:text-[13px]
-        "
-        style={{
-          WebkitLineClamp: 1,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          minHeight: "42px",
-          maxHeight: "42px",
-        }}
-      >
-        {product.description}
-      </p> */}
-
       {/* PRICING */}
       <ProductCardPricing
         product={product}
         packaging={packaging}
         onAddToCart={onAddToCart}
+        onVariantChange={onVariantChange}
       />
     </div>
   );

@@ -31,7 +31,7 @@ const faqs: FAQItem[] = [
   {
     question: "Can I cancel or change my order?",
     answer:
-      "yes but in 1hr only post that it will not be possible.",
+      "Yes. You can cancel or modify your order within 1 hour of placing it. After 1 hour, processing begins in our kitchen and changes are no longer possible.",
   },
   {
     question: "How should I store my laddoos?",

@@ -394,7 +394,7 @@ function AdminReviewsPage() {
               sm:py-2.5
               text-[11px]
               sm:text-[12px]
-              text-[#6F6259]
+              text-slate-500
               shadow-sm
               hover:border-[#D9B8C1]
               hover:bg-[#FDF4F6]

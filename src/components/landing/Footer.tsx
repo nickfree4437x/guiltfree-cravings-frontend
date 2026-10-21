@@ -60,11 +60,11 @@ function Footer() {
       </div>
 
       <div className="min-w-0">
-        <p className="text-[9px] uppercase tracking-[0.12em] text-white/50">
-          FSSAI License
+        <p className="text-[9px] uppercase tracking-[0.12em] text-white/80">
+          FSSAI Registration No
         </p>
         <p className="mt-0.5 whitespace-nowrap font-[350] text-[10px] text-white sm:text-[11px]">
-          FSSAI Lic :- #23326006003247
+          FSSAI Reg :- #23326006003247
         </p>
       </div>
     </div>

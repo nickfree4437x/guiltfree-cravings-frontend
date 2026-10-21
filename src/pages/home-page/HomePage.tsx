@@ -15,8 +15,8 @@ function HomePage() {
 
       <main>
         <Hero />
-        <About/>
         <FeaturedProducts/>
+        <About/>
         <OurStory/>
         <OurPromise/>
         {/* <HowOurLaddoosAreMade/> */}
