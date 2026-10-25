@@ -2,108 +2,32 @@
 
 import axios from "axios";
 
-/*
- * =========================================================
- * ADMIN API
- * =========================================================
- */
-
+// ─── Config ───────────────────────────────────────────────
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://guiltfreecravings.com/api";
+  import.meta.env.VITE_API_BASE_URL || "https://guiltfreecravings.com/api";
 
+const ADMIN_TOKEN_KEY = "guiltfree_admin_token";
 
-/*
- * =========================================================
- * ERROR MESSAGE EXTRACTOR
- * =========================================================
- *
- * Backend se error different formats mein aa sakta hai:
- *
- * 1. JSON
- *    { message: "Current password is incorrect." }
- *
- * 2. JSON
- *    { error: "Something went wrong." }
- *
- * 3. Express HTML error page
- *    <pre>Error: Current password is incorrect.
- *    at createServiceError(...)
- *    at changeAdminPassword(...)</pre>
- *
- * Frontend ko hamesha sirf clean message chahiye.
- * =========================================================
- */
+// ─── Helpers ──────────────────────────────────────────────
+const normalizeEmail = (email: string) => email.trim().toLowerCase();
 
+// Extract clean message from JSON/HTML/Express errors
 const extractApiErrorMessage = (
   errorData: unknown,
   fallbackMessage = "Something went wrong."
 ): string => {
-
-  /*
-   * =======================================================
-   * JSON RESPONSE
-   * =======================================================
-   */
-
-  if (
-    errorData &&
-    typeof errorData === "object"
-  ) {
-    const data = errorData as {
-      message?: unknown;
-      error?: unknown;
-    };
-
-    if (
-      typeof data.message === "string" &&
-      data.message.trim()
-    ) {
-      return data.message.trim();
-    }
-
-    if (
-      typeof data.error === "string" &&
-      data.error.trim()
-    ) {
-      return data.error.trim();
-    }
+  // JSON response
+  if (errorData && typeof errorData === "object") {
+    const data = errorData as { message?: unknown; error?: unknown };
+    if (typeof data.message === "string" && data.message.trim()) return data.message.trim();
+    if (typeof data.error === "string" && data.error.trim()) return data.error.trim();
   }
 
-
-  /*
-   * =======================================================
-   * HTML RESPONSE
-   * =======================================================
-   *
-   * Express development error handler generally returns:
-   *
-   * <html>
-   *   ...
-   *   <pre>
-   *     Error: Current password is incorrect.
-   *     at createServiceError(...)
-   *     at changeAdminPassword(...)
-   *   </pre>
-   * </html>
-   *
-   * We extract only the first meaningful error line.
-   * =======================================================
-   */
-
+  // HTML response (Express dev error page)
   if (typeof errorData === "string") {
     const html = errorData.trim();
 
-    /*
-     * -------------------------------------------------------
-     * Try extracting content from <pre>
-     * -------------------------------------------------------
-     */
-
-    const preMatch = html.match(
-      /<pre[^>]*>([\s\S]*?)<\/pre>/i
-    );
-
+    const preMatch = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
     if (preMatch?.[1]) {
       const preContent = preMatch[1]
         .replace(/<br\s*\/?>/gi, "\n")
@@ -116,31 +40,11 @@ const extractApiErrorMessage = (
         .replace(/<[^>]+>/g, "")
         .trim();
 
-      /*
-       * The first line normally contains:
-       *
-       * Error: Current password is incorrect.
-       */
-
-      const firstLine = preContent
-        .split("\n")
-        .map((line) => line.trim())
-        .find(Boolean);
-
-      if (firstLine) {
-        return firstLine
-          .replace(/^Error:\s*/i, "")
-          .trim();
-      }
+      const firstLine = preContent.split("\n").map((l) => l.trim()).find(Boolean);
+      if (firstLine) return firstLine.replace(/^Error:\s*/i, "").trim();
     }
 
-
-    /*
-     * -------------------------------------------------------
-     * Fallback HTML parsing
-     * -------------------------------------------------------
-     */
-
+    // Fallback: strip all HTML
     const plainText = html
       .replace(/<br\s*\/?>/gi, "\n")
       .replace(/<[^>]+>/g, " ")
@@ -153,176 +57,58 @@ const extractApiErrorMessage = (
       .replace(/\s+/g, " ")
       .trim();
 
-    if (plainText) {
-      return plainText
-        .replace(/^Error:\s*/i, "")
-        .trim();
-    }
+    if (plainText) return plainText.replace(/^Error:\s*/i, "").trim();
   }
-
-
-  /*
-   * =======================================================
-   * FALLBACK
-   * =======================================================
-   */
 
   return fallbackMessage;
 };
 
-
-/*
- * =========================================================
- * AXIOS INSTANCE WITH INTERCEPTORS
- * =========================================================
- */
-
+// ─── Axios Instance ───────────────────────────────────────
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
-
-/*
- * =========================================================
- * RESPONSE INTERCEPTOR
- * =========================================================
- *
- * Converts backend errors into clean JavaScript Error
- * objects so frontend components can simply use:
- *
- * error.message
- *
- * Example:
- *
- * Backend:
- * Error: Current password is incorrect.
- * at changeAdminPassword(...)
- *
- * Frontend:
- * Current password is incorrect.
- * =========================================================
- */
-
+// Response interceptor → converts backend errors into clean Error objects
 axiosInstance.interceptors.response.use(
   (response) => response,
-
   (error) => {
-
-    /*
-     * =======================================================
-     * SERVER RESPONSE ERROR
-     * =======================================================
-     */
-
+    // Server responded with error
     if (error.response) {
-      const errorData =
-        error.response.data;
-
-      const errorMessage =
-        extractApiErrorMessage(
-          errorData,
-          "Something went wrong."
-        );
-
-
-      /*
-       * Create clean custom error
-       */
-
-      const customError =
-        new Error(errorMessage);
-
-      customError.name =
-        "ApiError";
-
-
-      /*
-       * Keep original response available
-       * for debugging if required.
-       */
-
-      (
-        customError as any
-      ).response =
-        error.response;
-
-      (
-        customError as any
-      ).status =
-        error.response.status;
-
-
-      return Promise.reject(
-        customError
+      const errorMessage = extractApiErrorMessage(
+        error.response.data,
+        "Something went wrong."
       );
+
+      const customError = new Error(errorMessage);
+      customError.name = "ApiError";
+      (customError as any).response = error.response;
+      (customError as any).status = error.response.status;
+
+      return Promise.reject(customError);
     }
 
-
-    /*
-     * =======================================================
-     * NETWORK ERROR
-     * =======================================================
-     */
-
+    // Network error
     if (error.request) {
-      const networkError =
-        new Error(
-          "Network error. Please check your internet connection."
-        );
-
-      networkError.name =
-        "NetworkError";
-
-      return Promise.reject(
-        networkError
+      const networkError = new Error(
+        "Network error. Please check your internet connection."
       );
+      networkError.name = "NetworkError";
+      return Promise.reject(networkError);
     }
 
+    // Other axios errors
+    if (error?.message) return Promise.reject(error);
 
-    /*
-     * =======================================================
-     * OTHER AXIOS ERRORS
-     * =======================================================
-     */
-
-    if (error?.message) {
-      return Promise.reject(
-        error
-      );
-    }
-
-
-    /*
-     * =======================================================
-     * UNKNOWN ERROR
-     * =======================================================
-     */
-
-    const unknownError =
-      new Error(
-        "Something went wrong. Please try again."
-      );
-
-    unknownError.name =
-      "ApiError";
-
-    return Promise.reject(
-      unknownError
-    );
+    // Unknown
+    const unknownError = new Error("Something went wrong. Please try again.");
+    unknownError.name = "ApiError";
+    return Promise.reject(unknownError);
   }
 );
 
-
-/*
- * =========================================================
- * TYPES
- * =========================================================
- */
-
+// ─── Types ────────────────────────────────────────────────
 export interface AdminUser {
   id: number;
   name: string;
@@ -333,10 +119,7 @@ export interface AdminUser {
 export interface AdminLoginResponse {
   success: boolean;
   message: string;
-  data: {
-    token: string;
-    admin: AdminUser;
-  };
+  data: { token: string; admin: AdminUser };
 }
 
 export interface ForgotAdminPasswordResponse {
@@ -347,10 +130,7 @@ export interface ForgotAdminPasswordResponse {
 export interface VerifyAdminResetOtpResponse {
   success: boolean;
   message: string;
-  data: {
-    resetToken: string;
-    expiresAt: string;
-  };
+  data: { resetToken: string; expiresAt: string };
 }
 
 export interface ResetAdminPasswordResponse {
@@ -363,304 +143,116 @@ export interface ChangeAdminPasswordResponse {
   message: string;
 }
 
-
-/*
- * =========================================================
- * ADMIN LOGIN
- * =========================================================
- */
-
+// ─── API: Admin Login ─────────────────────────────────────
 export const adminLogin = async (
   email: string,
   password: string
-): Promise<
-  AdminLoginResponse["data"]
-> => {
-
+): Promise<AdminLoginResponse["data"]> => {
   try {
-    const response =
-      await axiosInstance.post<AdminLoginResponse>(
-        "/admin/auth/login",
-        {
-          email:
-            email
-              .trim()
-              .toLowerCase(),
-          password,
-        }
-      );
+    const response = await axiosInstance.post<AdminLoginResponse>(
+      "/admin/auth/login",
+      { email: normalizeEmail(email), password }
+    );
 
-
-    if (
-      !response.data.success ||
-      !response.data.data
-    ) {
-      throw new Error(
-        response.data.message ||
-          "Admin login failed."
-      );
+    if (!response.data.success || !response.data.data) {
+      throw new Error(response.data.message || "Admin login failed.");
     }
-
 
     return response.data.data;
-
   } catch (error: any) {
-
-    console.error(
-      "Admin login API error:",
-      error
-    );
-
+    console.error("Admin login API error:", error);
     throw error;
   }
 };
 
-
-/*
- * =========================================================
- * FORGOT ADMIN PASSWORD
- * =========================================================
- */
-
+// ─── API: Forgot Admin Password ───────────────────────────
 export const forgotAdminPassword = async (
   email: string
-): Promise<
-  ForgotAdminPasswordResponse
-> => {
-
+): Promise<ForgotAdminPasswordResponse> => {
   try {
-    const response =
-      await axiosInstance.post<ForgotAdminPasswordResponse>(
-        "/admin/auth/forgot-password",
-        {
-          email:
-            email
-              .trim()
-              .toLowerCase(),
-        }
-      );
-
-
-    if (
-      !response.data.success
-    ) {
-      throw new Error(
-        response.data.message ||
-          "Unable to send password reset OTP."
-      );
-    }
-
-
-    return response.data;
-
-  } catch (error: any) {
-
-    console.error(
-      "Forgot password API error:",
-      error
+    const response = await axiosInstance.post<ForgotAdminPasswordResponse>(
+      "/admin/auth/forgot-password",
+      { email: normalizeEmail(email) }
     );
 
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Unable to send password reset OTP.");
+    }
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Forgot password API error:", error);
     throw error;
   }
 };
 
-
-/*
- * =========================================================
- * VERIFY ADMIN RESET OTP
- * =========================================================
- */
-
+// ─── API: Verify Admin Reset OTP ──────────────────────────
 export const verifyAdminResetOtp = async (
   email: string,
   otp: string
-): Promise<
-  VerifyAdminResetOtpResponse["data"]
-> => {
-
+): Promise<VerifyAdminResetOtpResponse["data"]> => {
   try {
-    const response =
-      await axiosInstance.post<VerifyAdminResetOtpResponse>(
-        "/admin/auth/verify-reset-otp",
-        {
-          email:
-            email
-              .trim()
-              .toLowerCase(),
-
-          otp:
-            otp.trim(),
-        }
-      );
-
-
-    if (
-      !response.data.success ||
-      !response.data.data
-    ) {
-      throw new Error(
-        response.data.message ||
-          "Invalid password reset OTP."
-      );
-    }
-
-
-    return response.data.data;
-
-  } catch (error: any) {
-
-    console.error(
-      "Verify OTP API error:",
-      error
+    const response = await axiosInstance.post<VerifyAdminResetOtpResponse>(
+      "/admin/auth/verify-reset-otp",
+      { email: normalizeEmail(email), otp: otp.trim() }
     );
 
+    if (!response.data.success || !response.data.data) {
+      throw new Error(response.data.message || "Invalid password reset OTP.");
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    console.error("Verify OTP API error:", error);
     throw error;
   }
 };
 
-
-/*
- * =========================================================
- * RESET ADMIN PASSWORD
- * =========================================================
- */
-
+// ─── API: Reset Admin Password ────────────────────────────
 export const resetAdminPassword = async (
   email: string,
   resetToken: string,
   newPassword: string
-): Promise<
-  ResetAdminPasswordResponse
-> => {
-
+): Promise<ResetAdminPasswordResponse> => {
   try {
-    const response =
-      await axiosInstance.post<ResetAdminPasswordResponse>(
-        "/admin/auth/reset-password",
-        {
-          email:
-            email
-              .trim()
-              .toLowerCase(),
-
-          resetToken,
-
-          newPassword,
-        }
-      );
-
-
-    if (
-      !response.data.success
-    ) {
-      throw new Error(
-        response.data.message ||
-          "Unable to reset admin password."
-      );
-    }
-
-
-    return response.data;
-
-  } catch (error: any) {
-
-    console.error(
-      "Reset password API error:",
-      error
+    const response = await axiosInstance.post<ResetAdminPasswordResponse>(
+      "/admin/auth/reset-password",
+      { email: normalizeEmail(email), resetToken, newPassword }
     );
 
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Unable to reset admin password.");
+    }
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Reset password API error:", error);
     throw error;
   }
 };
 
-
-/*
- * =========================================================
- * CHANGE ADMIN PASSWORD
- * =========================================================
- *
- * Protected endpoint.
- *
- * Sends the currently logged-in admin's JWT
- * through the Authorization header.
- * =========================================================
- */
-
+// ─── API: Change Admin Password (protected) ───────────────
 export const changeAdminPassword = async (
   currentPassword: string,
   newPassword: string
-): Promise<
-  ChangeAdminPasswordResponse
-> => {
-
+): Promise<ChangeAdminPasswordResponse> => {
   try {
+    const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+    if (!token) throw new Error("Admin authentication is required.");
 
-    /*
-     * =======================================================
-     * GET ADMIN ACCESS TOKEN
-     * =======================================================
-     */
-
-    const token =
-      localStorage.getItem(
-        "guiltfree_admin_token"
-      );
-
-
-    if (!token) {
-      throw new Error(
-        "Admin authentication is required."
-      );
-    }
-
-
-    /*
-     * =======================================================
-     * CHANGE PASSWORD REQUEST
-     * =======================================================
-     */
-
-    const response =
-      await axiosInstance.post<ChangeAdminPasswordResponse>(
-        "/admin/auth/change-password",
-        {
-          currentPassword,
-          newPassword,
-        },
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
-
-
-    /*
-     * =======================================================
-     * VALIDATE RESPONSE
-     * =======================================================
-     */
-
-    if (
-      !response.data.success
-    ) {
-      throw new Error(
-        response.data.message ||
-          "Unable to change admin password."
-      );
-    }
-
-
-    return response.data;
-
-  } catch (error: any) {
-
-    console.error(
-      "Change password API error:",
-      error
+    const response = await axiosInstance.post<ChangeAdminPasswordResponse>(
+      "/admin/auth/change-password",
+      { currentPassword, newPassword },
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
+    if (!response.data.success) {
+      throw new Error(response.data.message || "Unable to change admin password.");
+    }
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Change password API error:", error);
     throw error;
   }
 };

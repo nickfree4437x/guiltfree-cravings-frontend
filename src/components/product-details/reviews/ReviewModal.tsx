@@ -1,14 +1,5 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
-  Check,
-  Loader2,
-  X,
-} from "lucide-react";
-
+import { useEffect, useState } from "react";
+import { Check, Loader2, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 import {
@@ -19,6 +10,7 @@ import {
 
 import ReviewStars from "./ReviewStars";
 
+// ─── Types ────────────────────────────────────────────────
 interface ReviewModalProps {
   productId: number;
   productName: string;
@@ -28,6 +20,55 @@ interface ReviewModalProps {
   onSuccess: (review: Review) => void;
 }
 
+// ─── Config ───────────────────────────────────────────────
+const INPUT_CLASS =
+  "w-full rounded-lg border border-[#EADBD0] bg-white px-4 py-2.5 text-[11px] md:text-[12px] text-gray-500 outline-none transition-all duration-200 placeholder:text-gray-500 focus:border-[#B5697A]";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Rating → label
+const RATING_LABELS = ["Select your rating", "We'll do better.", "Could be better.", "It was good.", "Really good!", "Loved it!"];
+
+const getRatingLabel = (rating: number) =>
+  RATING_LABELS[rating] ?? RATING_LABELS[0];
+
+// ─── Validation ───────────────────────────────────────────
+interface FormValues {
+  rating: number;
+  title: string;
+  comment: string;
+  displayName: string;
+  email: string;
+}
+
+function validateForm(v: FormValues): string | null {
+  if (v.rating < 1 || v.rating > 5) return "Please select a rating from 1 to 5.";
+
+  const title = v.title.trim();
+  if (!title) return "Please add a title to your review.";
+  if (title.length < 3) return "Review title should be at least 3 characters.";
+  if (title.length > 120) return "Review title cannot exceed 120 characters.";
+
+  const comment = v.comment.trim();
+  if (!comment) return "Please write a review.";
+  if (comment.length < 5) return "Your review should be at least 5 characters.";
+  if (comment.length > 1000) return "Your review cannot exceed 1000 characters.";
+
+  const name = v.displayName.trim();
+  if (!name) return "Please enter a display name.";
+  if (name.length < 2) return "Display name should be at least 2 characters.";
+  if (name.length > 60) return "Display name cannot exceed 60 characters.";
+
+  const email = v.email.trim().toLowerCase();
+  if (email) {
+    if (!EMAIL_REGEX.test(email)) return "Please enter a valid email address.";
+    if (email.length > 255) return "Email cannot exceed 255 characters.";
+  }
+
+  return null;
+}
+
+// ─── Component ────────────────────────────────────────────
 function ReviewModal({
   productId,
   productName,
@@ -36,177 +77,36 @@ function ReviewModal({
   onClose,
   onSuccess,
 }: ReviewModalProps) {
-  const isEditing =
-    Boolean(existingReview);
+  const isEditing = Boolean(existingReview);
 
-  const [rating, setRating] = useState(
-    existingReview?.rating ?? 0
+  // Form state (initialized from existingReview)
+  const [rating, setRating] = useState(existingReview?.rating ?? 0);
+  const [title, setTitle] = useState(existingReview?.title ?? "");
+  const [comment, setComment] = useState(existingReview?.comment ?? "");
+  const [displayName, setDisplayName] = useState(
+    existingReview?.displayName ?? existingReview?.user?.name ?? ""
   );
+  const [email, setEmail] = useState(existingReview?.email ?? "");
 
-  const [title, setTitle] = useState(
-    existingReview?.title ?? ""
-  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const [comment, setComment] =
-    useState(
-      existingReview?.comment ?? ""
-    );
-
-  const [displayName, setDisplayName] =
-    useState(
-      existingReview?.displayName ??
-        existingReview?.user?.name ??
-        ""
-    );
-
-  const [email, setEmail] = useState(
-    existingReview?.email ?? ""
-  );
-
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
-
-  const [isSubmitted, setIsSubmitted] =
-    useState(false);
-
-  /*
-   * ============================================================
-   * SYNC EXISTING REVIEW
-   * ============================================================
-   */
-
+  // Sync form when existingReview changes
   useEffect(() => {
-    setRating(
-      existingReview?.rating ?? 0
-    );
-
-    setTitle(
-      existingReview?.title ?? ""
-    );
-
-    setComment(
-      existingReview?.comment ?? ""
-    );
-
-    setDisplayName(
-      existingReview?.displayName ??
-        existingReview?.user?.name ??
-        ""
-    );
-
-    setEmail(
-      existingReview?.email ?? ""
-    );
-
+    setRating(existingReview?.rating ?? 0);
+    setTitle(existingReview?.title ?? "");
+    setComment(existingReview?.comment ?? "");
+    setDisplayName(existingReview?.displayName ?? existingReview?.user?.name ?? "");
+    setEmail(existingReview?.email ?? "");
     setIsSubmitted(false);
   }, [existingReview]);
 
-  /*
-   * ============================================================
-   * SUBMIT REVIEW
-   * ============================================================
-   */
-
+  // ─── Submit ─────────────────────────────────────────────
   const handleSubmit = async () => {
-    if (rating < 1 || rating > 5) {
-      toast.error(
-        "Please select a rating from 1 to 5."
-      );
+    const validationError = validateForm({ rating, title, comment, displayName, email });
+    if (validationError) {
+      toast.error(validationError);
       return;
-    }
-
-    const trimmedTitle =
-      title.trim();
-
-    if (!trimmedTitle) {
-      toast.error(
-        "Please add a title to your review."
-      );
-      return;
-    }
-
-    if (trimmedTitle.length < 3) {
-      toast.error(
-        "Review title should be at least 3 characters."
-      );
-      return;
-    }
-
-    if (trimmedTitle.length > 120) {
-      toast.error(
-        "Review title cannot exceed 120 characters."
-      );
-      return;
-    }
-
-    const trimmedComment =
-      comment.trim();
-
-    if (!trimmedComment) {
-      toast.error(
-        "Please write a review."
-      );
-      return;
-    }
-
-    if (trimmedComment.length < 5) {
-      toast.error(
-        "Your review should be at least 5 characters."
-      );
-      return;
-    }
-
-    if (trimmedComment.length > 1000) {
-      toast.error(
-        "Your review cannot exceed 1000 characters."
-      );
-      return;
-    }
-
-    const trimmedDisplayName =
-      displayName.trim();
-
-    if (!trimmedDisplayName) {
-      toast.error(
-        "Please enter a display name."
-      );
-      return;
-    }
-
-    if (trimmedDisplayName.length < 2) {
-      toast.error(
-        "Display name should be at least 2 characters."
-      );
-      return;
-    }
-
-    if (trimmedDisplayName.length > 60) {
-      toast.error(
-        "Display name cannot exceed 60 characters."
-      );
-      return;
-    }
-
-    const trimmedEmail =
-      email.trim().toLowerCase();
-
-    if (trimmedEmail) {
-      const emailRegex =
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (!emailRegex.test(trimmedEmail)) {
-        toast.error(
-          "Please enter a valid email address."
-        );
-        return;
-      }
-
-      if (trimmedEmail.length > 255) {
-        toast.error(
-          "Email cannot exceed 255 characters."
-        );
-        return;
-      }
     }
 
     try {
@@ -214,27 +114,17 @@ function ReviewModal({
 
       const payload = {
         rating,
-        title: trimmedTitle,
-        comment: trimmedComment,
-        displayName: trimmedDisplayName,
-        email:
-          trimmedEmail || undefined,
+        title: title.trim(),
+        comment: comment.trim(),
+        displayName: displayName.trim(),
+        email: email.trim().toLowerCase() || undefined,
       };
 
       const review = isEditing
-        ? await updateProductReview(
-            productId,
-            payload,
-            token
-          )
-        : await createProductReview(
-            productId,
-            payload,
-            token
-          );
+        ? await updateProductReview(productId, payload, token)
+        : await createProductReview(productId, payload, token);
 
       onSuccess(review);
-
       setIsSubmitted(true);
 
       toast.success(
@@ -243,17 +133,9 @@ function ReviewModal({
           : "Your review has been submitted successfully."
       );
     } catch (submitError: any) {
-      console.error(
-        "Failed to submit review:",
-        submitError
-      );
-
-      const apiMessage =
-        submitError?.response?.data
-          ?.message;
-
+      console.error("Failed to submit review:", submitError);
       toast.error(
-        apiMessage ||
+        submitError?.response?.data?.message ||
           submitError?.message ||
           "Unable to submit your review right now. Please try again."
       );
@@ -262,498 +144,158 @@ function ReviewModal({
     }
   };
 
+  // ─── Render ─────────────────────────────────────────────
   return (
     <div
-      className="
-        fixed
-        inset-0
-        z-[100]
-        flex
-        items-center
-        justify-center
-        bg-[#2C1F24]/45
-        px-4
-        py-6
-      "
       role="dialog"
       aria-modal="true"
       aria-labelledby="review-modal-title"
-      onMouseDown={(event) => {
-        if (
-          event.target ===
-          event.currentTarget
-        ) {
-          onClose();
-        }
-      }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#2C1F24]/45 px-4 py-6"
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div
-        className="
-          relative
-          max-h-[92vh]
-          w-full
-          max-w-[620px]
-          overflow-y-auto
-          rounded-2xl
-          border
-          border-[#F0DDE2]
-          bg-white
-          shadow-sm
-        "
-      >
-        {/* ====================================================
-            CLOSE
-            ==================================================== */}
-
+      <div className="relative max-h-[92vh] w-full max-w-[620px] overflow-y-auto rounded-2xl border border-[#F0DDE2] bg-white shadow-sm">
+        {/* Close */}
         <button
           type="button"
           onClick={onClose}
           aria-label="Close review form"
-          className="
-            absolute
-            right-5
-            top-5
-            z-20
-            flex
-            h-9
-            w-9
-            items-center
-            justify-center
-            rounded-full
-            border
-            border-[#F0DDE2]
-            bg-white
-            text-[#8B7A6C]
-            hover:border-[#D9B7C0]
-            hover:bg-[#FBEEF1]
-            hover:text-[#B5697A]
-            focus:outline-none
-          "
+          className="absolute right-5 top-5 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-[#F0DDE2] bg-white text-[#8B7A6C] hover:border-[#D9B7C0] hover:bg-[#FBEEF1] hover:text-[#B5697A] focus:outline-none"
         >
-          <X
-            className="h-4 w-4"
-            strokeWidth={2}
-          />
+          <X className="h-4 w-4" strokeWidth={2} />
         </button>
 
-        {/* ====================================================
-            SUCCESS
-            ==================================================== */}
-
         {isSubmitted ? (
-          <div
-            className="
-              flex
-              flex-col
-              items-center
-              justify-center
-              px-6
-              py-14
-              text-center
-              sm:px-10
-            "
-          >
-            <span
-              className="
-                flex
-                h-16
-                w-16
-                items-center
-                justify-center
-                rounded-full
-                bg-[#FBEEF1]
-                text-[#B5697A]
-              "
-            >
-              <Check
-                className="h-7 w-7"
-                strokeWidth={2.2}
-              />
+          // ─── Success ───────────────────────────────────
+          <div className="flex flex-col items-center justify-center px-6 py-14 text-center sm:px-10">
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FBEEF1] text-[#B5697A]">
+              <Check className="h-7 w-7" strokeWidth={2.2} />
             </span>
 
-            <h3
-              className="
-                mt-5
-                text-[21px]
-                font-semibold
-                tracking-wide
-                text-gray-700
-              "
-            >
-              {isEditing
-                ? "Review updated!"
-                : "Thank you!"}
+            <h3 className="mt-5 text-[21px] font-semibold tracking-wide text-gray-700">
+              {isEditing ? "Review updated!" : "Thank you!"}
             </h3>
 
-            <p
-              className="
-                mt-2
-                max-w-[340px]
-                text-[12px]
-                leading-[1.7]
-                text-slate-500
-                sm:text-[13px]
-              "
-            >
-              Your review has been
-              submitted and is awaiting
-              verification. Once approved,
-              it will appear publicly on
-              this product.
+            <p className="mt-2 max-w-[340px] text-[12px] leading-[1.7] text-slate-500 sm:text-[13px]">
+              Your review has been submitted and is awaiting verification.
+              Once approved, it will appear publicly on this product.
             </p>
 
             <button
               type="button"
               onClick={onClose}
-              className="
-                mt-7
-                rounded-lg
-                bg-[#B5697A]
-                px-7
-                py-2.5
-                text-[12px]
-                text-white
-                transition-all
-                hover:bg-[#A55D6F]
-              "
+              className="mt-7 rounded-lg bg-[#B5697A] px-7 py-2.5 text-[12px] text-white transition-all hover:bg-[#A55D6F]"
             >
               Done
             </button>
           </div>
         ) : (
+          // ─── Form ──────────────────────────────────────
           <>
-            {/* ==================================================
-                HEADER
-                ================================================== */}
-
-            <div
-              className="
-                border-b
-                border-[#F0DDE2]
-                px-6
-                pb-5
-                pt-7
-                sm:px-8
-              "
-            >
+            {/* Header */}
+            <div className="border-b border-[#F0DDE2] px-6 pb-5 pt-7 sm:px-8">
               <h2
                 id="review-modal-title"
-                className="
-                  pr-8
-                  text-center
-                  text-[20px]
-                  font-semibold
-                  tracking-wide
-                  text-gray-700
-                  sm:text-[22px]
-                "
+                className="pr-8 text-center text-[20px] font-semibold tracking-wide text-gray-700 sm:text-[22px]"
               >
-                {isEditing
-                  ? "Edit Your Review"
-                  : "Write a Review"}
+                {isEditing ? "Edit Your Review" : "Write a Review"}
               </h2>
-
-              <p
-                className="
-                  mt-0
-                  text-center
-                  text-[11px]
-                  leading-relaxed
-                  text-slate-500
-                  sm:text-[12px]
-                "
-              >
+              <p className="mt-0 text-center text-[11px] leading-relaxed text-slate-500 sm:text-[12px]">
                 {isEditing
                   ? `Update your thoughts about ${productName}.`
                   : `Share your experience with ${productName}.`}
               </p>
             </div>
 
-            {/* ==================================================
-                FORM
-                ================================================== */}
-
-            <div
-              className="
-                px-6
-                py-6
-                sm:px-8
-                sm:py-7
-              "
-            >
-              {/* ================================
-                  RATING
-                  ================================= */}
-
-              <div
-                className="
-                  rounded-lg
-                  border
-                  border-[#F0DDE2]
-                  bg-[#FFFCFD]
-                  px-5
-                  py-4
-                "
-              >
-                <p
-                  className="
-                    text-center
-                    text-[12px]
-                    text-slate-500
-                  "
-                >
+            {/* Form body */}
+            <div className="px-6 py-6 sm:px-8 sm:py-7">
+              {/* Rating */}
+              <div className="rounded-lg border border-[#F0DDE2] bg-[#FFFCFD] px-5 py-4">
+                <p className="text-center text-[12px] text-slate-500">
                   How would you rate it?
                 </p>
-
                 <div className="mt-2 flex justify-center">
-                  <ReviewStars
-                    rating={rating}
-                    size={27}
-                    interactive
-                    onChange={setRating}
-                  />
+                  <ReviewStars rating={rating} size={27} interactive onChange={setRating} />
                 </div>
-
-                <p
-                  className="
-                    mt-1.5
-                    text-center
-                    text-[10px]
-                    text-[#B5697A]
-                  "
-                >
-                  {rating === 0
-                    ? "Select your rating"
-                    : rating === 5
-                      ? "Loved it!"
-                      : rating === 4
-                        ? "Really good!"
-                        : rating === 3
-                          ? "It was good."
-                          : rating === 2
-                            ? "Could be better."
-                            : "We'll do better."}
+                <p className="mt-1.5 text-center text-[10px] text-[#B5697A]">
+                  {getRatingLabel(rating)}
                 </p>
               </div>
 
-              {/* ================================
-                  TITLE
-                  ================================= */}
-
+              {/* Title */}
               <div className="mt-4">
                 <input
                   id="review-title"
                   type="text"
                   value={title}
-                  onChange={(event) => {
-                    setTitle(
-                      event.target.value
-                    );
-                  }}
+                  onChange={(e) => setTitle(e.target.value)}
                   maxLength={120}
                   placeholder="Give your review a short title... *"
                   aria-label="Review title"
-                  className="
-                    w-full
-                    rounded-lg
-                    border
-                    border-[#EADBD0]
-                    bg-white
-                    px-4
-                    py-2.5
-                    text-[11px] md:text-[12px]
-                    text-gray-500
-                    outline-none
-                    transition-all
-                    duration-200
-                    placeholder:text-gray-500
-                    focus:border-[#B5697A]
-                  "
+                  className={INPUT_CLASS}
                 />
-
                 <div className="mt-1 flex justify-end">
-                  <span className="text-[9px] text-slate-500">
-                    {title.length}/120
-                  </span>
+                  <span className="text-[9px] text-slate-500">{title.length}/120</span>
                 </div>
               </div>
 
-              {/* ================================
-                  COMMENT
-                  ================================= */}
-
+              {/* Comment */}
               <div className="mt-3">
                 <textarea
                   id="review-comment"
                   value={comment}
-                  onChange={(event) => {
-                    setComment(
-                      event.target.value
-                    );
-                  }}
+                  onChange={(e) => setComment(e.target.value)}
                   maxLength={1000}
                   rows={5}
                   placeholder="Share your thoughts about the taste, freshness, packaging or overall experience... *"
                   aria-label="Your review"
-                  className="
-                    w-full
-                    resize-none
-                    rounded-lg
-                    border
-                    border-[#EADBD0]
-                    bg-white
-                    px-4
-                    py-3
-                    text-[11px] md:text-[12px]
-                    leading-[1.65]
-                    text-gray-500
-                    outline-none
-                    transition-all
-                    duration-200
-                    placeholder:text-gray-500
-                    focus:border-[#B5697A]
-                  "
+                  className={`${INPUT_CLASS} resize-none py-3 leading-[1.65]`}
                 />
-
                 <div className="mt-0 flex justify-end">
-                  <span className="text-[9px] text-slate-500">
-                    {comment.length}/1000
-                  </span>
+                  <span className="text-[9px] text-slate-500">{comment.length}/1000</span>
                 </div>
               </div>
 
-              {/* ================================
-                  USER DETAILS
-                  ================================= */}
-
-              <div
-                className="
-                  mt-3
-                  grid
-                  grid-cols-1
-                  gap-3
-                  sm:grid-cols-2
-                "
-              >
+              {/* Display name + Email */}
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <input
                   id="review-display-name"
                   type="text"
                   value={displayName}
-                  onChange={(event) => {
-                    setDisplayName(
-                      event.target.value
-                    );
-                  }}
+                  onChange={(e) => setDisplayName(e.target.value)}
                   maxLength={60}
                   placeholder="Display name *"
                   aria-label="Display name"
                   autoComplete="name"
-                  className="
-                    w-full
-                    rounded-lg
-                    border
-                    border-[#EADBD0]
-                    bg-white
-                    px-4
-                    py-2.5
-                    text-[11px] md:text-[12px]
-                    text-gray-500
-                    outline-none
-                    transition-all
-                    duration-200
-                    placeholder:text-gray-500
-                    focus:border-[#B5697A]
-                  "
+                  className={INPUT_CLASS}
                 />
-
                 <input
                   id="review-email"
                   type="email"
                   value={email}
-                  onChange={(event) => {
-                    setEmail(
-                      event.target.value
-                    );
-                  }}
+                  onChange={(e) => setEmail(e.target.value)}
                   maxLength={255}
                   placeholder="Email (optional)"
                   aria-label="Email"
                   autoComplete="email"
-                  className="
-                    w-full
-                    rounded-lg
-                    border
-                    border-[#EADBD0]
-                    bg-white
-                    px-4
-                    py-2.5
-                    text-[11px] md:text-[12px]
-                    text-gray-500
-                    outline-none
-                    transition-all
-                    duration-200
-                    placeholder:text-gray-500
-                    focus:border-[#B5697A]
-                  "
+                  className={INPUT_CLASS}
                 />
               </div>
 
-              <p
-                className="
-                  mt-1.5
-                  text-[9px]
-                  text-slate-500
-                "
-              >
-                Your email will not be shown
-                publicly.
+              <p className="mt-1.5 text-[9px] text-slate-500">
+                Your email will not be shown publicly.
               </p>
 
-              {/* ================================
-                  SUBMIT
-                  ================================= */}
-
+              {/* Submit */}
               <button
                 type="button"
                 disabled={isSubmitting}
-                onClick={() => {
-                  void handleSubmit();
-                }}
-                className="
-                  mt-5
-                  flex
-                  w-full
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-lg
-                  bg-[#B5697A]
-                  px-5
-                  py-3
-                  text-[12px]
-                  text-white
-                  shadow-sm
-                  transition-all
-                  duration-200
-                  hover:bg-[#A55D6F]
-                  hover:shadow-md
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-[#B5697A]/20
-                  focus:ring-offset-2
-                  disabled:cursor-not-allowed
-                  disabled:opacity-60
-                "
+                onClick={() => void handleSubmit()}
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-[#B5697A] px-5 py-3 text-[12px] text-white shadow-sm transition-all duration-200 hover:bg-[#A55D6F] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#B5697A]/20 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2
-                      className="h-4 w-4 animate-spin"
-                    />
-
-                    {isEditing
-                      ? "Updating..."
-                      : "Submitting..."}
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {isEditing ? "Updating..." : "Submitting..."}
                   </>
                 ) : isEditing ? (
                   "Update Review"
@@ -762,16 +304,8 @@ function ReviewModal({
                 )}
               </button>
 
-              <p
-                className="
-                  mt-2.5
-                  text-center
-                  text-[10px]
-                  text-slate-500
-                "
-              >
-                Reviews are checked before
-                appearing publicly.
+              <p className="mt-2.5 text-center text-[10px] text-slate-500">
+                Reviews are checked before appearing publicly.
               </p>
             </div>
           </>

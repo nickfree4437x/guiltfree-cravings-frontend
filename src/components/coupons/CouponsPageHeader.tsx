@@ -12,13 +12,10 @@ function CouponsPageHeader() {
         lg:px-10
       "
     >
-
       {/* =====================================================
           CONTENT
       ====================================================== */}
-
       <div className="relative text-center">
-
 
         {/* Heading */}
         <h1

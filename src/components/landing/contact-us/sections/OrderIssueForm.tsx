@@ -1,15 +1,10 @@
-
 import { useState, type FormEvent } from "react";
-import {
-  Send,
-  ChevronDown,
-  AlertCircle,
-  LoaderCircle,
-} from "lucide-react";
+import { Send, ChevronDown, AlertCircle, LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../../../../store/authStore";
 
-const issueTypes = [
+// ─── Static Data ──────────────────────────────────────────
+const ISSUE_TYPES = [
   "Order not received",
   "Wrong item received",
   "Damaged product",
@@ -18,40 +13,30 @@ const issueTypes = [
   "Other",
 ];
 
+// ─── Component ────────────────────────────────────────────
 function OrderIssueForm() {
   const [orderNumber, setOrderNumber] = useState("");
   const [issueType, setIssueType] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const token = useAuthStore((state) => state.token);
+  const token = useAuthStore((s) => s.token);
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     if (isSubmitting) return;
 
-    const normalizedOrderNumber = orderNumber.trim();
-    const normalizedMessage = message.trim();
+    const order = orderNumber.trim();
+    const msg = message.trim();
 
-    if (
-      !normalizedOrderNumber ||
-      !issueType ||
-      !normalizedMessage
-    ) {
+    if (!order || !issueType || !msg) {
       toast.error("Please fill in all required fields.");
       return;
     }
-
-    if (normalizedMessage.length < 10) {
-      toast.error(
-        "Please describe your issue in at least 10 characters."
-      );
+    if (msg.length < 10) {
+      toast.error("Please describe your issue in at least 10 characters.");
       return;
     }
-
     if (!token) {
       toast.error("Please log in to report an order issue.");
       return;
@@ -61,42 +46,31 @@ function OrderIssueForm() {
 
     try {
       const apiBaseUrl = (
-        import.meta.env.VITE_API_BASE_URL ||
-        "https://guiltfreecravings.com/api"
+        import.meta.env.VITE_API_BASE_URL || "https://guiltfreecravings.com/api"
       ).replace(/\/+$/, "");
 
-      const response = await fetch(
-        `${apiBaseUrl}/order-issues`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            orderNumber: normalizedOrderNumber,
-            issueType,
-            message: normalizedMessage,
-          }),
-        }
-      );
+      const response = await fetch(`${apiBaseUrl}/order-issues`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          orderNumber: order,
+          issueType,
+          message: msg,
+        }),
+      });
 
       const result = await response.json().catch(() => null);
 
       if (!response.ok || !result?.success) {
         throw new Error(
-          result?.message ||
-            "Unable to submit your issue. Please try again."
+          result?.message || "Unable to submit your issue. Please try again."
         );
       }
 
-      // Show success toast
-      toast.success(
-        result.message ||
-          "Your issue has been submitted successfully."
-      );
-
-      // Reset form only after successful submission
+      toast.success(result.message || "Your issue has been submitted successfully.");
       setOrderNumber("");
       setIssueType("");
       setMessage("");
@@ -111,23 +85,19 @@ function OrderIssueForm() {
     }
   };
 
+  // ─── Render ─────────────────────────────────────────────
   return (
     <div className="relative h-full overflow-hidden rounded-xl border border-gray-200 bg-transparent px-5 py-5 sm:px-7 sm:py-7">
-      {/* MINI HEADER */}
+      {/* Header */}
       <div className="relative mb-7">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E5C5CC] bg-transparent">
-            <AlertCircle
-              className="h-[18px] w-[18px] text-[#B5697A]"
-              strokeWidth={1.8}
-            />
+            <AlertCircle className="h-[18px] w-[18px] text-[#B5697A]" strokeWidth={1.8} />
           </span>
-
           <div>
             <p className="text-[10px] uppercase tracking-[0.18em] text-[#B5697A]">
               Order Support
             </p>
-
             <h3 className="mt-0.5 text-[16px] font-semibold leading-tight text-gray-600 sm:text-[18px]">
               Something not quite right?
             </h3>
@@ -141,21 +111,16 @@ function OrderIssueForm() {
         </div>
       </div>
 
-      {/* FORM */}
-      <form
-        onSubmit={handleSubmit}
-        className="relative space-y-5"
-      >
-        {/* ORDER NUMBER */}
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="relative space-y-5">
+        {/* Order number */}
         <div>
           <input
             id="order-number"
             name="orderNumber"
             type="text"
             value={orderNumber}
-            onChange={(event) =>
-              setOrderNumber(event.target.value)
-            }
+            onChange={(e) => setOrderNumber(e.target.value)}
             placeholder="Enter your order number"
             autoComplete="off"
             maxLength={100}
@@ -165,32 +130,23 @@ function OrderIssueForm() {
           />
         </div>
 
-        {/* ISSUE TYPE */}
+        {/* Issue type */}
         <div>
           <div className="relative">
             <select
               id="issue-type"
               name="issueType"
               value={issueType}
-              onChange={(event) =>
-                setIssueType(event.target.value)
-              }
+              onChange={(e) => setIssueType(e.target.value)}
               className={`h-11 w-full cursor-pointer appearance-none rounded-lg border border-[#E5D7CB] bg-transparent pl-3.5 pr-10 text-[13px] outline-none transition-all duration-200 hover:border-[#D5C3B5] focus:border-[#B5697A] ${
-                issueType
-                  ? "text-gray-600 font-[350]"
-                  : "text-gray-500 font-[350]"
+                issueType ? "text-gray-600 font-[350]" : "text-gray-500 font-[350]"
               }`}
               required
               disabled={isSubmitting}
             >
-              <option value="" disabled>
-                Select an issue
-              </option>
-
-              {issueTypes.map((issue) => (
-                <option key={issue} value={issue}>
-                  {issue}
-                </option>
+              <option value="" disabled>Select an issue</option>
+              {ISSUE_TYPES.map((issue) => (
+                <option key={issue} value={issue}>{issue}</option>
               ))}
             </select>
 
@@ -201,15 +157,13 @@ function OrderIssueForm() {
           </div>
         </div>
 
-        {/* MESSAGE */}
+        {/* Message */}
         <div>
           <textarea
             id="issue-message"
             name="message"
             value={message}
-            onChange={(event) =>
-              setMessage(event.target.value)
-            }
+            onChange={(e) => setMessage(e.target.value)}
             placeholder="Please share the details of the issue..."
             rows={5}
             minLength={10}
@@ -224,7 +178,7 @@ function OrderIssueForm() {
           </p>
         </div>
 
-        {/* SUBMIT */}
+        {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting}

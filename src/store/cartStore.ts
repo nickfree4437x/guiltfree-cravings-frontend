@@ -1,10 +1,8 @@
 import { create } from "zustand";
 
-import type {
-  Product,
-  ProductVariant,
-} from "../api/productApi";
+import type { Product, ProductVariant } from "../api/productApi";
 
+// ─── Types ────────────────────────────────────────────────
 export interface CartItem {
   product: Product;
   variant: ProductVariant;
@@ -18,101 +16,40 @@ interface PendingCartItem {
 }
 
 interface CartState {
-  /* =========================================================
-     CART DATA
-  ========================================================= */
-
   items: CartItem[];
-
-  /* =========================================================
-     CART DRAWER
-  ========================================================= */
-
   isCartDrawerOpen: boolean;
-
   openCartDrawer: () => void;
-
   closeCartDrawer: () => void;
-
-  /* =========================================================
-     CART ACTIONS
-  ========================================================= */
-
-  addToCart: (
-    product: Product,
-    variant: ProductVariant,
-    quantity?: number
-  ) => void;
-
-  removeFromCart: (
-    productId: number,
-    variantId: number
-  ) => void;
-
-  updateQuantity: (
-    productId: number,
-    variantId: number,
-    quantity: number
-  ) => void;
-
+  addToCart: (product: Product, variant: ProductVariant, quantity?: number) => void;
+  removeFromCart: (productId: number, variantId: number) => void;
+  updateQuantity: (productId: number, variantId: number, quantity: number) => void;
   clearCart: () => void;
-
   getCartItemCount: () => number;
-
   getCartTotal: () => number;
-
-  /* =========================================================
-     PENDING CART
-  ========================================================= */
-
-  setPendingCartItem: (
-    product: Product,
-    variant: ProductVariant,
-    quantity: number
-  ) => void;
-
+  setPendingCartItem: (product: Product, variant: ProductVariant, quantity: number) => void;
   getPendingCartItem: () => PendingCartItem | null;
-
   clearPendingCartItem: () => void;
-
   addPendingCartItem: () => void;
 }
 
-/* =========================================================
-   CART STORAGE
-========================================================= */
+// ─── Storage Keys ─────────────────────────────────────────
+const CART_STORAGE_KEY = "guiltfree_cart";
+const PENDING_CART_STORAGE_KEY = "guiltfree_pending_cart_item";
 
-const CART_STORAGE_KEY =
-  "guiltfree_cart";
+// ─── Item Match Helper ────────────────────────────────────
+const isSameItem = (item: CartItem, productId: number, variantId: number) =>
+  item.product.id === productId && item.variant.id === variantId;
 
-const PENDING_CART_STORAGE_KEY =
-  "guiltfree_pending_cart_item";
-
-/* =========================================================
-   LOAD CART
-========================================================= */
-
+// ─── Load Cart ────────────────────────────────────────────
 const getStoredCart = (): CartItem[] => {
   try {
-    const storedCart =
-      localStorage.getItem(
-        CART_STORAGE_KEY
-      );
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    if (!stored) return [];
 
-    if (!storedCart) {
-      return [];
-    }
+    const parsed = JSON.parse(stored) as CartItem[];
+    if (!Array.isArray(parsed)) return [];
 
-    const parsedCart =
-      JSON.parse(
-        storedCart
-      ) as CartItem[];
-
-    if (!Array.isArray(parsedCart)) {
-      return [];
-    }
-
-    return parsedCart.filter(
+    return parsed.filter(
       (item) =>
         item &&
         item.product &&
@@ -123,407 +60,156 @@ const getStoredCart = (): CartItem[] => {
         item.quantity > 0
     );
   } catch (error) {
-    console.error(
-      "Failed to load cart from localStorage:",
-      error
-    );
-
+    console.error("Failed to load cart from localStorage:", error);
     return [];
   }
 };
 
-/* =========================================================
-   SAVE CART
-========================================================= */
-
-const saveCart = (
-  items: CartItem[]
-) => {
+// ─── Save Cart ────────────────────────────────────────────
+const saveCart = (items: CartItem[]) => {
   try {
-    localStorage.setItem(
-      CART_STORAGE_KEY,
-      JSON.stringify(items)
-    );
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   } catch (error) {
-    console.error(
-      "Failed to save cart to localStorage:",
-      error
-    );
+    console.error("Failed to save cart to localStorage:", error);
   }
 };
 
-/* =========================================================
-   LOAD PENDING CART ITEM
-========================================================= */
+// ─── Pending Item Load/Save/Clear ─────────────────────────
+const getStoredPendingCartItem = (): PendingCartItem | null => {
+  try {
+    const stored = localStorage.getItem(PENDING_CART_STORAGE_KEY);
+    if (!stored) return null;
 
-const getStoredPendingCartItem =
-  (): PendingCartItem | null => {
-    try {
-      const storedItem =
-        localStorage.getItem(
-          PENDING_CART_STORAGE_KEY
-        );
+    const parsed = JSON.parse(stored) as PendingCartItem;
 
-      if (!storedItem) {
-        return null;
-      }
-
-      const parsedItem =
-        JSON.parse(
-          storedItem
-        ) as PendingCartItem;
-
-      if (
-        !parsedItem ||
-        !parsedItem.product ||
-        typeof parsedItem.product.id !== "number" ||
-        !parsedItem.variant ||
-        typeof parsedItem.variant.id !== "number" ||
-        typeof parsedItem.quantity !== "number" ||
-        parsedItem.quantity <= 0
-      ) {
-        return null;
-      }
-
-      return parsedItem;
-    } catch (error) {
-      console.error(
-        "Failed to load pending cart item:",
-        error
-      );
-
+    if (
+      !parsed ||
+      !parsed.product ||
+      typeof parsed.product.id !== "number" ||
+      !parsed.variant ||
+      typeof parsed.variant.id !== "number" ||
+      typeof parsed.quantity !== "number" ||
+      parsed.quantity <= 0
+    ) {
       return null;
     }
-  };
 
-/* =========================================================
-   SAVE PENDING CART ITEM
-========================================================= */
-
-const savePendingCartItem = (
-  item: PendingCartItem
-) => {
-  try {
-    localStorage.setItem(
-      PENDING_CART_STORAGE_KEY,
-      JSON.stringify(item)
-    );
+    return parsed;
   } catch (error) {
-    console.error(
-      "Failed to save pending cart item:",
-      error
-    );
+    console.error("Failed to load pending cart item:", error);
+    return null;
   }
 };
 
-/* =========================================================
-   CLEAR PENDING CART ITEM
-========================================================= */
+const savePendingCartItem = (item: PendingCartItem) => {
+  try {
+    localStorage.setItem(PENDING_CART_STORAGE_KEY, JSON.stringify(item));
+  } catch (error) {
+    console.error("Failed to save pending cart item:", error);
+  }
+};
 
 const removePendingCartItem = () => {
   try {
-    localStorage.removeItem(
-      PENDING_CART_STORAGE_KEY
-    );
+    localStorage.removeItem(PENDING_CART_STORAGE_KEY);
   } catch (error) {
-    console.error(
-      "Failed to clear pending cart item:",
-      error
-    );
+    console.error("Failed to clear pending cart item:", error);
   }
 };
 
-/* =========================================================
-   INITIAL CART
-========================================================= */
+// ─── Initial Cart ─────────────────────────────────────────
+const storedCart = getStoredCart();
 
-const storedCart =
-  getStoredCart();
+// ─── Store ────────────────────────────────────────────────
+export const useCartStore = create<CartState>((set, get) => ({
+  items: storedCart,
+  isCartDrawerOpen: false,
 
-/* =========================================================
-   CART STORE
-========================================================= */
+  openCartDrawer: () => set({ isCartDrawerOpen: true }),
+  closeCartDrawer: () => set({ isCartDrawerOpen: false }),
 
-export const useCartStore =
-  create<CartState>(
-    (set, get) => ({
-      /* =====================================================
-         INITIAL STATE
-      ===================================================== */
+  // ─── Add to cart ──────────────────────────────────────
+  addToCart: (product, variant, quantity = 1) => {
+    if (quantity <= 0) return;
 
-      items: storedCart,
+    set((state) => {
+      const existing = state.items.find((item) => isSameItem(item, product.id, variant.id));
 
-      /* =====================================================
-         CART DRAWER STATE
-      ===================================================== */
+      const updatedItems: CartItem[] = existing
+        ? state.items.map((item) =>
+            isSameItem(item, product.id, variant.id)
+              ? { ...item, quantity: item.quantity + quantity }
+              : item
+          )
+        : [...state.items, { product, variant, quantity }];
 
-      isCartDrawerOpen: false,
+      saveCart(updatedItems);
+      return { items: updatedItems };
+    });
+  },
 
-      /* =====================================================
-         OPEN CART DRAWER
-      ===================================================== */
+  // ─── Remove from cart ─────────────────────────────────
+  removeFromCart: (productId, variantId) => {
+    set((state) => {
+      const updatedItems = state.items.filter((item) => !isSameItem(item, productId, variantId));
+      saveCart(updatedItems);
+      return { items: updatedItems };
+    });
+  },
 
-      openCartDrawer: () => {
-        set({
-          isCartDrawerOpen: true,
-        });
-      },
+  // ─── Update quantity ──────────────────────────────────
+  updateQuantity: (productId, variantId, quantity) => {
+    // quantity <= 0 → remove item
+    if (quantity <= 0) {
+      set((state) => {
+        const updatedItems = state.items.filter((item) => !isSameItem(item, productId, variantId));
+        saveCart(updatedItems);
+        return { items: updatedItems };
+      });
+      return;
+    }
 
-      /* =====================================================
-         CLOSE CART DRAWER
-      ===================================================== */
+    set((state) => {
+      const updatedItems = state.items.map((item) =>
+        isSameItem(item, productId, variantId) ? { ...item, quantity } : item
+      );
+      saveCart(updatedItems);
+      return { items: updatedItems };
+    });
+  },
 
-      closeCartDrawer: () => {
-        set({
-          isCartDrawerOpen: false,
-        });
-      },
+  // ─── Clear cart ───────────────────────────────────────
+  clearCart: () => {
+    try {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    } catch (error) {
+      console.error("Failed to clear cart from localStorage:", error);
+    }
+    set({ items: [] });
+  },
 
-      /* =====================================================
-         ADD TO CART
-      ===================================================== */
+  // ─── Derived values ───────────────────────────────────
+  getCartItemCount: () => get().items.reduce((total, item) => total + item.quantity, 0),
 
-      addToCart: (
-        product,
-        variant,
-        quantity = 1
-      ) => {
-        if (quantity <= 0) {
-          return;
-        }
+  getCartTotal: () =>
+    get().items.reduce((total, item) => total + item.variant.price * item.quantity, 0),
 
-        set((state) => {
-          const existingItem =
-            state.items.find(
-              (item) =>
-                item.product.id ===
-                  product.id &&
-                item.variant.id ===
-                  variant.id
-            );
+  // ─── Pending item ─────────────────────────────────────
+  setPendingCartItem: (product, variant, quantity) => {
+    if (quantity <= 0) return;
+    savePendingCartItem({ product, variant, quantity });
+  },
 
-          let updatedItems: CartItem[];
+  getPendingCartItem: () => getStoredPendingCartItem(),
 
-          if (existingItem) {
-            updatedItems =
-              state.items.map(
-                (item) =>
-                  item.product.id ===
-                    product.id &&
-                  item.variant.id ===
-                    variant.id
-                    ? {
-                        ...item,
-                        quantity:
-                          item.quantity +
-                          quantity,
-                      }
-                    : item
-              );
-          } else {
-            updatedItems = [
-              ...state.items,
-              {
-                product,
-                variant,
-                quantity,
-              },
-            ];
-          }
+  clearPendingCartItem: () => removePendingCartItem(),
 
-          saveCart(updatedItems);
+  // After login: merge pending item into cart, then clear pending
+  addPendingCartItem: () => {
+    const pendingItem = getStoredPendingCartItem();
+    if (!pendingItem) return;
 
-          return {
-            items: updatedItems,
-          };
-        });
-      },
-
-      /* =====================================================
-         REMOVE FROM CART
-      ===================================================== */
-
-      removeFromCart: (
-        productId,
-        variantId
-      ) => {
-        set((state) => {
-          const updatedItems =
-            state.items.filter(
-              (item) =>
-                !(
-                  item.product.id ===
-                    productId &&
-                  item.variant.id ===
-                    variantId
-                )
-            );
-
-          saveCart(updatedItems);
-
-          return {
-            items: updatedItems,
-          };
-        });
-      },
-
-      /* =====================================================
-         UPDATE QUANTITY
-      ===================================================== */
-
-      updateQuantity: (
-        productId,
-        variantId,
-        quantity
-      ) => {
-        if (quantity <= 0) {
-          set((state) => {
-            const updatedItems =
-              state.items.filter(
-                (item) =>
-                  !(
-                    item.product.id ===
-                      productId &&
-                    item.variant.id ===
-                      variantId
-                  )
-              );
-
-            saveCart(updatedItems);
-
-            return {
-              items: updatedItems,
-            };
-          });
-
-          return;
-        }
-
-        set((state) => {
-          const updatedItems =
-            state.items.map(
-              (item) =>
-                item.product.id ===
-                  productId &&
-                item.variant.id ===
-                  variantId
-                  ? {
-                      ...item,
-                      quantity,
-                    }
-                  : item
-            );
-
-          saveCart(updatedItems);
-
-          return {
-            items: updatedItems,
-          };
-        });
-      },
-
-      /* =====================================================
-         CLEAR CART
-      ===================================================== */
-
-      clearCart: () => {
-        try {
-          localStorage.removeItem(
-            CART_STORAGE_KEY
-          );
-        } catch (error) {
-          console.error(
-            "Failed to clear cart from localStorage:",
-            error
-          );
-        }
-
-        set({
-          items: [],
-        });
-      },
-
-      /* =====================================================
-         CART ITEM COUNT
-      ===================================================== */
-
-      getCartItemCount: () => {
-        return get().items.reduce(
-          (total, item) =>
-            total + item.quantity,
-          0
-        );
-      },
-
-      /* =====================================================
-         CART TOTAL
-      ===================================================== */
-
-      getCartTotal: () => {
-        return get().items.reduce(
-          (total, item) =>
-            total +
-            item.variant.price *
-              item.quantity,
-          0
-        );
-      },
-
-      /* =====================================================
-         SET PENDING CART ITEM
-      ===================================================== */
-
-      setPendingCartItem: (
-        product,
-        variant,
-        quantity
-      ) => {
-        if (quantity <= 0) {
-          return;
-        }
-
-        savePendingCartItem({
-          product,
-          variant,
-          quantity,
-        });
-      },
-
-      /* =====================================================
-         GET PENDING CART ITEM
-      ===================================================== */
-
-      getPendingCartItem: () => {
-        return getStoredPendingCartItem();
-      },
-
-      /* =====================================================
-         CLEAR PENDING CART ITEM
-      ===================================================== */
-
-      clearPendingCartItem: () => {
-        removePendingCartItem();
-      },
-
-      /* =====================================================
-         ADD PENDING ITEM AFTER LOGIN
-      ===================================================== */
-
-      addPendingCartItem: () => {
-        const pendingItem =
-          getStoredPendingCartItem();
-
-        if (!pendingItem) {
-          return;
-        }
-
-        get().addToCart(
-          pendingItem.product,
-          pendingItem.variant,
-          pendingItem.quantity
-        );
-
-        removePendingCartItem();
-      },
-    })
-  );
+    get().addToCart(pendingItem.product, pendingItem.variant, pendingItem.quantity);
+    removePendingCartItem();
+  },
+}));

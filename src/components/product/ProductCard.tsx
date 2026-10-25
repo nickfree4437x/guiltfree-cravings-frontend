@@ -141,7 +141,7 @@ function ProductCard({
           aria-label={`View details for ${product.name}`}
           className="
             group/image relative block cursor-pointer
-            overflow-hidden rounded-xl bg-[#FBF7F2]
+            overflow-hidden bg-[#FBF7F2]
             focus:outline-none
             focus-visible:ring-2
             focus-visible:ring-inset

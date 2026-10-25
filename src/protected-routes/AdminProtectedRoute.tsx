@@ -1,27 +1,17 @@
-import {
-  Navigate,
-  Outlet,
-  useLocation,
-} from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { useAdminAuthStore } from "../store/adminAuthStore";
 
 function AdminProtectedRoute() {
   const location = useLocation();
-
-  const isAuthenticated =
-    useAdminAuthStore(
-      (state) => state.isAuthenticated
-    );
+  const isAuthenticated = useAdminAuthStore((s) => s.isAuthenticated);
 
   if (!isAuthenticated) {
     return (
       <Navigate
         to="/admin"
         replace
-        state={{
-          from: location,
-        }}
+        state={{ from: location }}
       />
     );
   }

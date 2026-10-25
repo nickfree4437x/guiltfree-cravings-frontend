@@ -2,239 +2,99 @@ import { create } from "zustand";
 
 import type { AuthUser } from "../api/authApi";
 
-const AUTH_TOKEN_KEY =
-  "guiltfree_auth_token";
+// ─── Storage Keys ─────────────────────────────────────────
+const AUTH_TOKEN_KEY = "guiltfree_auth_token";
+const AUTH_USER_KEY = "guiltfree_auth_user";
 
-const AUTH_USER_KEY =
-  "guiltfree_auth_user";
-
-/*
- * =========================================================
- * AUTH STATE
- * =========================================================
- */
-
+// ─── Types ────────────────────────────────────────────────
 interface AuthState {
   token: string | null;
   user: AuthUser | null;
   isAuthenticated: boolean;
-
-  login: (
-    token: string,
-    user: AuthUser
-  ) => void;
-
-  updateUser: (
-    user: AuthUser
-  ) => void;
-
+  login: (token: string, user: AuthUser) => void;
+  updateUser: (user: AuthUser) => void;
   logout: () => void;
 }
 
-/*
- * =========================================================
- * LOAD STORED TOKEN
- * =========================================================
- */
-
+// ─── Storage Helpers ──────────────────────────────────────
 const getStoredToken = (): string | null => {
   try {
-    return localStorage.getItem(
-      AUTH_TOKEN_KEY
-    );
+    return localStorage.getItem(AUTH_TOKEN_KEY);
   } catch (error) {
-    console.error(
-      "Failed to read authentication token:",
-      error
-    );
-
+    console.error("Failed to read authentication token:", error);
     return null;
   }
 };
 
-/*
- * =========================================================
- * LOAD STORED USER
- * =========================================================
- */
-
 const getStoredUser = (): AuthUser | null => {
   try {
-    const storedUser =
-      localStorage.getItem(
-        AUTH_USER_KEY
-      );
+    const stored = localStorage.getItem(AUTH_USER_KEY);
+    if (!stored) return null;
 
-    if (!storedUser) {
-      return null;
-    }
+    const parsed = JSON.parse(stored) as AuthUser;
 
-    const parsedUser = JSON.parse(
-      storedUser
-    ) as AuthUser;
-
-    /*
-     * Basic validation so corrupted
-     * localStorage data doesn't mark
-     * the user as authenticated.
-     */
-
+    // Basic validation — prevents corrupted storage from marking user as authenticated
     if (
-      !parsedUser ||
-      typeof parsedUser.id !== "number" ||
-      typeof parsedUser.phone !== "string"
+      !parsed ||
+      typeof parsed.id !== "number" ||
+      typeof parsed.phone !== "string"
     ) {
       return null;
     }
 
-    return parsedUser;
+    return parsed;
   } catch (error) {
-    console.error(
-      "Failed to read stored user:",
-      error
-    );
-
+    console.error("Failed to read stored user:", error);
     return null;
   }
 };
 
-/*
- * =========================================================
- * INITIAL AUTH STATE
- * =========================================================
- */
+// ─── Initial State ────────────────────────────────────────
+const storedToken = getStoredToken();
+const storedUser = getStoredUser();
+const initialIsAuthenticated = Boolean(storedToken) && Boolean(storedUser);
 
-const storedToken =
-  getStoredToken();
+// ─── Store ────────────────────────────────────────────────
+export const useAuthStore = create<AuthState>((set) => ({
+  token: storedToken,
+  user: storedUser,
+  isAuthenticated: initialIsAuthenticated,
 
-const storedUser =
-  getStoredUser();
+  // Called after successful OTP verification
+  login: (token, user) => {
+    try {
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    } catch (error) {
+      console.error("Failed to persist authentication:", error);
+    }
 
-const initialIsAuthenticated =
-  Boolean(storedToken) &&
-  Boolean(storedUser);
+    set({ token, user, isAuthenticated: true });
+  },
 
-/*
- * =========================================================
- * AUTH STORE
- * =========================================================
- */
+  // Called after PATCH /api/users/me — syncs Zustand + localStorage
+  updateUser: (user) => {
+    try {
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    } catch (error) {
+      console.error("Failed to persist updated user:", error);
+    }
 
-export const useAuthStore =
-  create<AuthState>((set) => ({
+    set((state) => ({
+      token: state.token,
+      user,
+      isAuthenticated: Boolean(state.token) && Boolean(user),
+    }));
+  },
 
-    /*
-     * =====================================================
-     * INITIAL STATE
-     * =====================================================
-     */
+  logout: () => {
+    try {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(AUTH_USER_KEY);
+    } catch (error) {
+      console.error("Failed to clear authentication:", error);
+    }
 
-    token: storedToken,
-
-    user: storedUser,
-
-    isAuthenticated:
-      initialIsAuthenticated,
-
-    /*
-     * =====================================================
-     * LOGIN
-     * =====================================================
-     *
-     * Called after successful OTP verification.
-     */
-
-    login: (token, user) => {
-      try {
-        localStorage.setItem(
-          AUTH_TOKEN_KEY,
-          token
-        );
-
-        localStorage.setItem(
-          AUTH_USER_KEY,
-          JSON.stringify(user)
-        );
-      } catch (error) {
-        console.error(
-          "Failed to persist authentication:",
-          error
-        );
-      }
-
-      set({
-        token,
-        user,
-        isAuthenticated: true,
-      });
-    },
-
-    /*
-     * =====================================================
-     * UPDATE USER
-     * =====================================================
-     *
-     * Called after:
-     *
-     * PATCH /api/users/me
-     *
-     * This keeps:
-     *
-     * PostgreSQL
-     * Zustand
-     * localStorage
-     *
-     * synchronized.
-     */
-
-    updateUser: (user) => {
-      try {
-        localStorage.setItem(
-          AUTH_USER_KEY,
-          JSON.stringify(user)
-        );
-      } catch (error) {
-        console.error(
-          "Failed to persist updated user:",
-          error
-        );
-      }
-
-      set((state) => ({
-        token: state.token,
-        user,
-        isAuthenticated:
-          Boolean(state.token) &&
-          Boolean(user),
-      }));
-    },
-
-    /*
-     * =====================================================
-     * LOGOUT
-     * =====================================================
-     */
-
-    logout: () => {
-      try {
-        localStorage.removeItem(
-          AUTH_TOKEN_KEY
-        );
-
-        localStorage.removeItem(
-          AUTH_USER_KEY
-        );
-      } catch (error) {
-        console.error(
-          "Failed to clear authentication:",
-          error
-        );
-      }
-
-      set({
-        token: null,
-        user: null,
-        isAuthenticated: false,
-      });
-    },
-  }));
+    set({ token: null, user: null, isAuthenticated: false });
+  },
+}));

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import AccountDropdown from "./AccountDropdown";
 
+// ─── Types ────────────────────────────────────────────────
 interface DesktopActionsProps {
   cartItemCount: number;
 
@@ -21,13 +22,12 @@ interface DesktopActionsProps {
   onAccountToggle: () => void;
   onAccountClose: () => void;
   onLogout: () => void;
-
-  // 👇 ADD THIS
   onCartClick: () => void;
 
   variant?: "dark" | "light";
 }
 
+// ─── Component ────────────────────────────────────────────
 function DesktopActions({
   cartItemCount,
   isAuthenticated,
@@ -38,17 +38,14 @@ function DesktopActions({
   onAccountToggle,
   onAccountClose,
   onLogout,
-  onCartClick, // 👈 ADD THIS
+  onCartClick,
   variant = "dark",
 }: DesktopActionsProps) {
   const isLight = variant === "light";
 
   return (
     <div className="hidden items-center gap-2.5 lg:flex">
-      {/* =======================================================
-          ACCOUNT / LOGIN
-      ======================================================= */}
-
+      {/* Account / Login */}
       {isAuthenticated ? (
         <AccountDropdown
           user={user}
@@ -85,10 +82,7 @@ function DesktopActions({
         </Link>
       )}
 
-      {/* =======================================================
-          CART
-      ======================================================= */}
-
+      {/* Cart */}
       <button
         type="button"
         onClick={onCartClick}
@@ -115,12 +109,7 @@ function DesktopActions({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.8"
-          className="
-            h-[18px]
-            w-[18px]
-            transition-transform
-            duration-200
-          "
+          className="h-[18px] w-[18px] transition-transform duration-200"
           aria-hidden="true"
         >
           <path
@@ -146,11 +135,7 @@ function DesktopActions({
               text-[9px]
               leading-none
               shadow-sm
-              ${
-                isLight
-                  ? "bg-white text-[#B5697A]"
-                  : "bg-[#B5697A] text-white"
-              }
+              ${isLight ? "bg-white text-[#B5697A]" : "bg-[#B5697A] text-white"}
             `}
           >
             {cartItemCount > 99 ? "99+" : cartItemCount}

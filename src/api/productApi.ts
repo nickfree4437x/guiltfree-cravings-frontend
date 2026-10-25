@@ -1,10 +1,6 @@
-
 import axios from "axios";
 
-/* =========================================================
-   Product Variant
-========================================================= */
-
+// ─── Types ────────────────────────────────────────────────
 export interface ProductVariant {
   id: number;
   productId: number;
@@ -16,31 +12,21 @@ export interface ProductVariant {
   updatedAt: string;
 }
 
-/* =========================================================
-   Product
-========================================================= */
-
 export interface Product {
   id: number;
   name: string;
   description: string;
 
-  // Main image displayed on the landing page
-  image: string;
-
-  // General product gallery
-  images: string[];
-
-  // Packaging-specific image galleries
+  // Images
+  image: string; // main image (landing page)
+  images: string[]; // general gallery
   regularImages: string[];
   glassJarImages: string[];
   cardboardBoxImages: string[];
+  glassJarImage: string | null; // legacy compatibility
+  cardboardBoxImage: string | null; // legacy compatibility
 
-  // Existing single-image fields retained for compatibility
-  glassJarImage: string | null;
-  cardboardBoxImage: string | null;
-
-  // Product information and dietary details
+  // Product info / dietary details
   ingredients: string | null;
   allergenInfo: string | null;
   medicalDisclaimer: string | null;
@@ -56,10 +42,7 @@ export interface Product {
   variants: ProductVariant[];
 }
 
-/* =========================================================
-   API Response Types
-========================================================= */
-
+// ─── API Responses ────────────────────────────────────────
 interface ProductsResponse {
   success: boolean;
   count: number;
@@ -71,53 +54,32 @@ interface ProductResponse {
   data: Product;
 }
 
-/* =========================================================
-   Axios Instance
-========================================================= */
-
+// ─── Axios Instance ───────────────────────────────────────
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    "https://guiltfreecravings.com/api",
-
-  headers: {
-    "Content-Type": "application/json",
-  },
-
+  baseURL: import.meta.env.VITE_API_URL || "https://guiltfreecravings.com/api",
+  headers: { "Content-Type": "application/json" },
   timeout: 10000,
 });
 
-/* =========================================================
-   Get All Active Products
-========================================================= */
-
+// ─── API: Get All Active Products ─────────────────────────
 export const getProducts = async (): Promise<Product[]> => {
   const response = await api.get<ProductsResponse>("/products");
-
   if (!response.data.success) {
     throw new Error("Failed to fetch products.");
   }
-
   return response.data.data;
 };
 
-/* =========================================================
-   Get Single Product By ID
-========================================================= */
-
-export const getProductById = async (
-  id: number
-): Promise<Product> => {
+// ─── API: Get Product By ID ───────────────────────────────
+export const getProductById = async (id: number): Promise<Product> => {
   if (!Number.isInteger(id) || id <= 0) {
     throw new Error("Invalid product ID.");
   }
 
   const response = await api.get<ProductResponse>(`/products/${id}`);
-
   if (!response.data.success) {
     throw new Error("Failed to fetch product.");
   }
-
   return response.data.data;
 };
 

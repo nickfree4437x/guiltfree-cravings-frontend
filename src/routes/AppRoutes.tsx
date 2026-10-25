@@ -5,7 +5,6 @@ import MainLayout from "../layout/MainLayout";
 import HomePage from "../pages/home-page/HomePage";
 import ProductDetailsPage from "../pages/product-details/ProductDetailsPage";
 import CheckoutPage from "../pages/check-out/CheckoutPage";
-import PaymentPage from "../pages/payment-page/PaymentPage";
 import OrderSuccessPage from "../pages/order-success/OrderSuccessPage";
 import MyOrdersPage from "../pages/my-orders/MyOrdersPage";
 import OrderDetailsPage from "../pages/orders/OrderDetailsPage";
@@ -16,107 +15,35 @@ import CouponsPage from "../pages/coupons/CouponsPage";
 import PrivacyPolicyPage from "../pages/privacy-policy/PrivacyPolicyPage";
 import TermsAndConditionsPage from "../pages/terms-and-conditions/TermsAndConditionsPage";
 import PaymentResultPage from "../pages/payment-result/PaymentResultPage";
-
-// Account
 import AccountPage from "../components/landing/navbar/AccountPage";
 
+// ─── Route Config ─────────────────────────────────────────
+const APP_ROUTES = [
+  { path: "/", element: <HomePage /> },
+  { path: "/products/:id", element: <ProductDetailsPage /> },
+  { path: "/checkout", element: <CheckoutPage /> },
+  { path: "/payment-result", element: <PaymentResultPage /> },
+  { path: "/order-success", element: <OrderSuccessPage /> },
+  { path: "/orders/:orderId", element: <OrderDetailsPage /> },
+  { path: "/orders", element: <MyOrdersPage /> },
+  { path: "/account", element: <AccountPage /> },
+  { path: "/profile", element: <ProfilePage /> },
+  { path: "/login", element: <LoginPage /> },
+  { path: "/wishlist", element: <WishlistPage /> },
+  { path: "/coupons", element: <CouponsPage /> },
+  { path: "/privacy-policy", element: <PrivacyPolicyPage /> },
+  { path: "/terms-and-conditions", element: <TermsAndConditionsPage /> },
+];
+
+// ─── Component ────────────────────────────────────────────
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* =========================
-          MAIN WEBSITE LAYOUT
-          Navbar + Outlet + Footer
-      ========================= */}
+      {/* Main layout: Navbar + Outlet + Footer */}
       <Route element={<MainLayout />}>
-
-        {/* Home */}
-        <Route
-          path="/"
-          element={<HomePage />}
-        />
-
-        {/* Product Details */}
-        <Route
-          path="/products/:id"
-          element={<ProductDetailsPage />}
-        />
-
-        {/* Checkout */}
-        <Route
-          path="/checkout"
-          element={<CheckoutPage />}
-        />
-
-        {/* Payment */}
-        <Route
-          path="/payment"
-          element={<PaymentPage />}
-        />
-
-        <Route
-          path="/payment-result"
-          element={<PaymentResultPage />}
-        />
-
-        {/* Order Success */}
-        <Route
-          path="/order-success"
-          element={<OrderSuccessPage />}
-        />
-
-        <Route
-          path="/orders/:orderId"
-          element={<OrderDetailsPage />}
-        />
-
-        {/* My Orders */}
-        <Route
-          path="/orders"
-          element={<MyOrdersPage />}
-        />
-
-        {/* Account */}
-        <Route
-          path="/account"
-          element={<AccountPage />}
-        />
-
-        {/* Profile */}
-        <Route
-          path="/profile"
-          element={<ProfilePage />}
-        />
-
-        {/* Login */}
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
-
-        {/* Wishlist */}
-        <Route
-          path="/wishlist"
-          element={<WishlistPage />}
-        />
-
-        {/* Coupons */}
-        <Route
-          path="/coupons"
-          element={<CouponsPage />}
-        />
-
-        {/* Privacy Policy */}
-        <Route
-          path="/privacy-policy"
-          element={<PrivacyPolicyPage />}
-        />
-
-        {/* Terms & Conditions */}
-        <Route
-          path="/terms-and-conditions"
-          element={<TermsAndConditionsPage />}
-        />
-
+        {APP_ROUTES.map(({ path, element }) => (
+          <Route key={path} path={path} element={element} />
+        ))}
       </Route>
     </Routes>
   );

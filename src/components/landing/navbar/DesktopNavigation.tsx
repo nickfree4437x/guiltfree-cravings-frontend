@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
+import type { MouseEvent } from "react";
 
+// ─── Types ────────────────────────────────────────────────
 export interface NavLink {
   label: string;
   to: string;
@@ -11,6 +13,7 @@ interface DesktopNavigationProps {
   variant?: "dark" | "light";
 }
 
+// ─── Component ────────────────────────────────────────────
 function DesktopNavigation({
   navLinks,
   onNavigate,
@@ -18,34 +21,16 @@ function DesktopNavigation({
 }: DesktopNavigationProps) {
   const isLight = variant === "light";
 
-  const handleNavigation = (
-    event: React.MouseEvent<HTMLAnchorElement>,
-    to: string
-  ) => {
-    // =========================
-    // SAME PAGE HASH SCROLL
-    // =========================
+  const handleNavigation = (event: MouseEvent<HTMLAnchorElement>, to: string) => {
+    // Same-page hash scroll: /#section → smooth scroll + URL update
     if (to.startsWith("/#")) {
       const sectionId = to.replace("/#", "");
-
-      const section =
-        document.getElementById(sectionId);
+      const section = document.getElementById(sectionId);
 
       if (section) {
         event.preventDefault();
-
-        section.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-
-        // URL hash update
-        window.history.pushState(
-          null,
-          "",
-          `/#${sectionId}`
-        );
-
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+        window.history.pushState(null, "", `/#${sectionId}`);
         onNavigate();
         return;
       }
@@ -57,21 +42,13 @@ function DesktopNavigation({
 
   return (
     <div className="hidden items-center lg:flex">
-      <nav
-        aria-label="Primary navigation"
-        className="flex items-center"
-      >
+      <nav aria-label="Primary navigation" className="flex items-center">
         <div className="flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               to={link.to}
-              onClick={(event) =>
-                handleNavigation(
-                  event,
-                  link.to
-                )
-              }
+              onClick={(e) => handleNavigation(e, link.to)}
               className={`
                 group
                 relative

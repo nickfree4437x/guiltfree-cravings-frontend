@@ -5,113 +5,60 @@ import type {
   AdminCustomerDetails,
 } from "../components/admin/customers/types";
 
+// ─── Config ───────────────────────────────────────────────
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://guiltfreecravings.com/api";
+  import.meta.env.VITE_API_BASE_URL || "https://guiltfreecravings.com/api";
 
-/*
- * =========================================================
- * RESPONSE TYPES
- * =========================================================
- */
+const ADMIN_TOKEN_KEY = "guiltfree_admin_token";
 
+// ─── Helpers ──────────────────────────────────────────────
+const getAuthHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem(ADMIN_TOKEN_KEY)}`,
+  },
+});
+
+// ─── Types ────────────────────────────────────────────────
 interface AdminCustomersResponse {
   success: boolean;
   message?: string;
-
-  data: {
-    customers: AdminCustomer[];
-  };
+  data: { customers: AdminCustomer[] };
 }
 
 interface AdminCustomerDetailsResponse {
   success: boolean;
   message?: string;
-
-  data: {
-    customer: AdminCustomerDetails;
-  };
+  data: { customer: AdminCustomerDetails };
 }
 
-/*
- * =========================================================
- * GET ALL CUSTOMERS
- * =========================================================
- */
+// ─── API: Get All Customers ───────────────────────────────
+export const getAdminCustomers = async (): Promise<AdminCustomer[]> => {
+  const response = await axios.get<AdminCustomersResponse>(
+    `${API_BASE_URL}/admin/users`,
+    getAuthHeaders()
+  );
 
-export const getAdminCustomers =
-  async (): Promise<AdminCustomer[]> => {
-    const token =
-      localStorage.getItem(
-        "guiltfree_admin_token"
-      );
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.message || "Unable to load customers.");
+  }
 
-    const response =
-      await axios.get<AdminCustomersResponse>(
-        `${API_BASE_URL}/admin/users`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  return response.data.data.customers;
+};
 
-    if (
-      !response.data.success ||
-      !response.data.data
-    ) {
-      throw new Error(
-        response.data.message ||
-          "Unable to load customers."
-      );
-    }
+// ─── API: Get Customer By ID ──────────────────────────────
+export const getAdminCustomerById = async (id: number): Promise<AdminCustomerDetails> => {
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Invalid customer ID.");
+  }
 
-    return response.data.data.customers;
-  };
+  const response = await axios.get<AdminCustomerDetailsResponse>(
+    `${API_BASE_URL}/admin/users/${id}`,
+    getAuthHeaders()
+  );
 
-/*
- * =========================================================
- * GET CUSTOMER BY ID
- * =========================================================
- */
+  if (!response.data.success || !response.data.data?.customer) {
+    throw new Error(response.data.message || "Unable to load customer details.");
+  }
 
-export const getAdminCustomerById =
-  async (
-    id: number
-  ): Promise<AdminCustomerDetails> => {
-    if (
-      !Number.isInteger(id) ||
-      id <= 0
-    ) {
-      throw new Error(
-        "Invalid customer ID."
-      );
-    }
-
-    const token =
-      localStorage.getItem(
-        "guiltfree_admin_token"
-      );
-
-    const response =
-      await axios.get<AdminCustomerDetailsResponse>(
-        `${API_BASE_URL}/admin/users/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-    if (
-      !response.data.success ||
-      !response.data.data?.customer
-    ) {
-      throw new Error(
-        response.data.message ||
-          "Unable to load customer details."
-      );
-    }
-
-    return response.data.data.customer;
-  };
+  return response.data.data.customer;
+};

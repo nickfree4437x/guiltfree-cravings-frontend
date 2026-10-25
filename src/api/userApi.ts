@@ -1,11 +1,6 @@
 import axios from "axios";
 
-/*
- * =========================================================
- * TYPES
- * =========================================================
- */
-
+// ─── Types ────────────────────────────────────────────────
 export interface UserProfile {
   id: number;
   name: string | null;
@@ -21,116 +16,51 @@ export interface UpdateProfilePayload {
   email: string;
 }
 
-/*
- * =========================================================
- * API RESPONSES
- * =========================================================
- */
-
+// ─── API Responses ────────────────────────────────────────
 interface ProfileResponse {
   success: boolean;
   message?: string;
   data: UserProfile;
 }
 
-/*
- * =========================================================
- * AXIOS INSTANCE
- * =========================================================
- */
-
+// ─── Axios Instance ───────────────────────────────────────
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    "https://guiltfreecravings.com/api",
-
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: import.meta.env.VITE_API_URL || "https://guiltfreecravings.com/api",
+  headers: { "Content-Type": "application/json" },
 });
 
-/*
- * =========================================================
- * AUTH TOKEN
- * =========================================================
- */
-
-const AUTH_TOKEN_KEY =
-  "guiltfree_auth_token";
+// ─── Auth Token + Interceptor ─────────────────────────────
+const AUTH_TOKEN_KEY = "guiltfree_auth_token";
 
 const getAuthToken = (): string | null => {
   try {
-    return localStorage.getItem(
-      AUTH_TOKEN_KEY
-    );
+    return localStorage.getItem(AUTH_TOKEN_KEY);
   } catch {
     return null;
   }
 };
 
-/*
- * =========================================================
- * REQUEST INTERCEPTOR
- * =========================================================
- *
- * Automatically attaches:
- *
- * Authorization: Bearer <token>
- *
- * to authenticated user requests.
- */
-
+// Attaches `Authorization: Bearer <token>` to every request
 api.interceptors.request.use(
   (config) => {
     const token = getAuthToken();
-
-    if (token) {
-      config.headers.Authorization =
-        `Bearer ${token}`;
-    }
-
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-/*
- * =========================================================
- * GET MY PROFILE
- * =========================================================
- *
- * GET /api/users/me
- */
+// ─── API: Get My Profile ──────────────────────────────────
+export const getMyProfile = async (): Promise<UserProfile> => {
+  const response = await api.get<ProfileResponse>("/users/me");
+  return response.data.data;
+};
 
-export const getMyProfile =
-  async (): Promise<UserProfile> => {
-    const response =
-      await api.get<ProfileResponse>(
-        "/users/me"
-      );
-
-    return response.data.data;
-  };
-
-/*
- * =========================================================
- * UPDATE MY PROFILE
- * =========================================================
- *
- * PATCH /api/users/me
- */
-
+// ─── API: Update My Profile ───────────────────────────────
 export const updateMyProfile = async (
   payload: UpdateProfilePayload
 ): Promise<UserProfile> => {
-  const response =
-    await api.patch<ProfileResponse>(
-      "/users/me",
-      payload
-    );
-
+  const response = await api.patch<ProfileResponse>("/users/me", payload);
   return response.data.data;
 };
 

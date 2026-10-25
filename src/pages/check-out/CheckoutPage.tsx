@@ -4,23 +4,21 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import api, { createOrder } from "../../api/orderApi";
-import { validateOffer } from "../../api/offerApi";
-import type { ValidateOfferResponse } from "../../api/offerApi";
+import { validateOffer, type ValidateOfferResponse } from "../../api/offerApi";
 
 import CheckoutHeader from "../../components/checkout/CheckoutHeader";
 import CheckoutCustomerForm from "../../components/checkout/CheckoutCustomerForm";
 import CheckoutOrderSummary from "../../components/checkout/CheckoutOrderSummary";
 import CheckoutEmptyCart from "../../components/checkout/CheckoutEmptyCart";
-import DeliveryAddressForm from "../../components/checkout/DeliveryAddressForm";
-
-import type {
-  DeliveryAddress,
-  DeliveryAddressErrors,
+import DeliveryAddressForm, {
+  type DeliveryAddress,
+  type DeliveryAddressErrors,
 } from "../../components/checkout/DeliveryAddressForm";
 
 import { useAuthStore } from "../../store/authStore";
 import { useCartStore } from "../../store/cartStore";
 
+// ─── Types ────────────────────────────────────────────────
 interface CheckoutFormData {
   fullName: string;
   phone: string;
@@ -47,6 +45,7 @@ interface PaymentInitiationResponse {
   };
 }
 
+// ─── Config ───────────────────────────────────────────────
 const INITIAL_DELIVERY_ADDRESS: DeliveryAddress = {
   addressLine1: "",
   addressLine2: "",
@@ -57,106 +56,111 @@ const INITIAL_DELIVERY_ADDRESS: DeliveryAddress = {
   selectedZone: "WITHIN_DWARKA",
 };
 
-function getErrorMessage(
-  error: unknown,
-  fallback: string
-): string {
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PINCODE_REGEX = /^\d{6}$/;
+
+// ─── Helpers ──────────────────────────────────────────────
+function getErrorMessage(error: unknown, fallback: string): string {
   if (typeof error === "object" && error !== null) {
     const candidate = error as {
-      response?: {
-        data?: {
-          message?: string;
-        };
-      };
+      response?: { data?: { message?: string } };
       message?: string;
     };
-
-    return (
-      candidate.response?.data?.message ||
-      candidate.message ||
-      fallback
-    );
+    return candidate.response?.data?.message || candidate.message || fallback;
   }
-
   return fallback;
 }
 
+// Validate customer form
+function validateCustomer(formData: CheckoutFormData): CheckoutErrors {
+  const errors: CheckoutErrors = { fullName: "", email: "" };
+  const name = formData.fullName.trim();
+  const email = formData.email.trim();
+
+  if (!name) errors.fullName = "Please enter your full name.";
+  else if (name.length < 2) errors.fullName = "Name must contain at least 2 characters.";
+  else if (name.length > 100) errors.fullName = "Name cannot exceed 100 characters.";
+
+  if (!email) errors.email = "Please enter your email address.";
+  else if (!EMAIL_REGEX.test(email)) errors.email = "Please enter a valid email address.";
+
+  return errors;
+}
+
+// Validate delivery address
+function validateDelivery(addr: DeliveryAddress): DeliveryAddressErrors {
+  const errors: DeliveryAddressErrors = {};
+  const addr1 = addr.addressLine1.trim();
+  const addr2 = addr.addressLine2.trim();
+  const area = addr.area.trim();
+  const city = addr.city.trim();
+  const state = addr.state.trim();
+  const pincode = addr.pincode.trim();
+
+  if (!addr1) errors.addressLine1 = "Please enter your house/flat and street address.";
+  else if (addr1.length > 200) errors.addressLine1 = "Address cannot exceed 200 characters.";
+
+  if (addr2.length > 200) errors.addressLine2 = "Landmark cannot exceed 200 characters.";
+  if (!area) errors.area = "Please enter your area or locality.";
+  else if (area.length > 100) errors.area = "Area cannot exceed 100 characters.";
+  if (!city) errors.city = "Please enter your city.";
+  else if (city.length > 100) errors.city = "City cannot exceed 100 characters.";
+  if (!state) errors.state = "Please enter your state.";
+  else if (state.length > 100) errors.state = "State cannot exceed 100 characters.";
+  if (!PINCODE_REGEX.test(pincode)) errors.pincode = "Please enter a valid 6-digit PIN code.";
+  if (addr.selectedZone !== "WITHIN_DWARKA" && addr.selectedZone !== "OUTSIDE_DWARKA") {
+    errors.selectedZone = "Please select a delivery area.";
+  }
+
+  return errors;
+}
+
+// ─── Component ────────────────────────────────────────────
 function CheckoutPage() {
   const navigate = useNavigate();
 
-  // CART
-  const items = useCartStore((state) => state.items);
-  const getCartTotal = useCartStore((state) => state.getCartTotal);
-  const openCartDrawer = useCartStore((state) => state.openCartDrawer);
+  // Stores
+  const items = useCartStore((s) => s.items);
+  const getCartTotal = useCartStore((s) => s.getCartTotal);
+  const openCartDrawer = useCartStore((s) => s.openCartDrawer);
+  const user = useAuthStore((s) => s.user);
+  const token = useAuthStore((s) => s.token);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const handleEditOrder = () => {
-    if (!isSubmitting) {
-      openCartDrawer();
-    }
-  };
-
-  // AUTH
-  const user = useAuthStore((state) => state.user);
-  const token = useAuthStore((state) => state.token);
-  const isAuthenticated = useAuthStore(
-    (state) => state.isAuthenticated
-  );
-
-  // CUSTOMER FORM
+  // Form state
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: user?.name ?? "",
     phone: user?.phone ?? "",
     email: user?.email ?? "",
   });
-
-  const [errors, setErrors] = useState<CheckoutErrors>({
-    fullName: "",
-    email: "",
-  });
-
+  const [errors, setErrors] = useState<CheckoutErrors>({ fullName: "", email: "" });
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingOrderId, setPendingOrderId] = useState<number | null>(null);
 
-  /*
-   * If order creation succeeds but payment initiation fails,
-   * retain its ID so a retry can reuse the same order.
-   */
-  const [pendingOrderId, setPendingOrderId] = useState<number | null>(
-    null
-  );
+  // Delivery address
+  const [deliveryAddress, setDeliveryAddress] = useState<DeliveryAddress>({ ...INITIAL_DELIVERY_ADDRESS });
+  const [deliveryErrors, setDeliveryErrors] = useState<DeliveryAddressErrors>({});
 
-  // DELIVERY ADDRESS
-  const [deliveryAddress, setDeliveryAddress] =
-    useState<DeliveryAddress>({ ...INITIAL_DELIVERY_ADDRESS });
-
-  const [deliveryErrors, setDeliveryErrors] =
-    useState<DeliveryAddressErrors>({});
-
-  // COUPON
+  // Coupon
   const [couponCode, setCouponCode] = useState("");
-  const [appliedOffer, setAppliedOffer] =
-    useState<ValidateOfferResponse | null>(null);
-
+  const [appliedOffer, setAppliedOffer] = useState<ValidateOfferResponse | null>(null);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [couponError, setCouponError] = useState("");
   const [couponMessage, setCouponMessage] = useState("");
 
+  // Derived
   const cartTotal = getCartTotal();
   const discountAmount = appliedOffer?.discountAmount ?? 0;
   const appliedCouponCode = appliedOffer?.offer.code ?? "";
-  const finalAmount = Math.max(0, cartTotal - discountAmount);
 
-  // AUTH GUARD
+  // ─── Effects ────────────────────────────────────────────
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/cart", { replace: true });
-    }
+    if (!isAuthenticated) navigate("/cart", { replace: true });
   }, [isAuthenticated, navigate]);
 
-  // SYNC USER DETAILS
   useEffect(() => {
     if (!user) return;
-
     setFormData((current) => ({
       ...current,
       fullName: current.fullName || user.name || "",
@@ -165,72 +169,48 @@ function CheckoutPage() {
     }));
   }, [user]);
 
-  // CUSTOMER INPUT
-  const handleChange = (
-    field: "fullName" | "email",
-    value: string
-  ) => {
-    setFormData((current) => ({
-      ...current,
-      [field]: value,
-    }));
+  // ─── Handlers ───────────────────────────────────────────
+  const handleEditOrder = () => {
+    if (!isSubmitting) openCartDrawer();
+  };
 
-    setErrors((current) => ({
-      ...current,
-      [field]: "",
-    }));
-
+  const handleChange = (field: "fullName" | "email", value: string) => {
+    setFormData((current) => ({ ...current, [field]: value }));
+    setErrors((current) => ({ ...current, [field]: "" }));
     setSubmitError("");
   };
 
-  // DELIVERY INPUT
-  const handleDeliveryChange = (
-    field: keyof DeliveryAddress,
-    value: string
-  ) => {
-    setDeliveryAddress((current) => ({
-      ...current,
-      [field]: value,
-    }));
-
-    setDeliveryErrors((current) => ({
-      ...current,
-      [field]: "",
-    }));
-
+  const handleDeliveryChange = (field: keyof DeliveryAddress, value: string) => {
+    setDeliveryAddress((current) => ({ ...current, [field]: value }));
+    setDeliveryErrors((current) => ({ ...current, [field]: "" }));
     setSubmitError("");
   };
 
-  // COUPON INPUT
   const handleCouponCodeChange = (value: string) => {
     setCouponCode(value.toUpperCase());
     setCouponError("");
     setCouponMessage("");
-
-    if (appliedOffer) {
-      setAppliedOffer(null);
-    }
+    if (appliedOffer) setAppliedOffer(null);
   };
 
-  // APPLY COUPON
+  // ─── Apply coupon ───────────────────────────────────────
   const handleApplyCoupon = async () => {
     const normalizedCode = couponCode.trim().toUpperCase();
-
     if (isApplyingCoupon || isSubmitting) return;
 
     if (!normalizedCode) {
-      const message = "Please enter a coupon code.";
-      setCouponError(message);
+      const msg = "Please enter a coupon code.";
+      setCouponError(msg);
       setCouponMessage("");
-      toast.error(message);
+      toast.error(msg);
       return;
     }
 
     if (!Number.isFinite(cartTotal) || cartTotal <= 0) {
-      const message = "Your cart total is invalid.";
-      setCouponError(message);
+      const msg = "Your cart total is invalid.";
+      setCouponError(msg);
       setCouponMessage("");
-      toast.error(message);
+      toast.error(msg);
       return;
     }
 
@@ -241,6 +221,7 @@ function CheckoutPage() {
     try {
       const result = await validateOffer(normalizedCode, cartTotal);
 
+      // Validate response shape
       if (
         !result ||
         !result.offer ||
@@ -252,155 +233,40 @@ function CheckoutPage() {
       }
 
       const discount = Number(result.discountAmount);
-
       setAppliedOffer({
         ...result,
         discountAmount: discount,
         subtotal: Number(result.subtotal),
         totalAmount: Number(result.totalAmount),
       });
-
       setCouponCode(result.offer.code);
 
-      const message = `Coupon applied! You save ₹${discount.toFixed(2)}.`;
-      setCouponMessage(message);
-      toast.success(message);
+      const msg = `Coupon applied! You save ₹${discount.toFixed(2)}.`;
+      setCouponMessage(msg);
+      toast.success(msg);
     } catch (error: unknown) {
-      const message = getErrorMessage(
-        error,
-        "Unable to validate this coupon. Please try again."
-      );
-
+      const msg = getErrorMessage(error, "Unable to validate this coupon. Please try again.");
       setAppliedOffer(null);
-      setCouponError(message);
+      setCouponError(msg);
       setCouponMessage("");
-      toast.error(message);
+      toast.error(msg);
     } finally {
       setIsApplyingCoupon(false);
     }
   };
 
-  // REMOVE COUPON
   const handleRemoveCoupon = () => {
     if (isSubmitting) return;
-
     setAppliedOffer(null);
     setCouponCode("");
     setCouponError("");
     setCouponMessage("");
-
     toast.success("Coupon removed successfully.");
   };
 
-  // VALIDATE CUSTOMER
-  const validateForm = () => {
-    const newErrors: CheckoutErrors = {
-      fullName: "",
-      email: "",
-    };
-
-    const trimmedName = formData.fullName.trim();
-    const trimmedEmail = formData.email.trim();
-
-    if (!trimmedName) {
-      newErrors.fullName = "Please enter your full name.";
-    } else if (trimmedName.length < 2) {
-      newErrors.fullName = "Name must contain at least 2 characters.";
-    } else if (trimmedName.length > 100) {
-      newErrors.fullName = "Name cannot exceed 100 characters.";
-    }
-
-    if (!trimmedEmail) {
-      newErrors.email = "Please enter your email address.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      newErrors.email = "Please enter a valid email address.";
-    }
-
-    setErrors(newErrors);
-
-    const firstError = newErrors.fullName || newErrors.email;
-
-    if (firstError) {
-      toast.error(firstError);
-    }
-
-    return !Object.values(newErrors).some(Boolean);
-  };
-
-  // VALIDATE DELIVERY ADDRESS
-  const validateDeliveryAddress = () => {
-    const newErrors: DeliveryAddressErrors = {};
-
-    const addressLine1 = deliveryAddress.addressLine1.trim();
-    const addressLine2 = deliveryAddress.addressLine2.trim();
-    const area = deliveryAddress.area.trim();
-    const city = deliveryAddress.city.trim();
-    const state = deliveryAddress.state.trim();
-    const pincode = deliveryAddress.pincode.trim();
-
-    if (!addressLine1) {
-      newErrors.addressLine1 =
-        "Please enter your house/flat and street address.";
-    } else if (addressLine1.length > 200) {
-      newErrors.addressLine1 = "Address cannot exceed 200 characters.";
-    }
-
-    if (addressLine2.length > 200) {
-      newErrors.addressLine2 = "Landmark cannot exceed 200 characters.";
-    }
-
-    if (!area) {
-      newErrors.area = "Please enter your area or locality.";
-    } else if (area.length > 100) {
-      newErrors.area = "Area cannot exceed 100 characters.";
-    }
-
-    if (!city) {
-      newErrors.city = "Please enter your city.";
-    } else if (city.length > 100) {
-      newErrors.city = "City cannot exceed 100 characters.";
-    }
-
-    if (!state) {
-      newErrors.state = "Please enter your state.";
-    } else if (state.length > 100) {
-      newErrors.state = "State cannot exceed 100 characters.";
-    }
-
-    if (!/^\d{6}$/.test(pincode)) {
-      newErrors.pincode = "Please enter a valid 6-digit PIN code.";
-    }
-
-    if (
-      deliveryAddress.selectedZone !== "WITHIN_DWARKA" &&
-      deliveryAddress.selectedZone !== "OUTSIDE_DWARKA"
-    ) {
-      newErrors.selectedZone = "Please select a delivery area.";
-    }
-
-    setDeliveryErrors(newErrors);
-
-    const firstError = Object.values(newErrors).find(Boolean);
-
-    if (firstError) {
-      toast.error(firstError);
-    }
-
-    return Object.keys(newErrors).length === 0;
-  };
-
-  /*
-   * INITIATE PHONEPE PAYMENT
-   *
-   * Uses the backend-calculated order total.
-   * Never calculate or send a payment amount from the frontend.
-   */
+  // ─── Initiate PhonePe ───────────────────────────────────
   const initiatePhonePePayment = async (orderId: number) => {
-    const response = await api.post<PaymentInitiationResponse>(
-      "/payments/initiate",
-      { orderId }
-    );
-
+    const response = await api.post<PaymentInitiationResponse>("/payments/initiate", { orderId });
     const paymentData = response.data?.data;
     const checkoutUrl = paymentData?.checkoutUrl;
 
@@ -409,26 +275,16 @@ function CheckoutPage() {
       typeof checkoutUrl !== "string" ||
       !checkoutUrl.startsWith("https://")
     ) {
-      throw new Error(
-        "PhonePe did not return a valid checkout link. Please try again."
-      );
+      throw new Error("PhonePe did not return a valid checkout link. Please try again.");
     }
 
-    /*
-     * Save the order ID before redirecting so that the same
-     * order can be reused if payment initiation needs a retry.
-     */
     setPendingOrderId(orderId);
-
     window.location.assign(checkoutUrl);
   };
 
-  // PLACE ORDER AND START PAYMENT
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ) => {
+  // ─── Submit order ───────────────────────────────────────
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     if (isSubmitting || isApplyingCoupon) return;
 
     if (!isAuthenticated || !user || !token) {
@@ -437,36 +293,36 @@ function CheckoutPage() {
       return;
     }
 
-    const isCustomerValid = validateForm();
-    const isAddressValid = validateDeliveryAddress();
+    // Validate customer + address
+    const customerErrors = validateCustomer(formData);
+    const addressErrors = validateDelivery(deliveryAddress);
+    setErrors(customerErrors);
+    setDeliveryErrors(addressErrors);
 
-    if (!isCustomerValid || !isAddressValid) {
-      const message =
-        "Please correct the highlighted fields before continuing.";
+    const hasCustomerErr = Object.values(customerErrors).some(Boolean);
+    const hasAddressErr = Object.values(addressErrors).some(Boolean);
 
-      setSubmitError(message);
+    if (hasCustomerErr || hasAddressErr) {
+      setSubmitError("Please correct the highlighted fields before continuing.");
       return;
     }
 
     if (!items.length) {
-      const message = "Your cart is empty.";
-      setSubmitError(message);
-      toast.error(message);
+      const msg = "Your cart is empty.";
+      setSubmitError(msg);
+      toast.error(msg);
       return;
     }
 
     if (!Number.isFinite(cartTotal) || cartTotal <= 0) {
-      const message =
-        "Your cart total is invalid. Please review your cart.";
-
-      setSubmitError(message);
-      toast.error(message);
+      const msg = "Your cart total is invalid. Please review your cart.";
+      setSubmitError(msg);
+      toast.error(msg);
       return;
     }
 
     const hasInvalidItem = items.some((item) => {
       const price = Number(item.variant.price);
-
       return (
         !item.product.name ||
         !Number.isFinite(price) ||
@@ -477,11 +333,9 @@ function CheckoutPage() {
     });
 
     if (hasInvalidItem) {
-      const message =
-        "One or more cart items have invalid details. Please review your cart.";
-
-      setSubmitError(message);
-      toast.error(message);
+      const msg = "One or more cart items have invalid details. Please review your cart.";
+      setSubmitError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -491,39 +345,27 @@ function CheckoutPage() {
     try {
       let orderId = pendingOrderId;
 
-      /*
-       * Create the order only once during this checkout session.
-       * A payment retry reuses the existing order ID.
-       */
+      // Create order only once — payment retry reuses existing ID
       if (orderId === null) {
         const createdOrder = await createOrder({
           customer: {
             name: formData.fullName.trim(),
             email: formData.email.trim().toLowerCase(),
           },
-
           deliveryAddress: {
             addressLine1: deliveryAddress.addressLine1.trim(),
-            addressLine2:
-              deliveryAddress.addressLine2.trim() || null,
+            addressLine2: deliveryAddress.addressLine2.trim() || null,
             area: deliveryAddress.area.trim(),
             city: deliveryAddress.city.trim(),
             state: deliveryAddress.state.trim(),
             pincode: deliveryAddress.pincode.trim(),
-
-            /*
-             * The backend determines the authoritative zone
-             * from its configured PIN-code allowlist.
-             */
             selectedZone: deliveryAddress.selectedZone,
           },
-
           items: items.map((item) => ({
             productId: Number(item.product.id),
             variantId: Number(item.variant.id),
             quantity: Number(item.quantity),
           })),
-
           offerCode: appliedCouponCode || null,
         });
 
@@ -532,59 +374,38 @@ function CheckoutPage() {
           !Number.isSafeInteger(Number(createdOrder.id)) ||
           Number(createdOrder.id) <= 0
         ) {
-          throw new Error(
-            "The order was not created correctly. Please contact support before retrying."
-          );
+          throw new Error("The order was not created correctly. Please contact support before retrying.");
         }
 
         orderId = Number(createdOrder.id);
         setPendingOrderId(orderId);
       }
 
-      /*
-       * Initiate PhonePe using the database order ID.
-       */
+      // Initiate PhonePe
       try {
         await initiatePhonePePayment(orderId);
       } catch (paymentError: unknown) {
-        const message = getErrorMessage(
-          paymentError,
-          "Unable to start PhonePe checkout."
-        );
-
-        /*
-         * Keep pendingOrderId so another click retries payment
-         * for the same order rather than creating a new order.
-         */
+        const msg = getErrorMessage(paymentError, "Unable to start PhonePe checkout.");
+        // Keep pendingOrderId so retry reuses the same order
         setSubmitError(
-          `Your order has been created, but payment could not be started. Order ID: ${orderId}. ${message}`
+          `Your order has been created, but payment could not be started. Order ID: ${orderId}. ${msg}`
         );
-
-        toast.error(
-          "Order created, but payment could not be started. You can retry from this page."
-        );
+        toast.error("Order created, but payment could not be started. You can retry from this page.");
       }
     } catch (error: unknown) {
-      const message = getErrorMessage(
-        error,
-        "Unable to create your order. Please try again."
-      );
-
-      setSubmitError(message);
-      toast.error(message);
+      const msg = getErrorMessage(error, "Unable to create your order. Please try again.");
+      setSubmitError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (items.length === 0) {
-    return <CheckoutEmptyCart />;
-  }
+  // ─── Early returns ──────────────────────────────────────
+  if (items.length === 0) return <CheckoutEmptyCart />;
+  if (!isAuthenticated || !user) return null;
 
-  if (!isAuthenticated || !user) {
-    return null;
-  }
-
+  // ─── Render ─────────────────────────────────────────────
   return (
     <main className="min-h-screen bg-white text-[#2C2C2C]">
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-20 pt-7 sm:px-6 sm:pb-24 sm:pt-9 lg:px-8 lg:pt-11">
@@ -597,7 +418,7 @@ function CheckoutPage() {
           noValidate
           className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_350px] lg:gap-7 xl:grid-cols-[minmax(0,1fr)_370px] xl:gap-8"
         >
-          {/* LEFT COLUMN */}
+          {/* Left column */}
           <div className="min-w-0 space-y-5">
             <section
               className="min-w-0 overflow-hidden rounded-xl border border-[#EEDFE2] bg-white shadow-sm"
@@ -632,11 +453,8 @@ function CheckoutPage() {
             )}
           </div>
 
-          {/* RIGHT COLUMN: ORDER SUMMARY */}
-          <aside
-            className="min-w-0 lg:sticky lg:top-6"
-            aria-label="Order summary"
-          >
+          {/* Right column: order summary */}
+          <aside className="min-w-0 lg:sticky lg:top-6" aria-label="Order summary">
             <div className="overflow-hidden rounded-xl border border-[#EEDFE2] bg-white shadow-sm">
               <CheckoutOrderSummary
                 items={items}
@@ -656,32 +474,15 @@ function CheckoutPage() {
 
               {pendingOrderId !== null && (
                 <div className="border-t border-[#EEDFE2] px-5 py-3 text-sm text-amber-800">
-                  Order #{pendingOrderId} has been created. Retry
-                  payment to continue with this order.
+                  Order #{pendingOrderId} has been created. Retry payment to continue with this order.
                 </div>
               )}
 
-              <div className="border-t border-[#EEDFE2] p-5">
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <span className="text-sm text-gray-600">
-                    Payable amount (estimate)
-                  </span>
-
-                  <span className="text-lg font-semibold text-[#2C2C2C]">
-                    ₹{finalAmount.toFixed(2)}
-                  </span>
-                </div>
-
-                <p className="mb-4 text-xs leading-5 text-gray-500">
-                  The final amount is calculated by the server using
-                  current product prices and any valid offer. Delivery
-                  details are confirmed according to our delivery policy.
-                </p>
-
+              <div className="p-5">
                 <button
                   type="submit"
                   disabled={isSubmitting || isApplyingCoupon}
-                  className="flex w-full items-center justify-center rounded-lg bg-[#8B2942] px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-[#722036] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex w-full items-center justify-center rounded-lg bg-[#B5697A] px-5 py-3 text-[12px] md:text-[13px] hover:shdow-md text-white disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isSubmitting
                     ? "Processing..."

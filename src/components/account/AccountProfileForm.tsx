@@ -1,12 +1,9 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 
 import { useAuthStore } from "../../store/authStore";
 
+// ─── Types ────────────────────────────────────────────────
 interface ProfileForm {
   name: string;
   email: string;
@@ -37,367 +34,149 @@ interface AccountProfileFormProps {
   token: string;
 }
 
+// ─── Config ───────────────────────────────────────────────
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://guiltfreecravings.com/api";
+  import.meta.env.VITE_API_URL || "https://guiltfreecravings.com/api";
 
-function AccountProfileForm({
-  user,
-  token,
-}: AccountProfileFormProps) {
-  const updateUser = useAuthStore(
-    (state) => state.updateUser
-  );
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const [form, setForm] =
-    useState<ProfileForm>({
-      name: "",
-      email: "",
-    });
+const INPUT_CLASS =
+  "w-full rounded-2xl border border-[#eadfd3] bg-[#fffaf5] px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#8b542f] focus:bg-white focus:ring-2 focus:ring-[#8b542f]/10 disabled:cursor-not-allowed disabled:opacity-70";
 
-  const [isEditing, setIsEditing] =
-    useState(false);
+// ─── Validation ───────────────────────────────────────────
+function validateForm(name: string, email: string): string | null {
+  if (!name) return "Name is required.";
+  if (name.length < 2) return "Name must be at least 2 characters long.";
+  if (name.length > 100) return "Name cannot exceed 100 characters.";
+  if (!email) return "Email is required.";
+  if (!EMAIL_REGEX.test(email)) return "Please provide a valid email address.";
+  return null;
+}
 
-  const [isSaving, setIsSaving] =
-    useState(false);
+// ─── Component ────────────────────────────────────────────
+function AccountProfileForm({ user, token }: AccountProfileFormProps) {
+  const updateUser = useAuthStore((s) => s.updateUser);
 
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [form, setForm] = useState<ProfileForm>({ name: "", email: "" });
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [errorMessage, setErrorMessage] =
-    useState("");
-
-  /*
-   * =========================================================
-   * LOAD USER DATA
-   * =========================================================
-   */
-
+  // Load user data into form
   useEffect(() => {
-    setForm({
-      name: user.name ?? "",
-      email: user.email ?? "",
-    });
+    setForm({ name: user.name ?? "", email: user.email ?? "" });
   }, [user]);
 
-  /*
-   * =========================================================
-   * FORM CHANGE
-   * =========================================================
-   */
-
-  const handleInputChange = (
-    field: keyof ProfileForm,
-    value: string
-  ) => {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
-
+  // ─── Handlers ───────────────────────────────────────────
+  const handleInputChange = (field: keyof ProfileForm, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
     setSuccessMessage("");
     setErrorMessage("");
   };
 
-  /*
-   * =========================================================
-   * START EDITING
-   * =========================================================
-   */
+  const resetFormFromUser = () =>
+    setForm({ name: user.name ?? "", email: user.email ?? "" });
 
   const handleStartEditing = () => {
-    setForm({
-      name: user.name ?? "",
-      email: user.email ?? "",
-    });
-
+    resetFormFromUser();
     setSuccessMessage("");
     setErrorMessage("");
     setIsEditing(true);
   };
 
-  /*
-   * =========================================================
-   * CANCEL EDITING
-   * =========================================================
-   */
-
   const handleCancelEditing = () => {
-    setForm({
-      name: user.name ?? "",
-      email: user.email ?? "",
-    });
-
+    resetFormFromUser();
     setSuccessMessage("");
     setErrorMessage("");
     setIsEditing(false);
   };
 
-  /*
-   * =========================================================
-   * SAVE PROFILE
-   * =========================================================
-   */
-
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    /*
-     * Prevent duplicate requests.
-     */
-
-    if (isSaving) {
-      return;
-    }
+    if (isSaving) return;
 
     setSuccessMessage("");
     setErrorMessage("");
 
-    /*
-     * =======================================================
-     * NORMALIZE DATA
-     * =======================================================
-     */
+    const name = form.name.trim();
+    const email = form.email.trim().toLowerCase();
 
-    const normalizedName =
-      form.name.trim();
-
-    const normalizedEmail =
-      form.email.trim().toLowerCase();
-
-    /*
-     * =======================================================
-     * NAME VALIDATION
-     * =======================================================
-     */
-
-    if (!normalizedName) {
-      setErrorMessage(
-        "Name is required."
-      );
-
+    const validationError = validateForm(name, email);
+    if (validationError) {
+      setErrorMessage(validationError);
       return;
     }
-
-    if (normalizedName.length < 2) {
-      setErrorMessage(
-        "Name must be at least 2 characters long."
-      );
-
-      return;
-    }
-
-    if (normalizedName.length > 100) {
-      setErrorMessage(
-        "Name cannot exceed 100 characters."
-      );
-
-      return;
-    }
-
-    /*
-     * =======================================================
-     * EMAIL VALIDATION
-     * =======================================================
-     */
-
-    if (!normalizedEmail) {
-      setErrorMessage(
-        "Email is required."
-      );
-
-      return;
-    }
-
-    const emailRegex =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(normalizedEmail)) {
-      setErrorMessage(
-        "Please provide a valid email address."
-      );
-
-      return;
-    }
-
-    /*
-     * =======================================================
-     * TOKEN CHECK
-     * =======================================================
-     */
 
     if (!token) {
-      setErrorMessage(
-        "Your session has expired. Please login again."
-      );
-
+      setErrorMessage("Your session has expired. Please login again.");
       return;
     }
-
-    /*
-     * =======================================================
-     * API REQUEST
-     * =======================================================
-     */
 
     try {
       setIsSaving(true);
 
-      const response = await fetch(
-        `${API_BASE_URL}/users/me`,
-        {
-          method: "PATCH",
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, email }),
+      });
 
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            Authorization:
-              `Bearer ${token}`,
-          },
-
-          body: JSON.stringify({
-            name: normalizedName,
-            email: normalizedEmail,
-          }),
-        }
-      );
-
-      /*
-       * =====================================================
-       * PARSE RESPONSE
-       * =====================================================
-       */
-
-      let result:
-        | UpdateProfileResponse
-        | {
-            success?: boolean;
-            message?: string;
-          };
-
+      // Parse response safely
+      let result: UpdateProfileResponse | { success?: boolean; message?: string };
       try {
-        result =
-          await response.json();
+        result = await response.json();
       } catch {
-        result = {
-          success: false,
-          message:
-            "Unable to process the server response.",
-        };
+        result = { success: false, message: "Unable to process the server response." };
       }
-
-      /*
-       * =====================================================
-       * HTTP ERROR
-       * =====================================================
-       */
 
       if (!response.ok) {
-        throw new Error(
-          result.message ||
-            "Unable to update your profile."
-        );
+        throw new Error(result.message || "Unable to update your profile.");
       }
 
-      /*
-       * =====================================================
-       * RESPONSE DATA CHECK
-       * =====================================================
-       */
-
-      if (
-        !("data" in result) ||
-        !result.data
-      ) {
-        throw new Error(
-          result.message ||
-            "Profile update failed."
-        );
+      if (!("data" in result) || !result.data) {
+        throw new Error(result.message || "Profile update failed.");
       }
 
-      /*
-       * =====================================================
-       * UPDATE ZUSTAND
-       * =====================================================
-       */
-
+      // Update Zustand
       updateUser({
         id: result.data.id,
         name: result.data.name,
         phone: result.data.phone,
         email: result.data.email,
-        isVerified:
-          result.data.isVerified,
+        isVerified: result.data.isVerified,
       });
 
-      /*
-       * =====================================================
-       * UPDATE LOCAL FORM
-       * =====================================================
-       */
-
-      setForm({
-        name:
-          result.data.name ?? "",
-
-        email:
-          result.data.email ?? "",
-      });
-
-      /*
-       * =====================================================
-       * EXIT EDIT MODE
-       * =====================================================
-       */
-
+      // Update local form
+      setForm({ name: result.data.name ?? "", email: result.data.email ?? "" });
       setIsEditing(false);
-
-      /*
-       * =====================================================
-       * SUCCESS MESSAGE
-       * =====================================================
-       */
-
-      setSuccessMessage(
-        "Your profile has been updated successfully."
-      );
-
+      setSuccessMessage("Your profile has been updated successfully.");
     } catch (error) {
-      const message =
+      setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Something went wrong while updating your profile.";
-
-      setErrorMessage(message);
-
+          : "Something went wrong while updating your profile."
+      );
     } finally {
       setIsSaving(false);
     }
   };
 
+  // ─── Render ─────────────────────────────────────────────
   return (
     <section className="rounded-3xl border border-[#eadfd3] bg-white p-6 shadow-sm sm:p-8">
-
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
+      {/* Header */}
       <div className="flex flex-col justify-between gap-4 border-b border-[#eadfd3] pb-6 sm:flex-row sm:items-center">
-
         <div>
-
           <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
             Personal Information
           </h2>
-
           <p className="mt-1 text-sm leading-6 text-slate-500">
-            Keep your account information up to
-            date.
+            Keep your account information up to date.
           </p>
-
         </div>
 
         {!isEditing && (
@@ -409,13 +188,9 @@ function AccountProfileForm({
             Edit Profile
           </button>
         )}
-
       </div>
 
-      {/* =================================================
-          SUCCESS MESSAGE
-      ================================================= */}
-
+      {/* Success */}
       {successMessage && (
         <div
           role="status"
@@ -425,10 +200,7 @@ function AccountProfileForm({
         </div>
       )}
 
-      {/* =================================================
-          ERROR MESSAGE
-      ================================================= */}
-
+      {/* Error */}
       {errorMessage && (
         <div
           role="alert"
@@ -438,64 +210,31 @@ function AccountProfileForm({
         </div>
       )}
 
-      {/* =================================================
-          PROFILE FORM
-      ================================================= */}
-
-      <form
-        onSubmit={handleSubmit}
-        className="mt-7"
-      >
-
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="mt-7">
         <div className="grid gap-6 sm:grid-cols-2">
-
-          {/* =================================================
-              FULL NAME
-          ================================================= */}
-
+          {/* Full name */}
           <div>
-
-            <label
-              htmlFor="account-name"
-              className="mb-2 block text-sm font-semibold text-slate-800"
-            >
+            <label htmlFor="account-name" className="mb-2 block text-sm font-semibold text-slate-800">
               Full Name
             </label>
-
             <input
               id="account-name"
               type="text"
               value={form.name}
-              onChange={(event) =>
-                handleInputChange(
-                  "name",
-                  event.target.value
-                )
-              }
-              disabled={
-                !isEditing ||
-                isSaving
-              }
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              disabled={!isEditing || isSaving}
               autoComplete="name"
               placeholder="Enter your full name"
-              className="w-full rounded-2xl border border-[#eadfd3] bg-[#fffaf5] px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#8b542f] focus:bg-white focus:ring-2 focus:ring-[#8b542f]/10 disabled:cursor-not-allowed disabled:opacity-70"
+              className={INPUT_CLASS}
             />
-
           </div>
 
-          {/* =================================================
-              PHONE
-          ================================================= */}
-
+          {/* Phone (read-only) */}
           <div>
-
-            <label
-              htmlFor="account-phone"
-              className="mb-2 block text-sm font-semibold text-slate-800"
-            >
+            <label htmlFor="account-phone" className="mb-2 block text-sm font-semibold text-slate-800">
               Mobile Number
             </label>
-
             <input
               id="account-phone"
               type="tel"
@@ -504,79 +243,46 @@ function AccountProfileForm({
               readOnly
               className="w-full cursor-not-allowed rounded-2xl border border-[#eadfd3] bg-slate-100 px-4 py-3 text-sm text-slate-600 outline-none"
             />
-
             <p className="mt-2 text-xs text-slate-400">
-              Your mobile number is linked to
-              your account and cannot be changed
-              here.
+              Your mobile number is linked to your account and cannot be changed here.
             </p>
-
           </div>
 
-          {/* =================================================
-              EMAIL
-          ================================================= */}
-
+          {/* Email */}
           <div className="sm:col-span-2">
-
-            <label
-              htmlFor="account-email"
-              className="mb-2 block text-sm font-semibold text-slate-800"
-            >
+            <label htmlFor="account-email" className="mb-2 block text-sm font-semibold text-slate-800">
               Email Address
             </label>
-
             <input
               id="account-email"
               type="email"
               value={form.email}
-              onChange={(event) =>
-                handleInputChange(
-                  "email",
-                  event.target.value
-                )
-              }
-              disabled={
-                !isEditing ||
-                isSaving
-              }
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              disabled={!isEditing || isSaving}
               autoComplete="email"
               placeholder="Enter your email address"
-              className="w-full rounded-2xl border border-[#eadfd3] bg-[#fffaf5] px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#8b542f] focus:bg-white focus:ring-2 focus:ring-[#8b542f]/10 disabled:cursor-not-allowed disabled:opacity-70"
+              className={INPUT_CLASS}
             />
-
           </div>
-
         </div>
 
-        {/* =================================================
-            ACTIONS
-        ================================================= */}
-
+        {/* Actions */}
         {isEditing && (
           <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#eadfd3] pt-6 sm:flex-row sm:justify-end">
-
-            {/* Cancel */}
-
             <button
               type="button"
-              onClick={
-                handleCancelEditing
-              }
+              onClick={handleCancelEditing}
               disabled={isSaving}
               className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
               Cancel
             </button>
 
-            {/* Save */}
-
             <button
               type="submit"
               disabled={isSaving}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-[#8b542f] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
-
               {isSaving ? (
                 <>
                   <svg
@@ -585,15 +291,7 @@ function AccountProfileForm({
                     fill="none"
                     aria-hidden="true"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="9"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="opacity-30"
-                    />
-
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" className="opacity-30" />
                     <path
                       d="M21 12a9 9 0 0 0-9-9"
                       stroke="currentColor"
@@ -601,20 +299,15 @@ function AccountProfileForm({
                       strokeLinecap="round"
                     />
                   </svg>
-
                   Saving...
                 </>
               ) : (
                 "Save Changes"
               )}
-
             </button>
-
           </div>
         )}
-
       </form>
-
     </section>
   );
 }

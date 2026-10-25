@@ -8,7 +8,10 @@ import type { FormEvent } from "react";
 
 import {
   useNavigate,
+  Link,
 } from "react-router-dom";
+
+import { ArrowLeft } from "lucide-react";
 
 import toast from "react-hot-toast";
 
@@ -854,9 +857,9 @@ function LoginPage() {
         min-h-screen
         bg-white
         px-4
-        py-8
+        py-2
         sm:px-6
-        sm:py-12
+        sm:py-4
         lg:px-8
       "
     >
@@ -866,10 +869,29 @@ function LoginPage() {
           flex
           min-h-[calc(100vh-64px)]
           max-w-[460px]
+          flex-col
           items-center
           justify-center
         "
       >
+        {/* =====================================================
+            BACK TO HOME LINK (TOP LEFT)
+        ===================================================== */}
+        <div className="mb-6 w-full flex justify-start">
+          <Link
+            to="/"
+            className="
+              inline-flex items-center gap-1.5
+              text-[12px] text-[#824958]
+              transition-colors hover:text-[#B5697A] hover:underline
+              sm:text-[13px]
+            "
+          >
+            <ArrowLeft size={15} />
+            Back to Home
+          </Link>
+        </div>
+
         <section className="w-full">
           {/* =================================================
               LOGIN CARD
@@ -921,18 +943,18 @@ function LoginPage() {
                   "
                 >
                   {step === "phone"
-                    ? "Welcome Back!"
-                    : "Verify Your Number"}
+                    ? "Let’s Get You Started"
+                    : "Verify Your Phone Number"}
                 </h1>
 
                 <p
                   className="
-                    mt-0
+                    mt-1
                     max-w-[390px]
                     text-[12px]
                     text-center
                     leading-relaxed
-                    text-gray-600
+                    text-gray-500
                     sm:text-[13px]
                   "
                 >
@@ -948,7 +970,7 @@ function LoginPage() {
 
               <div
                 className="
-                  mt-5
+                  mt-4
                   flex
                   items-center
                   justify-center
@@ -987,7 +1009,7 @@ function LoginPage() {
 
                     <span
                       className={`
-                        text-[11px]
+                        text-[11px] font-[400]
                         sm:text-[12px]
 
                         ${
@@ -1034,7 +1056,7 @@ function LoginPage() {
                         items-center
                         justify-center
                         rounded-full
-                        text-[10px]
+                        text-[10px] font-[400]
                         transition-all
                         duration-200
 
@@ -1050,7 +1072,7 @@ function LoginPage() {
 
                     <span
                       className={`
-                        text-[11px]
+                        text-[11px] font-[400]
                         sm:text-[12px]
 
                         ${
@@ -1073,7 +1095,7 @@ function LoginPage() {
               {step === "phone" && (
                 <form
                   onSubmit={handleSendOtp}
-                  className="mt-7"
+                  className="mt-6"
                 >
                   {/* =============================================
                       PHONE FIELD
@@ -1085,10 +1107,10 @@ function LoginPage() {
                       className="
                         mt-2
                         flex
-                        h-[45px]
+                        h-[40px]
                         w-full
                         overflow-hidden
-                        rounded-xl
+                        rounded-lg
                         border
                         border-[#E8DCDF]
                         bg-white
@@ -1115,7 +1137,7 @@ function LoginPage() {
                           className="
                             text-[12px]
                             font-semibold
-                            text-[#3A3335]
+                            text-gray-600
                             sm:text-[13px]
                           "
                         >
@@ -1146,14 +1168,14 @@ function LoginPage() {
                           flex-1
                           bg-transparent
                           px-3.5
-                          text-[13px]
+                          text-[12px]
                           text-[#2C2C2C]
                           outline-none
-                          placeholder:font-normal
-                          placeholder:text-[#A69B9E]
+                          placeholder:font-slate-500
+                          placeholder:text-slate-500 font-[350]
                           disabled:cursor-not-allowed
                           sm:px-4
-                          sm:text-[14px]
+                          sm:text-[13px]
                         "
                         aria-label="Phone Number"
                       />
@@ -1171,26 +1193,21 @@ function LoginPage() {
                       isSendingOtp
                     }
                     className="
-                      mt-6
+                      mt-5
                       flex
-                      h-[46px]
+                      h-[44px]
                       w-full
                       items-center
                       justify-center
                       gap-2
-                      rounded-[12px]
+                      rounded-xl
                       bg-[#B5697A]
                       px-5
-                      text-[13px]
+                      text-[13.5px]
                       text-white
-                      transition-all
-                      duration-200
                       hover:bg-[#A85D6F]
                       hover:shadow-sm
                       focus:outline-none
-                      focus:ring-2
-                      focus:ring-[#B5697A]/25
-                      focus:ring-offset-2
                       disabled:cursor-not-allowed
                       disabled:bg-[#D7AEB8]
                       disabled:shadow-none
@@ -1232,7 +1249,7 @@ function LoginPage() {
                   onSubmit={
                     handleVerifyOtp
                   }
-                  className="mt-7"
+                  className="mt-4"
                 >
                   {/* =============================================
                       CHANGE NUMBER
@@ -1254,7 +1271,7 @@ function LoginPage() {
                         items-center
                         gap-1.5
                         text-[11px]
-                        text-[#8F8588]
+                        text-slate-500
                         transition-colors
                         duration-200
                         hover:text-[#B5697A]
@@ -1275,7 +1292,7 @@ function LoginPage() {
                       OTP INPUT
                   ============================================== */}
 
-                  <div className="relative mt-6">
+                  <div className="relative mt-4">
                     <input
                       ref={
                         otpInputRef
@@ -1346,22 +1363,22 @@ function LoginPage() {
                               }
                               className={`
                                 flex
-                                h-[50px]
-                                w-[50px]
+                                h-[45px]
+                                w-[45px]
                                 items-center
                                 justify-center
                                 rounded-[12px]
                                 border
                                 bg-white
-                                text-[18px]
+                                text-[16px]
                                 font-semibold
                                 tracking-wide
                                 text-[#2C2C2C]
                                 transition-all
                                 duration-200
-                                sm:h-[52px]
-                                sm:w-[52px]
-                                sm:text-[19px]
+                                sm:h-[50px]
+                                sm:w-[50px]
+                                sm:text-[18px]
 
                                 ${
                                   isActive
@@ -1392,7 +1409,7 @@ function LoginPage() {
                       isVerifyingOtp
                     }
                     className="
-                      mt-5
+                      mt-4
                       flex
                       h-[46px]
                       w-full
@@ -1404,14 +1421,9 @@ function LoginPage() {
                       px-5
                       text-[13px]
                       text-white
-                      transition-all
-                      duration-200
                       hover:bg-[#A85D6F]
                       hover:shadow-sm
                       focus:outline-none
-                      focus:ring-2
-                      focus:ring-[#B5697A]/25
-                      focus:ring-offset-2
                       disabled:cursor-not-allowed
                       disabled:bg-[#D7AEB8]
                       disabled:shadow-none
@@ -1448,7 +1460,7 @@ function LoginPage() {
 
                   <div
                     className="
-                      mt-5
+                      mt-4
                       flex
                       items-center
                       justify-center
@@ -1456,13 +1468,13 @@ function LoginPage() {
                       text-[11px]
                     "
                   >
-                    <span className="text-[#A49A9C]">
+                    <span className="text-slate-500">
                       Didn't receive the code?
                     </span>
 
                     {countdown >
                     0 ? (
-                      <span className="text-[#8F8588]">
+                      <span className="text-slate-500">
                         Resend in{" "}
                         {
                           countdown
@@ -1505,10 +1517,10 @@ function LoginPage() {
 
               <div
                 className="
-                  mt-8
+                  mt-4
                   border-t
                   border-[#F1E5E8]
-                  pt-5
+                  pt-2
                 "
               >
                 <p
@@ -1516,7 +1528,7 @@ function LoginPage() {
                     text-center
                     text-[9px]
                     leading-5
-                    text-[#A49A9C]
+                    text-slate-500
                     sm:text-[11px]
                   "
                 >

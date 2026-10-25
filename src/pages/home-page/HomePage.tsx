@@ -2,30 +2,29 @@ import Hero from "../../components/landing/Hero";
 import About from "../../components/landing/About";
 import FeaturedProducts from "../../components/landing/FeaturedProducts/FeaturedProducts";
 import OurPromise from "../../components/landing/PromiseSection";
-// import HowOurLaddoosAreMade from "../../components/landing/HowOurLaddoosAreMade";
 import ContactIntro from "../../components/landing/contact-us/Contact";
 import TestimonialsSection from "../../components/landing/testimonial/TestimonialsSection";
-//import CustomerVideo from "../../components/landing/CustomerVideoStories/CustomerVideoStories";
-// import WhyChooseUs from "../../components/landing/WhyChooseUs";
 import OurStory from "../../components/landing/StorySection";
+
+// Disabled sections (enable when ready)
+// import HowOurLaddoosAreMade from "../../components/landing/HowOurLaddoosAreMade";
+// import CustomerVideo from "../../components/landing/CustomerVideoStories/CustomerVideoStories";
+// import WhyChooseUs from "../../components/landing/WhyChooseUs";
 
 function HomePage() {
   return (
-    <>
-
-      <main>
-        <Hero />
-        <FeaturedProducts/>
-        <About/>
-        <OurStory/>
-        <OurPromise/>
-        {/* <HowOurLaddoosAreMade/> */}
-        <TestimonialsSection/>
-        {/* <CustomerVideo/> */}
-        <ContactIntro/>
-        {/* <WhyChooseUs/> */}
-      </main>
-    </>
+    <main>
+      <Hero />
+      <FeaturedProducts />
+      <OurStory />
+      <About />
+      <OurPromise />
+      {/* <HowOurLaddoosAreMade /> */}
+      <TestimonialsSection />
+      {/* <CustomerVideo /> */}
+      <ContactIntro />
+      {/* <WhyChooseUs /> */}
+    </main>
   );
 }
 

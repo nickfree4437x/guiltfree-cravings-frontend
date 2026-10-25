@@ -188,7 +188,7 @@ function TestimonialCard({
               mt-0.5
               text-[10px]
               tracking-[0.12em]
-              text-[#8B7A6C]
+              text-slate-500
               sm:text-[10px]
             "
           >

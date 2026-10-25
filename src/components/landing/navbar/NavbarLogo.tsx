@@ -1,16 +1,14 @@
 import { Link } from "react-router-dom";
-
 import logo from "../../../assets/logo.jpg";
 
+// ─── Types ────────────────────────────────────────────────
 interface NavbarLogoProps {
   onClick?: () => void;
   variant?: "dark" | "light";
 }
 
-function NavbarLogo({
-  onClick,
-  variant = "dark",
-}: NavbarLogoProps) {
+// ─── Component ────────────────────────────────────────────
+function NavbarLogo({ onClick, variant = "dark" }: NavbarLogoProps) {
   const isLight = variant === "light";
 
   return (
@@ -32,33 +30,14 @@ function NavbarLogo({
       {/* Brand */}
       <div className="flex flex-col justify-center leading-none">
         <span
-          className={`
-            
-            text-[15px]
-            font-bold
-            tracking-[-0.04em]
-            sm:text-[18px]
-            ${
-              isLight
-                ? "text-white"
-                : "text-slate-700"
-            }
-          `}
+          className={`text-[15px] font-bold tracking-[-0.04em] sm:text-[18px] ${
+            isLight ? "text-white" : "text-slate-700"
+          }`}
         >
           Guilt<span className="text-amber-600">Free</span> Cravings
         </span>
 
-        <span
-          className="
-            mt-1 ml-0.5
-            text-[8.5px]
-            uppercase 
-            tracking-[0.08em]
-            text-[#B5697A]
-            sm:text-[9.5px]
-            font-[450]
-          "
-        >
+        <span className="mt-1 ml-0.5 text-[8.5px] uppercase tracking-[0.08em] text-[#B5697A] sm:text-[9.5px] font-[400]">
           Sweet bhi Health bhi
         </span>
       </div>

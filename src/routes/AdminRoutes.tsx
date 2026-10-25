@@ -1,10 +1,6 @@
-import {
-  Routes,
-  Route,
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import AdminLoginPage from "../pages/admin/auth/AdminLoginPage";
-
 import AdminDashboardPage from "../pages/admin/dashboard/AdminDashboardPage";
 import AdminProductsPage from "../pages/admin/product-page/AdminProductsPage";
 import AdminOrdersPage from "../pages/admin/orders/AdminOrdersPage";
@@ -15,89 +11,39 @@ import AdminAnalyticsPage from "../pages/admin/analytics/AdminAnalyticsPage";
 import AdminOffers from "../pages/admin/offers/AdminOffersPage";
 import AdminSettingsPage from "../pages/admin/settings/AdminSettingsPage";
 import AdminReviewsPage from "../pages/admin/reviews/AdminReviewsPage";
+import AdminOrderDetailsPage from "../pages/admin/orders/AdminOrderDetailsPage";
 
 import AdminLayout from "../pages/admin/layout/AdminLayout";
 import AdminProtectedRoute from "../protected-routes/AdminProtectedRoute";
-import AdminOrderDetailsPage from "../pages/admin/orders/AdminOrderDetailsPage";
 
+// ─── Route Config ─────────────────────────────────────────
+const ADMIN_ROUTES = [
+  { path: "dashboard", element: <AdminDashboardPage /> },
+  { path: "products", element: <AdminProductsPage /> },
+  { path: "reviews", element: <AdminReviewsPage /> },
+  { path: "orders", element: <AdminOrdersPage /> },
+  { path: "orders/:id", element: <AdminOrderDetailsPage /> },
+  { path: "payments", element: <AdminPaymentsPage /> },
+  { path: "analytics", element: <AdminAnalyticsPage /> },
+  { path: "offers", element: <AdminOffers /> },
+  { path: "users", element: <AdminCustomersPage /> },
+  { path: "customers/:id", element: <CustomerDetailsPage /> },
+  { path: "settings", element: <AdminSettingsPage /> },
+];
+
+// ─── Component ────────────────────────────────────────────
 function AdminRoutes() {
   return (
     <Routes>
-      {/* Admin Login */}
-      <Route
-        index
-        element={<AdminLoginPage />}
-      />
+      {/* Admin login */}
+      <Route index element={<AdminLoginPage />} />
 
-      {/* Protected Admin Panel */}
+      {/* Protected admin panel */}
       <Route element={<AdminProtectedRoute />}>
         <Route element={<AdminLayout />}>
-
-          {/* Dashboard */}
-          <Route
-            path="dashboard"
-            element={<AdminDashboardPage />}
-          />
-
-          {/* Products */}
-          <Route
-            path="products"
-            element={<AdminProductsPage />}
-          />
-
-          {/* Reviews */}
-          <Route
-            path="reviews"
-            element={<AdminReviewsPage />}
-          />
-
-          {/* Orders */}
-          <Route
-            path="orders"
-            element={<AdminOrdersPage />}
-          />
-
-          <Route
-            path="orders/:id"
-            element={<AdminOrderDetailsPage />}
-          />
-
-          {/* Payments */}
-          <Route
-            path="payments"
-            element={<AdminPaymentsPage />}
-          />
-
-          {/* Analytics */}
-          <Route
-            path="analytics"
-            element={<AdminAnalyticsPage />}
-          />
-
-          {/* Offers */}
-          <Route
-            path="offers"
-            element={<AdminOffers />}
-          />
-
-          {/* Customers */}
-          <Route
-            path="users"
-            element={<AdminCustomersPage />}
-          />
-
-          {/* Customer Details */}
-          <Route
-            path="customers/:id"
-            element={<CustomerDetailsPage />}
-          />
-
-          {/* Settings */}
-          <Route
-            path="settings"
-            element={<AdminSettingsPage />}
-          />
-
+          {ADMIN_ROUTES.map(({ path, element }) => (
+            <Route key={path} path={path} element={element} />
+          ))}
         </Route>
       </Route>
     </Routes>

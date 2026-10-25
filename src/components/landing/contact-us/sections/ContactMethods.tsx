@@ -1,89 +1,64 @@
-import {
-  Mail,
-  MessageCircle,
-  Phone,
-  ArrowUpRight,
-} from "lucide-react";
+import { Mail, MessageCircle, Phone, ArrowUpRight } from "lucide-react";
 
+// ─── Contact Info ─────────────────────────────────────────
 const CONTACT_PHONE = "+91-9667760119";
 const CONTACT_EMAIL = "guiltfreecravings24@gmail.com";
 
-/*
- * =========================================================
- * WHATSAPP
- * =========================================================
- *
- * IMPORTANT:
- * wa.me link mein sirf pure digits hone chahiye.
- * Koi +, -, ya space nahi.
- *
- * Example: 919667760119 ✅
- *          +91-9667760119 ❌
- * =========================================================
- */
-
+// wa.me needs digits only (no +, -, spaces) → 919667760119 ✅
 const WHATSAPP_NUMBER = "919667760119";
-
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Hi, I want to place an order"
-);
-
+const WHATSAPP_MESSAGE = encodeURIComponent("Hi, I want to place an order");
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
 
-function ContactMethods() {
-  const methods = [
-    {
-      id: "whatsapp",
-      number: "01",
-      href: WHATSAPP_URL,
-      external: true,
-      icon: MessageCircle,
-      label: "WhatsApp",
-      value: "Chat with us directly",
-      cta: "Start a chat",
-      iconColor: "text-[#3D8B5F]",
-      iconBg: "bg-[#E8F5EE]",
-      accentColor: "#3D8B5F",
-      ariaLabel: "Chat with us on WhatsApp",
-    },
-    {
-      id: "phone",
-      number: "02",
-      href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`,
-      external: false,
-      icon: Phone,
-      label: "Call Us",
-      value: CONTACT_PHONE,
-      cta: "Give us a call",
-      iconColor: "text-[#B5697A]",
-      iconBg: "bg-[#FBEEF1]",
-      accentColor: "#B5697A",
-      ariaLabel: `Call us at ${CONTACT_PHONE}`,
-    },
-    {
-      id: "email",
-      number: "03",
-      href: `mailto:${CONTACT_EMAIL}`,
-      external: false,
-      icon: Mail,
-      label: "Email Us",
-      value: CONTACT_EMAIL,
-      cta: "Send an email",
-      iconColor: "text-[#B58A3D]",
-      iconBg: "bg-[#FAF3E3]",
-      accentColor: "#B58A3D",
-      ariaLabel: `Email us at ${CONTACT_EMAIL}`,
-    },
-  ];
+// ─── Methods Config ───────────────────────────────────────
+const METHODS = [
+  {
+    id: "whatsapp",
+    href: WHATSAPP_URL,
+    external: true,
+    icon: MessageCircle,
+    label: "WhatsApp",
+    value: "Chat with us directly",
+    cta: "Start a chat",
+    iconColor: "text-[#3D8B5F]",
+    iconBg: "bg-[#E8F5EE]",
+    accentColor: "#3D8B5F",
+    ariaLabel: "Chat with us on WhatsApp",
+  },
+  {
+    id: "phone",
+    href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`,
+    external: false,
+    icon: Phone,
+    label: "Call Us",
+    value: CONTACT_PHONE,
+    cta: "Give us a call",
+    iconColor: "text-[#B5697A]",
+    iconBg: "bg-[#FBEEF1]",
+    accentColor: "#B5697A",
+    ariaLabel: `Call us at ${CONTACT_PHONE}`,
+  },
+  {
+    id: "email",
+    href: `mailto:${CONTACT_EMAIL}`,
+    external: false,
+    icon: Mail,
+    label: "Email Us",
+    value: CONTACT_EMAIL,
+    cta: "Send an email",
+    iconColor: "text-[#B58A3D]",
+    iconBg: "bg-[#FAF3E3]",
+    accentColor: "#B58A3D",
+    ariaLabel: `Email us at ${CONTACT_EMAIL}`,
+  },
+];
 
+// ─── Component ────────────────────────────────────────────
+function ContactMethods() {
   return (
     <section className="relative overflow-hidden bg-white px-6 pt-8 sm:px-10 md:px-14 lg:px-20">
-
       <div className="relative mx-auto max-w-4xl">
-
-        {/* ================= METHODS ROWS ================= */}
         <div className="relative space-y-4">
-          {methods.map((method) => {
+          {METHODS.map((method) => {
             const Icon = method.icon;
 
             return (
@@ -93,40 +68,26 @@ function ContactMethods() {
                 target={method.external ? "_blank" : undefined}
                 rel={method.external ? "noopener noreferrer" : undefined}
                 aria-label={method.ariaLabel}
-                className="
-                  group relative flex items-center gap-4 rounded-xl
-                  px-4 py-5 border border-gray-200
-                  transition-all duration-300
-                bg-white/70
-                  sm:gap-4 sm:px-6 sm:py-6
-                "
+                className="group relative flex items-center gap-4 rounded-xl px-4 py-5 border border-gray-200 transition-all duration-300 bg-white/70 sm:gap-4 sm:px-6 sm:py-6"
               >
-
-                {/* ============ ICON ============ */}
+                {/* Icon */}
                 <span
-                  className={`
-                    flex h-12 w-12 shrink-0 items-center justify-center
-                    rounded-2xl ${method.iconBg} ${method.iconColor}
-                    transition-all duration-500
-                    sm:h-14 sm:w-14
-                  `}
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${method.iconBg} ${method.iconColor} transition-all duration-500 sm:h-14 sm:w-14`}
                 >
                   <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.9} />
                 </span>
 
-                {/* ============ CONTENT ============ */}
+                {/* Content */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="text-[14px] font-semibold leading-tight text-gray-600 sm:text-[16px]">
                       {method.label}
                     </h3>
-
                     <span
                       className="hidden h-1 w-1 rounded-full sm:block"
                       style={{ backgroundColor: method.accentColor }}
                     />
-
-                    <span className="hidden text-[11px] tracking-[0.12em] text-[#8B7A6C] sm:inline">
+                    <span className="hidden text-[11px] tracking-[0.05em] text-slate-500 sm:inline">
                       {method.cta}
                     </span>
                   </div>
@@ -136,17 +97,8 @@ function ContactMethods() {
                   </p>
                 </div>
 
-                {/* ============ ARROW ============ */}
-                <span
-                  className="
-                    flex h-10 w-10 shrink-0 items-center justify-center
-                    rounded-full border border-[#EFE3D2] bg-white
-                    sm:h-11 sm:w-11
-                  "
-                  style={{
-                    backgroundColor: undefined,
-                  }}
-                >
+                {/* Arrow */}
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#EFE3D2] bg-white sm:h-11 sm:w-11">
                   <ArrowUpRight
                     className="h-4 w-4 transition-colors duration-500"
                     style={{ color: method.accentColor }}
@@ -157,7 +109,6 @@ function ContactMethods() {
             );
           })}
         </div>
-
       </div>
     </section>
   );

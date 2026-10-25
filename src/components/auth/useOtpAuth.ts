@@ -1,13 +1,7 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 
 import { verifyOtp } from "../../api/authApi";
 import { useAuthStore } from "../../store/authStore";
-
 import {
   initializeMsg91Widget,
   retryMsg91Otp,
@@ -24,341 +18,123 @@ import {
   type AuthStep,
 } from "./otpAuthUtils";
 
+// ─── Types ────────────────────────────────────────────────
 interface UseOtpAuthProps {
   onSuccess: () => void;
 }
 
-export function useOtpAuth({
-  onSuccess,
-}: UseOtpAuthProps) {
-  const login = useAuthStore(
-    (state) => state.login
-  );
+// ─── Hook ─────────────────────────────────────────────────
+export function useOtpAuth({ onSuccess }: UseOtpAuthProps) {
+  const login = useAuthStore((s) => s.login);
 
-  // ==========================================================
-  // AUTH STATE
-  // ==========================================================
+  // State
+  const [step, setStep] = useState<AuthStep>("phone");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [resendCountdown, setResendCountdown] = useState(0);
 
-  const [step, setStep] =
-    useState<AuthStep>("phone");
+  // MSG91 may or may not expose reqId — kept optional
+  const [msg91ReqId, setMsg91ReqId] = useState<string | null>(null);
 
-  const [phone, setPhone] =
-    useState("");
+  const otpInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [otp, setOtp] =
-    useState("");
+  const normalizedPhone = phone.replace(/\D/g, "");
 
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [resendCountdown, setResendCountdown] =
-    useState(0);
-
-  /*
-    MSG91 may or may not expose reqId through
-    the Web SDK response.
-
-    Therefore reqId is intentionally optional.
-  */
-  const [msg91ReqId, setMsg91ReqId] =
-    useState<string | null>(null);
-
-  const otpInputRef =
-    useRef<HTMLInputElement | null>(null);
-
-  // ==========================================================
-  // NORMALIZED PHONE
-  // ==========================================================
-
-  const normalizedPhone =
-    phone.replace(/\D/g, "");
-
-  // ==========================================================
-  // INITIALIZE MSG91
-  // ==========================================================
-
+  // Initialize MSG91 widget on mount
   useEffect(() => {
     let cancelled = false;
-
     const initialize = async () => {
       try {
         await initializeMsg91Widget();
-
-        if (cancelled) {
-          return;
-        }
-      } catch (initializationError) {
-        if (cancelled) {
-          return;
-        }
-
-        setError(
-          getMsg91ErrorMessage(
-            initializationError
-          )
-        );
+        if (cancelled) return;
+      } catch (initError) {
+        if (cancelled) return;
+        setError(getMsg91ErrorMessage(initError));
       }
     };
-
     void initialize();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  // ==========================================================
-  // RESEND COUNTDOWN
-  // ==========================================================
-
+  // Resend countdown ticker
   useEffect(() => {
-    if (resendCountdown <= 0) {
-      return;
-    }
-
-    const interval =
-      window.setInterval(() => {
-        setResendCountdown(
-          (current) => {
-            if (current <= 1) {
-              window.clearInterval(
-                interval
-              );
-
-              return 0;
-            }
-
-            return current - 1;
-          }
-        );
-      }, 1000);
-
-    return () => {
-      window.clearInterval(interval);
-    };
+    if (resendCountdown <= 0) return;
+    const interval = window.setInterval(() => {
+      setResendCountdown((current) => {
+        if (current <= 1) {
+          window.clearInterval(interval);
+          return 0;
+        }
+        return current - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(interval);
   }, [resendCountdown]);
 
-  // ==========================================================
-  // OTP AUTO FOCUS
-  // ==========================================================
-
+  // Auto-focus OTP input when step becomes "otp"
   useEffect(() => {
-    if (step !== "otp") {
-      return;
-    }
-
-    const timeout =
-      window.setTimeout(() => {
-        otpInputRef.current?.focus();
-      }, 100);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
+    if (step !== "otp") return;
+    const timeout = window.setTimeout(() => otpInputRef.current?.focus(), 100);
+    return () => window.clearTimeout(timeout);
   }, [step]);
 
-  // ==========================================================
-  // SEND OTP
-  // ==========================================================
-
+  // ─── Send OTP ───────────────────────────────────────────
   const handleSendOtp = async () => {
-    if (loading) {
-      return;
-    }
-
+    if (loading) return;
     setError("");
 
-    // --------------------------------------------------------
-    // PHONE VALIDATION
-    // --------------------------------------------------------
-
-    if (
-      !/^[6-9]\d{9}$/.test(
-        normalizedPhone
-      )
-    ) {
-      setError(
-        "Please enter a valid 10-digit Indian mobile number."
-      );
-
+    if (!/^[6-9]\d{9}$/.test(normalizedPhone)) {
+      setError("Please enter a valid 10-digit Indian mobile number.");
       return;
     }
 
-    // --------------------------------------------------------
-    // START LOADING
-    // --------------------------------------------------------
-
     setLoading(true);
-
     setOtp("");
-
-    /*
-      Clear old request ID before starting
-      a completely new OTP session.
-    */
-    setMsg91ReqId(null);
+    setMsg91ReqId(null); // clear old request ID
 
     try {
-      // ------------------------------------------------------
-      // SEND OTP THROUGH MSG91
-      // ------------------------------------------------------
-
-      const result =
-        await sendMsg91Otp(
-          normalizedPhone
-        );
-
-      /*
-        IMPORTANT:
-
-        MSG91 Web SDK can successfully send
-        the OTP without exposing reqId in
-        the sendOtp success callback.
-
-        Therefore reqId is NOT required here.
-
-        If MSG91 gives us one, we store it.
-        Otherwise we continue normally.
-      */
-
-      if (result?.reqId) {
-        setMsg91ReqId(result.reqId);
-      } else {
-        setMsg91ReqId(null);
-      }
-
-      // ------------------------------------------------------
-      // MOVE TO OTP STEP
-      // ------------------------------------------------------
-
+      const result = await sendMsg91Otp(normalizedPhone);
+      // reqId optional — store if provided
+      setMsg91ReqId(result?.reqId ?? null);
       setStep("otp");
-
-      // ------------------------------------------------------
-      // START RESEND COOLDOWN
-      // ------------------------------------------------------
-
-      setResendCountdown(
-        RESEND_COOLDOWN_SECONDS
-      );
+      setResendCountdown(RESEND_COOLDOWN_SECONDS);
     } catch (sendError) {
-      setError(
-        getMsg91ErrorMessage(sendError)
-      );
+      setError(getMsg91ErrorMessage(sendError));
     } finally {
       setLoading(false);
     }
   };
 
-  // ==========================================================
-  // VERIFY OTP
-  // ==========================================================
-
+  // ─── Verify OTP ─────────────────────────────────────────
   const handleVerifyOtp = async () => {
-    if (loading) {
-      return;
-    }
-
+    if (loading) return;
     setError("");
 
-    // --------------------------------------------------------
-    // OTP VALIDATION
-    // --------------------------------------------------------
-
-    const otpRegex =
-      new RegExp(
-        `^\\d{${OTP_LENGTH}}$`
-      );
-
+    const otpRegex = new RegExp(`^\\d{${OTP_LENGTH}}$`);
     if (!otpRegex.test(otp)) {
-      setError(
-        `Please enter the ${OTP_LENGTH}-digit OTP.`
-      );
-
+      setError(`Please enter the ${OTP_LENGTH}-digit OTP.`);
       return;
     }
-
-    /*
-      IMPORTANT:
-
-      Do NOT block verification if msg91ReqId
-      is missing.
-
-      MSG91 Web SDK can maintain the OTP
-      session internally.
-    */
 
     setLoading(true);
 
     try {
-      // ------------------------------------------------------
-      // VERIFY OTP WITH MSG91
-      // ------------------------------------------------------
+      const msg91Result = await verifyMsg91Otp(otp, msg91ReqId);
 
-      const msg91Result =
-        await verifyMsg91Otp(
-          otp,
-          msg91ReqId
-        );
+      // Safe debug (no tokens logged)
+      console.log("MSG91 VERIFY OTP RESPONSE:", getSafeMsg91ResponseShape(msg91Result));
 
-      // ------------------------------------------------------
-      // SAFE DEBUG
-      // ------------------------------------------------------
+      const accessToken = extractMsg91AccessToken(msg91Result);
 
-      /*
-        This intentionally logs only a sanitized
-        response shape.
-
-        The actual access token/JWT is never
-        printed to the console.
-      */
-
-      console.log(
-        "MSG91 VERIFY OTP RESPONSE:",
-        getSafeMsg91ResponseShape(
-          msg91Result
-        )
-      );
-
-      // ------------------------------------------------------
-      // EXTRACT ACCESS TOKEN
-      // ------------------------------------------------------
-
-      const accessToken =
-        extractMsg91AccessToken(
-          msg91Result
-        );
-
-      /*
-        Safe token information only.
-        Never log the actual token.
-      */
-
-      console.log(
-        "MSG91 ACCESS TOKEN RECEIVED BY BACKEND:",
-        {
-          exists: Boolean(accessToken),
-
-          length:
-            accessToken?.length ?? 0,
-
-          parts: accessToken
-            ? accessToken.split(".").length
-            : 0,
-
-          looksLikeJwt:
-            accessToken
-              ? accessToken.split(".")
-                  .length === 3
-              : false,
-        }
-      );
-
-      // ------------------------------------------------------
-      // TOKEN VALIDATION
-      // ------------------------------------------------------
+      // Safe token info (never log actual token)
+      console.log("MSG91 ACCESS TOKEN RECEIVED BY BACKEND:", {
+        exists: Boolean(accessToken),
+        length: accessToken?.length ?? 0,
+        parts: accessToken ? accessToken.split(".").length : 0,
+        looksLikeJwt: accessToken ? accessToken.split(".").length === 3 : false,
+      });
 
       if (!accessToken) {
         throw new Error(
@@ -366,282 +142,97 @@ export function useOtpAuth({
         );
       }
 
-      // ------------------------------------------------------
-      // VERIFY TOKEN WITH OUR BACKEND
-      // ------------------------------------------------------
+      // Existing backend flow — unchanged
+      const result = await verifyOtp(normalizedPhone, accessToken);
 
-      /*
-        This is the existing application
-        authentication flow.
-
-        We do NOT change it.
-      */
-
-      const result =
-        await verifyOtp(
-          normalizedPhone,
-          accessToken
-        );
-
-      // ------------------------------------------------------
-      // LOGIN INTO ZUSTAND
-      // ------------------------------------------------------
-
-      login(
-        result.token,
-        result.user
-      );
-
-      // ------------------------------------------------------
-      // SUCCESS
-      // ------------------------------------------------------
-
+      login(result.token, result.user);
       onSuccess();
     } catch (verifyError) {
-      setError(
-        getMsg91ErrorMessage(
-          verifyError
-        )
-      );
-
-      /*
-        Clear OTP after failed verification
-        so user can enter it again.
-      */
-
-      setOtp("");
+      setError(getMsg91ErrorMessage(verifyError));
+      setOtp(""); // clear on failure
     } finally {
       setLoading(false);
     }
   };
 
-  // ==========================================================
-  // RESEND OTP
-  // ==========================================================
-
+  // ─── Resend OTP ─────────────────────────────────────────
   const handleResendOtp = async () => {
-    /*
-      Prevent duplicate resend requests.
-    */
-
-    if (
-      loading ||
-      resendCountdown > 0
-    ) {
-      return;
-    }
-
+    if (loading || resendCountdown > 0) return;
     setError("");
-
     setLoading(true);
 
     try {
-      // ------------------------------------------------------
-      // RETRY OTP
-      // ------------------------------------------------------
-
-      /*
-        reqId is optional.
-
-        If we have one, it will be passed.
-        Otherwise MSG91 SDK can use its own
-        current OTP session.
-      */
-
-      const result =
-        await retryMsg91Otp(
-          msg91ReqId
-        );
-
-      // ------------------------------------------------------
-      // UPDATE REQUEST ID IF AVAILABLE
-      // ------------------------------------------------------
-
-      if (result?.reqId) {
-        setMsg91ReqId(
-          result.reqId
-        );
-      }
-
-      // ------------------------------------------------------
-      // CLEAR OLD OTP
-      // ------------------------------------------------------
-
+      const result = await retryMsg91Otp(msg91ReqId);
+      if (result?.reqId) setMsg91ReqId(result.reqId);
       setOtp("");
-
-      // ------------------------------------------------------
-      // RESTART COUNTDOWN
-      // ------------------------------------------------------
-
-      setResendCountdown(
-        RESEND_COOLDOWN_SECONDS
-      );
+      setResendCountdown(RESEND_COOLDOWN_SECONDS);
     } catch (resendError) {
-      setError(
-        getMsg91ErrorMessage(
-          resendError
-        )
-      );
+      setError(getMsg91ErrorMessage(resendError));
     } finally {
       setLoading(false);
     }
   };
 
-  // ==========================================================
-  // BACK TO PHONE
-  // ==========================================================
-
+  // ─── Back to Phone ──────────────────────────────────────
   const handleBackToPhone = () => {
-    if (loading) {
-      return;
-    }
-
+    if (loading) return;
     setStep("phone");
-
     setOtp("");
-
     setMsg91ReqId(null);
-
     setError("");
-
     setResendCountdown(0);
   };
 
-  // ==========================================================
-  // PHONE CHANGE
-  // ==========================================================
+  // ─── Phone Change ───────────────────────────────────────
+  const handlePhoneChange = (value: string) => {
+    const sanitized = value.replace(/\D/g, "").slice(0, 10);
 
-  const handlePhoneChange = (
-    value: string
-  ) => {
-    /*
-      Only numbers.
-      Maximum 10 digits.
-    */
-
-    const sanitizedValue =
-      value
-        .replace(/\D/g, "")
-        .slice(0, 10);
-
-    /*
-      If the phone number changes,
-      the previous OTP session becomes
-      invalid for this UI flow.
-
-      Therefore clear OTP-related state.
-    */
-
-    if (
-      sanitizedValue !== phone
-    ) {
+    // Phone changed → old OTP session becomes invalid
+    if (sanitized !== phone) {
       setMsg91ReqId(null);
-
       setOtp("");
-
       setResendCountdown(0);
     }
 
-    setPhone(
-      sanitizedValue
-    );
-
+    setPhone(sanitized);
     setError("");
   };
 
-  // ==========================================================
-  // OTP CHANGE
-  // ==========================================================
-
-  const handleOtpChange = (
-    value: string
-  ) => {
-    const sanitizedValue =
-      value
-        .replace(/\D/g, "")
-        .slice(0, OTP_LENGTH);
-
-    setOtp(
-      sanitizedValue
-    );
-
+  // ─── OTP Change ─────────────────────────────────────────
+  const handleOtpChange = (value: string) => {
+    const sanitized = value.replace(/\D/g, "").slice(0, OTP_LENGTH);
+    setOtp(sanitized);
     setError("");
   };
 
-  // ==========================================================
-  // ENTER KEY
-  // ==========================================================
-
-  const handleKeyDown = (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
-    /*
-      Only handle Enter.
-    */
-
-    if (
-      event.key !== "Enter" ||
-      loading
-    ) {
-      return;
-    }
-
-    // --------------------------------------------------------
-    // PHONE STEP
-    // --------------------------------------------------------
-
+  // ─── Enter key ──────────────────────────────────────────
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Enter" || loading) return;
     if (step === "phone") {
       void handleSendOtp();
-
       return;
     }
-
-    // --------------------------------------------------------
-    // OTP STEP
-    // --------------------------------------------------------
-
     void handleVerifyOtp();
   };
 
-  // ==========================================================
-  // RETURN
-  // ==========================================================
-
+  // ─── Return ─────────────────────────────────────────────
   return {
-    // --------------------------------------------------------
-    // STATE
-    // --------------------------------------------------------
-
+    // State
     step,
-
     phone,
-
     otp,
-
     loading,
-
     error,
-
     resendCountdown,
-
     otpInputRef,
 
-    // --------------------------------------------------------
-    // ACTIONS
-    // --------------------------------------------------------
-
+    // Actions
     handleSendOtp,
-
     handleVerifyOtp,
-
     handleResendOtp,
-
     handleBackToPhone,
-
     handlePhoneChange,
-
     handleOtpChange,
-
     handleKeyDown,
   };
 }

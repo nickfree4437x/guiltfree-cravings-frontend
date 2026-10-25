@@ -1,11 +1,17 @@
-
 import axios from "axios";
 
+// ─── Config ───────────────────────────────────────────────
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://guiltfreecravings.com/api";
+  import.meta.env.VITE_API_BASE_URL || "https://guiltfreecravings.com/api";
 
-// Admin information
+const ADMIN_TOKEN_KEY = "guiltfree_admin_token";
+
+// ─── Auth Header Helper ───────────────────────────────────
+const getAuthHeaders = () => ({
+  Authorization: `Bearer ${localStorage.getItem(ADMIN_TOKEN_KEY)}`,
+});
+
+// ─── Types ────────────────────────────────────────────────
 export interface AdminInfo {
   id: number;
   name: string;
@@ -14,7 +20,6 @@ export interface AdminInfo {
   createdAt: string;
 }
 
-// Dashboard statistics
 export interface AdminDashboardStats {
   totalProducts: number;
   activeProducts: number;
@@ -24,28 +29,17 @@ export interface AdminDashboardStats {
   paidOrders: number;
 }
 
-// Recent orders
 export interface AdminRecentOrder {
   id: number;
   orderNumber: string;
   customerName: string;
   customerPhone: string;
   totalAmount: number;
-  orderStatus:
-    | "PENDING"
-    | "CONFIRMED"
-    | "PROCESSING"
-    | "COMPLETED"
-    | "CANCELLED";
-  paymentStatus:
-    | "PENDING"
-    | "PAID"
-    | "FAILED"
-    | "REFUNDED";
+  orderStatus: "PENDING" | "CONFIRMED" | "PROCESSING" | "COMPLETED" | "CANCELLED";
+  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
   createdAt: string;
 }
 
-// Top-selling products
 export interface AdminTopSellingProduct {
   productId: number;
   productName: string;
@@ -54,7 +48,6 @@ export interface AdminTopSellingProduct {
   revenue: number;
 }
 
-// Dashboard API response
 interface AdminDashboardResponse {
   success: boolean;
   message?: string;
@@ -66,7 +59,6 @@ interface AdminDashboardResponse {
   };
 }
 
-// Sales analytics types
 export interface DailyRevenue {
   date: string;
   revenue: number;
@@ -87,57 +79,34 @@ interface AdminSalesAnalyticsResponse {
   data: AdminSalesAnalytics;
 }
 
-// Get admin dashboard
-export const getAdminDashboard = async (): Promise<
-  AdminDashboardResponse["data"]
-> => {
-  const token = localStorage.getItem(
-    "guiltfree_admin_token"
-  );
-
+// ─── API: Dashboard ───────────────────────────────────────
+export const getAdminDashboard = async (): Promise<AdminDashboardResponse["data"]> => {
   const response = await axios.get<AdminDashboardResponse>(
     `${API_BASE_URL}/admin/dashboard/overview`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    { headers: getAuthHeaders() }
   );
 
   if (!response.data.success || !response.data.data) {
-    throw new Error(
-      response.data.message ||
-        "Unable to load dashboard."
-    );
+    throw new Error(response.data.message || "Unable to load dashboard.");
   }
 
   return response.data.data;
 };
 
-// Get sales and revenue analytics
+// ─── API: Sales Analytics ─────────────────────────────────
 export const getSalesAnalytics = async (
   days: 7 | 30 = 7
 ): Promise<AdminSalesAnalytics> => {
-  const token = localStorage.getItem(
-    "guiltfree_admin_token"
+  const response = await axios.get<AdminSalesAnalyticsResponse>(
+    `${API_BASE_URL}/admin/dashboard/sales-analytics`,
+    {
+      params: { days },
+      headers: getAuthHeaders(),
+    }
   );
 
-  const response =
-    await axios.get<AdminSalesAnalyticsResponse>(
-      `${API_BASE_URL}/admin/dashboard/sales-analytics`,
-      {
-        params: { days },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
   if (!response.data.success || !response.data.data) {
-    throw new Error(
-      response.data.message ||
-        "Unable to load sales analytics."
-    );
+    throw new Error(response.data.message || "Unable to load sales analytics.");
   }
 
   return response.data.data;

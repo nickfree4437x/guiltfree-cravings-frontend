@@ -5,11 +5,7 @@ function CheckoutEmptyCart() {
     <main className="min-h-screen bg-[#fffaf5] px-6 py-16 sm:py-20 lg:px-8">
       <div className="mx-auto flex min-h-[65vh] max-w-3xl items-center justify-center">
         <div className="w-full text-center">
-
-          {/* =================================================
-              ICON
-          ================================================= */}
-
+          {/* Icon */}
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#f3e4d3]">
             <svg
               viewBox="0 0 24 24"
@@ -27,26 +23,13 @@ function CheckoutEmptyCart() {
             </svg>
           </div>
 
-          {/* =================================================
-              HEADING
-          ================================================= */}
-
           <h1 className="mt-7 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             Your Cart is Empty
           </h1>
 
-          {/* =================================================
-              DESCRIPTION
-          ================================================= */}
-
           <p className="mx-auto mt-4 max-w-md text-base leading-7 text-slate-500">
-            Add some delicious cravings to your
-            cart before proceeding to checkout.
+            Add some delicious cravings to your cart before proceeding to checkout.
           </p>
-
-          {/* =================================================
-              CTA
-          ================================================= */}
 
           <Link
             to="/#products"
@@ -54,7 +37,6 @@ function CheckoutEmptyCart() {
           >
             Explore Products
           </Link>
-
         </div>
       </div>
     </main>

@@ -9,65 +9,28 @@ import OrderSuccessSummary from "../../components/order-success/OrderSuccessSumm
 import OrderSuccessPaymentNotice from "../../components/order-success/OrderSuccessPaymentNotice";
 import OrderSuccessActions from "../../components/order-success/OrderSuccessActions";
 
-/*
- * =========================================================
- * LOCATION STATE
- * =========================================================
- */
-
+// ─── Types ────────────────────────────────────────────────
 interface OrderSuccessLocationState {
   order?: Order;
 }
 
-/*
- * =========================================================
- * ORDER SUCCESS PAGE
- * =========================================================
- */
-
+// ─── Component ────────────────────────────────────────────
 function OrderSuccessPage() {
   const location = useLocation();
-
-  const locationState =
-    location.state as OrderSuccessLocationState | null;
-
+  const locationState = location.state as OrderSuccessLocationState | null;
   const order = locationState?.order;
 
-  /*
-   * =======================================================
-   * ORDER INFORMATION MISSING
-   * =======================================================
-   *
-   * Show the fallback UI when order information is
-   * unavailable in the current navigation state.
-   */
+  // Fallback when order data is missing from navigation state
+  if (!order) return <OrderSuccessMissing />;
 
-  if (!order) {
-    return <OrderSuccessMissing />;
-  }
-
-  /*
-   * =======================================================
-   * ORDER SUCCESS CONTENT
-   * =======================================================
-   */
-
+  // ─── Render ─────────────────────────────────────────────
   return (
     <main className="min-h-screen bg-white px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
       <div className="mx-auto w-full max-w-4xl">
-        {/* Success Header */}
         <OrderSuccessHeader />
-
-        {/* Order Information */}
         <OrderSuccessInfo order={order} />
-
-        {/* Order Summary */}
         <OrderSuccessSummary order={order} />
-
-        {/* Payment Confirmation Notice */}
         <OrderSuccessPaymentNotice />
-
-        {/* Navigation Actions */}
         <OrderSuccessActions />
       </div>
     </main>

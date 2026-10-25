@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import {
+  CheckCircle2,
+  Clock3,
+  XCircle,
+  LoaderCircle,
+} from "lucide-react";
+
 import api from "../../api/orderApi";
 
 type PaymentState = "checking" | "success" | "pending" | "failed";
@@ -19,7 +26,9 @@ const PaymentResultPage = () => {
     const verifyPayment = async () => {
       if (!merchantOrderId) {
         setStatus("failed");
-        setMessage("Payment reference is missing. Please check your orders.");
+        setMessage(
+          "Payment reference is missing. Please check your orders."
+        );
         return;
       }
 
@@ -31,6 +40,7 @@ const PaymentResultPage = () => {
         if (cancelled) return;
 
         const result = response.data?.data ?? response.data;
+
         const paymentStatus = String(
           result?.status ?? result?.paymentStatus ?? ""
         ).toUpperCase();
@@ -41,25 +51,28 @@ const PaymentResultPage = () => {
           )
         ) {
           setStatus("success");
-          setMessage("Your payment has been verified successfully.");
+          setMessage(
+            "Your payment has been verified successfully. Thank you for choosing Guilt Free Cravings!"
+          );
         } else if (
           ["PENDING", "INITIATED", "PROCESSING"].includes(paymentStatus)
         ) {
           setStatus("pending");
           setMessage(
-            "Your payment is still being confirmed. Please check again shortly."
+            "Your payment is being confirmed. Please check your order status before retrying."
           );
         } else {
           setStatus("failed");
           setMessage(
             result?.message ||
-              "We could not confirm this payment. Please check your order status."
+              "We could not confirm your payment. Please check your order status."
           );
         }
       } catch (error: any) {
         if (cancelled) return;
 
         const responseData = error?.response?.data;
+
         const responseStatus = String(
           responseData?.data?.status ??
             responseData?.status ??
@@ -72,13 +85,13 @@ const PaymentResultPage = () => {
         ) {
           setStatus("pending");
           setMessage(
-            "Payment confirmation is taking longer than expected. Please check your orders before retrying."
+            "Payment confirmation is taking longer than expected. Please check your orders."
           );
         } else {
           setStatus("pending");
           setMessage(
             responseData?.message ||
-              "We could not verify the payment right now. Please check your orders before retrying."
+              "We could not verify your payment right now. Please check your orders before retrying."
           );
         }
       }
@@ -98,128 +111,112 @@ const PaymentResultPage = () => {
     failed: "Payment Not Confirmed",
   }[status];
 
+  const statusStyles = {
+    checking: {
+      icon: LoaderCircle,
+      iconWrapper: "bg-amber-50 text-amber-600",
+      badge: "bg-amber-50 text-amber-700",
+      badgeText: "VERIFYING PAYMENT",
+    },
+    success: {
+      icon: CheckCircle2,
+      iconWrapper: "bg-emerald-50 text-emerald-600",
+      badge: "bg-emerald-50 text-emerald-700",
+      badgeText: "PAYMENT VERIFIED",
+    },
+    pending: {
+      icon: Clock3,
+      iconWrapper: "bg-amber-50 text-amber-600",
+      badge: "bg-amber-50 text-amber-700",
+      badgeText: "AWAITING CONFIRMATION",
+    },
+    failed: {
+      icon: XCircle,
+      iconWrapper: "bg-rose-50 text-rose-600",
+      badge: "bg-rose-50 text-rose-700",
+      badgeText: "PAYMENT NOT CONFIRMED",
+    },
+  }[status];
+
+  const StatusIcon = statusStyles.icon;
+
   return (
-    <main
-      style={{
-        minHeight: "65vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "32px 16px",
-        background: "#fff",
-      }}
-    >
-      <section
-        style={{
-          width: "100%",
-          maxWidth: "520px",
-          padding: "36px 24px",
-          border: "1px solid #eee",
-          borderRadius: "16px",
-          textAlign: "center",
-          boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-        }}
-      >
-        <div
-          style={{
-            width: "64px",
-            height: "64px",
-            margin: "0 auto 20px",
-            borderRadius: "50%",
-            display: "grid",
-            placeItems: "center",
-            background:
-              status === "success"
-                ? "#e7f8ec"
-                : status === "failed"
-                  ? "#fff0f0"
-                  : "#fff5e8",
-            color:
-              status === "success"
-                ? "#198754"
-                : status === "failed"
-                  ? "#dc3545"
-                  : "#a15c00",
-            fontSize: "30px",
-            fontWeight: 700,
-          }}
-        >
-          {status === "checking" ? "…" : status === "success" ? "✓" : "!"}
-        </div>
+    <main className="w-full bg-white">
+      <div className="flex min-h-[480px] items-center justify-center px-4 py-24 sm:min-h-[520px] sm:px-6 sm:py-32 lg:min-h-[540px]">
+        <section className="my-4 w-full max-w-md overflow-hidden rounded-xl border border-[#f0e4df] bg-white shadow-sm">
+          <div className="h-1 w-full bg-[#B5697A]" />
 
-        <h1 style={{ fontSize: "26px", marginBottom: "12px" }}>
-          {heading}
-        </h1>
-
-        <p style={{ color: "#666", lineHeight: 1.7 }}>{message}</p>
-
-        {merchantOrderId && (
-          <p
-            style={{
-              marginTop: "20px",
-              fontSize: "13px",
-              color: "#777",
-              overflowWrap: "anywhere",
-            }}
-          >
-            Payment Reference: {merchantOrderId}
-          </p>
-        )}
-
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            marginTop: "28px",
-          }}
-        >
-          {status === "pending" && (
-            <button
-              onClick={() => window.location.reload()}
-              style={{
-                padding: "12px 20px",
-                border: "none",
-                borderRadius: "8px",
-                background: "#8e2945",
-                color: "#fff",
-                cursor: "pointer",
-              }}
+          <div className="px-5 py-7 text-center sm:px-8 sm:py-8">
+            {/* Status Icon */}
+            <div
+              className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full ${statusStyles.iconWrapper}`}
             >
-              Check Again
-            </button>
-          )}
+              <StatusIcon
+                size={28}
+                strokeWidth={1.7}
+                className={
+                  status === "checking" ? "animate-spin" : undefined
+                }
+              />
+            </div>
 
-          {status === "success" && (
-            <Link
-              to="/orders"
-              style={{
-                padding: "12px 20px",
-                borderRadius: "8px",
-                background: "#8e2945",
-                color: "#fff",
-                textDecoration: "none",
-              }}
+            {/* Status Badge */}
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-[10px] tracking-wide ${statusStyles.badge}`}
             >
-              View My Orders
-            </Link>
-          )}
+              {statusStyles.badgeText}
+            </span>
 
-          <Link
-            to="/"
-            style={{
-              padding: "12px 20px",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              color: "#333",
-              textDecoration: "none",
-            }}
-          >
-            Continue Shopping
-          </Link>
-        </div>
-      </section>
+            {/* Heading */}
+            <h1 className="mt-3 text-lg font-medium leading-snug text-gray-700 sm:text-xl">
+              {heading}
+            </h1>
+
+            {/* Message */}
+            <p className="mx-auto mt-1 max-w-sm text-[12px] md:text-[13px] leading-relaxed text-slate-500">
+              {message}
+            </p>
+
+            {/* Payment Reference */}
+            {merchantOrderId && (
+              <div className="mt-5 rounded-lg border border-[#f0e4df] bg-[#fffbfc] px-4 py-3 text-left">
+                <p className="text-[11px] md:text-[12px] text-gray-600">
+                  Payment Reference
+                </p>
+
+                <p className="mt-1 break-all text-sm text-[#4d363d]">
+                  {merchantOrderId}
+                </p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="mt-4 flex flex-col justify-center gap-3 sm:flex-row">
+              {status === "pending" && (
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-[#B5697A] px-5 py-2 text-[12px] md:text-[13px] text-white focus:outline-none"
+                >
+                  Check Again
+                </button>
+              )}
+
+              <Link
+                to="/orders"
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-[#B5697A] px-5 py-2 text-[12px] md:text-[13px] text-white focus:outline-none"
+              >
+                View My Orders
+              </Link>
+            </div>
+
+            {/* Footer Text */}
+            <p className="mt-4 border-t border-[#f3e9e5] pt-2 text-xs font-normal text-slate-500">
+              Made with care, just for you.
+            </p>
+          </div>
+        </section>
+      </div>
     </main>
   );
 };
