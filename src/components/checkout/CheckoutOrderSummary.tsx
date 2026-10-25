@@ -1,4 +1,3 @@
-
 import type { CartItem } from "../../store/cartStore";
 import { FaEdit } from "react-icons/fa";
 import { X } from "lucide-react";
@@ -50,7 +49,8 @@ function CheckoutOrderSummary({
               <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-[#2C2C2C] sm:text-[18px]">
                 Order Summary
               </h2>
-              <p className="text-[10px] leading-relxed text-slate-500 font-[350] sm:text-[11px]">
+
+              <p className="text-[10px] leading-relaxed text-slate-500 font-[350] sm:text-[11px]">
                 Review your items before continuing
               </p>
             </div>
@@ -93,7 +93,7 @@ function CheckoutOrderSummary({
         <div className="px-5 pt-3 sm:px-6">
           <div className="rounded-lg border border-[#F0E2E5] p-4">
             <div className="mb-1 flex items-center gap-2">
-              <h3 className="text-[12px] md:text-[13px] font-semibold text-gray-600">
+              <h3 className="text-[12px] font-semibold text-gray-600 md:text-[13px]">
                 Apply Coupon Code
               </h3>
             </div>
@@ -101,9 +101,10 @@ function CheckoutOrderSummary({
             {appliedCouponCode ? (
               <div className="flex items-center justify-between gap-3 rounded-md border border-green-200 bg-green-50 p-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] md:text-[11px] font-semibold text-green-700">
+                  <p className="text-[10px] font-semibold text-green-700 md:text-[11px]">
                     {appliedCouponCode}
                   </p>
+
                   <p className="mt-1 text-[11px] text-green-700">
                     {couponMessage || "Coupon applied successfully"}
                   </p>
@@ -113,6 +114,7 @@ function CheckoutOrderSummary({
                   type="button"
                   onClick={onRemoveCoupon}
                   disabled={isSubmitting || isApplyingCoupon}
+                  aria-label="Remove applied coupon"
                   className="flex shrink-0 items-center gap-1 text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -125,7 +127,9 @@ function CheckoutOrderSummary({
                     type="text"
                     value={couponCode}
                     onChange={(event) =>
-                      onCouponCodeChange(event.target.value.toUpperCase())
+                      onCouponCodeChange(
+                        event.target.value.toUpperCase()
+                      )
                     }
                     onKeyDown={(event) => {
                       if (event.key === "Enter") {
@@ -138,7 +142,7 @@ function CheckoutOrderSummary({
                     disabled={isSubmitting || isApplyingCoupon}
                     aria-label="Coupon code"
                     aria-invalid={Boolean(couponError)}
-                    className="min-w-0 flex-1 rounded-md border border-[#E8D9DD] px-3 py-2 font-[350] text-[11px] md:text-[12px] uppercase text-gray-600 outline-none transition focus:border-[#B5697A] disabled:bg-slate-50"
+                    className="min-w-0 flex-1 rounded-md border border-[#E8D9DD] px-3 py-2 text-[11px] font-[350] uppercase text-gray-600 outline-none transition focus:border-[#B5697A] disabled:bg-slate-50 md:text-[12px]"
                   />
 
                   <button
@@ -156,13 +160,16 @@ function CheckoutOrderSummary({
                 </div>
 
                 {couponError && (
-                  <p role="alert" className="mt-1 text-[10px] md:text-[11px] text-red-600">
+                  <p
+                    role="alert"
+                    className="mt-1 text-[10px] text-red-600 md:text-[11px]"
+                  >
                     {couponError}
                   </p>
                 )}
 
                 {!couponError && couponMessage && (
-                  <p className="mt-1 text-[10px] md:text-[11px] text-green-700">
+                  <p className="mt-1 text-[10px] text-green-700 md:text-[11px]">
                     {couponMessage}
                   </p>
                 )}
@@ -177,7 +184,10 @@ function CheckoutOrderSummary({
 
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-4">
-              <span className="text-xs text-slate-600">Subtotal</span>
+              <span className="text-xs text-slate-600">
+                Subtotal
+              </span>
+
               <span className="text-sm font-medium text-[#2C2C2C]">
                 ₹{cartTotal.toFixed(2)}
               </span>
@@ -188,6 +198,7 @@ function CheckoutOrderSummary({
                 <span className="text-xs text-green-700">
                   Coupon discount
                 </span>
+
                 <span className="text-sm font-semibold text-green-700">
                   −₹{discountAmount.toFixed(2)}
                 </span>
@@ -199,6 +210,7 @@ function CheckoutOrderSummary({
                 <p className="text-sm font-semibold text-[#2C2C2C]">
                   Total
                 </p>
+
                 <p className="mt-0.5 text-[10px] text-slate-500">
                   Inclusive of current cart items
                 </p>
@@ -211,26 +223,10 @@ function CheckoutOrderSummary({
           </div>
         </div>
 
-        {/* CONTINUE BUTTON */}
-        <div className="px-5 pb-5 pt-6 sm:px-6 sm:pb-6">
-          <button
-            type="submit"
-            disabled={isSubmitting || isApplyingCoupon}
-            className="flex min-h-[45px] w-full items-center justify-center rounded-full bg-[#B5697A] px-6 py-2.5 text-xs tracking-[0.01em] text-white shadow transition-all duration-200 hover:bg-[#A75D70] hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-[#B5697A]/30 focus:ring-offset-2 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
-          >
-            {isSubmitting ? (
-              <>
-                <span
-                  className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
-                  aria-hidden="true"
-                />
-                Saving Details...
-              </>
-            ) : (
-              "Proceed to Payment"
-            )}
-          </button>
-        </div>
+        {/*
+          WhatsApp Place Order button removed.
+          Payment submission is handled by CheckoutPage.
+        */}
       </div>
     </aside>
   );

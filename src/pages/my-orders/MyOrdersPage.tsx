@@ -180,7 +180,7 @@ function MyOrdersPage() {
     <main
       className="
         min-h-[calc(100vh-76px)]
-        bg-[#FFF9F5]
+        bg-[#fffbfc]
         px-4
         pb-16
         pt-24

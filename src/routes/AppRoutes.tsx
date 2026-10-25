@@ -15,6 +15,7 @@ import WishlistPage from "../pages/wishlist/WishlistPage";
 import CouponsPage from "../pages/coupons/CouponsPage";
 import PrivacyPolicyPage from "../pages/privacy-policy/PrivacyPolicyPage";
 import TermsAndConditionsPage from "../pages/terms-and-conditions/TermsAndConditionsPage";
+import PaymentResultPage from "../pages/payment-result/PaymentResultPage";
 
 // Account
 import AccountPage from "../components/landing/navbar/AccountPage";
@@ -50,6 +51,11 @@ const AppRoutes = () => {
         <Route
           path="/payment"
           element={<PaymentPage />}
+        />
+
+        <Route
+          path="/payment-result"
+          element={<PaymentResultPage />}
         />
 
         {/* Order Success */}
