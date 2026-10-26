@@ -52,13 +52,13 @@ function OrderCard({ order }: OrderCardProps) {
       <div className="bg-white p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#A39890]">
+            <p className="text-[10px] uppercase tracking-[0.10em] text-[#A39890]">
               Order Number
             </p>
-            <h2 className="mt-1.5 break-all text-[17px] font-semibold tracking-tight text-[#3E3430] sm:text-[19px]">
+            <h2 className="mt-0 break-all text-[17px] font-semibold tracking-tight text-[#3E3430] sm:text-[19px]">
               {order.orderNumber}
             </h2>
-            <p className="mt-1.5 text-[11px] text-[#8B7A6C] sm:text-xs">
+            <p className="mt-1 text-[11px] text-[#8B7A6C] sm:text-xs">
               Placed on {formatOrderDate(order.createdAt)}
             </p>
           </div>
@@ -83,7 +83,7 @@ function OrderCard({ order }: OrderCardProps) {
                   !isLast ? "sm:border-r sm:border-[#EFE3D2]" : ""
                 } ${isFirst ? "sm:pr-4" : isLast ? "sm:pl-5" : "sm:px-5"}`}
               >
-                <p className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A39890]">
+                <p className="shrink-0 text-[10px] uppercase tracking-[0.10em] text-[#A39890]">
                   {cell.label}
                 </p>
                 <p

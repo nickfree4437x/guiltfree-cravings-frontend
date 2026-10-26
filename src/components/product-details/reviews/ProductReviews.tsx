@@ -71,7 +71,7 @@ function NavButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={direction === "prev" ? "Previous page" : "Next page"}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#EADFD3] bg-white text-[#B5697A] transition-all duration-200 hover:border-[#B5697A] hover:bg-[#FBEEF1] focus:outline-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#EADFD3] disabled:hover:bg-white"
+      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#EADFD3] bg-white text-[#B5697A] transition-all duration-200 hover:border-[#B5697A] hover:bg-[#FBEEF1] focus:outline-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#EADFD3] disabled:hover:bg-white sm:h-9 sm:w-9"
     >
       <Icon size={15} strokeWidth={2} />
     </button>
@@ -149,6 +149,23 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
     document.getElementById("reviews-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // Smart Page Numbers (with Ellipsis for Mobile)
+  const getPageNumbers = () => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   // ─── Handlers ───────────────────────────────────────────
   const handleWriteReview = () => {
     if (!isAuthenticated) {
@@ -175,7 +192,7 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
       await loadReviews();
     } catch (deleteError: any) {
       console.error("Failed to delete review:", deleteError);
-      window.alert(
+      setError(
         deleteError?.response?.data?.message ||
           deleteError?.message ||
           "Unable to delete your review."
@@ -191,39 +208,43 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
   // ─── Render ─────────────────────────────────────────────
   return (
     <section className="w-full">
-      {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-[18px] font-semibold tracking-wide text-gray-700 sm:text-[20px]">
+      {/* =====================================================
+          HEADER - RESPONSIVE
+      ===================================================== */}
+      <div className="mb-6 flex flex-row items-center justify-between gap-3 sm:items-end">
+        <div className="min-w-0">
+          <h2 className="text-[16px] font-semibold tracking-wide text-gray-700 sm:text-[20px] truncate">
             Customer Reviews
           </h2>
-          <p className="mt-0 text-[11px] leading-relaxed text-slate-500 sm:text-[12px]">
-            Honest thoughts from customers who have tried it.
+          <p className="mt-0 text-[11px] leading-relaxed text-slate-500 sm:text-[12px] truncate">
+            Honest thoughts from customers.
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleWriteReview}
-          className="group inline-flex w-fit items-center justify-center gap-2.5 rounded-lg border border-[#D9B7C0] bg-white px-5 py-2 text-[12px] text-[#B5697A] transition-all duration-200 hover:border-[#B5697A] hover:bg-[#B5697A] hover:text-white"
+          className="group inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-[#D9B7C0] bg-white px-3 py-1.5 text-[11px] text-[#B5697A] transition-all duration-200 hover:border-[#B5697A] hover:bg-[#B5697A] hover:text-white sm:gap-2.5 sm:px-5 sm:py-2 sm:text-[12px]"
         >
           <MessageSquarePlus
-            size={15}
+            size={14}
             strokeWidth={1.8}
-            className="text-[#B5697A] transition-colors duration-200 group-hover:text-white"
+            className="text-[#B5697A] transition-colors duration-200 group-hover:text-white sm:h-[15px] sm:w-[15px]"
           />
-          <span>{myReview ? "Your Review" : "Write a Review"}</span>
+          <span className="whitespace-nowrap">{myReview ? "Your Review" : "Write Review"}</span>
         </button>
       </div>
 
       {/* Summary */}
       {!isLoading && <ReviewSummaryComponent summary={summary} />}
 
-      {/* My review status */}
+      {/* =====================================================
+          MY REVIEW STATUS
+      ===================================================== */}
       {isAuthenticated && myReview && myStatus && (
         <div className="mt-5 rounded-xl border border-[#F0DDE2] bg-[#FFFCFD] p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-[12px] font-medium text-gray-700">Your review</p>
                 <span className={`rounded-full px-2.5 py-0.5 text-[9px] ${myStatus.badge}`}>
@@ -235,11 +256,12 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="p-2 rounded-md text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-50 text-blue-600 transition hover:bg-blue-100 sm:h-9 sm:w-9"
+                aria-label="Edit review"
               >
                 <FaEdit size={13} />
               </button>
@@ -247,7 +269,8 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
                 type="button"
                 disabled={isDeleting}
                 onClick={() => void handleDeleteReview()}
-                className="p-2 rounded-md text-sm bg-red-50 text-red-600 hover:bg-red-100 transition"
+                className="flex h-8 w-8 items-center justify-center rounded-md bg-red-50 text-red-600 transition hover:bg-red-100 disabled:opacity-50 sm:h-9 sm:w-9"
+                aria-label="Delete review"
               >
                 {isDeleting ? <Loader2 size={13} className="animate-spin" /> : <FaTrash size={13} />}
               </button>
@@ -263,10 +286,12 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
         </div>
       )}
 
-      {/* Reviews list */}
+      {/* =====================================================
+          REVIEWS LIST
+      ===================================================== */}
       <div
         id="reviews-list"
-        className="mt-7 rounded-xl border border-[#F0DDE2] bg-white p-5 shadow-[0_2px_12px_rgba(181,105,122,0.04)] sm:p-6"
+        className="mt-7 rounded-xl border border-[#F0DDE2] bg-white p-4 shadow-[0_2px_12px_rgba(181,105,122,0.04)] sm:p-6"
       >
         {isLoading ? (
           <div className="flex min-h-[180px] items-center justify-center">
@@ -297,7 +322,9 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
               ))}
             </div>
 
-            {/* Pagination */}
+            {/* =====================================================
+                PAGINATION - FULLY RESPONSIVE
+            ===================================================== */}
             {totalPages > 1 && (
               <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-[#F5EBEF] pt-5 sm:flex-row">
                 <p className="text-[11px] text-slate-500 sm:text-[12px]">
@@ -312,29 +339,42 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
                   of <span className="font-semibold text-gray-700">{reviews.length}</span> reviews
                 </p>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 sm:gap-1.5">
                   <NavButton
                     direction="prev"
                     onClick={() => goToPage(currentPage - 1)}
                     disabled={currentPage === 1}
                   />
 
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      type="button"
-                      onClick={() => goToPage(page)}
-                      aria-label={`Go to page ${page}`}
-                      aria-current={page === currentPage ? "page" : undefined}
-                      className={`inline-flex h-8 min-w-[32px] items-center justify-center rounded-lg border px-2 text-[12px] transition-all duration-200 focus:outline-none ${
-                        page === currentPage
-                          ? "border-[#B5697A] bg-[#B5697A] text-white shadow-sm"
-                          : "border-[#EADFD3] bg-white text-[#6F6259] hover:border-[#B5697A] hover:text-[#B5697A]"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
+                  {getPageNumbers().map((page, idx) => {
+                    if (page === "...") {
+                      return (
+                        <span
+                          key={`ellipsis-${idx}`}
+                          className="flex h-8 w-6 items-center justify-center text-[12px] text-gray-400 sm:h-9 sm:w-8"
+                        >
+                          ...
+                        </span>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={page}
+                        type="button"
+                        onClick={() => goToPage(page as number)}
+                        aria-label={`Go to page ${page}`}
+                        aria-current={page === currentPage ? "page" : undefined}
+                        className={`inline-flex h-8 min-w-[30px] items-center justify-center rounded-lg border px-1.5 text-[12px] transition-all duration-200 focus:outline-none sm:h-9 sm:min-w-[32px] sm:px-2 ${
+                          page === currentPage
+                            ? "border-[#B5697A] bg-[#B5697A] text-white shadow-sm"
+                            : "border-[#EADFD3] bg-white text-[#6F6259] hover:border-[#B5697A] hover:text-[#B5697A]"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
 
                   <NavButton
                     direction="next"

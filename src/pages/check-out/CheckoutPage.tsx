@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -45,6 +45,26 @@ interface PaymentInitiationResponse {
   };
 }
 
+interface SavedAddressResponse {
+  success: boolean;
+  hasSavedAddress: boolean;
+  data: {
+    addressLine1: string;
+    addressLine2: string | null;
+    area: string;
+    city: string;
+    state: string;
+    pincode: string;
+    selectedZone: DeliveryAddress["selectedZone"];
+  } | null;
+}
+
+interface UpdateAddressResponse {
+  success: boolean;
+  message: string;
+  data: SavedAddressResponse["data"];
+}
+
 // ─── Config ───────────────────────────────────────────────
 const INITIAL_DELIVERY_ADDRESS: DeliveryAddress = {
   addressLine1: "",
@@ -71,7 +91,6 @@ function getErrorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
-// Validate customer form
 function validateCustomer(formData: CheckoutFormData): CheckoutErrors {
   const errors: CheckoutErrors = { fullName: "", email: "" };
   const name = formData.fullName.trim();
@@ -87,7 +106,6 @@ function validateCustomer(formData: CheckoutFormData): CheckoutErrors {
   return errors;
 }
 
-// Validate delivery address
 function validateDelivery(addr: DeliveryAddress): DeliveryAddressErrors {
   const errors: DeliveryAddressErrors = {};
   const addr1 = addr.addressLine1.trim();
@@ -99,7 +117,6 @@ function validateDelivery(addr: DeliveryAddress): DeliveryAddressErrors {
 
   if (!addr1) errors.addressLine1 = "Please enter your house/flat and street address.";
   else if (addr1.length > 200) errors.addressLine1 = "Address cannot exceed 200 characters.";
-
   if (addr2.length > 200) errors.addressLine2 = "Landmark cannot exceed 200 characters.";
   if (!area) errors.area = "Please enter your area or locality.";
   else if (area.length > 100) errors.area = "Area cannot exceed 100 characters.";
@@ -113,6 +130,20 @@ function validateDelivery(addr: DeliveryAddress): DeliveryAddressErrors {
   }
 
   return errors;
+}
+
+function normalizeSavedAddress(
+  address: NonNullable<SavedAddressResponse["data"]>
+): DeliveryAddress {
+  return {
+    addressLine1: address.addressLine1 ?? "",
+    addressLine2: address.addressLine2 ?? "",
+    area: address.area ?? "",
+    city: address.city || "New Delhi",
+    state: address.state || "Delhi",
+    pincode: address.pincode ?? "",
+    selectedZone: address.selectedZone,
+  };
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -134,13 +165,15 @@ function CheckoutPage() {
     email: user?.email ?? "",
   });
   const [errors, setErrors] = useState<CheckoutErrors>({ fullName: "", email: "" });
-  const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingOrderId, setPendingOrderId] = useState<number | null>(null);
 
   // Delivery address
   const [deliveryAddress, setDeliveryAddress] = useState<DeliveryAddress>({ ...INITIAL_DELIVERY_ADDRESS });
   const [deliveryErrors, setDeliveryErrors] = useState<DeliveryAddressErrors>({});
+  const [isLoadingAddress, setIsLoadingAddress] = useState(true);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const addressRequestId = useRef(0); // prevents stale address responses
 
   // Coupon
   const [couponCode, setCouponCode] = useState("");
@@ -153,6 +186,9 @@ function CheckoutPage() {
   const cartTotal = getCartTotal();
   const discountAmount = appliedOffer?.discountAmount ?? 0;
   const appliedCouponCode = appliedOffer?.offer.code ?? "";
+
+  // Shared disabled state
+  const isBusy = isSubmitting || isApplyingCoupon || isSavingAddress;
 
   // ─── Effects ────────────────────────────────────────────
   useEffect(() => {
@@ -169,6 +205,46 @@ function CheckoutPage() {
     }));
   }, [user]);
 
+  // Load saved delivery address
+  useEffect(() => {
+    const requestId = ++addressRequestId.current;
+
+    if (!isAuthenticated || !user || !token) {
+      setIsLoadingAddress(false);
+      return;
+    }
+
+    let isActive = true;
+
+    const loadSavedAddress = async () => {
+      setIsLoadingAddress(true);
+      try {
+        const response = await api.get<SavedAddressResponse>("/users/me/address");
+        if (!isActive || requestId !== addressRequestId.current) return;
+
+        const result = response.data;
+        if (!result?.success || typeof result.hasSavedAddress !== "boolean") {
+          throw new Error("Unable to read the saved delivery address.");
+        }
+
+        if (result.hasSavedAddress && result.data) {
+          setDeliveryAddress(normalizeSavedAddress(result.data));
+        }
+      } catch (error: unknown) {
+        if (!isActive || requestId !== addressRequestId.current) return;
+        // Checkout remains usable even if the address API fails
+        console.error("Unable to load saved delivery address:", error);
+      } finally {
+        if (isActive && requestId === addressRequestId.current) {
+          setIsLoadingAddress(false);
+        }
+      }
+    };
+
+    void loadSavedAddress();
+    return () => { isActive = false; };
+  }, [isAuthenticated, user, token]);
+
   // ─── Handlers ───────────────────────────────────────────
   const handleEditOrder = () => {
     if (!isSubmitting) openCartDrawer();
@@ -177,13 +253,11 @@ function CheckoutPage() {
   const handleChange = (field: "fullName" | "email", value: string) => {
     setFormData((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: "" }));
-    setSubmitError("");
   };
 
   const handleDeliveryChange = (field: keyof DeliveryAddress, value: string) => {
     setDeliveryAddress((current) => ({ ...current, [field]: value }));
     setDeliveryErrors((current) => ({ ...current, [field]: "" }));
-    setSubmitError("");
   };
 
   const handleCouponCodeChange = (value: string) => {
@@ -193,10 +267,44 @@ function CheckoutPage() {
     if (appliedOffer) setAppliedOffer(null);
   };
 
+  // ─── Save address ───────────────────────────────────────
+  const saveDeliveryAddress = async (address: DeliveryAddress): Promise<boolean> => {
+    setIsSavingAddress(true);
+    try {
+      const response = await api.put<UpdateAddressResponse>("/users/me/address", {
+        addressLine1: address.addressLine1.trim(),
+        addressLine2: address.addressLine2.trim() || "",
+        area: address.area.trim(),
+        city: address.city.trim(),
+        state: address.state.trim(),
+        pincode: address.pincode.trim(),
+        selectedZone: address.selectedZone,
+      });
+
+      if (!response.data?.success || !response.data.data) {
+        throw new Error(response.data?.message || "Unable to save your delivery address.");
+      }
+
+      setDeliveryAddress(normalizeSavedAddress(response.data.data));
+      return true;
+    } catch (error: unknown) {
+      console.error("Unable to save delivery address:", error);
+      toast.error(
+        `Your order can still continue, but the address could not be saved for future checkouts. ${getErrorMessage(
+          error,
+          "Please try again later."
+        )}`
+      );
+      return false;
+    } finally {
+      setIsSavingAddress(false);
+    }
+  };
+
   // ─── Apply coupon ───────────────────────────────────────
   const handleApplyCoupon = async () => {
     const normalizedCode = couponCode.trim().toUpperCase();
-    if (isApplyingCoupon || isSubmitting) return;
+    if (isBusy) return;
 
     if (!normalizedCode) {
       const msg = "Please enter a coupon code.";
@@ -221,7 +329,6 @@ function CheckoutPage() {
     try {
       const result = await validateOffer(normalizedCode, cartTotal);
 
-      // Validate response shape
       if (
         !result ||
         !result.offer ||
@@ -256,7 +363,7 @@ function CheckoutPage() {
   };
 
   const handleRemoveCoupon = () => {
-    if (isSubmitting) return;
+    if (isBusy) return;
     setAppliedOffer(null);
     setCouponCode("");
     setCouponError("");
@@ -285,11 +392,16 @@ function CheckoutPage() {
   // ─── Submit order ───────────────────────────────────────
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isSubmitting || isApplyingCoupon) return;
+    if (isBusy) return;
 
     if (!isAuthenticated || !user || !token) {
       toast.error("Please sign in to continue with your order.");
       navigate("/cart", { replace: true });
+      return;
+    }
+
+    if (isLoadingAddress) {
+      toast.error("Please wait while we load your saved address.");
       return;
     }
 
@@ -303,50 +415,66 @@ function CheckoutPage() {
     const hasAddressErr = Object.values(addressErrors).some(Boolean);
 
     if (hasCustomerErr || hasAddressErr) {
-      setSubmitError("Please correct the highlighted fields before continuing.");
+      toast.error("Please correct the highlighted fields.");
+      setTimeout(() => {
+        const firstErrorElement = document.querySelector('[aria-invalid="true"]');
+        if (firstErrorElement) {
+          firstErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (
+            firstErrorElement instanceof HTMLInputElement ||
+            firstErrorElement instanceof HTMLSelectElement ||
+            firstErrorElement instanceof HTMLTextAreaElement
+          ) {
+            firstErrorElement.focus();
+          }
+        }
+      }, 100);
       return;
     }
 
     if (!items.length) {
-      const msg = "Your cart is empty.";
-      setSubmitError(msg);
-      toast.error(msg);
+      toast.error("Your cart is empty.");
       return;
     }
 
     if (!Number.isFinite(cartTotal) || cartTotal <= 0) {
-      const msg = "Your cart total is invalid. Please review your cart.";
-      setSubmitError(msg);
-      toast.error(msg);
+      toast.error("Your cart total is invalid. Please review your cart.");
       return;
     }
 
     const hasInvalidItem = items.some((item) => {
       const price = Number(item.variant.price);
+      const productId = Number(item.product.id);
+      const variantId = Number(item.variant.id);
+
       return (
         !item.product.name ||
         !Number.isFinite(price) ||
         price <= 0 ||
+        !Number.isSafeInteger(productId) ||
+        productId <= 0 ||
+        !Number.isSafeInteger(variantId) ||
+        variantId <= 0 ||
         !Number.isSafeInteger(item.quantity) ||
         item.quantity < 1
       );
     });
 
     if (hasInvalidItem) {
-      const msg = "One or more cart items have invalid details. Please review your cart.";
-      setSubmitError(msg);
-      toast.error(msg);
+      toast.error("One or more cart items have invalid details.");
       return;
     }
 
     setIsSubmitting(true);
-    setSubmitError("");
 
     try {
       let orderId = pendingOrderId;
 
       // Create order only once — payment retry reuses existing ID
       if (orderId === null) {
+        // Save address first (failure doesn't block order creation)
+        await saveDeliveryAddress(deliveryAddress);
+
         const createdOrder = await createOrder({
           customer: {
             name: formData.fullName.trim(),
@@ -374,27 +502,24 @@ function CheckoutPage() {
           !Number.isSafeInteger(Number(createdOrder.id)) ||
           Number(createdOrder.id) <= 0
         ) {
-          throw new Error("The order was not created correctly. Please contact support before retrying.");
+          throw new Error(
+            "The order was not created correctly. Please contact support before retrying."
+          );
         }
 
         orderId = Number(createdOrder.id);
         setPendingOrderId(orderId);
       }
 
-      // Initiate PhonePe
+      // PhonePe payment
       try {
         await initiatePhonePePayment(orderId);
       } catch (paymentError: unknown) {
         const msg = getErrorMessage(paymentError, "Unable to start PhonePe checkout.");
-        // Keep pendingOrderId so retry reuses the same order
-        setSubmitError(
-          `Your order has been created, but payment could not be started. Order ID: ${orderId}. ${msg}`
-        );
-        toast.error("Order created, but payment could not be started. You can retry from this page.");
+        toast.error(`Order created, but payment failed. ID: ${orderId}. ${msg}`);
       }
     } catch (error: unknown) {
       const msg = getErrorMessage(error, "Unable to create your order. Please try again.");
-      setSubmitError(msg);
       toast.error(msg);
     } finally {
       setIsSubmitting(false);
@@ -436,21 +561,21 @@ function CheckoutPage() {
               </div>
             </section>
 
+            {isLoadingAddress && (
+              <div
+                className="rounded-lg border border-[#EEDFE2] bg-[#FFF9FA] px-4 py-3 text-sm text-[#79515A]"
+                role="status"
+              >
+                Loading your saved delivery address...
+              </div>
+            )}
+
             <DeliveryAddressForm
               value={deliveryAddress}
               errors={deliveryErrors}
-              disabled={isSubmitting || isApplyingCoupon}
+              disabled={isSubmitting || isApplyingCoupon || isLoadingAddress || isSavingAddress}
               onChange={handleDeliveryChange}
             />
-
-            {submitError && (
-              <div
-                role="alert"
-                className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
-              >
-                {submitError}
-              </div>
-            )}
           </div>
 
           {/* Right column: order summary */}
@@ -481,14 +606,18 @@ function CheckoutPage() {
               <div className="p-5">
                 <button
                   type="submit"
-                  disabled={isSubmitting || isApplyingCoupon}
-                  className="flex w-full items-center justify-center rounded-lg bg-[#B5697A] px-5 py-3 text-[12px] md:text-[13px] hover:shdow-md text-white disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={isBusy || isLoadingAddress}
+                  className="flex w-full items-center justify-center rounded-lg bg-[#B5697A] px-5 py-3 text-[12px] text-white transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 md:text-[13px]"
                 >
                   {isSubmitting
                     ? "Processing..."
-                    : pendingOrderId !== null
-                      ? "Retry PhonePe Payment"
-                      : "Proceed to Pay"}
+                    : isSavingAddress
+                      ? "Saving address..."
+                      : isLoadingAddress
+                        ? "Loading address..."
+                        : pendingOrderId !== null
+                          ? "Retry PhonePe Payment"
+                          : "Proceed to Pay"}
                 </button>
               </div>
             </div>

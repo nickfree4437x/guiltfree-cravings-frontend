@@ -1,4 +1,5 @@
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
+import { FaTrash } from "react-icons/fa";
 
 import type { CartItem as CartItemType } from "../../../store/cartStore";
 import ProductCardImage from "../../product/card/ProductCardImage";
@@ -72,9 +73,9 @@ function CartDrawerItem({
               type="button"
               onClick={remove}
               aria-label={`Remove ${product.name} from cart`}
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F8EDEF] text-[#B5697A] transition hover:bg-[#F0DCE1] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]"
+              className="flex h-6 w-6 items-center justify-center rounded-md bg-red-50 text-red-600 transition hover:bg-red-100 disabled:opacity-50 sm:h-7 sm:w-7"
             >
-              <Trash2 size={13} strokeWidth={1.8} />
+              <FaTrash size={12} strokeWidth={1.8} />
             </button>
           </div>
 

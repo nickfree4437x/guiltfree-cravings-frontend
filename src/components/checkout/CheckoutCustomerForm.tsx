@@ -21,7 +21,7 @@ interface CheckoutCustomerFormProps {
 
 // ─── Input Class Helper ───────────────────────────────────
 const inputClass = (hasError: boolean) =>
-  `mt-1 h-10 w-full rounded-lg border bg-white px-3.5 text-[14px] text-[#2C2C2C] outline-none transition-all placeholder:text-slate-400 placeholder:font-[350] disabled:cursor-not-allowed disabled:bg-slate-50 ${
+  `mt-1 h-10 w-full rounded-lg border bg-white px-3.5 text-[12px] md:text-[13px] text-gray-600 outline-none transition-all placeholder:text-slate-500 placeholder:font-[350] disabled:cursor-not-allowed disabled:bg-slate-50 ${
     hasError
       ? "border-red-400 focus:border-red-400 focus:ring-red-100"
       : "border-[#E6D9DC] focus:border-[#B5697A] focus:ring-[#F8E8EC]"

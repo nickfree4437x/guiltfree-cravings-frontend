@@ -108,7 +108,7 @@ function MyOrdersPage() {
 
   // ─── Render ─────────────────────────────────────────────
   return (
-    <main className="min-h-[calc(100vh-76px)] bg-[#fffbfc] px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-24 lg:px-8 lg:pt-28">
+    <main className="min-h-[calc(100vh-76px)] bg-[#fffbfc] px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-24 lg:px-8 lg:pt-32">
       <div className="mx-auto w-full max-w-6xl">
         <MyOrdersHeader />
 

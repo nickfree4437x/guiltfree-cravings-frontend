@@ -138,10 +138,10 @@ function AccountPage() {
                 </span>
 
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[13px] font-semibold text-[#594D47] transition-colors duration-200">
+                  <span className="block text-[13px] font-semibold text-gray-600 transition-colors duration-200">
                     {title}
                   </span>
-                  <span className="mt-0 block truncate text-[10px] text-[#9A8D84]">
+                  <span className="mt-0 block truncate text-[10px] text-gray-500">
                     {description}
                   </span>
                 </span>
@@ -166,10 +166,10 @@ function AccountPage() {
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="block text-[13px] font-semibold text-[#594D47] transition-colors duration-200 group-hover:text-[#B5697A]">
+              <span className="block text-[13px] font-semibold text-gray-600 transition-colors duration-200 group-hover:text-[#B5697A]">
                 Logout
               </span>
-              <span className="mt-1 block text-[10px] text-[#9A8D84]">
+              <span className="mt-1 block text-[10px] text-gray-500">
                 Sign out of your account
               </span>
             </span>

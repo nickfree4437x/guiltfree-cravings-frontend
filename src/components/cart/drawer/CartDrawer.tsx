@@ -137,7 +137,7 @@ function CartDrawer() {
                   type="button"
                   onClick={closeCartDrawer}
                   aria-label="Close cart"
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F8F2EC] text-[#9A918A] transition hover:text-[#B5697A] focus:outline-none sm:h-9 sm:w-9"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FDF0F2] text-[#B5697A] transition-colors duration-200 hover:bg-[#F3DDE2] hover:text-[#9F5366] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]/40 sm:h-9 sm:w-9"
                 >
                   <X size={18} strokeWidth={1.7} />
                 </button>

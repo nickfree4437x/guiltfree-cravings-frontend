@@ -59,10 +59,10 @@ function StatusBadge({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[10px] md:text-[11px] font-light uppercase tracking-wider text-slate-500">
+      <span className="text-[10px] md:text-[10px] font-light uppercase tracking-wider text-[#A39890]">
         {label}
       </span>
-      <span className={`inline-flex w-fit text-[9px] md:text-[10px] items-center rounded-full border px-3 py-1.5 text-xs capitalize ${styles}`}>
+      <span className={`inline-flex w-fit text-[10px] md:text-[10px] items-center rounded-full border px-3 py-1.5 capitalize ${styles}`}>
         {formatStatus(status)}
       </span>
     </div>
@@ -212,9 +212,6 @@ function OrderDetailsPage() {
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#eadfd3] bg-white/80 px-3 py-1 text-[9px] md:text-[10px] uppercase tracking-wider text-[#9f6674]">
                   Order Details
                 </span>
-                <h1 className="mt-2 text-[14px] font-semibold tracking-tight text-slate-700 sm:text-[16px]">
-                  Your Order
-                </h1>
                 <p className="mt-2 break-all text-xs md:text-sm text-[#B5697A]">
                   {order.orderNumber}
                 </p>
@@ -230,22 +227,33 @@ function OrderDetailsPage() {
           </div>
 
           {/* Quick summary */}
-          <div className="grid gap-4 border-t border-[#eadfd3] p-6 sm:grid-cols-3 sm:gap-0 sm:p-0">
-            <div className="sm:border-r sm:border-[#eadfd3] sm:p-6">
-              <p className="text-xs uppercase tracking-wider text-slate-500">Total Items</p>
-              <p className="mt-1 text-[14px] md:text-[16px] font-semibold text-slate-700">
+          <div className="grid grid-cols-3 border-t border-[#eadfd3]">
+            {/* Total Items */}
+            <div className="min-w-0 border-r border-[#eadfd3] p-3 sm:p-6">
+              <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-[#A39890]">
+                Total Items
+              </p>
+              <p className="mt-1 text-[13px] sm:text-[16px] font-semibold text-slate-700 break-words">
                 {totalItems} {totalItems === 1 ? "Item" : "Items"}
               </p>
             </div>
-            <div className="sm:border-r sm:border-[#eadfd3] sm:p-6">
-              <p className="text-xs uppercase tracking-wider text-slate-500">Customer</p>
-              <p className="mt-1 text-[14px] md:text-[16px] font-semibold text-slate-700">
+
+            {/* Customer */}
+            <div className="min-w-0 border-r border-[#eadfd3] p-3 sm:p-6">
+              <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-[#A39890]">
+                Customer
+              </p>
+              <p className="mt-1 text-[13px] sm:text-[16px] font-semibold text-slate-700 break-words">
                 {order.customerName || "Not provided"}
               </p>
             </div>
-            <div className="sm:p-6">
-              <p className="text-xs uppercase tracking-wider text-slate-500">Total Amount</p>
-              <p className="mt-1 text-[14px] md:text-[16px] font-semibold text-[#B5697A]">
+
+            {/* Total Amount */}
+            <div className="min-w-0 p-3 sm:p-6">
+              <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-[#A39890]">
+                Total Amount
+              </p>
+              <p className="mt-1 text-[13px] sm:text-[16px] font-semibold text-[#B5697A] break-words">
                 ₹{order.totalAmount}
               </p>
             </div>
@@ -344,20 +352,20 @@ function OrderDetailsPage() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-[#eadfd3] bg-white p-4">
-              <p className="text-xs uppercase tracking-wider text-slate-400">Name</p>
-              <p className="mt-1 break-words text-xs md:text-sm text-slate-700">
+              <p className="text-[10px] uppercase tracking-wider text-[#A39890]">Name</p>
+              <p className="mt-0.5 break-words text-xs md:text-sm text-slate-700">
                 {order.customerName || "Not provided"}
               </p>
             </div>
             <div className="rounded-xl border border-[#eadfd3] bg-white p-4">
-              <p className="text-xs uppercase tracking-wider text-slate-400">Mobile Number</p>
-              <p className="mt-1 break-words text-xs md:text-sm text-slate-700">
+              <p className="text-[10px] uppercase tracking-wider text-[#A39890]">Mobile Number</p>
+              <p className="mt-0.5 break-words text-xs md:text-sm text-slate-700">
                 {order.customerPhone ? `+91 ${order.customerPhone}` : "Not provided"}
               </p>
             </div>
             <div className="rounded-xl border border-[#eadfd3] bg-white p-4 sm:col-span-2">
-              <p className="text-xs uppercase tracking-wider text-slate-400">Email Address</p>
-              <p className="mt-1 break-all text-sm text-slate-700">
+              <p className="text-[10px] uppercase tracking-wider text-[#A39890]">Email Address</p>
+              <p className="mt-0.5 break-all text-sm text-slate-700">
                 {order.customerEmail || "Not provided"}
               </p>
             </div>
@@ -384,7 +392,7 @@ function OrderDetailsPage() {
           )}
 
           <div className="mt-4 border-t border-[#f0e7df] pt-3">
-            <p className="text-xs uppercase tracking-wider text-slate-400">Delivery Status</p>
+            <p className="text-[10px] uppercase tracking-wider text-[#A39890]">Delivery Status</p>
             <p className="mt-1 text-xs md:text-sm capitalize text-slate-700">
               {formatStatus(order.deliveryStatus)}
             </p>
