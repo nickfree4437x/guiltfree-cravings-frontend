@@ -192,7 +192,7 @@ function AdminSidebar({
               "
             >
               <span className="text-[11px] font-bold tracking-wide">
-                GC
+                GFC
               </span>
             </div>
 
@@ -346,7 +346,7 @@ function AdminSidebar({
               "
             >
               <span className="text-[11px] font-bold tracking-wide">
-                GC
+                GFC
               </span>
             </div>
 

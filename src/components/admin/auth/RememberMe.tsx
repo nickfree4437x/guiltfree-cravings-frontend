@@ -19,7 +19,7 @@ export const RememberMe = ({ checked, onChange, disabled = false }: RememberMePr
         disabled={disabled}
         className="h-4 w-4 cursor-pointer border-[#d9c7b7] text-[#8b542f] rounded-xl disabled:cursor-not-allowed disabled:opacity-50"
       />
-      <span className="text-sm text-slate-600 transition-colors group-hover:text-slate-900">
+      <span className="text-[12px] md:text-[13px] text-slate-600 transition-colors group-hover:text-slate-700">
         Remember me
       </span>
     </label>

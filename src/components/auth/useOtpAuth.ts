@@ -1,7 +1,14 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
+import toast from "react-hot-toast";
 
 import { verifyOtp } from "../../api/authApi";
 import { useAuthStore } from "../../store/authStore";
+
 import {
   initializeMsg91Widget,
   retryMsg91Otp,
@@ -19,11 +26,13 @@ import {
 } from "./otpAuthUtils";
 
 // ─── Types ────────────────────────────────────────────────
+
 interface UseOtpAuthProps {
   onSuccess: () => void;
 }
 
 // ─── Hook ─────────────────────────────────────────────────
+
 export function useOtpAuth({ onSuccess }: UseOtpAuthProps) {
   const login = useAuthStore((s) => s.login);
 
@@ -35,147 +44,212 @@ export function useOtpAuth({ onSuccess }: UseOtpAuthProps) {
   const [error, setError] = useState("");
   const [resendCountdown, setResendCountdown] = useState(0);
 
-  // MSG91 may or may not expose reqId — kept optional
-  const [msg91ReqId, setMsg91ReqId] = useState<string | null>(null);
+  // MSG91 request ID
+  const [msg91ReqId, setMsg91ReqId] = useState<string | null>(
+    null
+  );
 
   const otpInputRef = useRef<HTMLInputElement | null>(null);
 
   const normalizedPhone = phone.replace(/\D/g, "");
 
-  // Initialize MSG91 widget on mount
+  // ─── Error helper ───────────────────────────────────────
+
+  const showError = (message: string) => {
+    const safeMessage =
+      message.trim() || "Something went wrong. Please try again.";
+
+    setError(safeMessage);
+    toast.error(safeMessage);
+  };
+
+  // ─── Initialize MSG91 widget ────────────────────────────
+
   useEffect(() => {
     let cancelled = false;
+
     const initialize = async () => {
       try {
         await initializeMsg91Widget();
+
         if (cancelled) return;
       } catch (initError) {
         if (cancelled) return;
-        setError(getMsg91ErrorMessage(initError));
+
+        showError(getMsg91ErrorMessage(initError));
       }
     };
+
     void initialize();
-    return () => { cancelled = true; };
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  // Resend countdown ticker
+  // ─── Resend countdown ticker ────────────────────────────
+
   useEffect(() => {
     if (resendCountdown <= 0) return;
+
     const interval = window.setInterval(() => {
       setResendCountdown((current) => {
         if (current <= 1) {
           window.clearInterval(interval);
           return 0;
         }
+
         return current - 1;
       });
     }, 1000);
+
     return () => window.clearInterval(interval);
   }, [resendCountdown]);
 
-  // Auto-focus OTP input when step becomes "otp"
+  // ─── Auto-focus OTP input ───────────────────────────────
+
   useEffect(() => {
     if (step !== "otp") return;
-    const timeout = window.setTimeout(() => otpInputRef.current?.focus(), 100);
+
+    const timeout = window.setTimeout(() => {
+      otpInputRef.current?.focus();
+    }, 100);
+
     return () => window.clearTimeout(timeout);
   }, [step]);
 
   // ─── Send OTP ───────────────────────────────────────────
+
   const handleSendOtp = async () => {
     if (loading) return;
+
     setError("");
 
     if (!/^[6-9]\d{9}$/.test(normalizedPhone)) {
-      setError("Please enter a valid 10-digit Indian mobile number.");
+      showError(
+        "Please enter a valid 10-digit Indian mobile number."
+      );
       return;
     }
 
     setLoading(true);
     setOtp("");
-    setMsg91ReqId(null); // clear old request ID
+    setMsg91ReqId(null);
 
     try {
       const result = await sendMsg91Otp(normalizedPhone);
-      // reqId optional — store if provided
+
       setMsg91ReqId(result?.reqId ?? null);
       setStep("otp");
       setResendCountdown(RESEND_COOLDOWN_SECONDS);
-    } catch (sendError) {
-      setError(getMsg91ErrorMessage(sendError));
+
+      toast.success("OTP sent successfully.");
+    } catch (sendError: unknown) {
+      showError(getMsg91ErrorMessage(sendError));
     } finally {
       setLoading(false);
     }
   };
 
   // ─── Verify OTP ─────────────────────────────────────────
+
   const handleVerifyOtp = async () => {
     if (loading) return;
+
     setError("");
 
     const otpRegex = new RegExp(`^\\d{${OTP_LENGTH}}$`);
+
     if (!otpRegex.test(otp)) {
-      setError(`Please enter the ${OTP_LENGTH}-digit OTP.`);
+      showError(`Please enter the ${OTP_LENGTH}-digit OTP.`);
       return;
     }
 
     setLoading(true);
 
     try {
-      const msg91Result = await verifyMsg91Otp(otp, msg91ReqId);
+      const msg91Result = await verifyMsg91Otp(
+        otp,
+        msg91ReqId
+      );
 
-      // Safe debug (no tokens logged)
-      console.log("MSG91 VERIFY OTP RESPONSE:", getSafeMsg91ResponseShape(msg91Result));
+      // Safe debug: never log actual authentication tokens.
+      console.log(
+        "MSG91 VERIFY OTP RESPONSE:",
+        getSafeMsg91ResponseShape(msg91Result)
+      );
 
       const accessToken = extractMsg91AccessToken(msg91Result);
 
-      // Safe token info (never log actual token)
       console.log("MSG91 ACCESS TOKEN RECEIVED BY BACKEND:", {
         exists: Boolean(accessToken),
         length: accessToken?.length ?? 0,
-        parts: accessToken ? accessToken.split(".").length : 0,
-        looksLikeJwt: accessToken ? accessToken.split(".").length === 3 : false,
+        parts: accessToken
+          ? accessToken.split(".").length
+          : 0,
+        looksLikeJwt: accessToken
+          ? accessToken.split(".").length === 3
+          : false,
       });
 
       if (!accessToken) {
         throw new Error(
-          "OTP verified, but authentication token was not received. Please try again."
+          "OTP verification succeeded, but the authentication token was not received. Please try again."
         );
       }
 
-      // Existing backend flow — unchanged
-      const result = await verifyOtp(normalizedPhone, accessToken);
+      // Existing backend authentication flow.
+      const result = await verifyOtp(
+        normalizedPhone,
+        accessToken
+      );
 
       login(result.token, result.user);
+
+      toast.success("Phone number verified successfully.");
+
       onSuccess();
-    } catch (verifyError) {
-      setError(getMsg91ErrorMessage(verifyError));
-      setOtp(""); // clear on failure
+    } catch (verifyError: unknown) {
+      const message = getMsg91ErrorMessage(verifyError);
+
+      setOtp("");
+      showError(message);
     } finally {
       setLoading(false);
     }
   };
 
   // ─── Resend OTP ─────────────────────────────────────────
+
   const handleResendOtp = async () => {
     if (loading || resendCountdown > 0) return;
+
     setError("");
     setLoading(true);
 
     try {
       const result = await retryMsg91Otp(msg91ReqId);
-      if (result?.reqId) setMsg91ReqId(result.reqId);
+
+      if (result?.reqId) {
+        setMsg91ReqId(result.reqId);
+      }
+
       setOtp("");
       setResendCountdown(RESEND_COOLDOWN_SECONDS);
-    } catch (resendError) {
-      setError(getMsg91ErrorMessage(resendError));
+
+      toast.success("A new OTP has been requested.");
+    } catch (resendError: unknown) {
+      showError(getMsg91ErrorMessage(resendError));
     } finally {
       setLoading(false);
     }
   };
 
   // ─── Back to Phone ──────────────────────────────────────
+
   const handleBackToPhone = () => {
     if (loading) return;
+
     setStep("phone");
     setOtp("");
     setMsg91ReqId(null);
@@ -184,10 +258,10 @@ export function useOtpAuth({ onSuccess }: UseOtpAuthProps) {
   };
 
   // ─── Phone Change ───────────────────────────────────────
+
   const handlePhoneChange = (value: string) => {
     const sanitized = value.replace(/\D/g, "").slice(0, 10);
 
-    // Phone changed → old OTP session becomes invalid
     if (sanitized !== phone) {
       setMsg91ReqId(null);
       setOtp("");
@@ -199,25 +273,34 @@ export function useOtpAuth({ onSuccess }: UseOtpAuthProps) {
   };
 
   // ─── OTP Change ─────────────────────────────────────────
+
   const handleOtpChange = (value: string) => {
-    const sanitized = value.replace(/\D/g, "").slice(0, OTP_LENGTH);
+    const sanitized = value
+      .replace(/\D/g, "")
+      .slice(0, OTP_LENGTH);
+
     setOtp(sanitized);
     setError("");
   };
 
   // ─── Enter key ──────────────────────────────────────────
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+
+  const handleKeyDown = (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
     if (event.key !== "Enter" || loading) return;
+
     if (step === "phone") {
       void handleSendOtp();
       return;
     }
+
     void handleVerifyOtp();
   };
 
   // ─── Return ─────────────────────────────────────────────
+
   return {
-    // State
     step,
     phone,
     otp,
@@ -226,7 +309,6 @@ export function useOtpAuth({ onSuccess }: UseOtpAuthProps) {
     resendCountdown,
     otpInputRef,
 
-    // Actions
     handleSendOtp,
     handleVerifyOtp,
     handleResendOtp,

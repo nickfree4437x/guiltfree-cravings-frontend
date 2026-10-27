@@ -66,7 +66,7 @@ function ReviewSummary({ summary }: ReviewSummaryProps) {
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <span className="w-6 text-[11px] text-[#A89486]">{count}</span>
+                <span className="w-6 text-[11px] text-slate-500">{count}</span>
               </div>
             );
           })}

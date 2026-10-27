@@ -1,12 +1,9 @@
-
 import { PackageX } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import type {
-  Product,
-  ProductVariant,
-} from "../../../api/productApi";
+import type { Product, ProductVariant } from "../../../api/productApi";
 
+// ─── Types ────────────────────────────────────────────────
 interface ProductCardImageProps {
   product: Product;
   packaging?: "Plastic Box" | "Glass Jar" | "Cardboard Box";
@@ -14,10 +11,8 @@ interface ProductCardImageProps {
   compact?: boolean;
 }
 
-const GLASS_JAR_IMAGES: Record<
-  string,
-  { 350: string; 500: string }
-> = {
+// ─── Glass jar variant images ─────────────────────────────
+const GLASS_JAR_IMAGES: Record<string, { 350: string; 500: string }> = {
   "dry fruit sattu laddoo": {
     350: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518318/WhatsApp_Image_2026-10-19_at_11.25.07_PM.jpg",
     500: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518221/WhatsApp_Image_2026-10-19_at_11.25.03_PM.jpg",
@@ -32,10 +27,16 @@ const GLASS_JAR_IMAGES: Record<
   },
 };
 
+// ─── Helpers ──────────────────────────────────────────────
 function normalizeProductName(name: string): string {
   return name.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
+// Container sizing based on `compact` mode
+const getContainerSize = (compact: boolean) =>
+  compact ? "h-full w-full" : "h-[140px] w-full sm:h-[220px] md:h-[260px]";
+
+// ─── Component ────────────────────────────────────────────
 function ProductCardImage({
   product,
   packaging = "Plastic Box",
@@ -44,10 +45,8 @@ function ProductCardImage({
 }: ProductCardImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const normalizedProductName = normalizeProductName(product.name);
-
-  const glassJarImageMap =
-    GLASS_JAR_IMAGES[normalizedProductName];
+  const normalizedName = normalizeProductName(product.name);
+  const glassJarImageMap = GLASS_JAR_IMAGES[normalizedName];
 
   const isValidGlassJarVariant =
     packaging === "Glass Jar" &&
@@ -56,9 +55,7 @@ function ProductCardImage({
     (variant.quantity === 350 || variant.quantity === 500);
 
   const variantGlassJarImage = isValidGlassJarVariant
-    ? glassJarImageMap?.[
-        variant!.quantity as 350 | 500
-      ] ?? null
+    ? glassJarImageMap?.[variant!.quantity as 350 | 500] ?? null
     : null;
 
   const image =
@@ -69,17 +66,17 @@ function ProductCardImage({
         ? product.cardboardBoxImage
         : product.image);
 
+  // Reset loading state when image source changes
   useEffect(() => {
     setIsLoaded(false);
   }, [image]);
 
+  // ─── No image fallback ──────────────────────────────────
   if (!image) {
     return (
       <div
-        className={`relative flex items-center justify-center overflow-hidden bg-[#F9F5F0] ${
-          compact
-            ? "h-full w-full rounded-lg p-2"
-            : "h-[140px] w-full rounded-xl p-3 sm:h-[220px] sm:p-5 md:h-[260px] md:p-6"
+        className={`relative flex items-center justify-center overflow-hidden bg-[#fffbfc] ${getContainerSize(compact)} ${
+          compact ? "rounded-lg p-2" : "rounded-lg p-3 sm:p-5 md:p-6"
         }`}
       >
         <div className="flex flex-col items-center gap-2 text-center">
@@ -96,7 +93,6 @@ function ProductCardImage({
               aria-hidden="true"
             />
           </span>
-
           {!compact && (
             <span className="text-[10px] font-medium text-[#8B7A6C] sm:text-[11px]">
               Image coming soon
@@ -107,18 +103,18 @@ function ProductCardImage({
     );
   }
 
+  // ─── Image display ──────────────────────────────────────
   return (
     <div
-      className={`group/image relative flex items-center justify-center overflow-hidden bg-white ${
-        compact
-          ? "h-full w-full rounded-xl p-1.5"
-          : "h-[140px] w-full rounded-xl p-3 sm:h-[220px] sm:p-5 md:h-[200px] md:p-6"
+      className={`group/image relative flex items-center justify-center overflow-hidden bg-white ${getContainerSize(compact)} ${
+        compact ? "rounded-xl p-1.5" : "rounded-xl p-3 sm:p-5 md:p-6"
       }`}
     >
+      {/* Shimmer placeholder while loading */}
       {!isLoaded && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 z-[1] bg-gradient-to-br from-[#FBF6EE] via-[#F9F2E8] to-[#FBF6EE]"
+          className="absolute inset-0 z-[1] bg-[#fffbfc]"
         >
           <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
         </div>
@@ -127,9 +123,7 @@ function ProductCardImage({
       <img
         key={image}
         src={image}
-        alt={`${product.name} ${packaging}${
-          variant ? ` ${variant.quantity}${variant.unit}` : ""
-        }`}
+        alt={`${product.name} ${packaging}${variant ? ` ${variant.quantity}${variant.unit}` : ""}`}
         loading={compact ? "eager" : "lazy"}
         onLoad={() => setIsLoaded(true)}
         onError={() => setIsLoaded(true)}
@@ -137,13 +131,6 @@ function ProductCardImage({
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
       />
-
-      {!compact && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-1/3 bg-gradient-to-t from-[#B5697A]/[0.05] to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        />
-      )}
     </div>
   );
 }

@@ -8,7 +8,6 @@ import {
   type ProductVariant,
 } from "../../api/productApi";
 
-import { useAuthStore } from "../../store/authStore";
 import { useCartStore } from "../../store/cartStore";
 
 import OtpAuthModal from "../../components/auth/OtpAuthModal";
@@ -19,6 +18,7 @@ import CustomerReviews from "../../components/product-details/reviews/ProductRev
 import RecommendedProducts from "../../components/product-details/RecommendedProducts";
 
 // ─── Types ────────────────────────────────────────────────
+
 type PackagingOption = "Plastic Box" | "Cardboard Box" | "Glass Jar";
 
 interface ProductDetailsData {
@@ -40,7 +40,12 @@ interface ProductNavigationState {
 }
 
 // ─── Config ───────────────────────────────────────────────
-const PACKAGING_ORDER: PackagingOption[] = ["Plastic Box", "Cardboard Box", "Glass Jar"];
+
+const PACKAGING_ORDER: PackagingOption[] = [
+  "Plastic Box",
+  "Cardboard Box",
+  "Glass Jar",
+];
 
 const ALLOWED_WEIGHTS: Record<PackagingOption, number[]> = {
   "Plastic Box": [250],
@@ -49,18 +54,29 @@ const ALLOWED_WEIGHTS: Record<PackagingOption, number[]> = {
 };
 
 // ─── Helpers ──────────────────────────────────────────────
+
 function isPackagingOption(p: unknown): p is PackagingOption {
-  return p === "Plastic Box" || p === "Cardboard Box" || p === "Glass Jar";
+  return (
+    p === "Plastic Box" ||
+    p === "Cardboard Box" ||
+    p === "Glass Jar"
+  );
 }
 
 function isAllowedVariant(v: ProductVariant): boolean {
   if (!isPackagingOption(v.packaging)) return false;
-  return v.unit === "g" && ALLOWED_WEIGHTS[v.packaging].includes(v.quantity);
+
+  return (
+    v.unit === "g" &&
+    ALLOWED_WEIGHTS[v.packaging].includes(v.quantity)
+  );
 }
 
-function sortVariants(variants: ProductVariant[]) {
+function sortVariants(variants: ProductVariant[]): ProductVariant[] {
   return [...variants].sort((a, b) =>
-    a.quantity !== b.quantity ? a.quantity - b.quantity : a.id - b.id
+    a.quantity !== b.quantity
+      ? a.quantity - b.quantity
+      : a.id - b.id
   );
 }
 
@@ -68,49 +84,67 @@ function getAllowedVariants(product: Product): ProductVariant[] {
   return sortVariants(product.variants.filter(isAllowedVariant));
 }
 
-// Pick the best initial variant from navigation state
+// ─── Initial Variant Selection ────────────────────────────
+
 function pickInitialVariant(
   variants: ProductVariant[],
   requestedPackaging: PackagingOption | null,
   requestedVariantId: number | null,
   requestedVariantQuantity: number | null
 ): ProductVariant {
-  // 1. Exact variant ID (with packaging check)
+  // 1. Exact variant ID, with packaging validation.
   if (requestedVariantId !== null) {
     const match = variants.find(
       (v) =>
         v.id === requestedVariantId &&
         (!requestedPackaging || v.packaging === requestedPackaging)
     );
+
     if (match) return match;
   }
 
-  // 2. Packaging + weight match
-  if (requestedPackaging && requestedVariantQuantity !== null) {
+  // 2. Packaging and weight match.
+  if (
+    requestedPackaging &&
+    requestedVariantQuantity !== null
+  ) {
     const match = variants.find(
       (v) =>
-        v.packaging === requestedPackaging && v.quantity === requestedVariantQuantity
+        v.packaging === requestedPackaging &&
+        v.quantity === requestedVariantQuantity
     );
+
     if (match) return match;
   }
 
-  // 3. Packaging only
+  // 3. Packaging-only match.
   if (requestedPackaging) {
-    const match = variants.find((v) => v.packaging === requestedPackaging);
+    const match = variants.find(
+      (v) => v.packaging === requestedPackaging
+    );
+
     if (match) return match;
   }
 
-  // 4. Default priority: Plastic → Cardboard → Glass
+  // 4. Default priority: Plastic → Cardboard → Glass.
   for (const packaging of PACKAGING_ORDER) {
-    const match = variants.find((v) => v.packaging === packaging);
+    const match = variants.find(
+      (v) => v.packaging === packaging
+    );
+
     if (match) return match;
   }
 
   return variants[0];
 }
 
-// ─── Detail Section ───────────────────────────────────────
-const ICON_MAP = { book: BookOpen, shield: ShieldCheck, clock: Clock };
+// ─── Product Detail Section ───────────────────────────────
+
+const ICON_MAP = {
+  book: BookOpen,
+  shield: ShieldCheck,
+  clock: Clock,
+};
 
 function ProductDetailSection({
   title,
@@ -122,6 +156,7 @@ function ProductDetailSection({
   icon: "book" | "shield" | "clock";
 }) {
   if (!content?.trim()) return null;
+
   const Icon = ICON_MAP[icon];
 
   return (
@@ -130,9 +165,13 @@ function ProductDetailSection({
         <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FBEEF1] text-[#B5697A]">
           <Icon size={16} strokeWidth={1.8} />
         </span>
+
         <div className="min-w-0 flex-1">
-          <h3 className="text-[12px] font-semibold text-gray-600 sm:text-[15px]">{title}</h3>
-          <p className="mt-1 text-[11px] leading-relaxed font-light tracking-wide text-gray-600 sm:text-[12.5px] md:text-[13px]">
+          <h3 className="text-[12px] font-semibold text-gray-600 sm:text-[15px]">
+            {title}
+          </h3>
+
+          <p className="mt-1 text-[11px] font-light leading-relaxed tracking-wide text-gray-600 sm:text-[12.5px] md:text-[13px]">
             {content}
           </p>
         </div>
@@ -142,6 +181,7 @@ function ProductDetailSection({
 }
 
 // ─── Back Button ──────────────────────────────────────────
+
 function BackToHomeButton({
   onClick,
   size = 18,
@@ -167,12 +207,14 @@ function BackToHomeButton({
         strokeWidth={1.8}
         className="transition-transform duration-200 group-hover:-translate-x-1"
       />
+
       <span>Back to Home</span>
     </button>
   );
 }
 
-// ─── Component ────────────────────────────────────────────
+// ─── Product Details Page ──────────────────────────────────
+
 function ProductDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -180,7 +222,7 @@ function ProductDetailsPage() {
 
   const navState = location.state as ProductNavigationState | null;
 
-  // Parse navigation state
+  // Parse navigation state.
   const requestedPackaging = isPackagingOption(navState?.packaging)
     ? navState.packaging
     : null;
@@ -197,23 +239,30 @@ function ProductDetailsPage() {
       ? navState.selectedVariantQuantity
       : null;
 
-  // Local state
+  // ─── Local State ─────────────────────────────────────────
+
   const [product, setProduct] = useState<DetailedProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedPackaging, setSelectedPackaging] = useState<PackagingOption>("Plastic Box");
-  const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
+
+  const [selectedPackaging, setSelectedPackaging] =
+    useState<PackagingOption>("Plastic Box");
+
+  const [selectedVariantId, setSelectedVariantId] =
+    useState<number | null>(null);
+
   const [quantity, setQuantity] = useState(1);
+
+  // Authentication modal is only used when a review action requires login.
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // Stores
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  // ─── Cart Store ──────────────────────────────────────────
+
   const addToCart = useCartStore((s) => s.addToCart);
-  const setPendingCartItem = useCartStore((s) => s.setPendingCartItem);
-  const addPendingCartItem = useCartStore((s) => s.addPendingCartItem);
   const openCartDrawer = useCartStore((s) => s.openCartDrawer);
 
-  // ─── Fetch product + restore requested variant ──────────
+  // ─── Fetch Product ───────────────────────────────────────
+
   useEffect(() => {
     let cancelled = false;
 
@@ -223,11 +272,13 @@ function ProductDetailsPage() {
         setError("");
 
         const productId = Number(id);
+
         if (!Number.isInteger(productId) || productId <= 0) {
           throw new Error("Invalid product ID.");
         }
 
         const data = await getProductById(productId);
+
         if (cancelled) return;
 
         const allowed = getAllowedVariants(data);
@@ -253,21 +304,32 @@ function ProductDetailsPage() {
         setQuantity(1);
       } catch (fetchError) {
         if (cancelled) return;
+
         console.error("Failed to fetch product:", fetchError);
+
         setProduct(null);
         setError("Unable to load this product right now.");
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     void fetchProduct();
+
     return () => {
       cancelled = true;
     };
-  }, [id, requestedPackaging, requestedVariantId, requestedVariantQuantity]);
+  }, [
+    id,
+    requestedPackaging,
+    requestedVariantId,
+    requestedVariantQuantity,
+  ]);
 
-  // ─── Derived: allowed variants + packagings ─────────────
+  // ─── Allowed Variants ────────────────────────────────────
+
   const allowedVariants = useMemo(
     () => (product ? getAllowedVariants(product) : []),
     [product]
@@ -275,39 +337,56 @@ function ProductDetailsPage() {
 
   const availablePackagings = useMemo<PackagingOption[]>(
     () =>
-      PACKAGING_ORDER.filter((p) =>
-        allowedVariants.some((v) => v.packaging === p)
+      PACKAGING_ORDER.filter((packaging) =>
+        allowedVariants.some(
+          (variant) => variant.packaging === packaging
+        )
       ),
     [allowedVariants]
   );
 
-  // ─── Variants for selected packaging ────────────────────
+  // ─── Selected Packaging Variants ─────────────────────────
+
   const packagingVariants = useMemo(
-    () => allowedVariants.filter((v) => v.packaging === selectedPackaging),
+    () =>
+      allowedVariants.filter(
+        (variant) => variant.packaging === selectedPackaging
+      ),
     [allowedVariants, selectedPackaging]
   );
 
   const selectedVariant =
-    packagingVariants.find((v) => v.id === selectedVariantId) ??
+    packagingVariants.find(
+      (variant) => variant.id === selectedVariantId
+    ) ??
     packagingVariants[0] ??
     null;
 
-  // Keep selected variant valid when packaging changes
+  // Keep the selected variant valid when packaging changes.
   useEffect(() => {
-    const exists = packagingVariants.some((v) => v.id === selectedVariantId);
+    const exists = packagingVariants.some(
+      (variant) => variant.id === selectedVariantId
+    );
+
     if (!exists) {
       setSelectedVariantId(packagingVariants[0]?.id ?? null);
       setQuantity(1);
     }
   }, [packagingVariants, selectedVariantId]);
 
-  // ─── Handlers ───────────────────────────────────────────
+  // ─── Handlers ────────────────────────────────────────────
+
   const handlePackagingChange = (packaging: string) => {
     if (!isPackagingOption(packaging)) return;
-    const matching = allowedVariants.filter((v) => v.packaging === packaging);
-    if (matching.length === 0) return;
+
+    const matchingVariants = allowedVariants.filter(
+      (variant) => variant.packaging === packaging
+    );
+
+    if (matchingVariants.length === 0) return;
+
     setSelectedPackaging(packaging);
-    setSelectedVariantId(matching[0].id);
+    setSelectedVariantId(matchingVariants[0].id);
     setQuantity(1);
   };
 
@@ -319,46 +398,52 @@ function ProductDetailsPage() {
     ) {
       return;
     }
+
     setSelectedVariantId(variant.id);
     setQuantity(1);
   };
 
   const handleQuantityChange = (nextQuantity: number) => {
     if (!Number.isFinite(nextQuantity)) return;
+
     setQuantity(Math.max(1, Math.floor(nextQuantity)));
   };
+
+  // ─── Guest-Friendly Add to Cart ──────────────────────────
 
   const handleAddToCart = () => {
     if (!product || !selectedVariant || quantity <= 0) return;
 
+    // Validate selected variant before adding it.
     if (
       selectedVariant.packaging !== selectedPackaging ||
       !isAllowedVariant(selectedVariant) ||
-      !packagingVariants.some((v) => v.id === selectedVariant.id)
+      !packagingVariants.some(
+        (variant) => variant.id === selectedVariant.id
+      )
     ) {
       return;
     }
 
-    if (isAuthenticated) {
-      addToCart(product, selectedVariant, quantity);
-      openCartDrawer();
-      return;
-    }
+    // Guests and authenticated customers can both add products.
+    // No OTP modal should open from the Add to Cart action.
+    addToCart(product, selectedVariant, quantity);
 
-    setPendingCartItem(product, selectedVariant, quantity);
-    setIsAuthModalOpen(true);
-  };
-
-  const handleAuthSuccess = () => {
-    addPendingCartItem();
-    setIsAuthModalOpen(false);
+    // Open the cart drawer so the customer can review their items.
     openCartDrawer();
   };
 
-  const handleReviewLoginRequired = () => setIsAuthModalOpen(true);
-  const handleBackToHome = () => navigate("/");
+  // Reviews may still request authentication independently.
+  const handleReviewLoginRequired = () => {
+    setIsAuthModalOpen(true);
+  };
 
-  // ─── Loading ────────────────────────────────────────────
+  const handleBackToHome = () => {
+    navigate("/");
+  };
+
+  // ─── Loading State ───────────────────────────────────────
+
   if (loading) {
     return (
       <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-20">
@@ -367,6 +452,7 @@ function ProductDetailsPage() {
 
           <div className="grid animate-pulse gap-8 lg:grid-cols-2 lg:gap-14">
             <div className="min-h-[420px] rounded-2xl bg-[#F5EFE6]" />
+
             <div className="space-y-5 py-4">
               <div className="h-8 w-3/4 rounded bg-[#F5EFE6]" />
               <div className="h-5 w-full rounded bg-[#F5EFE6]" />
@@ -380,7 +466,8 @@ function ProductDetailsPage() {
     );
   }
 
-  // ─── Error ──────────────────────────────────────────────
+  // ─── Error State ─────────────────────────────────────────
+
   if (error || !product) {
     return (
       <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
@@ -388,10 +475,15 @@ function ProductDetailsPage() {
           <BackToHomeButton onClick={handleBackToHome} large />
 
           <div className="mx-auto mt-10 flex max-w-xl flex-col items-center text-center">
-            <h1 className="text-2xl font-semibold text-[#1F4A2E]">Product Not Found</h1>
+            <h1 className="text-2xl font-semibold text-[#1F4A2E]">
+              Product Not Found
+            </h1>
+
             <p className="mt-3 text-sm leading-6 text-[#8B7A6C]">
-              {error || "The product you are looking for is no longer available."}
+              {error ||
+                "The product you are looking for is no longer available."}
             </p>
+
             <button
               type="button"
               onClick={handleBackToHome}
@@ -405,8 +497,10 @@ function ProductDetailsPage() {
     );
   }
 
-  // ─── Product details data ───────────────────────────────
+  // ─── Product Details Data ────────────────────────────────
+
   const details = product as DetailedProduct;
+
   const hasProductDetails = Boolean(
     details.ingredients ||
       details.allergenInfo ||
@@ -417,17 +511,21 @@ function ProductDetailsPage() {
       details.shelfLife
   );
 
-  // ─── Page ───────────────────────────────────────────────
+  // ─── Page ─────────────────────────────────────────────────
+
   return (
     <>
       <main className="bg-white px-5 pb-10 pt-[85px] sm:px-8 sm:pb-12 sm:pt-24 lg:px-12 lg:pb-14 lg:pt-28">
         <div className="mx-auto w-full max-w-6xl">
-          {/* Back to home */}
+          {/* Back to Home */}
           <div className="mb-2 sm:mb-4">
-            <BackToHomeButton onClick={handleBackToHome} size={16} />
+            <BackToHomeButton
+              onClick={handleBackToHome}
+              size={16}
+            />
           </div>
 
-          {/* Main product section */}
+          {/* Main Product Section */}
           <div className="overflow-hidden rounded-2xl border border-[#EFE3D2] bg-white shadow-sm">
             <div className="grid lg:grid-cols-[1fr_1fr]">
               <ProductDetailsImage
@@ -435,6 +533,7 @@ function ProductDetailsPage() {
                 packaging={selectedPackaging}
                 variant={selectedVariant}
               />
+
               <ProductDetailsInfo
                 product={product}
                 availablePackagings={availablePackagings}
@@ -451,9 +550,12 @@ function ProductDetailsPage() {
             </div>
           </div>
 
-          {/* Product information */}
+          {/* Product Information */}
           {hasProductDetails && (
-            <section className="mt-8 sm:mt-10" aria-labelledby="product-details-heading">
+            <section
+              className="mt-8 sm:mt-10"
+              aria-labelledby="product-details-heading"
+            >
               <div className="mb-3 sm:mb-4">
                 <h2
                   id="product-details-heading"
@@ -461,24 +563,58 @@ function ProductDetailsPage() {
                 >
                   Product Details
                 </h2>
+
                 <p className="mt-0 max-w-2xl text-[11px] leading-relaxed text-gray-500 md:text-[13px]">
-                  Ingredients, allergen information, serving ideas and storage guidance for {product.name}.
+                  Ingredients, allergen information, serving ideas and
+                  storage guidance for {product.name}.
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-                <ProductDetailSection title="Ingredients" content={details.ingredients} icon="book" />
-                <ProductDetailSection title="Allergen Information" content={details.allergenInfo} icon="shield" />
-                <ProductDetailSection title="Benefits" content={details.benefits} icon="book" />
-                <ProductDetailSection title="Usage Suggestions" content={details.usageSuggestions} icon="book" />
-                <ProductDetailSection title="Storage Instructions" content={details.storageInstructions} icon="clock" />
-                <ProductDetailSection title="Shelf Life" content={details.shelfLife} icon="clock" />
+                <ProductDetailSection
+                  title="Ingredients"
+                  content={details.ingredients}
+                  icon="book"
+                />
+
+                <ProductDetailSection
+                  title="Allergen Information"
+                  content={details.allergenInfo}
+                  icon="shield"
+                />
+
+                <ProductDetailSection
+                  title="Benefits"
+                  content={details.benefits}
+                  icon="book"
+                />
+
+                <ProductDetailSection
+                  title="Usage Suggestions"
+                  content={details.usageSuggestions}
+                  icon="book"
+                />
+
+                <ProductDetailSection
+                  title="Storage Instructions"
+                  content={details.storageInstructions}
+                  icon="clock"
+                />
+
+                <ProductDetailSection
+                  title="Shelf Life"
+                  content={details.shelfLife}
+                  icon="clock"
+                />
               </div>
 
               {details.medicalDisclaimer && (
                 <div className="mt-4 rounded-xl border border-[#E8D6B9] bg-[#FFFCF7] p-4 sm:p-5">
-                  <h3 className="text-sm font-semibold text-gray-600">Medical Disclaimer</h3>
-                  <p className="text-[11.5px] leading-relaxed font-light tracking-wide text-justify text-gray-500 sm:text-[13.5px] md:text-[13px]">
+                  <h3 className="text-sm font-semibold text-gray-600">
+                    Medical Disclaimer
+                  </h3>
+
+                  <p className="text-justify text-[11.5px] font-light leading-relaxed tracking-wide text-gray-500 sm:text-[13.5px] md:text-[13px]">
                     {details.medicalDisclaimer}
                   </p>
                 </div>
@@ -486,21 +622,21 @@ function ProductDetailsPage() {
             </section>
           )}
 
-          {/* Picker guide */}
+          {/* Product Picker Guide */}
           <div className="px-0 py-6 sm:px-8 sm:py-7 lg:px-12 lg:py-8">
             <div className="mx-auto w-full max-w-2xl">
               <ProductPickerGuide />
             </div>
           </div>
 
-          {/* Recommended products */}
+          {/* Recommended Products */}
           <div className="pb-10 sm:pb-12 lg:pb-14">
             <div className="mx-auto w-full max-w-6xl">
               <RecommendedProducts currentProductId={product.id} />
             </div>
           </div>
 
-          {/* Customer reviews */}
+          {/* Customer Reviews */}
           <div className="pb-10 sm:pb-12 lg:pb-14">
             <div className="mx-auto w-full max-w-6xl">
               <CustomerReviews
@@ -513,11 +649,12 @@ function ProductDetailsPage() {
         </div>
       </main>
 
-      {/* OTP auth modal */}
+      {/* OTP Modal: Only for actions that explicitly require authentication,
+          such as writing a customer review. It is not used for Add to Cart. */}
       {isAuthModalOpen && (
         <OtpAuthModal
           onClose={() => setIsAuthModalOpen(false)}
-          onSuccess={handleAuthSuccess}
+          onSuccess={() => setIsAuthModalOpen(false)}
         />
       )}
     </>
