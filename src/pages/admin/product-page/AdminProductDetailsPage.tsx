@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ArrowLeft, BadgeCheck, CalendarDays, Clock3, Image as ImageIcon,
-  Info, Leaf, Package, ShieldCheck, ShoppingBag, Sparkles, XCircle,
+  ArrowLeft, CalendarDays, Clock3, Image as ImageIcon,
+  Info, Leaf, Package, ShoppingBag, XCircle,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
