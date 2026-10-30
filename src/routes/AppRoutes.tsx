@@ -8,6 +8,7 @@ import CheckoutPage from "../pages/check-out/CheckoutPage";
 import OrderSuccessPage from "../pages/order-success/OrderSuccessPage";
 import MyOrdersPage from "../pages/my-orders/MyOrdersPage";
 import OrderDetailsPage from "../pages/orders/OrderDetailsPage";
+import OrderHistoryPage from "../pages/order-history/OrderHistoryPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import LoginPage from "../pages/login/LoginPage";
 import WishlistPage from "../pages/wishlist/WishlistPage";
@@ -16,6 +17,7 @@ import PrivacyPolicyPage from "../pages/privacy-policy/PrivacyPolicyPage";
 import TermsAndConditionsPage from "../pages/terms-and-conditions/TermsAndConditionsPage";
 import PaymentResultPage from "../pages/payment-result/PaymentResultPage";
 import AccountPage from "../components/landing/navbar/AccountPage";
+import MyIssuesPage from "../pages/profile/MyIssuesPage";
 
 // ─── Route Config ─────────────────────────────────────────
 const APP_ROUTES = [
@@ -26,6 +28,8 @@ const APP_ROUTES = [
   { path: "/order-success", element: <OrderSuccessPage /> },
   { path: "/orders/:orderId", element: <OrderDetailsPage /> },
   { path: "/orders", element: <MyOrdersPage /> },
+  { path: "/order-history", element: <OrderHistoryPage /> },
+  { path: "/my-issues", element: <MyIssuesPage/>},
   { path: "/account", element: <AccountPage /> },
   { path: "/profile", element: <ProfilePage /> },
   { path: "/login", element: <LoginPage /> },

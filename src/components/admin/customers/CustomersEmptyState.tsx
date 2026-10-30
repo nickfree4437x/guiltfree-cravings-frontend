@@ -17,7 +17,7 @@ function CustomersEmptyState({
           : "No customers yet"}
       </h3>
 
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+      <p className="mx-auto mt-2 max-w-md text-[11px] md:text-[12px] leading-relaxed text-slate-600">
         {hasSearch
           ? "No customers match your search. Try a different name, email, or phone number."
           : "Customers registered through your store will appear here."}

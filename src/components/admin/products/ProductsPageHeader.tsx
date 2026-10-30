@@ -1,5 +1,4 @@
 // src/components/admin/products/ProductsPageHeader.tsx
-
 interface ProductsPageHeaderProps {
   onAddProduct: () => void;
 }
@@ -9,8 +8,7 @@ function ProductsPageHeader({
   return (
     <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div>
-
-        <h1 className="mt-2 text-[18px] font-bold tracking-tight text-slate-700 md:text-[22px]">
+        <h1 className="mt-1 text-[18px] font-semibold tracking-tight text-slate-700 md:text-[22px]">
           Products
         </h1>
 
@@ -19,21 +17,6 @@ function ProductsPageHeader({
           information.
         </p>
       </div>
-
-      {/* <button
-        type="button"
-        onClick={onAddProduct}
-        className="inline-flex items-center justify-center gap-2 rounded-full bg-[#8b542f] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#744324] focus:outline-none focus:ring-2 focus:ring-[#8b542f] focus:ring-offset-2"
-      >
-        <span
-          className="text-base leading-none"
-          aria-hidden="true"
-        >
-          +
-        </span>
-
-        Add Product
-      </button> */}
     </div>
   );
 }

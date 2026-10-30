@@ -1,4 +1,3 @@
-
 import {
   useCallback,
   useEffect,
@@ -20,12 +19,16 @@ import OrderSummaryCards from "../../../components/admin/orders/OrderSummaryCard
 import OrdersToolbar from "../../../components/admin/orders/OrdersToolbar";
 import OrdersList from "../../../components/admin/orders/OrdersList";
 
-import { getAdminOrders } from "../../../api/adminOrderApi";
+import {
+  getAdminOrders,
+  updateAdminOrderDeliveryStatus,
+} from "../../../api/adminOrderApi";
 
 import type {
   AdminOrder,
   OrderStatus,
   PaymentStatus,
+  DeliveryStatus,
 } from "../../../components/admin/orders/types";
 
 type AreaFilter = "ALL" | "WITHIN_DWARKA" | "OUTSIDE_DWARKA";
@@ -50,27 +53,33 @@ function AdminOrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState("");
+  const [deliveryUpdateError, setDeliveryUpdateError] = useState("");
+  const [updatingOrderIds, setUpdatingOrderIds] = useState<number[]>([]);
 
   const requestInProgress = useRef(false);
   const mountedRef = useRef(false);
 
+  /*
+   * =========================================================
+   * LOAD ADMIN ORDERS
+   * =========================================================
+   */
+
   const loadOrders = useCallback(async (showRefreshLoader = false) => {
-    // Avoid overlapping requests.
     if (requestInProgress.current) return;
 
     requestInProgress.current = true;
 
     try {
-      if (showRefreshLoader) {
+      if (showRefreshLoader && mountedRef.current) {
         setIsRefreshing(true);
       }
-
-      setError("");
 
       const data = await getAdminOrders();
 
       if (mountedRef.current) {
         setOrders(data);
+        setError("");
       }
     } catch (err: unknown) {
       console.error("Failed to load admin orders:", err);
@@ -91,6 +100,73 @@ function AdminOrdersPage() {
       }
     }
   }, []);
+
+  /*
+   * =========================================================
+   * UPDATE DELIVERY STATUS
+   * =========================================================
+   */
+
+  const handleDeliveryStatusChange = useCallback(
+    async (orderId: number, deliveryStatus: DeliveryStatus) => {
+      if (updatingOrderIds.includes(orderId)) return;
+
+      setDeliveryUpdateError("");
+
+      setUpdatingOrderIds((current) => [...current, orderId]);
+
+      try {
+        const updatedOrder = await updateAdminOrderDeliveryStatus(
+          orderId,
+          deliveryStatus
+        );
+
+        if (mountedRef.current) {
+          // Update the affected order immediately in the UI.
+          setOrders((currentOrders) =>
+            currentOrders.map((order) =>
+              order.id === orderId
+                ? {
+                    ...order,
+                    deliveryStatus: updatedOrder.deliveryStatus,
+                    deliveredAt: updatedOrder.deliveredAt,
+                    orderStatus: updatedOrder.orderStatus,
+                    paymentStatus: updatedOrder.paymentStatus,
+                    updatedAt: updatedOrder.updatedAt,
+                  }
+                : order
+            )
+          );
+        }
+      } catch (err: unknown) {
+        console.error("Failed to update delivery status:", err);
+
+        if (mountedRef.current) {
+          setDeliveryUpdateError(
+            err instanceof Error
+              ? err.message
+              : "Unable to update delivery status. Please try again."
+          );
+        }
+
+        // Reload from the server so the UI reflects the saved state.
+        await loadOrders();
+      } finally {
+        if (mountedRef.current) {
+          setUpdatingOrderIds((current) =>
+            current.filter((id) => id !== orderId)
+          );
+        }
+      }
+    },
+    [loadOrders, updatingOrderIds]
+  );
+
+  /*
+   * =========================================================
+   * INITIAL LOAD + AUTO REFRESH
+   * =========================================================
+   */
 
   useEffect(() => {
     mountedRef.current = true;
@@ -113,13 +189,21 @@ function AdminOrdersPage() {
 
     return () => {
       mountedRef.current = false;
+
       window.clearInterval(intervalId);
+
       document.removeEventListener(
         "visibilitychange",
         handleVisibilityChange
       );
     };
   }, [loadOrders]);
+
+  /*
+   * =========================================================
+   * SUMMARY COUNTS
+   * =========================================================
+   */
 
   const totalOrders = orders.length;
 
@@ -135,6 +219,12 @@ function AdminOrdersPage() {
     (order) => order.orderStatus === "COMPLETED"
   ).length;
 
+  /*
+   * =========================================================
+   * DELIVERY AREA COUNTS
+   * =========================================================
+   */
+
   const areaCounts = useMemo(() => {
     const withinDwarka = orders.filter(isWithinDwarka).length;
     const outsideDwarka = orders.filter(isOutsideDwarka).length;
@@ -145,6 +235,12 @@ function AdminOrdersPage() {
       outsideDwarka,
     };
   }, [orders]);
+
+  /*
+   * =========================================================
+   * AREA FILTER
+   * =========================================================
+   */
 
   const areaFilteredOrders = useMemo(() => {
     switch (areaFilter) {
@@ -159,6 +255,12 @@ function AdminOrdersPage() {
         return orders;
     }
   }, [orders, areaFilter]);
+
+  /*
+   * =========================================================
+   * SEARCH + STATUS FILTERS
+   * =========================================================
+   */
 
   const filteredOrders = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -185,6 +287,12 @@ function AdminOrdersPage() {
     });
   }, [areaFilteredOrders, search, orderStatus, paymentStatus]);
 
+  /*
+   * =========================================================
+   * CLEAR FILTERS
+   * =========================================================
+   */
+
   const clearFilters = () => {
     setSearch("");
     setOrderStatus("");
@@ -195,6 +303,12 @@ function AdminOrdersPage() {
   const hasActiveFilters = Boolean(
     search.trim() || orderStatus || paymentStatus
   );
+
+  /*
+   * =========================================================
+   * DELIVERY AREA TABS
+   * =========================================================
+   */
 
   const areaTabs = [
     {
@@ -216,6 +330,12 @@ function AdminOrdersPage() {
       Icon: MapPinned,
     },
   ];
+
+  /*
+   * =========================================================
+   * INITIAL LOADING
+   * =========================================================
+   */
 
   if (isLoading) {
     return (
@@ -244,6 +364,12 @@ function AdminOrdersPage() {
       </main>
     );
   }
+
+  /*
+   * =========================================================
+   * INITIAL LOAD ERROR
+   * =========================================================
+   */
 
   if (error && orders.length === 0) {
     return (
@@ -279,6 +405,12 @@ function AdminOrdersPage() {
     );
   }
 
+  /*
+   * =========================================================
+   * MAIN PAGE
+   * =========================================================
+   */
+
   return (
     <main className="min-h-full bg-white px-5 py-2 sm:px-6 lg:px-8 lg:py-4">
       <div className="mx-auto max-w-7xl">
@@ -303,7 +435,7 @@ function AdminOrdersPage() {
           </button>
         </div>
 
-        {/* Non-blocking refresh error */}
+        {/* ORDER REFRESH ERROR */}
         {error && orders.length > 0 && (
           <div
             role="status"
@@ -321,6 +453,17 @@ function AdminOrdersPage() {
             >
               Retry
             </button>
+          </div>
+        )}
+
+        {/* DELIVERY UPDATE ERROR */}
+        {deliveryUpdateError && (
+          <div
+            role="alert"
+            className="mt-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{deliveryUpdateError}</span>
           </div>
         )}
 
@@ -368,12 +511,11 @@ function AdminOrdersPage() {
                   className={`flex min-h-[40px] items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition ${
                     active
                       ? "border-[#fffbfc] bg-[#F8EBEF] text-[#824958]"
-                      : "border-[#EFE3D2] bg-white text-[#6E5C61] hover:border-[#DABBC3] hover:bg-[#fffbfc]"
+                      : "border-[#EFE3D2] bg-white text-[#6E5C61] hover:bg-[#fffbfc]"
                   }`}
                 >
                   <span className="flex items-center gap-3">
                     <Icon size={18} strokeWidth={1.8} />
-
                     <span className="text-[11px] md:text-[12px]">
                       {label}
                     </span>
@@ -394,12 +536,13 @@ function AdminOrdersPage() {
           </div>
         </section>
 
-        {/* ORDERS */}
+        {/* ORDERS LIST */}
         <section className="mt-5 overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
           <OrdersList
             orders={filteredOrders}
             hasSearch={hasActiveFilters || areaFilter !== "ALL"}
             onClearSearch={clearFilters}
+            onDeliveryStatusChange={handleDeliveryStatusChange}
           />
         </section>
       </div>

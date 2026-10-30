@@ -12,7 +12,7 @@ import OrderCard from "../../components/orders/OrderCard";
 // ─── Config ───────────────────────────────────────────────
 const ORDERS_PER_PAGE = 5;
 
-// ─── Pagination Nav Button ────────────────────────────────
+// ─── Pagination Navigation Button ─────────────────────────
 function NavButton({
   direction,
   onClick,
@@ -23,36 +23,40 @@ function NavButton({
   disabled: boolean;
 }) {
   const Icon = direction === "prev" ? FaChevronLeft : FaChevronRight;
+
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
       aria-label={direction === "prev" ? "Previous page" : "Next page"}
-      className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#EADFD3] bg-white text-[#A98B6F] hover:border-[#B5697A] hover:text-[#B5697A] focus:outline-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#EADFD3] disabled:hover:text-[#A98B6F] sm:h-11 sm:w-11"
+      className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#EADFD3] bg-white text-[#A98B6F] transition-colors hover:border-[#B5697A] hover:text-[#B5697A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#EADFD3] disabled:hover:text-[#A98B6F] sm:h-11 sm:w-11"
     >
       <Icon className="h-3 w-3" />
     </button>
   );
 }
 
-// ─── Component ────────────────────────────────────────────
+// ─── Component ───────────────────────────────────────────
 function MyOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ─── Load orders ────────────────────────────────────────
+  // ─── Load Orders ────────────────────────────────────────
   const loadOrders = useCallback(async () => {
     try {
       setIsLoading(true);
       setError("");
+
       const data = await getMyOrders();
+
       setOrders(data);
       setCurrentPage(1);
     } catch (err) {
       console.error("Failed to load orders:", err);
+
       setError("Unable to load your orders right now. Please try again.");
     } finally {
       setIsLoading(false);
@@ -66,7 +70,6 @@ function MyOrdersPage() {
   // ─── Pagination ─────────────────────────────────────────
   const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
 
-  // Clamp current page if it exceeds totalPages
   useEffect(() => {
     if (totalPages > 0 && currentPage > totalPages) {
       setCurrentPage(totalPages);
@@ -75,33 +78,51 @@ function MyOrdersPage() {
 
   const paginatedOrders = useMemo(() => {
     const start = (currentPage - 1) * ORDERS_PER_PAGE;
+
     return orders.slice(start, start + ORDERS_PER_PAGE);
   }, [orders, currentPage]);
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) return;
+
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
-  // Page numbers with ellipsis
+  // ─── Page Numbers ────────────────────────────────────────
   const pageNumbers = useMemo(() => {
     const pages: (number | "...")[] = [];
 
     if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+
       return pages;
     }
 
     pages.push(1);
-    if (currentPage > 3) pages.push("...");
+
+    if (currentPage > 3) {
+      pages.push("...");
+    }
 
     const start = Math.max(2, currentPage - 1);
     const end = Math.min(totalPages - 1, currentPage + 1);
-    for (let i = start; i <= end; i++) pages.push(i);
 
-    if (currentPage < totalPages - 2) pages.push("...");
-    if (totalPages > 1) pages.push(totalPages);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (currentPage < totalPages - 2) {
+      pages.push("...");
+    }
+
+    pages.push(totalPages);
 
     return pages;
   }, [currentPage, totalPages]);
@@ -123,21 +144,27 @@ function MyOrdersPage() {
           />
         )}
 
-        {/* Empty */}
-        {!isLoading && !error && orders.length === 0 && <OrdersEmptyState />}
+        {/* Empty Orders */}
+        {!isLoading && !error && orders.length === 0 && (
+          <OrdersEmptyState />
+        )}
 
-        {/* Orders + pagination */}
+        {/* Orders + Pagination */}
         {!isLoading && !error && orders.length > 0 && (
           <>
-            <section aria-label="Your orders" className="mx-auto mt-5 max-w-5xl space-y-5">
+            <section
+              aria-label="Your orders"
+              className="mx-auto mt-5 max-w-5xl space-y-5"
+            >
               {paginatedOrders.map((order) => (
                 <OrderCard key={order.id} order={order} />
               ))}
             </section>
 
+            {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div
-                aria-label="Pagination"
+              <nav
+                aria-label="Orders pagination"
                 className="mx-auto mt-10 flex max-w-5xl flex-wrap items-center justify-center gap-2"
               >
                 <NavButton
@@ -151,6 +178,7 @@ function MyOrdersPage() {
                     return (
                       <span
                         key={`ellipsis-${index}`}
+                        aria-hidden="true"
                         className="flex h-10 w-8 items-center justify-center text-[14px] font-medium text-[#A98B6F] sm:h-11 sm:w-10"
                       >
                         ...
@@ -159,6 +187,7 @@ function MyOrdersPage() {
                   }
 
                   const isActive = page === currentPage;
+
                   return (
                     <button
                       key={page}
@@ -166,7 +195,7 @@ function MyOrdersPage() {
                       onClick={() => goToPage(page)}
                       aria-label={`Go to page ${page}`}
                       aria-current={isActive ? "page" : undefined}
-                      className={`flex h-10 w-10 items-center justify-center rounded-lg border text-[13px] focus:outline-none sm:h-11 sm:w-11 sm:text-[14px] ${
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg border text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A] sm:h-11 sm:w-11 sm:text-[14px] ${
                         isActive
                           ? "border-[#B5697A] bg-[#B5697A] text-white shadow-sm"
                           : "border-[#EADFD3] bg-white text-[#2C2C2C] hover:border-[#B5697A] hover:text-[#B5697A]"
@@ -182,7 +211,7 @@ function MyOrdersPage() {
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 />
-              </div>
+              </nav>
             )}
           </>
         )}

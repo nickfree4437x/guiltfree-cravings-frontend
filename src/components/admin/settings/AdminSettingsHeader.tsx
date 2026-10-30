@@ -4,7 +4,7 @@ function AdminSettingsHeader() {
   return (
     <div>
 
-      <h1 className="mt-2 text-[18px] md:text-[22px] font-bold tracking-tight text-slate-700">
+      <h1 className="mt-1 text-[18px] md:text-[22px] font-semibold tracking-tight text-slate-700">
         Admin Settings
       </h1>
 

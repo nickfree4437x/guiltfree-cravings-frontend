@@ -1,27 +1,22 @@
-import {
-  Users,
-  ShieldCheck,
-  ShieldAlert,
-  ShoppingBag,
-} from "lucide-react";
+import { Users, ShieldCheck, ShieldAlert, ShoppingBag } from "lucide-react";
 
+// ─── Types ────────────────────────────────────────────────
 interface CustomerSummaryCardsProps {
   totalCustomers: number;
   verifiedCustomers: number;
   customersWithOrders: number;
 }
 
+// ─── Component ────────────────────────────────────────────
 function CustomerSummaryCards({
   totalCustomers,
   verifiedCustomers,
   customersWithOrders,
 }: CustomerSummaryCardsProps) {
-  const unverifiedCustomers = Math.max(
-    totalCustomers - verifiedCustomers,
-    0
-  );
+  // Derived value
+  const unverifiedCustomers = Math.max(totalCustomers - verifiedCustomers, 0);
 
-  // Icon, colors, aur labels ka data structure
+  // Cards config
   const cards = [
     {
       label: "Total Customers",
@@ -57,6 +52,7 @@ function CustomerSummaryCards({
     },
   ];
 
+  // ─── Render ─────────────────────────────────────────────
   return (
     <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => {
@@ -70,10 +66,9 @@ function CustomerSummaryCards({
             <div className="flex items-start justify-between gap-4">
               {/* Text Content */}
               <div className="min-w-0">
-                <p className="text-[11px] md:text-[12px] tracking-wide text-gray-500 uppercase">
+                <p className="text-[11px] md:text-[12px] tracking-wide text-slate-500">
                   {card.label}
                 </p>
-
                 <p
                   className={`mt-2 text-[28px] font-bold leading-none tracking-[-0.02em] ${card.textColor}`}
                 >
@@ -85,10 +80,7 @@ function CustomerSummaryCards({
               <div
                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${card.iconBg} ${card.iconColor}`}
               >
-                <Icon
-                  className="h-[18px] w-[18px]"
-                  strokeWidth={1.8}
-                />
+                <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
               </div>
             </div>
           </div>

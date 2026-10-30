@@ -4,7 +4,7 @@ function OrdersPageHeader() {
   return (
     <div>
 
-      <h1 className="mt-2 text-[18px] font-bold tracking-tight text-slate-700 md:text-[22px]">
+      <h1 className="mt-1 text-[18px] font-semibold tracking-tight text-slate-700 md:text-[22px]">
         Orders
       </h1>
 

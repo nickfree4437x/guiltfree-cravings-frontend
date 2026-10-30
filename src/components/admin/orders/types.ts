@@ -1,4 +1,3 @@
-
 /*
  * =========================================================
  * ORDER TYPES
@@ -25,6 +24,7 @@ export type DeliveryZone =
 export type DeliveryStatus =
   | "PENDING"
   | "CONFIRMED"
+  | "PROCESSING"
   | "OUT_FOR_DELIVERY"
   | "DELIVERED"
   | "CANCELLED";
@@ -67,6 +67,7 @@ export interface AdminOrder {
   deliveryCharge?: number;
   deliveryChargeConfirmed?: boolean;
   deliveryStatus?: DeliveryStatus | null;
+  deliveredAt?: string | null;
 
   // Pricing
   subtotal: number;

@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import AdminLoginPage from "../pages/admin/auth/AdminLoginPage";
 import AdminDashboardPage from "../pages/admin/dashboard/AdminDashboardPage";
 import AdminProductsPage from "../pages/admin/product-page/AdminProductsPage";
+import AdminProductDetailsPage from "../pages/admin/product-page/AdminProductDetailsPage"; // ✅ Import add kiya
 import AdminOrdersPage from "../pages/admin/orders/AdminOrdersPage";
 import AdminCustomersPage from "../pages/admin/users/AdminCustomersPage";
 import CustomerDetailsPage from "../pages/admin/users/CustomerDetailsPage";
@@ -12,6 +13,8 @@ import AdminOffers from "../pages/admin/offers/AdminOffersPage";
 import AdminSettingsPage from "../pages/admin/settings/AdminSettingsPage";
 import AdminReviewsPage from "../pages/admin/reviews/AdminReviewsPage";
 import AdminOrderDetailsPage from "../pages/admin/orders/AdminOrderDetailsPage";
+import AdminOrderIssuesPage from "../pages/admin/order-issues/AdminOrderIssuesPage";
+import AdminOrderIssueDetailsPage from "../pages/admin/order-issues/AdminOrderIssueDetailsPage";
 
 import AdminLayout from "../pages/admin/layout/AdminLayout";
 import AdminProtectedRoute from "../protected-routes/AdminProtectedRoute";
@@ -20,6 +23,7 @@ import AdminProtectedRoute from "../protected-routes/AdminProtectedRoute";
 const ADMIN_ROUTES = [
   { path: "dashboard", element: <AdminDashboardPage /> },
   { path: "products", element: <AdminProductsPage /> },
+  { path: "products/:id", element: <AdminProductDetailsPage /> }, // ✅ Route add kiya
   { path: "reviews", element: <AdminReviewsPage /> },
   { path: "orders", element: <AdminOrdersPage /> },
   { path: "orders/:id", element: <AdminOrderDetailsPage /> },
@@ -27,6 +31,8 @@ const ADMIN_ROUTES = [
   { path: "analytics", element: <AdminAnalyticsPage /> },
   { path: "offers", element: <AdminOffers /> },
   { path: "users", element: <AdminCustomersPage /> },
+  { path: "order-issues", element: <AdminOrderIssuesPage /> },
+  { path: "order-issues/:id", element: <AdminOrderIssueDetailsPage /> },
   { path: "customers/:id", element: <CustomerDetailsPage /> },
   { path: "settings", element: <AdminSettingsPage /> },
 ];

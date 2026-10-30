@@ -32,7 +32,7 @@ function OrdersToolbar({
           <Search
             size={19}
             strokeWidth={1.8}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#A99A8D]"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
           />
 
           <input
@@ -40,7 +40,7 @@ function OrdersToolbar({
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
             placeholder="Search order, customer or phone..."
-            className="h-[42px] w-full rounded-xl border border-[#EADFD4] bg-white pl-11 pr-11 text-[11px] md:text-[12px] text-[#493D35] outline-none transition placeholder:text-[#B4A69A] focus:border-[#B5697A]"
+            className="h-[42px] w-full rounded-xl border border-[#EADFD4] bg-white pl-11 pr-11 text-[11px] md:text-[12px] text-slate-500 outline-none transition placeholder:text-slate-500 focus:border-[#B5697A]"
           />
 
           {search && (
@@ -48,7 +48,7 @@ function OrdersToolbar({
               type="button"
               onClick={() => onSearchChange("")}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-[#A99A8D] transition hover:bg-[#FBECEF] hover:text-[#B5697A]"
+              className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-[#FBECEF] hover:text-slate-500"
             >
               <X size={15} />
             </button>
@@ -64,7 +64,7 @@ function OrdersToolbar({
                 event.target.value as OrderStatus | ""
               )
             }
-            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] md:text-[12px] text-[#6F6259] outline-none transition focus:border-[#B5697A]"
+            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] md:text-[12px] text-slate-500 outline-none transition focus:border-[#B5697A]"
           >
             <option value="">All Status</option>
             <option value="PENDING">Pending</option>
@@ -77,7 +77,7 @@ function OrdersToolbar({
           <ChevronDown
             size={17}
             strokeWidth={1.8}
-            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#B5A79B]"
+            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
           />
         </div>
 
@@ -90,7 +90,7 @@ function OrdersToolbar({
                 event.target.value as PaymentStatus | ""
               )
             }
-            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] md:text-[12px] text-[#6F6259] outline-none transition focus:border-[#B5697A]"
+            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] md:text-[12px] text-slate-500 outline-none transition focus:border-[#B5697A]"
           >
             <option value="">All Payments</option>
             <option value="PENDING">Pending</option>
@@ -102,7 +102,7 @@ function OrdersToolbar({
           <ChevronDown
             size={17}
             strokeWidth={1.8}
-            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#B5A79B]"
+            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
           />
         </div>
 

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   getSalesAnalytics,
@@ -30,6 +29,25 @@ function formatDate(dateString: string, period: Period) {
     month: period === 7 ? "short" : undefined,
   });
 }
+
+// ─── BIG Color Palette for 30 Days (Different for each bar) ─────────
+const BAR_COLORS = [
+  "bg-[#B5697A] hover:bg-[#9C5263]", // Rose
+  "bg-[#4D7FEA] hover:bg-[#3D6ED8]", // Blue
+  "bg-[#3F8A58] hover:bg-[#34764A]", // Green
+  "bg-[#C4773B] hover:bg-[#A8622F]", // Amber
+  "bg-[#8062C7] hover:bg-[#6B4EAF]", // Purple
+  "bg-[#E55353] hover:bg-[#D14242]", // Red
+  "bg-[#2CA6A4] hover:bg-[#238C8A]", // Teal
+  "bg-[#F2A900] hover:bg-[#D49400]", // Yellow
+  "bg-[#E87C9C] hover:bg-[#D06787]", // Pink
+  "bg-[#5C6BC0] hover:bg-[#4A58A8]", // Indigo
+  "bg-[#8BC34A] hover:bg-[#78AB3A]", // Light Green
+  "bg-[#FF7043] hover:bg-[#E56034]", // Deep Orange
+  "bg-[#26A69A] hover:bg-[#1F8E83]", // Mint
+  "bg-[#AB47BC] hover:bg-[#933BA3]", // Light Purple
+  "bg-[#42A5F5] hover:bg-[#2B93E0]", // Light Blue
+];
 
 function SalesRevenueAnalytics() {
   const [period, setPeriod] = useState<Period>(7);
@@ -80,18 +98,23 @@ function SalesRevenueAnalytics() {
     0
   );
 
+  // ─── KPI Metrics with Different Colors ─────────────────────────
   const metrics = [
     {
       label: "Paid Revenue",
       value: currencyFormatter.format(data?.revenue ?? 0),
       description: "From paid, non-cancelled orders",
       icon: IndianRupee,
+      iconBg: "bg-[#FBECEF]",
+      iconColor: "text-[#B5697A]",
     },
     {
       label: "Paid Orders",
       value: numberFormatter.format(data?.paidOrders ?? 0),
       description: "Successfully paid orders",
       icon: ShoppingBag,
+      iconBg: "bg-[#EEF5FF]",
+      iconColor: "text-[#4D7FEA]",
     },
     {
       label: "Average Order Value",
@@ -100,12 +123,16 @@ function SalesRevenueAnalytics() {
       ),
       description: "Average per paid order",
       icon: TrendingUp,
+      iconBg: "bg-[#EEF8F2]",
+      iconColor: "text-[#3F8A58]",
     },
     {
       label: "Total Orders",
       value: numberFormatter.format(data?.totalOrders ?? 0),
       description: `Orders created in ${period} days`,
       icon: ChartColumnIncreasing,
+      iconBg: "bg-[#FFF3E8]",
+      iconColor: "text-[#C4773B]",
     },
   ];
 
@@ -169,33 +196,42 @@ function SalesRevenueAnalytics() {
         </div>
       )}
 
-      {/* KPI CARDS */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* =====================================================
+          KPI CARDS
+      ===================================================== */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         {metrics.map((metric) => {
           const Icon = metric.icon;
 
           return (
             <div
               key={metric.label}
-              className="rounded-xl border border-[#EAD9DC] bg-white p-5 shadow-sm"
+              className="rounded-xl border border-[#EAD9DC] bg-white p-3.5 shadow-sm sm:p-5"
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] md:text-[12px] text-slate-500">
+                  <p className="text-[10px] tracking-wide text-slate-500 sm:text-[11px] md:text-[12px]">
                     {metric.label}
                   </p>
 
-                  <p className="mt-3 break-words text-2xl font-semibold tracking-tight text-[#3B252C]">
+                  <p className="mt-3 text-[20px]
+              font-semibold
+              leading-none
+              tracking-[-0.02em]
+              text-gray-700
+              sm:text-[25px]">
                     {isLoading ? "—" : metric.value}
                   </p>
                 </div>
 
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F8EBEF] text-[#824958]">
-                  <Icon size={18} strokeWidth={1.8} />
+                <div
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 sm:rounded-xl ${metric.iconBg} ${metric.iconColor}`}
+                >
+                  <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={1.8} />
                 </div>
               </div>
 
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-1.5 text-[10px] leading-tight text-slate-500 sm:mt-2 sm:text-xs">
                 {metric.description}
               </p>
             </div>
@@ -203,13 +239,15 @@ function SalesRevenueAnalytics() {
         })}
       </div>
 
-      {/* REVENUE BAR CHART */}
+      {/* =====================================================
+          REVENUE BAR CHART (Multi-Color & Responsive)
+      ===================================================== */}
       <div className="overflow-hidden rounded-xl border border-[#EAD9DC] bg-white shadow-sm">
-        <div className="flex flex-col gap-1 border-b border-[#F0E3E6] px-5 py-4 sm:px-6">
-          <h3 className="text-[12px] md:text-[14px] font-semibold text-gray-700">
+        <div className="flex flex-col gap-1 border-b border-[#F0E3E6] px-4 py-3 sm:px-6 sm:py-4">
+          <h3 className="text-[13px] font-semibold text-gray-700 sm:text-[14px]">
             Daily Revenue
           </h3>
-          <p className="text-[11px] md:text-[12px] text-slate-500">
+          <p className="text-[10px] text-slate-500 sm:text-[12px]">
             Revenue from paid, non-cancelled orders
           </p>
         </div>
@@ -236,67 +274,70 @@ function SalesRevenueAnalytics() {
             </p>
           </div>
         ) : (
-          <div className="px-4 py-6 sm:px-6">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <span className="text-xs text-gray-600">
+          <div className="px-3 py-5 sm:px-6 sm:py-6">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[11px] text-gray-600 sm:text-xs">
                 Revenue (₹)
               </span>
-
-              <span className="text-sm text-[#824958]">
+              <span className="text-[12px] text-[#824958] sm:text-[13px]">
                 Total: {currencyFormatter.format(data?.revenue ?? 0)}
               </span>
             </div>
 
-            <div className="flex h-[230px] gap-2 sm:gap-4">
+            {/* Chart Container */}
+            <div className="flex h-[200px] gap-2 sm:h-[250px] sm:gap-4">
+              
               {/* Y-AXIS LABELS */}
-              <div className="flex w-[54px] shrink-0 flex-col justify-between pb-7 text-right text-[10px] text-[#927D83] sm:w-[68px] sm:text-xs">
-                <span>
-                  {currencyFormatter.format(maxRevenue)}
-                </span>
-                <span>
-                  {currencyFormatter.format(maxRevenue / 2)}
-                </span>
+              <div className="flex w-[40px] shrink-0 flex-col justify-between pb-6 text-right text-[9px] text-slate-500 sm:w-[65px] sm:pb-7 sm:text-xs">
+                <span>{currencyFormatter.format(maxRevenue)}</span>
+                <span>{currencyFormatter.format(maxRevenue / 2)}</span>
                 <span>₹0</span>
               </div>
 
               {/* BARS */}
               <div className="relative flex min-w-0 flex-1">
-                <div className="pointer-events-none absolute inset-x-0 top-0 flex h-[190px] flex-col justify-between">
+                {/* Background Grid Lines */}
+                <div className="pointer-events-none absolute inset-x-0 top-0 flex h-[160px] flex-col justify-between sm:h-[210px]">
                   <div className="border-t border-dashed border-[#EAD9DC]" />
                   <div className="border-t border-dashed border-[#EAD9DC]" />
                   <div className="border-t border-[#EAD9DC]" />
                 </div>
 
-                <div className="relative z-10 flex h-full min-w-0 flex-1 items-stretch justify-around gap-1 sm:gap-2">
-                  {dailyRevenue.map((item) => {
+                {/* Bars Wrapper */}
+                <div className="relative z-10 flex h-full min-w-0 flex-1 items-stretch justify-around gap-0.5 sm:gap-2">
+                  {dailyRevenue.map((item, index) => {
                     const barHeight =
                       maxRevenue > 0
-                        ? (item.revenue / maxRevenue) * 180
+                        ? (item.revenue / maxRevenue) * 100
                         : 0;
+                    
+                    // Har bar ke liye different color pick karo based on index
+                    const colorClass = BAR_COLORS[index % BAR_COLORS.length];
 
                     return (
                       <div
                         key={item.date}
                         className="flex min-w-0 flex-1 flex-col items-center"
                       >
-                        <div className="flex h-[190px] w-full items-end justify-center">
+                        <div className="flex h-[160px] w-full items-end justify-center sm:h-[210px]">
                           <div
                             title={`${formatDate(item.date, period)}: ${currencyFormatter.format(item.revenue)}`}
-                            className={`w-full max-w-8 rounded-t-md transition-all duration-300 ${
+                            className={`w-full max-w-[20px] rounded-t-md transition-all duration-300 sm:max-w-[28px] ${
                               item.revenue > 0
-                                ? "bg-[#B5697A] hover:bg-[#824958]"
+                                ? colorClass
                                 : "bg-[#F0E3E6]"
                             }`}
                             style={{
                               height:
                                 item.revenue > 0
-                                  ? `${Math.max(barHeight, 4)}px`
+                                  ? `${Math.max(barHeight, 6)}%`
                                   : "3px",
                             }}
                           />
                         </div>
 
-                        <span className="mt-2 whitespace-nowrap text-[9px] text-[#76666A] sm:text-[11px]">
+                        {/* 30 Days ke liye labels thode chhote aur rotate kiye taaki squeeze na ho */}
+                        <span className="mt-2 text-[7px] font-medium text-slate-500 sm:text-[10px] whitespace-nowrap">
                           {formatDate(item.date, period)}
                         </span>
                       </div>

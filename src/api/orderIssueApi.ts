@@ -24,7 +24,7 @@ export const createOrderIssue = async (
 ): Promise<CreateOrderIssueResponse> => {
   const apiBaseUrl = (
     import.meta.env.VITE_API_URL ||
-    "https://guiltfreecravings.com/api"
+    "http://localhost:5000/api"
   ).replace(/\/+$/, "");
 
   const response = await fetch(

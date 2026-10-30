@@ -1,12 +1,7 @@
-import {
-  ArrowRight,
-  Gift,
-  PackagePlus,
-  ShoppingBag,
-  Users,
-} from "lucide-react";
+import { ArrowRight, Gift, PackagePlus, ShoppingBag, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
+// ─── Types ────────────────────────────────────────────────
 interface QuickAction {
   label: string;
   path: string;
@@ -16,6 +11,7 @@ interface QuickAction {
   hoverBorder: string;
 }
 
+// ─── Config ───────────────────────────────────────────────
 const quickActions: QuickAction[] = [
   {
     label: "Add Product",
@@ -51,17 +47,16 @@ const quickActions: QuickAction[] = [
   },
 ];
 
+// ─── Component ────────────────────────────────────────────
 function QuickActions() {
   return (
     <section className="mt-4 md:mt-6 rounded-lg bg-white">
-      {/* Section Header */}
       <div className="mb-2">
         <h2 className="text-[16px] md:text-[18px] font-semibold tracking-[-0.01em] text-[#1F4A2E]">
           Quick Actions
         </h2>
       </div>
 
-      {/* Actions */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {quickActions.map((action) => {
           const Icon = action.icon;
@@ -70,44 +65,11 @@ function QuickActions() {
             <Link
               key={action.path}
               to={action.path}
-              className={`
-                group
-                flex
-                min-h-[140px]
-                flex-col
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-[#E8E1D9]
-                bg-white
-                px-5
-                py-4
-                text-center
-                transition-all
-                duration-300
-                hover:-translate-y-0.5
-                ${action.hoverBorder}
-              `}
+              className={`group flex min-h-[140px] flex-col items-center justify-center rounded-xl border border-[#E8E1D9] bg-white px-5 py-4 text-center transition-all duration-300 hover:-translate-y-0.5 ${action.hoverBorder}`}
             >
               {/* Icon */}
-              <div
-                className={`
-                  flex
-                  h-12
-                  w-12
-                  items-center
-                  justify-center
-                  rounded-xl
-                  ${action.iconBg}
-                  ${action.iconColor}
-                `}
-              >
-                <Icon
-                  className="h-[22px] w-[22px]"
-                  strokeWidth={1.8}
-                  aria-hidden="true"
-                />
+              <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${action.iconBg} ${action.iconColor}`}>
+                <Icon className="h-[22px] w-[22px]" strokeWidth={1.8} aria-hidden="true" />
               </div>
 
               {/* Label */}
@@ -117,11 +79,7 @@ function QuickActions() {
 
               {/* Arrow */}
               <div className="mt-2 flex items-center justify-center text-[#AAB1BA] transition-all duration-300 group-hover:text-[#B5697A]">
-                <ArrowRight
-                  className="h-[18px] w-[18px]"
-                  strokeWidth={1.6}
-                  aria-hidden="true"
-                />
+                <ArrowRight className="h-[18px] w-[18px]" strokeWidth={1.6} aria-hidden="true" />
               </div>
             </Link>
           );

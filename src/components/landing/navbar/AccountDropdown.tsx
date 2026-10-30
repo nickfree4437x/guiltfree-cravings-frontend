@@ -31,6 +31,11 @@ const MENU_ITEMS = [
     path: "M6 3h12v18H6zM9 7h6M9 11h6M9 15h4",
   },
   {
+    label: "Order History",
+    to: "/order-history",
+    path: "M3 12a9 9 0 1 0 2.64-6.36M3 4v5h5M12 7v5l3 2",
+  },
+  {
     label: "Coupons",
     to: "/coupons",
     path: "M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v1a2.5 2.5 0 0 1-2 2.45v1.1a2.5 2.5 0 0 1 2 2.45v1A2.5 2.5 0 0 1 17.5 18h-11A2.5 2.5 0 0 1 4 15.5v-1a2.5 2.5 0 0 1 2-2.45v-1.1A2.5 2.5 0 0 1 4 8.5v-1ZM9 5v13M15 5v13",
@@ -48,7 +53,6 @@ function AccountDropdown({
 }: AccountDropdownProps) {
   const isLight = variant === "light";
 
-  // Shared class fragments
   const itemText = isLight
     ? "text-white/80 hover:bg-white/10 hover:text-white"
     : "text-slate-600 hover:bg-[#B5697A]/10 hover:text-[#B5697A]";
@@ -59,7 +63,7 @@ function AccountDropdown({
 
   return (
     <div className="relative">
-      {/* Toggle button */}
+      {/* Toggle Button */}
       <button
         type="button"
         onClick={onToggle}
@@ -85,11 +89,15 @@ function AccountDropdown({
           }`}
           aria-hidden="true"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="m5 7.5 5 5 5-5" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="m5 7.5 5 5 5-5"
+          />
         </svg>
       </button>
 
-      {/* Dropdown */}
+      {/* Dropdown Menu */}
       {isOpen && (
         <div
           className={`absolute right-0 top-[calc(100%+10px)] z-50 w-56 overflow-hidden rounded-xl border p-2 shadow-md ${
@@ -118,15 +126,24 @@ function AccountDropdown({
                   className="h-3.5 w-3.5"
                   aria-hidden="true"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d={path} />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d={path}
+                  />
                 </svg>
               </span>
+
               <span>{label}</span>
             </Link>
           ))}
 
           {/* Divider */}
-          <div className={`my-1.5 border-t ${isLight ? "border-white/10" : "border-slate-100"}`} />
+          <div
+            className={`my-1.5 border-t ${
+              isLight ? "border-white/10" : "border-slate-100"
+            }`}
+          />
 
           {/* Logout */}
           <button
@@ -141,7 +158,9 @@ function AccountDropdown({
           >
             <span
               className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${
-                isLight ? "bg-red-500/10 text-red-300" : "bg-red-50 text-red-500"
+                isLight
+                  ? "bg-red-500/10 text-red-300"
+                  : "bg-red-50 text-red-500"
               }`}
             >
               <svg
@@ -159,6 +178,7 @@ function AccountDropdown({
                 />
               </svg>
             </span>
+
             <span>Logout</span>
           </button>
         </div>

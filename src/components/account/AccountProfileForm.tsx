@@ -36,7 +36,7 @@ interface AccountProfileFormProps {
 
 // ─── Config ───────────────────────────────────────────────
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://guiltfreecravings.com/api";
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

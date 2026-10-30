@@ -83,7 +83,7 @@ export const ForgotPasswordSteps = ({
           </span>
           <div>
             <p className="text-[12px] font-semibold text-gray-600">Reset your admin password</p>
-            <p className="mt-1 text-[10.5px] leading-relaxed text-slate-500">
+            <p className="mt-0 text-[10.5px] leading-relaxed text-slate-500">
               Enter your admin email to get a verification code.
             </p>
           </div>

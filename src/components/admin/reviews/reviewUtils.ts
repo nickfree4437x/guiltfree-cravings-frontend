@@ -1,32 +1,22 @@
 import type { AdminReviewStatus } from "../../../api/adminReviewApi";
 
-export const formatReviewDate = (
-  date: string
-) => {
-  const parsedDate =
-    new Date(date);
+// ─── Format Date ──────────────────────────────────────────
+export const formatReviewDate = (date: string) => {
+  const parsedDate = new Date(date);
 
-  if (
-    Number.isNaN(
-      parsedDate.getTime()
-    )
-  ) {
+  if (Number.isNaN(parsedDate.getTime())) {
     return "—";
   }
 
-  return new Intl.DateTimeFormat(
-    "en-IN",
-    {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }
-  ).format(parsedDate);
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(parsedDate);
 };
 
-export const getReviewStatusClasses = (
-  status: AdminReviewStatus
-) => {
+// ─── Status Classes ───────────────────────────────────────
+export const getReviewStatusClasses = (status: AdminReviewStatus) => {
   if (status === "VERIFIED") {
     return "border-[#CFE4D4] bg-[#EEF8F2] text-[#3F8A58]";
   }

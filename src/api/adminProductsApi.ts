@@ -2,33 +2,85 @@ import axios from "axios";
 
 import type { AdminProduct } from "../components/admin/products/types";
 
-// ─── Config ───────────────────────────────────────────────
+// ─── Configuration ────────────────────────────────────────
+
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://guiltfreecravings.com/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 const ADMIN_TOKEN_KEY = "guiltfree_admin_token";
 
-// ─── Types ────────────────────────────────────────────────
+// ─── Response Types ───────────────────────────────────────
+
 interface AdminProductsResponse {
   success: boolean;
   message?: string;
-  data: {
+  data?: {
     products: AdminProduct[];
   };
 }
 
-// ─── API: Get All Products ────────────────────────────────
-export const getAdminProducts = async (): Promise<AdminProduct[]> => {
+interface AdminProductResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    product: AdminProduct;
+  };
+}
+
+// ─── Authentication Headers ──────────────────────────────
+
+const getAdminHeaders = () => {
   const token = localStorage.getItem(ADMIN_TOKEN_KEY);
 
+  if (!token) {
+    throw new Error("Admin session expired. Please log in again.");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+// ─── Get All Products ─────────────────────────────────────
+
+export const getAdminProducts = async (): Promise<AdminProduct[]> => {
   const response = await axios.get<AdminProductsResponse>(
     `${API_BASE_URL}/admin/products`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    {
+      headers: getAdminHeaders(),
+    }
   );
 
   if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.message || "Unable to load products.");
+    throw new Error(
+      response.data.message || "Unable to load products."
+    );
   }
 
   return response.data.data.products;
+};
+
+// ─── Get Product By ID ────────────────────────────────────
+
+export const getAdminProductById = async (
+  id: number
+): Promise<AdminProduct> => {
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new Error("Invalid product ID.");
+  }
+
+  const response = await axios.get<AdminProductResponse>(
+    `${API_BASE_URL}/admin/products/${id}`,
+    {
+      headers: getAdminHeaders(),
+    }
+  );
+
+  if (!response.data.success || !response.data.data?.product) {
+    throw new Error(
+      response.data.message || "Unable to load product details."
+    );
+  }
+
+  return response.data.data.product;
 };

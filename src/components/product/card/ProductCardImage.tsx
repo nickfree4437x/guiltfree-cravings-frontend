@@ -32,7 +32,6 @@ function normalizeProductName(name: string): string {
   return name.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
-// Container sizing based on `compact` mode
 const getContainerSize = (compact: boolean) =>
   compact ? "h-full w-full" : "h-[140px] w-full sm:h-[220px] md:h-[260px]";
 
@@ -44,6 +43,7 @@ function ProductCardImage({
   compact = false,
 }: ProductCardImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const normalizedName = normalizeProductName(product.name);
   const glassJarImageMap = GLASS_JAR_IMAGES[normalizedName];
@@ -66,13 +66,14 @@ function ProductCardImage({
         ? product.cardboardBoxImage
         : product.image);
 
-  // Reset loading state when image source changes
+  // Reset loading and error state whenever the image changes.
   useEffect(() => {
     setIsLoaded(false);
+    setHasError(false);
   }, [image]);
 
-  // ─── No image fallback ──────────────────────────────────
-  if (!image) {
+  // ─── No image or failed image fallback ───────────────────
+  if (!image || hasError) {
     return (
       <div
         className={`relative flex items-center justify-center overflow-hidden bg-[#fffbfc] ${getContainerSize(compact)} ${
@@ -93,6 +94,7 @@ function ProductCardImage({
               aria-hidden="true"
             />
           </span>
+
           {!compact && (
             <span className="text-[10px] font-medium text-[#8B7A6C] sm:text-[11px]">
               Image coming soon
@@ -124,9 +126,16 @@ function ProductCardImage({
         key={image}
         src={image}
         alt={`${product.name} ${packaging}${variant ? ` ${variant.quantity}${variant.unit}` : ""}`}
-        loading={compact ? "eager" : "lazy"}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setIsLoaded(true)}
+        loading="eager"
+        decoding="async"
+        onLoad={() => {
+          setIsLoaded(true);
+          setHasError(false);
+        }}
+        onError={() => {
+          setIsLoaded(true);
+          setHasError(true);
+        }}
         className={`relative z-[2] h-full w-full object-contain object-center transition-all duration-700 ease-out ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}

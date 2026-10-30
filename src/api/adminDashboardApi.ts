@@ -1,8 +1,9 @@
 import axios from "axios";
+import type { DeliveryStatus } from "../components/admin/orders/types";
 
 // ─── Config ───────────────────────────────────────────────
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://guiltfreecravings.com/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 const ADMIN_TOKEN_KEY = "guiltfree_admin_token";
 
@@ -35,8 +36,20 @@ export interface AdminRecentOrder {
   customerName: string;
   customerPhone: string;
   totalAmount: number;
-  orderStatus: "PENDING" | "CONFIRMED" | "PROCESSING" | "COMPLETED" | "CANCELLED";
+
+  orderStatus:
+    | "PENDING"
+    | "CONFIRMED"
+    | "PROCESSING"
+    | "COMPLETED"
+    | "CANCELLED";
+
   paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+
+  // Delivery information
+  deliveryStatus?: DeliveryStatus | null;
+  deliveredAt?: string | null;
+
   createdAt: string;
 }
 
@@ -80,14 +93,20 @@ interface AdminSalesAnalyticsResponse {
 }
 
 // ─── API: Dashboard ───────────────────────────────────────
-export const getAdminDashboard = async (): Promise<AdminDashboardResponse["data"]> => {
+export const getAdminDashboard = async (): Promise<
+  AdminDashboardResponse["data"]
+> => {
   const response = await axios.get<AdminDashboardResponse>(
     `${API_BASE_URL}/admin/dashboard/overview`,
-    { headers: getAuthHeaders() }
+    {
+      headers: getAuthHeaders(),
+    }
   );
 
   if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.message || "Unable to load dashboard.");
+    throw new Error(
+      response.data.message || "Unable to load dashboard."
+    );
   }
 
   return response.data.data;
@@ -106,7 +125,9 @@ export const getSalesAnalytics = async (
   );
 
   if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.message || "Unable to load sales analytics.");
+    throw new Error(
+      response.data.message || "Unable to load sales analytics."
+    );
   }
 
   return response.data.data;

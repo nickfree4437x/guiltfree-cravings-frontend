@@ -4,7 +4,7 @@ import axios from "axios";
 
 // ─── Config ───────────────────────────────────────────────
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://guiltfreecravings.com/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 const ADMIN_TOKEN_KEY = "guiltfree_admin_token";
 
@@ -255,4 +255,307 @@ export const changeAdminPassword = async (
     console.error("Change password API error:", error);
     throw error;
   }
+};
+
+// Add to the bottom of src/api/adminApi.ts
+
+// ============================================================
+// ADMIN ORDER ISSUES
+// ============================================================
+
+export type OrderIssueStatus =
+  | "OPEN"
+  | "IN_PROGRESS"
+  | "RESOLVED"
+  | "CLOSED";
+
+export interface AdminOrderIssueItem {
+  id: number;
+  productId: number;
+  variantId: number;
+  productName: string;
+  variantQuantity: number;
+  variantUnit: string;
+  packaging: string;
+  unitPrice: number;
+  quantity: number;
+  subtotal: number;
+}
+
+export interface AdminOrderIssuePayment {
+  id: number;
+  status: string;
+  amount: number;
+  createdAt: string;
+}
+
+export interface AdminOrderIssueOrder {
+  id: number;
+  orderNumber: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  area: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  orderStatus: string;
+  paymentStatus: string;
+  subtotal: number;
+  discountAmount: number;
+  totalAmount: number;
+  createdAt: string;
+  items: AdminOrderIssueItem[];
+  payments: AdminOrderIssuePayment[];
+}
+
+export interface AdminOrderIssue {
+  id: number;
+  orderId: number;
+  orderNumber: string;
+  issueType: string;
+  message: string;
+  status: OrderIssueStatus;
+  createdAt: string;
+  updatedAt: string;
+  order: AdminOrderIssueOrder;
+}
+
+export interface AdminOrderIssueStats {
+  total: number;
+  open: number;
+  inProgress: number;
+  resolved: number;
+  closed: number;
+}
+
+export interface AdminOrderIssuePagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+interface AdminOrderIssueApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface AdminOrderIssuesListResponse {
+  success: boolean;
+  message: string;
+  data: AdminOrderIssue[];
+  pagination: AdminOrderIssuePagination;
+  filters?: {
+    search: string | null;
+    status: OrderIssueStatus | null;
+    issueType: string | null;
+    sortOrder: "asc" | "desc";
+  };
+}
+
+export interface AdminOrderIssuesQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: OrderIssueStatus | "";
+  issueType?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+const getAdminAuthHeaders = () => {
+  const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+
+  if (!token) {
+    throw new Error("Admin authentication is required. Please log in again.");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+export const getAdminOrderIssueStats = async () => {
+  const response = await axiosInstance.get<
+    AdminOrderIssueApiResponse<AdminOrderIssueStats>
+  >("/admin/order-issues/stats", {
+    headers: getAdminAuthHeaders(),
+  });
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.message || "Unable to load issue statistics.");
+  }
+
+  return response.data.data;
+};
+
+export const getAdminOrderIssues = async (
+  params: AdminOrderIssuesQuery = {}
+) => {
+  const response = await axiosInstance.get<AdminOrderIssuesListResponse>(
+    "/admin/order-issues",
+    {
+      headers: getAdminAuthHeaders(),
+      params,
+    }
+  );
+
+  if (!response.data.success) {
+    throw new Error(response.data.message || "Unable to load order issues.");
+  }
+
+  return response.data;
+};
+
+export const getAdminOrderIssueById = async (id: number) => {
+  const response = await axiosInstance.get<
+    AdminOrderIssueApiResponse<AdminOrderIssue>
+  >(`/admin/order-issues/${id}`, {
+    headers: getAdminAuthHeaders(),
+  });
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.message || "Unable to load issue details.");
+  }
+
+  return response.data.data;
+};
+
+export const updateAdminOrderIssueStatus = async (
+  id: number,
+  status: OrderIssueStatus
+) => {
+  const response = await axiosInstance.patch<
+    AdminOrderIssueApiResponse<AdminOrderIssue>
+  >(
+    `/admin/order-issues/${id}/status`,
+    { status },
+    {
+      headers: getAdminAuthHeaders(),
+    }
+  );
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.message || "Unable to update issue status.");
+  }
+
+  return response.data.data;
+};
+
+/*
+ * ============================================================
+ * ADMIN ORDER ISSUE CONVERSATION
+ * ============================================================
+ */
+
+export type OrderIssueMessageSender = "CUSTOMER" | "ADMIN";
+
+export interface AdminOrderIssueMessage {
+  id: number;
+  issueId: number;
+  senderType: OrderIssueMessageSender;
+  senderId: number;
+  message: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminOrderIssueConversation {
+  issue: {
+    id: number;
+    orderNumber: string;
+    issueType: string;
+    status: OrderIssueStatus;
+    createdAt: string;
+  };
+  messages: AdminOrderIssueMessage[];
+}
+
+export interface AdminOrderIssueConversationResponse {
+  success: boolean;
+  message: string;
+  data: AdminOrderIssueConversation;
+}
+
+export interface AdminOrderIssueMessageResponse {
+  success: boolean;
+  message: string;
+  data: AdminOrderIssueMessage;
+}
+
+/**
+ * Fetch conversation messages for an order issue.
+ *
+ * GET /api/admin/order-issues/:id/messages
+ */
+export const getAdminOrderIssueMessages = async (
+  issueId: number
+): Promise<AdminOrderIssueConversation> => {
+  if (!Number.isSafeInteger(issueId) || issueId <= 0) {
+    throw new Error("Invalid order issue ID.");
+  }
+
+  const response =
+    await axiosInstance.get<AdminOrderIssueConversationResponse>(
+      `/admin/order-issues/${issueId}/messages`,
+      {
+        headers: getAdminAuthHeaders(),
+      }
+    );
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error(
+      response.data.message || "Unable to load conversation."
+    );
+  }
+
+  return response.data.data;
+};
+
+/**
+ * Send a reply as the authenticated admin.
+ *
+ * POST /api/admin/order-issues/:id/messages
+ */
+export const sendAdminOrderIssueMessage = async (
+  issueId: number,
+  message: string
+): Promise<AdminOrderIssueMessage> => {
+  if (!Number.isSafeInteger(issueId) || issueId <= 0) {
+    throw new Error("Invalid order issue ID.");
+  }
+
+  const normalizedMessage = message.trim();
+
+  if (!normalizedMessage) {
+    throw new Error("Please enter a message.");
+  }
+
+  if (normalizedMessage.length > 2000) {
+    throw new Error("Message cannot exceed 2000 characters.");
+  }
+
+  const response =
+    await axiosInstance.post<AdminOrderIssueMessageResponse>(
+      `/admin/order-issues/${issueId}/messages`,
+      {
+        message: normalizedMessage,
+      },
+      {
+        headers: getAdminAuthHeaders(),
+      }
+    );
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error(
+      response.data.message || "Unable to send reply."
+    );
+  }
+
+  return response.data.data;
 };

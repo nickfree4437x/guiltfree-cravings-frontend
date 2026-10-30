@@ -2,88 +2,54 @@
 
 import type { AdminUser } from "../../../api/adminApi";
 
+// ─── Types ────────────────────────────────────────────────
 interface AdminProfileSectionProps {
   admin: AdminUser | null;
 }
 
-function AdminProfileSection({
-  admin,
-}: AdminProfileSectionProps) {
+// ─── Config ───────────────────────────────────────────────
+const INPUT_CLASS =
+  "mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-[12px] md:text-[12.5px] text-slate-700 outline-none";
+
+const LABEL_CLASS = "text-[10px] md:text-[11px] uppercase tracking-wide text-slate-500";
+
+// ─── Component ────────────────────────────────────────────
+function AdminProfileSection({ admin }: AdminProfileSectionProps) {
+  // Field config (all read-only)
+  const fields = [
+    { id: "admin-name", label: "Admin Name", type: "text", value: admin?.name || "" },
+    { id: "admin-email", label: "Email", type: "email", value: admin?.email || "" },
+    { id: "admin-role", label: "Account Role", type: "text", value: "Administrator" },
+  ];
+
   return (
     <section className="rounded-xl border border-[#eadfd3] bg-white shadow-sm">
-      {/* HEADER */}
-
+      {/* Header */}
       <div className="border-b border-[#eadfd3] px-5 py-4 sm:px-6">
         <h2 className="text-[14px] md:text-[16px] font-semibold text-slate-700">
           Admin Profile
         </h2>
-
         <p className="mt-0 text-[11px] md:text-[12px] text-slate-500">
-          Basic information about the current
-          administrator account.
+          Basic information about the current administrator account.
         </p>
       </div>
 
-      {/* CONTENT */}
-
+      {/* Content */}
       <div className="grid gap-3 md:gap-5 p-5 sm:grid-cols-2 sm:p-6">
-        {/* NAME */}
-
-        <div>
-          <label
-            htmlFor="admin-name"
-            className="text-[11px] md:text-[12px] uppercase tracking-wider text-slate-500"
-          >
-            Admin Name
-          </label>
-
-          <input
-            id="admin-name"
-            type="text"
-            value={admin?.name || ""}
-            readOnly
-            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-[12px] md:text-[12.5px] text-slate-700 outline-none"
-          />
-        </div>
-
-        {/* EMAIL */}
-
-        <div>
-          <label
-            htmlFor="admin-email"
-            className="text-[11px] md:text-[12px] uppercase tracking-wider text-slate-500"
-          >
-            Email
-          </label>
-
-          <input
-            id="admin-email"
-            type="email"
-            value={admin?.email || ""}
-            readOnly
-            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-[12px] md:text-[12.5px] text-slate-700 outline-none"
-          />
-        </div>
-
-
-        {/* ROLE */}
-
-        <div>
-          <label
-            htmlFor="admin-role"
-            className="text-[11px] md:text-[12px] uppercase tracking-wider text-slate-500"
-          >
-            Account Role
-          </label>
-
-          <input
-            id="admin-role"
-            type="text"
-            value="Administrator"
-            readOnly
-            className="mt-1 w-full rounded-xl border border-[#eadfd3] bg-white px-4 py-3 text-[12px] md:text-[12.5px] text-slate-700 outline-none"
-          />
-        </div>
+        {fields.map((field) => (
+          <div key={field.id}>
+            <label htmlFor={field.id} className={LABEL_CLASS}>
+              {field.label}
+            </label>
+            <input
+              id={field.id}
+              type={field.type}
+              value={field.value}
+              readOnly
+              className={INPUT_CLASS}
+            />
+          </div>
+        ))}
       </div>
     </section>
   );

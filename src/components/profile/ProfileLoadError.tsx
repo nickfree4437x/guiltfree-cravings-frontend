@@ -9,28 +9,6 @@ function ProfileLoadError({
     <main className="min-h-screen bg-[#FFFCF7] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto max-w-4xl">
 
-        {/* Header */}
-        <div className="text-center">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#F1DDE2] bg-[#FBEEF1] px-3 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#B5697A]" />
-
-            <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#B5697A] sm:text-[10px]">
-              Account
-            </span>
-          </div>
-
-          <h1 className="text-[22px] font-semibold tracking-tight text-[#1F4A2E] sm:text-[26px] md:text-[28px]">
-            My Profile
-          </h1>
-
-          <p className="mx-auto mt-2 max-w-xl px-2 text-[11.5px] leading-5 text-[#8B7A6C] sm:text-[13px] md:text-[14px] md:leading-6">
-            Keep your personal information up to date and manage
-            the details connected to your account.
-          </p>
-
-          <div className="mx-auto mt-5 h-px w-10 bg-[#E8C8D0]" />
-        </div>
-
         {/* Error Card */}
         <div className="mx-auto mt-8 max-w-2xl rounded-xl border border-[#F0D9D9] bg-white p-7 text-center shadow-sm sm:mt-10 sm:p-10">
 
