@@ -100,7 +100,7 @@ interface ProfileResponse {
 
 // ─── Axios Instance ───────────────────────────────────────
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "https://guiltfreecravings.com/api",
   headers: {
     "Content-Type": "application/json",
   },

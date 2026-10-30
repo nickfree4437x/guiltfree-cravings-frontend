@@ -9,7 +9,7 @@ import type {
 import { getAdminToken } from "../components/admin/payments/paymentUtils";
 
 const API_BASE_URL = (
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+  import.meta.env.VITE_API_URL || "https://guiltfreecravings.com/api"
 ).replace(/\/+$/, "");
 
 const PAGE_SIZE = 10;
