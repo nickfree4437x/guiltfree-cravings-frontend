@@ -211,8 +211,8 @@ function HistoryEmptyState({
 
       <p className="mx-auto mt-1 max-w-md text-[11px] leading-relaxed text-slate-500 md:text-[12px]">
         {hasSearch
-          ? "No delivered orders match your search or selected filters. Try changing your search."
-          : "Your successfully delivered orders will appear here. Once an order reaches you, you can revisit its details and order the same products again."}
+          ? "No delivered orders match your search or filters. Try adjusting them."
+          : "Your delivered orders will appear here. Revisit details or reorder anytime."}
       </p>
     </section>
   );
