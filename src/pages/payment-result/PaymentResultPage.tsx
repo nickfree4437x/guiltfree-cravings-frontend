@@ -142,7 +142,7 @@ const PaymentResultPage = () => {
 
   return (
     <main className="w-full bg-white">
-      <div className="flex min-h-[480px] items-center justify-center px-4 py-24 sm:min-h-[520px] sm:px-6 sm:py-32 lg:min-h-[540px]">
+      <div className="flex min-h-[480px] items-center justify-center px-4 sm:min-h-[520px] sm:px-6 lg:min-h-[540px]">
         <section className="my-4 w-full max-w-md overflow-hidden rounded-xl border border-[#f0e4df] bg-white shadow-sm">
           <div className="h-1 w-full bg-[#B5697A]" />
 
