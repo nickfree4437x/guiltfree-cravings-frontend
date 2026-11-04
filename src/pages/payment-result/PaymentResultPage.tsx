@@ -146,7 +146,7 @@ const PaymentResultPage = () => {
         <section className="my-4 w-full max-w-md overflow-hidden rounded-xl border border-[#f0e4df] bg-white shadow-sm">
           <div className="h-1 w-full bg-[#B5697A]" />
 
-          <div className="px-5 text-center sm:px-8">
+          <div className="px-5 py-7 text-center sm:px-8 sm:py-8">
             {/* Status Icon */}
             <div
               className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full ${statusStyles.iconWrapper}`}
