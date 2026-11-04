@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import type { DeliveryStatus } from "../components/admin/orders/types";
 
@@ -30,6 +31,19 @@ export interface AdminDashboardStats {
   paidOrders: number;
 }
 
+export type AdminOrderStatus =
+  | "NEW"
+  | "CONFIRMED"
+  | "PACKED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "RETURNED"
+  // Legacy statuses
+  | "PENDING"
+  | "PROCESSING"
+  | "COMPLETED";
+
 export interface AdminRecentOrder {
   id: number;
   orderNumber: string;
@@ -37,12 +51,7 @@ export interface AdminRecentOrder {
   customerPhone: string;
   totalAmount: number;
 
-  orderStatus:
-    | "PENDING"
-    | "CONFIRMED"
-    | "PROCESSING"
-    | "COMPLETED"
-    | "CANCELLED";
+  orderStatus: AdminOrderStatus;
 
   paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
 

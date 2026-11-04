@@ -1,10 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import api, { createOrder } from "../../api/orderApi";
-import { validateOffer, type ValidateOfferResponse } from "../../api/offerApi";
+import {
+  validateOffer,
+  getPublicOffers,
+  type Offer,
+  type ValidateOfferResponse,
+} from "../../api/offerApi";
 
 import CheckoutHeader from "../../components/checkout/CheckoutHeader";
 import CheckoutCustomerForm from "../../components/checkout/CheckoutCustomerForm";
@@ -17,6 +23,7 @@ import DeliveryAddressForm, {
 
 import { useAuthStore } from "../../store/authStore";
 import { useCartStore } from "../../store/cartStore";
+import type { CartItem } from "../../store/cartStore";
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -64,6 +71,13 @@ interface UpdateAddressResponse {
   success: boolean;
   message: string;
   data: SavedAddressResponse["data"];
+}
+
+type OfferSource = "AUTOMATIC" | "MANUAL";
+
+interface AppliedOfferState {
+  offer: ValidateOfferResponse;
+  source: OfferSource;
 }
 
 // ─── Configuration ────────────────────────────────────────
@@ -197,6 +211,91 @@ function normalizeSavedAddress(
   };
 }
 
+
+// ─── Calculate item-wise offer discounts ───────────────────
+// Distributes the already validated backend discount across eligible
+// cart items. All calculations use paise to avoid floating-point drift.
+function calculateItemDiscounts(
+  items: CartItem[],
+  appliedOffer: ValidateOfferResponse | null
+): Record<string, number> {
+  const discounts: Record<string, number> = {};
+
+  if (!appliedOffer) return discounts;
+
+  const totalDiscountCents = Math.max(
+    0,
+    Math.round(Number(appliedOffer.discountAmount) * 100)
+  );
+
+  if (totalDiscountCents === 0) return discounts;
+
+  const rawVariantIds = (appliedOffer.offer as Offer).variantIds;
+  const eligibleVariantIds = Array.isArray(rawVariantIds)
+    ? rawVariantIds.map(Number).filter(Number.isFinite)
+    : [];
+
+  const eligibleItems = items
+    .map((item) => {
+      const subtotalCents = Math.max(
+        0,
+        Math.round(Number(item.variant.price) * Number(item.quantity) * 100)
+      );
+
+      return {
+        item,
+        key: `${item.product.id}-${item.variant.id}`,
+        subtotalCents,
+      };
+    })
+    .filter(({ item, subtotalCents }) => {
+      const variantIsEligible =
+        eligibleVariantIds.length === 0 ||
+        eligibleVariantIds.includes(Number(item.variant.id));
+
+      return variantIsEligible && subtotalCents > 0;
+    });
+
+  const eligibleSubtotalCents = eligibleItems.reduce(
+    (sum, entry) => sum + entry.subtotalCents,
+    0
+  );
+
+  const discountToDistribute = Math.min(
+    totalDiscountCents,
+    eligibleSubtotalCents
+  );
+
+  if (eligibleSubtotalCents === 0 || discountToDistribute === 0) {
+    return discounts;
+  }
+
+  let distributedCents = 0;
+
+  eligibleItems.forEach((entry, index) => {
+    // Floor intermediate shares; give the exact remaining paise to the
+    // final eligible item so the displayed item discounts equal the
+    // validated overall discount exactly.
+    const itemDiscountCents =
+      index === eligibleItems.length - 1
+        ? discountToDistribute - distributedCents
+        : Math.floor(
+            (discountToDistribute * entry.subtotalCents) /
+              eligibleSubtotalCents
+          );
+
+    const safeDiscountCents = Math.min(
+      entry.subtotalCents,
+      Math.max(0, itemDiscountCents)
+    );
+
+    discounts[entry.key] = safeDiscountCents / 100;
+    distributedCents += safeDiscountCents;
+  });
+
+  return discounts;
+}
+
 // ─── Component ────────────────────────────────────────────
 
 function CheckoutPage() {
@@ -213,9 +312,7 @@ function CheckoutPage() {
     (state) => state.isAuthenticated
   );
 
-  const hasValidSession = Boolean(
-    isAuthenticated && user && token
-  );
+  const hasValidSession = Boolean(isAuthenticated && user && token);
 
   // Form state
   const [formData, setFormData] = useState<CheckoutFormData>({
@@ -231,7 +328,7 @@ function CheckoutPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Keep the order ID so payment retries don't create duplicate orders.
+  // Keep order ID for payment retries.
   const [pendingOrderId, setPendingOrderId] = useState<number | null>(
     null
   );
@@ -249,31 +346,56 @@ function CheckoutPage() {
   const [isSavingAddress, setIsSavingAddress] = useState(false);
 
   const addressRequestId = useRef(0);
+  const offerRequestId = useRef(0);
 
-  // Coupon
+  // Coupon and offer state
   const [couponCode, setCouponCode] = useState("");
-  const [appliedOffer, setAppliedOffer] =
-    useState<ValidateOfferResponse | null>(null);
+  const [appliedOfferState, setAppliedOfferState] =
+    useState<AppliedOfferState | null>(null);
 
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [isLoadingPublicOffer, setIsLoadingPublicOffer] = useState(false);
+
   const [couponError, setCouponError] = useState("");
   const [couponMessage, setCouponMessage] = useState("");
 
   // Derived values
   const cartTotal = getCartTotal();
-  const discountAmount = appliedOffer?.discountAmount ?? 0;
+
+  const appliedOffer = appliedOfferState?.offer ?? null;
+  const offerSource = appliedOfferState?.source ?? null;
+
+  const discountAmount = appliedOffer
+    ? Number(appliedOffer.discountAmount) || 0
+    : 0;
+
+  // Item-wise discount shares are used only for displaying checkout prices.
+  // The backend remains responsible for the authoritative order/payment total.
+  const itemDiscounts = useMemo(
+    () => calculateItemDiscounts(items, appliedOffer),
+    [items, appliedOffer]
+  );
+
   const appliedCouponCode = appliedOffer?.offer.code ?? "";
 
   const isBusy =
-    isSubmitting || isApplyingCoupon || isSavingAddress;
+    isSubmitting ||
+    isApplyingCoupon ||
+    isSavingAddress ||
+    isLoadingPublicOffer;
+
+  // Always send current cart variant IDs and quantities for validation.
+  const getOfferCartItems = () =>
+    items.map((item) => ({
+      variantId: Number(item.variant.id),
+      quantity: Number(item.quantity),
+    }));
 
   // ─── Protect checkout route ─────────────────────────────
 
   useEffect(() => {
     if (hasValidSession) return;
 
-    // Guests must authenticate from the cart drawer first.
-    // Return to the home page and reopen the cart drawer.
     openCartDrawer();
 
     navigate("/", {
@@ -296,7 +418,7 @@ function CheckoutPage() {
     }));
   }, [user]);
 
-  // ─── Load saved address for authenticated customers ──────
+  // ─── Load saved address ─────────────────────────────────
 
   useEffect(() => {
     const requestId = ++addressRequestId.current;
@@ -340,7 +462,6 @@ function CheckoutPage() {
           return;
         }
 
-        // Customer can still enter an address manually.
         console.error(
           "Unable to load saved delivery address:",
           error
@@ -358,6 +479,126 @@ function CheckoutPage() {
       isActive = false;
     };
   }, [hasValidSession]);
+
+  // ─── Validate an offer ──────────────────────────────────
+
+  const validateOfferForCart = async (code: string) => {
+    const result = await validateOffer(
+      code,
+      cartTotal,
+      getOfferCartItems()
+    );
+
+    if (
+      !result ||
+      !result.offer ||
+      !Number.isFinite(Number(result.discountAmount)) ||
+      Number(result.discountAmount) < 0 ||
+      Number(result.discountAmount) > cartTotal
+    ) {
+      throw new Error("The offer response is invalid.");
+    }
+
+    return {
+      ...result,
+      discountAmount: Number(result.discountAmount),
+      subtotal: Number(result.subtotal),
+      totalAmount: Number(result.totalAmount),
+    };
+  };
+
+  // ─── Automatically apply public offer ───────────────────
+
+  useEffect(() => {
+    const requestId = ++offerRequestId.current;
+    let isActive = true;
+
+    const applyPublicOffer = async () => {
+      if (!hasValidSession || items.length === 0 || cartTotal <= 0) {
+        setAppliedOfferState(null);
+        setIsLoadingPublicOffer(false);
+        return;
+      }
+
+      // Never override a coupon manually selected by the customer.
+      if (appliedOfferState?.source === "MANUAL") {
+        return;
+      }
+
+      setIsLoadingPublicOffer(true);
+
+      try {
+        const offers = await getPublicOffers();
+
+        if (!isActive || requestId !== offerRequestId.current) {
+          return;
+        }
+
+        const publicOffer = offers.find((offer: Offer) => {
+          return (
+            offer.audience === "PUBLIC" &&
+            offer.isActive &&
+            offer.discountType === "PERCENTAGE" &&
+            Number(offer.discountValue) > 0 &&
+            Number(offer.discountValue) <= 100 &&
+            Boolean(offer.code)
+          );
+        });
+
+        if (!publicOffer?.code) {
+          setAppliedOfferState(null);
+          setCouponCode("");
+          setCouponMessage("");
+          return;
+        }
+
+        const validatedOffer = await validateOfferForCart(
+          publicOffer.code
+        );
+
+        if (!isActive || requestId !== offerRequestId.current) {
+          return;
+        }
+
+        setAppliedOfferState({
+          offer: validatedOffer,
+          source: "AUTOMATIC",
+        });
+
+        setCouponCode(publicOffer.code);
+        setCouponError("");
+
+        setCouponMessage(
+          validatedOffer.discountAmount > 0
+            ? `Public offer applied! You save ₹${validatedOffer.discountAmount.toFixed(2)}.`
+            : "Public offer is available for eligible products."
+        );
+      } catch (error: unknown) {
+        if (!isActive || requestId !== offerRequestId.current) {
+          return;
+        }
+
+        console.error("AUTOMATIC PUBLIC OFFER ERROR:", error);
+
+        setAppliedOfferState(null);
+        setCouponCode("");
+        setCouponMessage("");
+      } finally {
+        if (isActive && requestId === offerRequestId.current) {
+          setIsLoadingPublicOffer(false);
+        }
+      }
+    };
+
+    void applyPublicOffer();
+
+    return () => {
+      isActive = false;
+    };
+    // appliedOfferState intentionally excluded:
+    // manual offers must not be overwritten by this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasValidSession, items, cartTotal]);
 
   // ─── Handlers ───────────────────────────────────────────
 
@@ -406,12 +647,12 @@ function CheckoutPage() {
     setCouponError("");
     setCouponMessage("");
 
-    if (appliedOffer) {
-      setAppliedOffer(null);
+    if (appliedOfferState) {
+      setAppliedOfferState(null);
     }
   };
 
-  // ─── Save address for logged-in customers ────────────────
+  // ─── Save address ───────────────────────────────────────
 
   const saveDeliveryAddress = async (
     address: DeliveryAddress
@@ -464,7 +705,7 @@ function CheckoutPage() {
     }
   };
 
-  // ─── Apply coupon ────────────────────────────────────────
+  // ─── Apply manual coupon ────────────────────────────────
 
   const handleApplyCoupon = async () => {
     const normalizedCode = couponCode.trim().toUpperCase();
@@ -496,35 +737,16 @@ function CheckoutPage() {
     setCouponMessage("");
 
     try {
-      const result = await validateOffer(
-        normalizedCode,
-        cartTotal
-      );
+      const result = await validateOfferForCart(normalizedCode);
 
-      if (
-        !result ||
-        !result.offer ||
-        !Number.isFinite(Number(result.discountAmount)) ||
-        Number(result.discountAmount) < 0 ||
-        Number(result.discountAmount) > cartTotal
-      ) {
-        throw new Error("The coupon response is invalid.");
-      }
-
-      const discount = Number(result.discountAmount);
-
-      setAppliedOffer({
-        ...result,
-        discountAmount: discount,
-        subtotal: Number(result.subtotal),
-        totalAmount: Number(result.totalAmount),
+      setAppliedOfferState({
+        offer: result,
+        source: "MANUAL",
       });
 
       setCouponCode(result.offer.code);
 
-      const message = `Coupon applied! You save ₹${discount.toFixed(
-        2
-      )}.`;
+      const message = `Coupon applied! You save ₹${result.discountAmount.toFixed(2)}.`;
 
       setCouponMessage(message);
       toast.success(message);
@@ -534,7 +756,7 @@ function CheckoutPage() {
         "Unable to validate this coupon. Please try again."
       );
 
-      setAppliedOffer(null);
+      setAppliedOfferState(null);
       setCouponError(message);
       setCouponMessage("");
 
@@ -544,15 +766,17 @@ function CheckoutPage() {
     }
   };
 
+  // ─── Remove offer ───────────────────────────────────────
+
   const handleRemoveCoupon = () => {
     if (isBusy) return;
 
-    setAppliedOffer(null);
+    setAppliedOfferState(null);
     setCouponCode("");
     setCouponError("");
     setCouponMessage("");
 
-    toast.success("Coupon removed successfully.");
+    toast.success("Offer removed successfully.");
   };
 
   // ─── Initiate PhonePe payment ───────────────────────────
@@ -579,13 +803,11 @@ function CheckoutPage() {
       );
     }
 
-    // Keep the existing order ID for payment retries.
     setPendingOrderId(orderId);
-
     window.location.assign(checkoutUrl);
   };
 
-  // ─── Validate fields and focus the first error ───────────
+  // ─── Focus first invalid field ──────────────────────────
 
   const focusFirstInvalidField = () => {
     window.setTimeout(() => {
@@ -619,7 +841,6 @@ function CheckoutPage() {
 
     if (isBusy) return;
 
-    // Defense-in-depth: guests must authenticate before checkout.
     if (!hasValidSession) {
       openCartDrawer();
 
@@ -658,7 +879,6 @@ function CheckoutPage() {
     if (hasCustomerErrors || hasAddressErrors) {
       toast.error("Please correct the highlighted fields.");
       focusFirstInvalidField();
-
       return;
     }
 
@@ -701,16 +921,44 @@ function CheckoutPage() {
       return;
     }
 
+    // Validate the selected offer again before order creation.
+    let confirmedOfferCode: string | null = null;
+
+    if (appliedOffer && appliedCouponCode) {
+      try {
+        const freshOffer = await validateOfferForCart(
+          appliedCouponCode
+        );
+
+        setAppliedOfferState({
+          offer: freshOffer,
+          source: offerSource ?? "AUTOMATIC",
+        });
+
+        confirmedOfferCode = freshOffer.offer.code;
+      } catch (error: unknown) {
+        setAppliedOfferState(null);
+        setCouponCode("");
+        setCouponMessage("");
+
+        toast.error(
+          `Your offer is no longer valid. Please review your order and apply it again. ${getErrorMessage(
+            error,
+            ""
+          )}`
+        );
+
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
       let orderId = pendingOrderId;
 
-      // Create the order only once.
-      // If payment initiation fails, reuse this order ID on retry.
+      // Create order only once.
       if (orderId === null) {
-        // Address saving is optional; an address-save failure
-        // must not prevent a valid order from being created.
         await saveDeliveryAddress(deliveryAddress);
 
         const createdOrder = await createOrder({
@@ -733,7 +981,7 @@ function CheckoutPage() {
             variantId: Number(item.variant.id),
             quantity: Number(item.quantity),
           })),
-          offerCode: appliedCouponCode || null,
+          offerCode: confirmedOfferCode,
         });
 
         if (
@@ -750,7 +998,7 @@ function CheckoutPage() {
         setPendingOrderId(orderId);
       }
 
-      // Reuse the order ID if payment initiation is retried.
+      // Reuse existing order ID if payment initiation is retried.
       try {
         await initiatePhonePePayment(orderId);
       } catch (paymentError: unknown) {
@@ -775,14 +1023,13 @@ function CheckoutPage() {
     }
   };
 
-  // ─── Protect rendering while redirecting ─────────────────
+  // ─── Protect rendering while redirecting ────────────────
 
-  // Avoid displaying the checkout form to unauthenticated guests.
   if (!hasValidSession) {
     return null;
   }
 
-  // ─── Empty cart ──────────────────────────────────────────
+  // ─── Empty cart ─────────────────────────────────────────
 
   if (items.length === 0) {
     return <CheckoutEmptyCart />;
@@ -792,7 +1039,7 @@ function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-white text-[#2C2C2C]">
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-20 pt-7 sm:px-6 sm:pb-24 sm:pt-9 lg:px-8 lg:pt-11">
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6 sm:pb-24 lg:px-8">
         <div className="mb-7 sm:mb-9 lg:mb-10">
           <CheckoutHeader />
         </div>
@@ -802,8 +1049,34 @@ function CheckoutPage() {
           noValidate
           className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_350px] lg:gap-7 xl:grid-cols-[minmax(0,1fr)_370px] xl:gap-8"
         >
-          {/* Left column */}
+          {/* Left Column */}
           <div className="min-w-0 space-y-5">
+            {/* Delivery Information */}
+            <div
+              className="flex items-start gap-3 rounded-xl border border-[#EEDFE2] bg-[#FFF8FA] px-4 py-4 sm:px-5"
+              role="note"
+              aria-label="Important delivery information"
+            >
+              <span
+                aria-hidden="true"
+                className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#B5697A]/10 text-sm font-semibold text-[#B5697A]"
+              >
+                i
+              </span>
+
+              <div className="min-w-0">
+                <p className="text-[12px] md:text-[13px] font-semibold text-[#79515A]">
+                  Important Delivery Information
+                </p>
+
+                <p className="mt-1 text-[10px] leading-relxaed text-[#79515A]/90 sm:text-[12px]">
+                  Please ensure your address, landmark, and phone number are
+                  correct to avoid any delivery delays.
+                </p>
+              </div>
+            </div>
+
+            {/* Customer Information */}
             <section
               className="min-w-0 overflow-hidden rounded-xl border border-[#EEDFE2] bg-white shadow-sm"
               aria-label="Customer information"
@@ -842,12 +1115,32 @@ function CheckoutPage() {
             />
           </div>
 
-          {/* Right column: order summary */}
+          {/* Right Column: Order Summary */}
           <aside
             className="min-w-0 lg:sticky lg:top-6"
             aria-label="Order summary"
           >
             <div className="overflow-hidden rounded-xl border border-[#EEDFE2] bg-white shadow-sm">
+              {isLoadingPublicOffer && (
+                <div
+                  className="border-b border-[#EEDFE2] bg-[#FFF9FA] px-5 py-3 text-xs text-[#79515A]"
+                  role="status"
+                >
+                  Checking available offers...
+                </div>
+              )}
+
+              {offerSource === "AUTOMATIC" && appliedOffer && (
+                <div className="border-b border-[#DDECE2] bg-[#F3FAF5] px-5 py-3">
+                  <p className="text-xs font-semibold text-[#28583B]">
+                    🎉 Public offer automatically applied!
+                  </p>
+                  <p className="mt-1 text-[11px] text-[#52745C]">
+                    You save ₹{discountAmount.toFixed(2)} on eligible products.
+                  </p>
+                </div>
+              )}
+
               <CheckoutOrderSummary
                 items={items}
                 cartTotal={cartTotal}
@@ -862,11 +1155,12 @@ function CheckoutPage() {
                 couponMessage={couponMessage}
                 discountAmount={discountAmount}
                 appliedCouponCode={appliedCouponCode}
+                itemDiscounts={itemDiscounts}
               />
 
               {pendingOrderId !== null && (
                 <div
-                  className="border-t border-[#EEDFE2] px-5 py-3 text-sm text-amber-800"
+                  className="border-t border-[#EEDFE2] px-5 py-3 text-[10px] md:text-[12px] text-amber-700"
                   role="status"
                 >
                   Order #{pendingOrderId} has been created. Retry
@@ -882,7 +1176,7 @@ function CheckoutPage() {
                     isLoadingAddress ||
                     items.length === 0
                   }
-                  className="flex w-full items-center justify-center rounded-lg bg-[#B5697A] px-5 py-3 text-[12px] text-white transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 md:text-[13px]"
+                  className="flex w-full items-center justify-center rounded-lg bg-[#B5697A] hover:bg-[#965264] px-5 py-3 text-[12px] text-white transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60 md:text-[13px]"
                 >
                   {isSubmitting
                     ? "Processing..."
@@ -890,14 +1184,12 @@ function CheckoutPage() {
                       ? "Saving address..."
                       : isLoadingAddress
                         ? "Loading address..."
-                        : pendingOrderId !== null
-                          ? "Retry PhonePe Payment"
-                          : "Proceed to Pay"}
+                        : isLoadingPublicOffer
+                          ? "Checking offers..."
+                          : pendingOrderId !== null
+                            ? "Retry PhonePe Payment"
+                            : "Proceed to Pay"}
                 </button>
-
-                <p className="mt-3 text-center text-xs leading-5 text-gray-500">
-                  Secure checkout. Payment is processed through PhonePe.
-                </p>
               </div>
             </div>
           </aside>

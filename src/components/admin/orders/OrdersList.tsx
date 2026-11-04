@@ -1,7 +1,7 @@
-// src/components/admin/orders/OrdersList.tsx
 
 import type {
   AdminOrder,
+  OrderStatus,
   DeliveryStatus,
 } from "./types";
 
@@ -12,6 +12,12 @@ interface OrdersListProps {
   orders: AdminOrder[];
   hasSearch: boolean;
   onClearSearch: () => void;
+
+  onOrderStatusChange: (
+    orderId: number,
+    orderStatus: OrderStatus
+  ) => Promise<void>;
+
   onDeliveryStatusChange: (
     orderId: number,
     deliveryStatus: DeliveryStatus
@@ -22,6 +28,7 @@ function OrdersList({
   orders,
   hasSearch,
   onClearSearch,
+  onOrderStatusChange,
   onDeliveryStatusChange,
 }: OrdersListProps) {
   if (orders.length === 0) {
@@ -37,6 +44,7 @@ function OrdersList({
     <div className="rounded-xl">
       <OrdersTable
         orders={orders}
+        onOrderStatusChange={onOrderStatusChange}
         onDeliveryStatusChange={onDeliveryStatusChange}
       />
     </div>

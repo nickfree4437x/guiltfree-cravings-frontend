@@ -1,16 +1,20 @@
-// src/components/admin/orders/OrdersTable.tsx
-
 import { useState, useMemo, useEffect } from "react";
+
 import {
-  Eye,
   ChevronLeft,
   ChevronRight,
   Truck,
   LoaderCircle,
+  PackageCheck,
 } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 
-import type { AdminOrder, DeliveryStatus } from "./types";
+import type {
+  AdminOrder,
+  OrderStatus,
+  DeliveryStatus,
+} from "./types";
 
 import {
   formatAmount,
@@ -23,6 +27,12 @@ import PaymentStatusBadge from "./PaymentStatusBadge";
 
 interface OrdersTableProps {
   orders: AdminOrder[];
+
+  onOrderStatusChange: (
+    orderId: number,
+    orderStatus: OrderStatus
+  ) => Promise<void>;
+
   onDeliveryStatusChange: (
     orderId: number,
     deliveryStatus: DeliveryStatus
@@ -30,6 +40,46 @@ interface OrdersTableProps {
 }
 
 const ITEMS_PER_PAGE = 10;
+
+/*
+ * =========================================================
+ * MAIN ORDER STATUS OPTIONS
+ * =========================================================
+ */
+
+const ORDER_STATUS_OPTIONS: {
+  value: OrderStatus;
+  label: string;
+}[] = [
+  { value: "NEW", label: "New" },
+  { value: "CONFIRMED", label: "Confirmed" },
+  { value: "PACKED", label: "Packed" },
+  { value: "SHIPPED", label: "Shipped" },
+  { value: "DELIVERED", label: "Delivered" },
+  { value: "CANCELLED", label: "Cancelled" },
+  { value: "RETURNED", label: "Returned" },
+];
+
+/*
+ * =========================================================
+ * LEGACY ORDER STATUSES
+ * =========================================================
+ */
+
+const LEGACY_ORDER_STATUSES: {
+  value: OrderStatus;
+  label: string;
+}[] = [
+  { value: "PENDING", label: "Pending (Legacy)" },
+  { value: "PROCESSING", label: "Processing (Legacy)" },
+  { value: "COMPLETED", label: "Completed (Legacy)" },
+];
+
+/*
+ * =========================================================
+ * DELIVERY STATUS OPTIONS
+ * =========================================================
+ */
 
 const DELIVERY_STATUS_OPTIONS: {
   value: DeliveryStatus;
@@ -45,19 +95,31 @@ const DELIVERY_STATUS_OPTIONS: {
 
 function OrdersTable({
   orders,
+  onOrderStatusChange,
   onDeliveryStatusChange,
 }: OrdersTableProps) {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [updatingOrderIds, setUpdatingOrderIds] = useState<number[]>(
-    []
-  );
+
+  const [updatingOrderIds, setUpdatingOrderIds] = useState<
+    number[]
+  >([]);
+
   const [updateErrors, setUpdateErrors] = useState<
     Record<number, string>
   >({});
 
+  const [deliveryUpdateErrors, setDeliveryUpdateErrors] =
+    useState<Record<number, string>>({});
+
   const safeOrders = Array.isArray(orders) ? orders : [];
+
+  /*
+   * =========================================================
+   * PAGINATION
+   * =========================================================
+   */
 
   useEffect(() => {
     setCurrentPage(1);
@@ -68,7 +130,6 @@ function OrdersTable({
     Math.ceil(safeOrders.length / ITEMS_PER_PAGE)
   );
 
-  // Keep the current page valid when the filtered list changes.
   useEffect(() => {
     setCurrentPage((page) => Math.min(page, totalPages));
   }, [totalPages]);
@@ -84,6 +145,7 @@ function OrdersTable({
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) return;
+
     setCurrentPage(page);
   };
 
@@ -118,15 +180,66 @@ function OrdersTable({
     return pages;
   }, [currentPage, totalPages]);
 
+  /*
+   * =========================================================
+   * UPDATE MAIN ORDER STATUS
+   * =========================================================
+   */
+
+  const handleOrderStatusChange = async (
+    orderId: number,
+    status: OrderStatus
+  ) => {
+    if (updatingOrderIds.includes(orderId)) return;
+
+    setUpdatingOrderIds((previous) => [
+      ...previous,
+      orderId,
+    ]);
+
+    setUpdateErrors((previous) => {
+      const next = { ...previous };
+      delete next[orderId];
+      return next;
+    });
+
+    try {
+      await onOrderStatusChange(orderId, status);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to update order status.";
+
+      setUpdateErrors((previous) => ({
+        ...previous,
+        [orderId]: message,
+      }));
+    } finally {
+      setUpdatingOrderIds((previous) =>
+        previous.filter((id) => id !== orderId)
+      );
+    }
+  };
+
+  /*
+   * =========================================================
+   * UPDATE DELIVERY STATUS
+   * =========================================================
+   */
+
   const handleDeliveryStatusChange = async (
     orderId: number,
     status: DeliveryStatus
   ) => {
     if (updatingOrderIds.includes(orderId)) return;
 
-    setUpdatingOrderIds((previous) => [...previous, orderId]);
+    setUpdatingOrderIds((previous) => [
+      ...previous,
+      orderId,
+    ]);
 
-    setUpdateErrors((previous) => {
+    setDeliveryUpdateErrors((previous) => {
       const next = { ...previous };
       delete next[orderId];
       return next;
@@ -140,7 +253,7 @@ function OrdersTable({
           ? error.message
           : "Unable to update delivery status.";
 
-      setUpdateErrors((previous) => ({
+      setDeliveryUpdateErrors((previous) => ({
         ...previous,
         [orderId]: message,
       }));
@@ -151,14 +264,31 @@ function OrdersTable({
     }
   };
 
+  /*
+   * =========================================================
+   * EMPTY STATE
+   * =========================================================
+   */
+
   if (safeOrders.length === 0) return null;
+
+  /*
+   * =========================================================
+   * MAIN TABLE
+   * =========================================================
+   */
 
   return (
     <div className="w-full">
+
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1120px]">
+
+        {/* Min-width ko thoda kam kiya kyunki Action column hat gaya */}
+        <table className="w-full min-w-[1100px]">
+
           <thead>
             <tr className="border-b border-[#B5697A] bg-[#B5697A]">
+
               <th className="px-5 py-3 text-left text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
                 Order
               </th>
@@ -187,33 +317,53 @@ function OrdersTable({
                 Date
               </th>
 
-              <th className="px-5 py-3 text-right text-[11px] font-[450] uppercase tracking-[0.08em] text-white">
-                Action
-              </th>
             </tr>
           </thead>
 
           <tbody>
+
             {paginatedOrders.map((order) => {
               const deliveryStatus: DeliveryStatus =
                 order.deliveryStatus ?? "PENDING";
 
-              const isUpdating = updatingOrderIds.includes(order.id);
-              const updateError = updateErrors[order.id];
+              const isUpdating = updatingOrderIds.includes(
+                order.id
+              );
+
+              const orderUpdateError = updateErrors[order.id];
+
+              const deliveryUpdateError =
+                deliveryUpdateErrors[order.id];
+
+              const isLegacyStatus =
+                LEGACY_ORDER_STATUSES.some(
+                  (status) =>
+                    status.value === order.orderStatus
+                );
+
+              const legacyStatusLabel =
+                LEGACY_ORDER_STATUSES.find(
+                  (status) =>
+                    status.value === order.orderStatus
+                )?.label;
 
               return (
                 <tr
                   key={order.id}
-                  className="border-b border-[#F1E9E1] transition-colors duration-200 last:border-0 hover:bg-[#fffbfc]"
+                  onClick={() => navigate(`/admin/orders/${order.id}`)}
+                  className="cursor-pointer border-b border-[#F1E9E1] transition-colors duration-200 last:border-0 hover:bg-[#fffbfc]"
                 >
+
                   {/* ORDER */}
+
                   <td className="px-5 py-3">
-                    <span className="inline-flex whitespace-nowrap rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[10px] text-[#A85F70] md:text-[11px]">
+                    <span className="inline-flex whitespace-nowrap rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[9px] text-[#A85F70] md:text-[10px]">
                       {order.orderNumber}
                     </span>
                   </td>
 
                   {/* CUSTOMER */}
+
                   <td className="px-5 py-3">
                     <p className="max-w-[180px] truncate text-[12px] text-gray-600 md:text-[14px]">
                       {order.customerName}
@@ -227,6 +377,7 @@ function OrdersTable({
                   </td>
 
                   {/* AMOUNT */}
+
                   <td className="px-5 py-3">
                     <span className="whitespace-nowrap text-[12px] text-gray-600 md:text-[14px]">
                       {formatAmount(order.totalAmount)}
@@ -239,22 +390,107 @@ function OrdersTable({
                     )}
                   </td>
 
-                  {/* PAYMENT */}
+                  {/* PAYMENT STATUS */}
+
                   <td className="px-5 py-3">
                     <PaymentStatusBadge
                       status={order.paymentStatus}
                     />
                   </td>
 
-                  {/* ORDER STATUS */}
-                  <td className="px-5 py-3">
-                    <OrderStatusBadge status={order.orderStatus} />
+                  {/* MAIN ORDER STATUS */}
+
+                  <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="min-w-[180px]">
+
+                      {isLegacyStatus ? (
+                        <div>
+                          <OrderStatusBadge
+                            status={order.orderStatus}
+                          />
+
+                          <p className="mt-1 text-[9px] text-gray-400">
+                            {legacyStatusLabel}
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="relative">
+
+                            <PackageCheck
+                              size={14}
+                              aria-hidden="true"
+                              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A85F70]"
+                            />
+
+                            <select
+                              aria-label={`Order status for ${order.orderNumber}`}
+                              value={order.orderStatus}
+                              disabled={isUpdating}
+                              onChange={(event) =>
+                                handleOrderStatusChange(
+                                  order.id,
+                                  event.target.value as OrderStatus
+                                )
+                              }
+                              className="
+                                w-full appearance-none rounded-lg border
+                                border-[#EADFD3] bg-white
+                                py-2 pl-8 pr-7 text-[11px]
+                                text-[#6E5C61] outline-none transition-all
+                                focus:border-[#B5697A]
+                                disabled:cursor-not-allowed disabled:opacity-60
+                              "
+                            >
+                              {ORDER_STATUS_OPTIONS.map(
+                                (option) => (
+                                  <option
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                )
+                              )}
+                            </select>
+
+                            {isUpdating ? (
+                              <LoaderCircle
+                                size={14}
+                                aria-label="Updating order status"
+                                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 animate-spin text-[#A85F70]"
+                              />
+                            ) : (
+                              <ChevronRight
+                                size={14}
+                                aria-hidden="true"
+                                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rotate-90 text-[#A85F70]"
+                              />
+                            )}
+
+                          </div>
+                        </>
+                      )}
+
+                      {orderUpdateError && (
+                        <p
+                          role="alert"
+                          className="mt-1 max-w-[190px] text-[10px] text-red-600"
+                        >
+                          {orderUpdateError}
+                        </p>
+                      )}
+
+                    </div>
                   </td>
 
-                  {/* DELIVERY STATUS DROPDOWN */}
-                  <td className="px-5 py-3">
+                  {/* DELIVERY STATUS */}
+
+                  <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
                     <div className="min-w-[170px]">
+
                       <div className="relative">
+
                         <Truck
                           size={14}
                           aria-hidden="true"
@@ -273,21 +509,22 @@ function OrdersTable({
                           }
                           className={`
                             w-full appearance-none rounded-lg border
-                            py-2 pl-8 pr-7 text-[11px] font-medium
+                            py-2 pl-8 pr-7 text-[11px]
                             outline-none transition-all
-                            focus:ring-2 focus:ring-[#B5697A]/20
                             disabled:cursor-wait disabled:opacity-60
                             ${getDeliveryStatusClass(deliveryStatus)}
                           `}
                         >
-                          {DELIVERY_STATUS_OPTIONS.map((option) => (
-                            <option
-                              key={option.value}
-                              value={option.value}
-                            >
-                              {option.label}
-                            </option>
-                          ))}
+                          {DELIVERY_STATUS_OPTIONS.map(
+                            (option) => (
+                              <option
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </option>
+                            )
+                          )}
                         </select>
 
                         {isUpdating ? (
@@ -303,61 +540,54 @@ function OrdersTable({
                             className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rotate-90 text-current"
                           />
                         )}
+
                       </div>
 
                       {order.deliveredAt &&
                         deliveryStatus === "DELIVERED" && (
                           <p className="mt-1 text-[10px] text-green-700">
-                            Delivered: {formatDate(order.deliveredAt)}
+                            Delivered:{" "}
+                            {formatDate(order.deliveredAt)}
                           </p>
                         )}
 
-                      {updateError && (
+                      {deliveryUpdateError && (
                         <p
                           role="alert"
                           className="mt-1 max-w-[190px] text-[10px] text-red-600"
                         >
-                          {updateError}
+                          {deliveryUpdateError}
                         </p>
                       )}
+
                     </div>
                   </td>
 
                   {/* DATE */}
+
                   <td className="px-5 py-3">
-                    <span className="whitespace-nowrap text-[12px] text-gray-500">
+                    <span className="whitespace-nowrap text-[10px] md:text-[11px] text-gray-500">
                       {formatDate(order.createdAt)}
                     </span>
                   </td>
 
-                  {/* ACTION */}
-                  <td className="px-5 py-3 text-right">
-                    <button
-                      type="button"
-                      aria-label={`View ${order.orderNumber}`}
-                      title="View order"
-                      onClick={() =>
-                        navigate(`/admin/orders/${order.id}`)
-                      }
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[#D7E2F8] bg-[#F2F6FF] text-[#4D7FEA] transition-all duration-200 hover:border-[#BFD0F5] hover:bg-[#E8F0FF] hover:text-[#3D6ED8] focus:outline-none focus:ring-2 focus:ring-[#4D7FEA]/30"
-                    >
-                      <Eye
-                        className="h-4 w-4"
-                        strokeWidth={1.8}
-                        aria-hidden="true"
-                      />
-                    </button>
-                  </td>
                 </tr>
               );
             })}
+
           </tbody>
+
         </table>
+
       </div>
 
-      {/* PAGINATION */}
+      {/* =====================================================
+          PAGINATION
+      ===================================================== */}
+
       {totalPages > 1 && (
         <div className="flex flex-col items-center justify-between gap-4 border-t border-[#F1E9E1] bg-white px-4 py-4 sm:flex-row sm:px-6">
+
           <p className="text-[11px] text-gray-500 sm:text-[12px]">
             Showing{" "}
             <span className="font-semibold text-gray-700">
@@ -378,6 +608,7 @@ function OrdersTable({
           </p>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
+
             <button
               type="button"
               onClick={() => goToPage(currentPage - 1)}
@@ -434,9 +665,11 @@ function OrdersTable({
             >
               <ChevronRight size={16} strokeWidth={2} />
             </button>
+
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 import {
   useCallback,
   useEffect,
@@ -21,6 +22,7 @@ import OrdersList from "../../../components/admin/orders/OrdersList";
 
 import {
   getAdminOrders,
+  updateAdminOrderStatus,
   updateAdminOrderDeliveryStatus,
 } from "../../../api/adminOrderApi";
 
@@ -31,30 +33,51 @@ import type {
   DeliveryStatus,
 } from "../../../components/admin/orders/types";
 
-type AreaFilter = "ALL" | "WITHIN_DWARKA" | "OUTSIDE_DWARKA";
+type AreaFilter =
+  | "ALL"
+  | "WITHIN_DWARKA"
+  | "OUTSIDE_DWARKA";
 
 const ORDERS_POLL_INTERVAL = 15_000;
 
 function isWithinDwarka(order: AdminOrder): boolean {
-  return order.deliveryZone?.trim().toUpperCase() === "WITHIN_DWARKA";
+  return (
+    order.deliveryZone?.trim().toUpperCase() ===
+    "WITHIN_DWARKA"
+  );
 }
 
 function isOutsideDwarka(order: AdminOrder): boolean {
-  return order.deliveryZone?.trim().toUpperCase() === "OUTSIDE_DWARKA";
+  return (
+    order.deliveryZone?.trim().toUpperCase() ===
+    "OUTSIDE_DWARKA"
+  );
 }
 
 function AdminOrdersPage() {
   const [search, setSearch] = useState("");
-  const [orderStatus, setOrderStatus] = useState<OrderStatus | "">("");
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | "">("");
-  const [areaFilter, setAreaFilter] = useState<AreaFilter>("ALL");
+
+  const [orderStatus, setOrderStatus] =
+    useState<OrderStatus | "">("");
+
+  const [paymentStatus, setPaymentStatus] =
+    useState<PaymentStatus | "">("");
+
+  const [areaFilter, setAreaFilter] =
+    useState<AreaFilter>("ALL");
 
   const [orders, setOrders] = useState<AdminOrder[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
   const [error, setError] = useState("");
-  const [deliveryUpdateError, setDeliveryUpdateError] = useState("");
-  const [updatingOrderIds, setUpdatingOrderIds] = useState<number[]>([]);
+  const [orderUpdateError, setOrderUpdateError] = useState("");
+  const [deliveryUpdateError, setDeliveryUpdateError] =
+    useState("");
+
+  const [updatingOrderIds, setUpdatingOrderIds] =
+    useState<number[]>([]);
 
   const requestInProgress = useRef(false);
   const mountedRef = useRef(false);
@@ -65,41 +88,107 @@ function AdminOrdersPage() {
    * =========================================================
    */
 
-  const loadOrders = useCallback(async (showRefreshLoader = false) => {
-    if (requestInProgress.current) return;
+  const loadOrders = useCallback(
+    async (showRefreshLoader = false) => {
+      if (requestInProgress.current) return;
 
-    requestInProgress.current = true;
+      requestInProgress.current = true;
 
-    try {
-      if (showRefreshLoader && mountedRef.current) {
-        setIsRefreshing(true);
+      try {
+        if (showRefreshLoader && mountedRef.current) {
+          setIsRefreshing(true);
+        }
+
+        const data = await getAdminOrders();
+
+        if (mountedRef.current) {
+          setOrders(data);
+          setError("");
+        }
+      } catch (err: unknown) {
+        console.error("Failed to load admin orders:", err);
+
+        if (mountedRef.current) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load orders. Please try again."
+          );
+        }
+      } finally {
+        requestInProgress.current = false;
+
+        if (mountedRef.current) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
       }
+    },
+    []
+  );
 
-      const data = await getAdminOrders();
+  /*
+   * =========================================================
+   * UPDATE MAIN ORDER STATUS
+   * =========================================================
+   */
 
-      if (mountedRef.current) {
-        setOrders(data);
-        setError("");
-      }
-    } catch (err: unknown) {
-      console.error("Failed to load admin orders:", err);
+  const handleOrderStatusChange = useCallback(
+    async (
+      orderId: number,
+      nextOrderStatus: OrderStatus
+    ) => {
+      if (updatingOrderIds.includes(orderId)) return;
 
-      if (mountedRef.current) {
-        setError(
+      setOrderUpdateError("");
+      setUpdatingOrderIds((current) => [...current, orderId]);
+
+      try {
+        const updatedOrder = await updateAdminOrderStatus(
+          orderId,
+          nextOrderStatus
+        );
+
+        if (mountedRef.current) {
+          setOrders((currentOrders) =>
+            currentOrders.map((order) =>
+              order.id === orderId
+                ? {
+                    ...order,
+                    orderStatus: updatedOrder.orderStatus,
+                    paymentStatus: updatedOrder.paymentStatus,
+                    deliveryStatus: updatedOrder.deliveryStatus,
+                    updatedAt: updatedOrder.updatedAt,
+                  }
+                : order
+            )
+          );
+        }
+      } catch (err: unknown) {
+        console.error("Failed to update order status:", err);
+
+        const message =
           err instanceof Error
             ? err.message
-            : "Unable to load orders. Please try again."
-        );
-      }
-    } finally {
-      requestInProgress.current = false;
+            : "Unable to update order status. Please try again.";
 
-      if (mountedRef.current) {
-        setIsLoading(false);
-        setIsRefreshing(false);
+        if (mountedRef.current) {
+          setOrderUpdateError(message);
+        }
+
+        await loadOrders();
+
+        throw err;
+      } finally {
+        if (mountedRef.current) {
+          setUpdatingOrderIds((current) =>
+            current.filter((id) => id !== orderId)
+          );
+        }
       }
-    }
-  }, []);
+    },
+    [loadOrders, updatingOrderIds]
+  );
 
   /*
    * =========================================================
@@ -108,21 +197,27 @@ function AdminOrdersPage() {
    */
 
   const handleDeliveryStatusChange = useCallback(
-    async (orderId: number, deliveryStatus: DeliveryStatus) => {
+    async (
+      orderId: number,
+      deliveryStatus: DeliveryStatus
+    ) => {
       if (updatingOrderIds.includes(orderId)) return;
 
       setDeliveryUpdateError("");
 
-      setUpdatingOrderIds((current) => [...current, orderId]);
+      setUpdatingOrderIds((current) => [
+        ...current,
+        orderId,
+      ]);
 
       try {
-        const updatedOrder = await updateAdminOrderDeliveryStatus(
-          orderId,
-          deliveryStatus
-        );
+        const updatedOrder =
+          await updateAdminOrderDeliveryStatus(
+            orderId,
+            deliveryStatus
+          );
 
         if (mountedRef.current) {
-          // Update the affected order immediately in the UI.
           setOrders((currentOrders) =>
             currentOrders.map((order) =>
               order.id === orderId
@@ -139,18 +234,23 @@ function AdminOrdersPage() {
           );
         }
       } catch (err: unknown) {
-        console.error("Failed to update delivery status:", err);
+        console.error(
+          "Failed to update delivery status:",
+          err
+        );
+
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Unable to update delivery status. Please try again.";
 
         if (mountedRef.current) {
-          setDeliveryUpdateError(
-            err instanceof Error
-              ? err.message
-              : "Unable to update delivery status. Please try again."
-          );
+          setDeliveryUpdateError(message);
         }
 
-        // Reload from the server so the UI reflects the saved state.
         await loadOrders();
+
+        throw err;
       } finally {
         if (mountedRef.current) {
           setUpdatingOrderIds((current) =>
@@ -185,7 +285,10 @@ function AdminOrdersPage() {
       }
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
 
     return () => {
       mountedRef.current = false;
@@ -208,7 +311,9 @@ function AdminOrdersPage() {
   const totalOrders = orders.length;
 
   const pendingOrders = orders.filter(
-    (order) => order.orderStatus === "PENDING"
+    (order) =>
+      order.orderStatus === "NEW" ||
+      order.orderStatus === "PENDING"
   ).length;
 
   const paidOrders = orders.filter(
@@ -216,7 +321,9 @@ function AdminOrdersPage() {
   ).length;
 
   const completedOrders = orders.filter(
-    (order) => order.orderStatus === "COMPLETED"
+    (order) =>
+      order.orderStatus === "DELIVERED" ||
+      order.orderStatus === "COMPLETED"
   ).length;
 
   /*
@@ -271,13 +378,16 @@ function AdminOrdersPage() {
         order.orderNumber.toLowerCase().includes(query) ||
         order.customerName.toLowerCase().includes(query) ||
         order.customerPhone.toLowerCase().includes(query) ||
-        Boolean(order.customerEmail?.toLowerCase().includes(query));
+        Boolean(
+          order.customerEmail?.toLowerCase().includes(query)
+        );
 
       const matchesOrderStatus =
         !orderStatus || order.orderStatus === orderStatus;
 
       const matchesPaymentStatus =
-        !paymentStatus || order.paymentStatus === paymentStatus;
+        !paymentStatus ||
+        order.paymentStatus === paymentStatus;
 
       return (
         matchesSearch &&
@@ -285,7 +395,12 @@ function AdminOrdersPage() {
         matchesPaymentStatus
       );
     });
-  }, [areaFilteredOrders, search, orderStatus, paymentStatus]);
+  }, [
+    areaFilteredOrders,
+    search,
+    orderStatus,
+    paymentStatus,
+  ]);
 
   /*
    * =========================================================
@@ -414,6 +529,7 @@ function AdminOrdersPage() {
   return (
     <main className="min-h-full bg-white px-5 py-2 sm:px-6 lg:px-8 lg:py-4">
       <div className="mx-auto max-w-7xl">
+
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <OrdersPageHeader />
 
@@ -431,11 +547,13 @@ function AdminOrdersPage() {
               }
               strokeWidth={1.8}
             />
+
             {isRefreshing ? "Refreshing..." : "Refresh"}
           </button>
         </div>
 
         {/* ORDER REFRESH ERROR */}
+
         {error && orders.length > 0 && (
           <div
             role="status"
@@ -456,7 +574,20 @@ function AdminOrdersPage() {
           </div>
         )}
 
-        {/* DELIVERY UPDATE ERROR */}
+        {/* ORDER STATUS UPDATE ERROR */}
+
+        {orderUpdateError && (
+          <div
+            role="alert"
+            className="mt-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{orderUpdateError}</span>
+          </div>
+        )}
+
+        {/* DELIVERY STATUS UPDATE ERROR */}
+
         {deliveryUpdateError && (
           <div
             role="alert"
@@ -468,6 +599,7 @@ function AdminOrdersPage() {
         )}
 
         {/* SUMMARY CARDS */}
+
         <OrderSummaryCards
           totalOrders={totalOrders}
           pendingOrders={pendingOrders}
@@ -476,6 +608,7 @@ function AdminOrdersPage() {
         />
 
         {/* SEARCH AND STATUS FILTERS */}
+
         <OrdersToolbar
           search={search}
           filteredCount={filteredOrders.length}
@@ -494,6 +627,7 @@ function AdminOrdersPage() {
         />
 
         {/* DELIVERY AREA TABS */}
+
         <section
           aria-label="Filter orders by delivery area"
           className="mt-5"
@@ -508,7 +642,7 @@ function AdminOrdersPage() {
                   type="button"
                   onClick={() => setAreaFilter(id)}
                   aria-pressed={active}
-                  className={`flex min-h-[40px] items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition ${
+                  className={`flex min-h-[40px] items-center justify-between gap-3 rounded-xl border px-4 py-2 text-left transition ${
                     active
                       ? "border-[#fffbfc] bg-[#F8EBEF] text-[#824958]"
                       : "border-[#EFE3D2] bg-white text-[#6E5C61] hover:bg-[#fffbfc]"
@@ -516,6 +650,7 @@ function AdminOrdersPage() {
                 >
                   <span className="flex items-center gap-3">
                     <Icon size={18} strokeWidth={1.8} />
+
                     <span className="text-[11px] md:text-[12px]">
                       {label}
                     </span>
@@ -537,14 +672,17 @@ function AdminOrdersPage() {
         </section>
 
         {/* ORDERS LIST */}
-        <section className="mt-5 overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
+
+        <section className="mt-4 overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
           <OrdersList
             orders={filteredOrders}
             hasSearch={hasActiveFilters || areaFilter !== "ALL"}
             onClearSearch={clearFilters}
+            onOrderStatusChange={handleOrderStatusChange}
             onDeliveryStatusChange={handleDeliveryStatusChange}
           />
         </section>
+
       </div>
     </main>
   );

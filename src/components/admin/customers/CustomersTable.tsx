@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { AdminCustomer } from "./types";
 import { formatCustomerDate } from "./customerUtils";
@@ -81,22 +81,28 @@ function CustomersTable({ customers }: CustomersTableProps) {
   return (
     <div className="w-full">
       <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-[720px] lg:min-w-[950px]">
+        {/* Table min-width ko thoda adjust kiya kyunki ek column badha aur ek hata */}
+        <table className="w-full min-w-[750px] lg:min-w-[950px]">
           <thead>
             <tr className="border-b border-[#B5697A] bg-[#B5697A]">
               <th className={TH_CLASS}><span className={TH_TEXT}>Customer</span></th>
               <th className={TH_CLASS}><span className={TH_TEXT}>Phone</span></th>
               <th className={`hidden sm:table-cell ${TH_CLASS}`}><span className={TH_TEXT}>Email</span></th>
               <th className={TH_CLASS}><span className={TH_TEXT}>Verified</span></th>
+              {/* ✅ NAYA COLUMN: Account Status */}
+              <th className={TH_CLASS}><span className={TH_TEXT}>Account Status</span></th>
               <th className={TH_CLASS}><span className={TH_TEXT}>Orders</span></th>
               <th className={`hidden sm:table-cell ${TH_CLASS}`}><span className={TH_TEXT}>Joined</span></th>
-              <th className={`${TH_CLASS} text-right`}><span className="text-[10px] uppercase text-white/80 sm:text-[11px]">Action</span></th>
             </tr>
           </thead>
 
           <tbody>
             {paginatedCustomers.map((customer) => (
-              <tr key={customer.id} className="border-b border-[#F1E9E1] transition-colors duration-200 last:border-0 hover:bg-[#FFFBF8]">
+              <tr
+                key={customer.id}
+                onClick={() => handleViewCustomer(customer.id)}
+                className="cursor-pointer border-b border-[#F1E9E1] transition-colors duration-200 last:border-0 hover:bg-[#FFFBF8]"
+              >
                 
                 <td className="px-4 py-3 sm:px-6">
                   <p className="truncate text-[12px] text-gray-600 md:text-[13px]">{customer.name || "Unnamed Customer"}</p>
@@ -110,6 +116,17 @@ function CustomersTable({ customers }: CustomersTableProps) {
                   <CustomerVerificationBadge isVerified={customer.isVerified} />
                 </td>
 
+                {/* ✅ NAYA COLUMN DATA */}
+                <td className="px-4 py-3 sm:px-6">
+                  <span className={`inline-flex items-center rounded-md px-2 py-1 text-[10px] font-medium ${
+                    customer.isVerified 
+                      ? "bg-emerald-50 text-emerald-700" 
+                      : "bg-amber-50 text-amber-700"
+                  }`}>
+                    {customer.isVerified ? "Active" : "Pending"}
+                  </span>
+                </td>
+
                 <td className="px-4 py-3 sm:px-6">
                   <span className="text-[12px] text-[#1F4A2E] sm:text-[13px]">
                     {customer.totalOrders?.toLocaleString("en-IN") || 0}
@@ -117,18 +134,6 @@ function CustomersTable({ customers }: CustomersTableProps) {
                 </td>
 
                 <td className={`hidden sm:table-cell px-4 py-3 sm:px-6 ${TD_TEXT}`}>{formatCustomerDate(customer.createdAt)}</td>
-
-                <td className="px-4 py-3 text-right sm:px-6">
-                  <button
-                    type="button"
-                    onClick={() => handleViewCustomer(customer.id)}
-                    aria-label={`View ${customer.name || "customer"}`}
-                    title="View customer"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#D7E2F8] bg-[#F2F6FF] text-[#4D7FEA] hover:border-[#BFD0F5] hover:bg-[#E8F0FF] hover:text-[#3D6ED8] focus:outline-none sm:h-9 sm:w-9"
-                  >
-                    <Eye className="h-[14px] w-[14px] sm:h-[16px] sm:w-[16px]" strokeWidth={1.8} aria-hidden="true" />
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>

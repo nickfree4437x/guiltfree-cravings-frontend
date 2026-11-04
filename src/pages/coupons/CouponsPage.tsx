@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import type { Coupon } from "../../components/coupons/CouponCard";
 import { getCustomerOffers, type Offer } from "../../api/offerApi";
 
@@ -93,7 +92,7 @@ function CouponsPage() {
 
   // ─── Render ─────────────────────────────────────────────
   return (
-    <main className="min-h-[calc(100vh-76px)] bg-white px-4 pb-10 pt-16 sm:px-6 sm:pb-20 sm:pt-16 lg:px-8 lg:pt-20">
+    <main className="min-h-[calc(100vh-76px)] bg-white px-4 pb-10 sm:px-6 sm:pb-20 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <CouponsPageHeader />
 

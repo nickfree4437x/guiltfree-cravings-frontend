@@ -7,6 +7,10 @@ export interface ProductVariant {
   unit: string;
   packaging: string;
   price: number;
+
+  // Separate image for Glass Jar variants
+  image?: string | null;
+
   createdAt?: string;
   updatedAt?: string;
 }

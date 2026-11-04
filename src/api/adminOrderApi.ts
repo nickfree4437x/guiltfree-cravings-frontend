@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 import type {
@@ -10,12 +11,14 @@ import type {
 } from "../components/admin/orders/types";
 
 // ─── Config ───────────────────────────────────────────────
+
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://guiltfreecravings.com/api";
 
 const ADMIN_TOKEN_KEY = "guiltfree_admin_token";
 
 // ─── Types ────────────────────────────────────────────────
+
 interface AdminOrderItemResponse {
   id: number;
   productId: number;
@@ -33,6 +36,7 @@ interface AdminOrderResponse {
   id: number;
   orderNumber: string;
   userId?: number;
+
   customerName: string;
   customerPhone: string;
   customerEmail: string | null;
@@ -83,6 +87,19 @@ interface AdminOrderDetailsResponse {
   data: AdminOrderResponse;
 }
 
+interface UpdateOrderStatusResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: number;
+    orderNumber: string;
+    orderStatus: OrderStatus;
+    paymentStatus: PaymentStatus;
+    deliveryStatus: DeliveryStatus;
+    updatedAt: string;
+  };
+}
+
 interface UpdateDeliveryStatusResponse {
   success: boolean;
   message: string;
@@ -98,11 +115,14 @@ interface UpdateDeliveryStatusResponse {
 }
 
 // ─── Auth ─────────────────────────────────────────────────
+
 const getAdminHeaders = () => {
   const token = localStorage.getItem(ADMIN_TOKEN_KEY);
 
   if (!token) {
-    throw new Error("Admin authentication required. Please login again.");
+    throw new Error(
+      "Admin authentication required. Please login again."
+    );
   }
 
   return {
@@ -111,6 +131,7 @@ const getAdminHeaders = () => {
 };
 
 // ─── Normalize ────────────────────────────────────────────
+
 const normalizeAdminOrder = (
   order: AdminOrderResponse
 ): AdminOrder => {
@@ -138,6 +159,7 @@ const normalizeAdminOrder = (
 };
 
 // ─── API: Get All Orders ──────────────────────────────────
+
 export const getAdminOrders = async (): Promise<AdminOrder[]> => {
   const response = await axios.get<AdminOrdersResponse>(
     `${API_BASE_URL}/admin/orders`,
@@ -146,7 +168,10 @@ export const getAdminOrders = async (): Promise<AdminOrder[]> => {
     }
   );
 
-  if (!response.data.success || !Array.isArray(response.data.data)) {
+  if (
+    !response.data.success ||
+    !Array.isArray(response.data.data)
+  ) {
     throw new Error(
       response.data.message || "Unable to load admin orders."
     );
@@ -156,6 +181,7 @@ export const getAdminOrders = async (): Promise<AdminOrder[]> => {
 };
 
 // ─── API: Get Single Order ────────────────────────────────
+
 export const getAdminOrderById = async (
   orderId: number
 ): Promise<AdminOrder> => {
@@ -179,7 +205,51 @@ export const getAdminOrderById = async (
   return normalizeAdminOrder(response.data.data);
 };
 
+// ─── API: Update Main Order Status ────────────────────────
+
+export const updateAdminOrderStatus = async (
+  orderId: number,
+  orderStatus: OrderStatus
+): Promise<UpdateOrderStatusResponse["data"]> => {
+  if (!Number.isInteger(orderId) || orderId <= 0) {
+    throw new Error("Invalid order ID.");
+  }
+
+  const allowedStatuses: OrderStatus[] = [
+    "NEW",
+    "CONFIRMED",
+    "PACKED",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+    "RETURNED",
+  ];
+
+  if (!allowedStatuses.includes(orderStatus)) {
+    throw new Error("Invalid order status.");
+  }
+
+  const response = await axios.patch<UpdateOrderStatusResponse>(
+    `${API_BASE_URL}/admin/orders/${orderId}/status`,
+    {
+      orderStatus,
+    },
+    {
+      headers: getAdminHeaders(),
+    }
+  );
+
+  if (!response.data.success || !response.data.data) {
+    throw new Error(
+      response.data.message || "Unable to update order status."
+    );
+  }
+
+  return response.data.data;
+};
+
 // ─── API: Update Delivery Status ──────────────────────────
+
 export const updateAdminOrderDeliveryStatus = async (
   orderId: number,
   deliveryStatus: DeliveryStatus

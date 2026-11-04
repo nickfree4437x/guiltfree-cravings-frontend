@@ -1,6 +1,7 @@
 import axios from "axios";
 
 // ─── Types ────────────────────────────────────────────────
+
 export interface ProductVariant {
   id: number;
   productId: number;
@@ -8,6 +9,10 @@ export interface ProductVariant {
   unit: string;
   packaging: string;
   price: number;
+
+  // Variant-specific image, primarily for Glass Jar variants.
+  image?: string | null;
+
   createdAt: string;
   updatedAt: string;
 }
@@ -18,15 +23,17 @@ export interface Product {
   description: string;
 
   // Images
-  image: string; // main image (landing page)
-  images: string[]; // general gallery
+  image: string;
+  images: string[];
   regularImages: string[];
   glassJarImages: string[];
   cardboardBoxImages: string[];
-  glassJarImage: string | null; // legacy compatibility
-  cardboardBoxImage: string | null; // legacy compatibility
 
-  // Product info / dietary details
+  // Legacy packaging images
+  glassJarImage: string | null;
+  cardboardBoxImage: string | null;
+
+  // Product information / dietary details
   ingredients: string | null;
   allergenInfo: string | null;
   medicalDisclaimer: string | null;
@@ -43,6 +50,7 @@ export interface Product {
 }
 
 // ─── API Responses ────────────────────────────────────────
+
 interface ProductsResponse {
   success: boolean;
   count: number;
@@ -55,31 +63,45 @@ interface ProductResponse {
 }
 
 // ─── Axios Instance ───────────────────────────────────────
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://guiltfreecravings.com/api",
-  headers: { "Content-Type": "application/json" },
+  baseURL:
+    import.meta.env.VITE_API_URL || "https://guiltfreecravings.com/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
   timeout: 10000,
 });
 
-// ─── API: Get All Active Products ─────────────────────────
+// ─── Get All Active Products ──────────────────────────────
+
 export const getProducts = async (): Promise<Product[]> => {
   const response = await api.get<ProductsResponse>("/products");
+
   if (!response.data.success) {
     throw new Error("Failed to fetch products.");
   }
+
   return response.data.data;
 };
 
-// ─── API: Get Product By ID ───────────────────────────────
-export const getProductById = async (id: number): Promise<Product> => {
+// ─── Get Product By ID ────────────────────────────────────
+
+export const getProductById = async (
+  id: number
+): Promise<Product> => {
   if (!Number.isInteger(id) || id <= 0) {
     throw new Error("Invalid product ID.");
   }
 
-  const response = await api.get<ProductResponse>(`/products/${id}`);
+  const response = await api.get<ProductResponse>(
+    `/products/${id}`
+  );
+
   if (!response.data.success) {
     throw new Error("Failed to fetch product.");
   }
+
   return response.data.data;
 };
 

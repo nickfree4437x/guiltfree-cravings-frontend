@@ -1,15 +1,31 @@
+
 /*
  * =========================================================
  * ORDER TYPES
  * =========================================================
  */
 
+/*
+ * Main order lifecycle statuses.
+ * These must match the backend Prisma OrderStatus enum.
+ */
+
 export type OrderStatus =
-  | "PENDING"
+  | "NEW"
   | "CONFIRMED"
+  | "PACKED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "RETURNED"
+  // Legacy statuses retained for existing orders
+  | "PENDING"
   | "PROCESSING"
-  | "COMPLETED"
-  | "CANCELLED";
+  | "COMPLETED";
+
+/*
+ * Payment status is independent of order status.
+ */
 
 export type PaymentStatus =
   | "PENDING"
@@ -17,9 +33,18 @@ export type PaymentStatus =
   | "FAILED"
   | "REFUNDED";
 
+/*
+ * Delivery zones
+ */
+
 export type DeliveryZone =
   | "WITHIN_DWARKA"
   | "OUTSIDE_DWARKA";
+
+/*
+ * Existing delivery workflow.
+ * Do not merge this with OrderStatus.
+ */
 
 export type DeliveryStatus =
   | "PENDING"
@@ -28,6 +53,12 @@ export type DeliveryStatus =
   | "OUT_FOR_DELIVERY"
   | "DELIVERED"
   | "CANCELLED";
+
+/*
+ * =========================================================
+ * ADMIN ORDER ITEM
+ * =========================================================
+ */
 
 export interface AdminOrderItem {
   id: number;
@@ -44,12 +75,19 @@ export interface AdminOrderItem {
   subtotal: number;
 }
 
+/*
+ * =========================================================
+ * ADMIN ORDER
+ * =========================================================
+ */
+
 export interface AdminOrder {
   id: number;
   orderNumber: string;
 
   userId?: number;
 
+  // Customer details
   customerName: string;
   customerPhone: string;
   customerEmail?: string | null;
@@ -74,6 +112,7 @@ export interface AdminOrder {
   discountAmount: number;
   totalAmount: number;
 
+  // Offer
   offerId?: number | null;
   offerCode?: string | null;
 
@@ -81,7 +120,7 @@ export interface AdminOrder {
   itemCount: number;
   items: AdminOrderItem[];
 
-  // Status
+  // Independent statuses
   orderStatus: OrderStatus;
   paymentStatus: PaymentStatus;
 

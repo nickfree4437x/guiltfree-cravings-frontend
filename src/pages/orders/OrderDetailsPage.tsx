@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  Link,
   useLocation,
   useNavigate,
   useParams,
@@ -46,12 +45,8 @@ interface DeliveryStatusConfig {
 // ─── Helpers ──────────────────────────────────────────────
 function formatOrderDate(dateString?: string | null) {
   if (!dateString) return "Date unavailable";
-
   const date = new Date(dateString);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Date unavailable";
-  }
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
 
   return new Intl.DateTimeFormat("en-IN", {
     day: "2-digit",
@@ -64,7 +59,6 @@ function formatOrderDate(dateString?: string | null) {
 
 function formatStatus(status?: string | null) {
   if (!status) return "Not available";
-
   return status
     .toLowerCase()
     .replace(/_/g, " ")
@@ -73,42 +67,20 @@ function formatStatus(status?: string | null) {
 
 function formatCurrency(amount: number | string | null | undefined) {
   const value = Number(amount);
-
-  if (!Number.isFinite(value)) {
-    return "₹0";
-  }
-
+  if (!Number.isFinite(value)) return "₹0";
   return `₹${value.toLocaleString("en-IN", {
     maximumFractionDigits: 2,
   })}`;
 }
 
-// HTTP status → user-friendly message
 function getOrderErrorMessage(err: unknown): string {
-  if (
-    typeof err === "object" &&
-    err !== null &&
-    "response" in err
-  ) {
-    const status = (
-      err as { response?: { status?: number } }
-    ).response?.status;
-
-    if (status === 401) {
-      return "Please sign in again to view your order.";
-    }
-
-    if (status === 403) {
-      return "You are not authorized to view this order.";
-    }
-
-    if (status === 404) {
-      return "This order could not be found.";
-    }
-
+  if (typeof err === "object" && err !== null && "response" in err) {
+    const status = (err as { response?: { status?: number } }).response?.status;
+    if (status === 401) return "Please sign in again to view your order.";
+    if (status === 403) return "You are not authorized to view this order.";
+    if (status === 404) return "This order could not be found.";
     return "We couldn't load your order. Please try again.";
   }
-
   return "We couldn't connect to the server. Please check your connection and try again.";
 }
 
@@ -124,7 +96,6 @@ const DELIVERY_STATUS_CONFIG: Record<
     className: "border-amber-200 bg-amber-50 text-amber-700",
     iconClassName: "bg-amber-100 text-amber-700",
   },
-
   CONFIRMED: {
     label: "Confirmed",
     description: "Your order is confirmed and awaiting preparation.",
@@ -132,7 +103,6 @@ const DELIVERY_STATUS_CONFIG: Record<
     className: "border-blue-200 bg-blue-50 text-blue-700",
     iconClassName: "bg-blue-100 text-blue-700",
   },
-
   PROCESSING: {
     label: "Processing",
     description: "Your order is being prepared.",
@@ -140,7 +110,6 @@ const DELIVERY_STATUS_CONFIG: Record<
     className: "border-purple-200 bg-purple-50 text-purple-700",
     iconClassName: "bg-purple-100 text-purple-700",
   },
-
   OUT_FOR_DELIVERY: {
     label: "Out for Delivery",
     description: "Your order is on its way to your delivery address.",
@@ -148,7 +117,6 @@ const DELIVERY_STATUS_CONFIG: Record<
     className: "border-sky-200 bg-sky-50 text-sky-700",
     iconClassName: "bg-sky-100 text-sky-700",
   },
-
   DELIVERED: {
     label: "Delivered",
     description: "Your order has been delivered successfully.",
@@ -156,7 +124,6 @@ const DELIVERY_STATUS_CONFIG: Record<
     className: "border-emerald-200 bg-emerald-50 text-emerald-700",
     iconClassName: "bg-emerald-100 text-emerald-700",
   },
-
   CANCELLED: {
     label: "Cancelled",
     description: "The delivery for this order was cancelled.",
@@ -166,19 +133,10 @@ const DELIVERY_STATUS_CONFIG: Record<
   },
 };
 
-function normalizeDeliveryStatus(
-  status?: string | null
-): DeliveryStatus {
-  if (
-    status &&
-    Object.prototype.hasOwnProperty.call(
-      DELIVERY_STATUS_CONFIG,
-      status
-    )
-  ) {
+function normalizeDeliveryStatus(status?: string | null): DeliveryStatus {
+  if (status && Object.prototype.hasOwnProperty.call(DELIVERY_STATUS_CONFIG, status)) {
     return status as DeliveryStatus;
   }
-
   return "PENDING";
 }
 
@@ -192,30 +150,24 @@ function StatusBadge({
 }) {
   const normalized = status.toLowerCase();
 
-  const isSuccess = [
-    "paid",
-    "completed",
-    "confirmed",
-  ].includes(normalized);
-
-  const isFailed = [
-    "failed",
-    "cancelled",
-    "refunded",
-  ].includes(normalized);
-
-  const styles = isSuccess
-    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-    : isFailed
-      ? "border-red-200 bg-red-50 text-red-700"
-      : "border-amber-200 bg-amber-50 text-amber-700";
+  const styles =
+    ["paid", "completed", "confirmed", "delivered"].includes(normalized)
+      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+      : ["failed", "cancelled", "refunded"].includes(normalized)
+        ? "border-red-200 bg-red-50 text-red-700"
+        : normalized === "returned"
+          ? "border-rose-200 bg-rose-50 text-rose-700"
+          : normalized === "shipped"
+            ? "border-sky-200 bg-sky-50 text-sky-700"
+            : normalized === "packed"
+              ? "border-purple-200 bg-purple-50 text-purple-700"
+              : "border-amber-200 bg-amber-50 text-amber-700";
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[10px] font-light uppercase tracking-wider text-[#A39890]">
+      <span className="text-[10px] font-light uppercase tracking-wider text-slate-500">
         {label}
       </span>
-
       <span
         className={`inline-flex w-fit items-center rounded-full border px-3 py-1.5 text-[10px] capitalize ${styles}`}
       >
@@ -227,7 +179,6 @@ function StatusBadge({
 
 // ─── Section Header ───────────────────────────────────────
 function SectionHeader({
-  icon,
   title,
   subtitle,
 }: {
@@ -237,15 +188,10 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff1f2] text-[#B5697A]">
-        {icon}
-      </div>
-
       <div>
         <h2 className="text-[16px] font-semibold text-slate-700 md:text-[18px]">
           {title}
         </h2>
-
         {subtitle && (
           <p className="mt-0.5 text-xs text-slate-500">
             {subtitle}
@@ -263,10 +209,7 @@ function DeliveryStatusCard({ order }: { order: Order }) {
   const Icon = config.icon;
 
   return (
-    <section
-      aria-label="Delivery tracking information"
-      className="overflow-hidden rounded-2xl border border-[#eadfd3] bg-white shadow-sm"
-    >
+    <section aria-label="Delivery tracking information" className="overflow-hidden rounded-2xl border border-[#eadfd3] bg-white shadow-sm">
       <div className="border-b border-[#eadfd3] px-5 py-5 sm:px-7">
         <SectionHeader
           icon={<Truck className="h-5 w-5" />}
@@ -277,26 +220,20 @@ function DeliveryStatusCard({ order }: { order: Order }) {
 
       <div className="p-5 sm:p-7">
         <div className="flex items-start gap-4">
-          <div
-            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${config.iconClassName}`}
-          >
+          <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${config.iconClassName}`}>
             <Icon className="h-6 w-6" aria-hidden="true" />
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#A39890]">
+            <p className="text-[10px] uppercase tracking-[0.12em] text-slate-500">
               Current Delivery Status
             </p>
-
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span
-                className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-semibold ${config.className}`}
-              >
+              <span className={`inline-flex items-center rounded-full border px-3 py-1.5 text-[10px] ${config.className}`}>
                 {config.label}
               </span>
             </div>
-
-            <p className="mt-3 text-xs leading-6 text-slate-500 sm:text-sm">
+            <p className="mt-1 text-[11px] leading-relaxed text-slate-500 sm:text-[13px]">
               {config.description}
             </p>
           </div>
@@ -305,13 +242,9 @@ function DeliveryStatusCard({ order }: { order: Order }) {
         {status === "OUT_FOR_DELIVERY" && (
           <div className="mt-5 flex items-start gap-3 rounded-xl border border-sky-100 bg-sky-50 p-4">
             <Truck className="mt-0.5 h-5 w-5 shrink-0 text-sky-700" />
-
             <div>
-              <p className="text-sm font-semibold text-sky-800">
-                Your order is on its way!
-              </p>
-
-              <p className="mt-1 text-xs leading-5 text-sky-700">
+              <p className="text-sm font-semibold text-sky-800">Your order is on its way!</p>
+              <p className="mt-1 text-[10px] md:text-[11px] leading-relaxed text-sky-700">
                 Your order has been marked as out for delivery. Please keep your phone available.
               </p>
             </div>
@@ -321,18 +254,14 @@ function DeliveryStatusCard({ order }: { order: Order }) {
         {status === "DELIVERED" && (
           <div className="mt-5 flex items-start gap-3 rounded-xl border border-emerald-100 bg-emerald-50 p-4">
             <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
-
             <div>
-              <p className="text-sm font-semibold text-emerald-800">
-                Order delivered successfully!
-              </p>
-
+              <p className="text-sm font-semibold text-emerald-800">Order delivered successfully!</p>
               {order.deliveredAt ? (
-                <p className="mt-1 text-xs leading-5 text-emerald-700">
+                <p className="mt-1 text-xs leading-relaxed text-emerald-700">
                   Delivered on {formatOrderDate(order.deliveredAt)}
                 </p>
               ) : (
-                <p className="mt-1 text-xs leading-5 text-emerald-700">
+                <p className="mt-1 text-xs leading-relaxed text-emerald-700">
                   Your order has been marked as delivered.
                 </p>
               )}
@@ -343,18 +272,188 @@ function DeliveryStatusCard({ order }: { order: Order }) {
         {status === "CANCELLED" && (
           <div className="mt-5 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4">
             <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-700" />
-
             <div>
-              <p className="text-sm font-semibold text-red-800">
-                Delivery cancelled
-              </p>
-
-              <p className="mt-1 text-xs leading-5 text-red-700">
+              <p className="text-sm font-semibold text-red-800">Delivery cancelled</p>
+              <p className="mt-1 text-xs leading-relaxed text-red-700">
                 Please contact our support team if you need help with this order.
               </p>
             </div>
           </div>
         )}
+      </div>
+    </section>
+  );
+}
+
+// ─── Order Tracking Timeline (Clean & Connected) ───
+
+const ORDER_STEPS = [
+  {
+    status: "NEW",
+    label: "Order Placed",
+    description: "We've received your order.",
+    icon: ReceiptText,
+    colorClass: "border-blue-500 text-blue-500",
+    ringClass: "ring-blue-50",
+    badgeClass: "bg-blue-50 text-blue-600",
+  },
+  {
+    status: "CONFIRMED",
+    label: "Confirmed",
+    description: "Your order has been confirmed.",
+    icon: CheckCircle2,
+    colorClass: "border-purple-500 text-purple-500",
+    ringClass: "ring-purple-50",
+    badgeClass: "bg-purple-50 text-purple-600",
+  },
+  {
+    status: "PACKED",
+    label: "Packed",
+    description: "Your items are packed and ready.",
+    icon: Package,
+    colorClass: "border-amber-500 text-amber-500",
+    ringClass: "ring-amber-50",
+    badgeClass: "bg-amber-50 text-amber-600",
+  },
+  {
+    status: "SHIPPED",
+    label: "Shipped",
+    description: "Your order has been dispatched.",
+    icon: Truck,
+    colorClass: "border-sky-500 text-sky-500",
+    ringClass: "ring-sky-50",
+    badgeClass: "bg-sky-50 text-sky-600",
+  },
+  {
+    status: "DELIVERED",
+    label: "Delivered",
+    description: "Your order has been delivered successfully.",
+    icon: PackageCheck,
+    colorClass: "border-emerald-500 text-emerald-500",
+    ringClass: "ring-emerald-50",
+    badgeClass: "bg-emerald-50 text-emerald-600",
+  },
+] as const;
+
+function OrderTrackingTimeline({ order }: { order: Order }) {
+  const currentStatus = order.orderStatus;
+  const currentIndex = ORDER_STEPS.findIndex((step) => step.status === currentStatus);
+  const isCancelled = currentStatus === "CANCELLED";
+  const isReturned = currentStatus === "RETURNED";
+
+  if (isCancelled || isReturned) {
+    return (
+      <section className="mt-4 overflow-hidden rounded-2xl border border-[#eadfd3] bg-white shadow-sm">
+        <div className="border-b border-[#eadfd3] px-5 py-5 sm:px-7">
+          <SectionHeader icon={<PackageCheck className="h-5 w-5" />} title="Order Tracking" subtitle="Your order's latest progress" />
+        </div>
+        <div className="p-5 sm:p-7">
+          <div className={`flex items-start gap-4 rounded-xl border p-4 sm:p-5 ${isReturned ? "border-rose-200 bg-rose-50" : "border-red-200 bg-red-50"}`}>
+            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${isReturned ? "bg-rose-100 text-rose-700" : "bg-red-100 text-red-700"}`}>
+              {isReturned ? <PackageCheck className="h-6 w-6" /> : <XCircle className="h-6 w-6" />}
+            </div>
+            <div className="min-w-0">
+              <h3 className={`text-sm font-semibold ${isReturned ? "text-rose-800" : "text-red-800"}`}>{isReturned ? "Order Returned" : "Order Cancelled"}</h3>
+              <p className={`mt-1 text-xs leading-5 ${isReturned ? "text-rose-700" : "text-red-700"}`}>
+                {isReturned ? "This order has been marked as returned." : "This order has been cancelled."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (currentIndex === -1) {
+    return (
+      <section className="mt-6 rounded-2xl border border-[#eadfd3] bg-white p-5 shadow-sm sm:p-7">
+        <SectionHeader icon={<Clock3 className="h-5 w-5" />} title="Order Tracking" subtitle="Your order's latest progress" />
+        <div className="mt-5 rounded-xl border border-amber-100 bg-amber-50 p-4">
+          <p className="text-sm font-semibold text-amber-800">{formatStatus(currentStatus)}</p>
+          <p className="mt-1 text-xs leading-5 text-amber-700">This order uses an older status. Its original status is preserved. Please contact support if you need an update.</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mt-6 overflow-hidden rounded-xl border border-[#eadfd3] bg-white shadow-sm">
+      <div className="border-b border-[#eadfd3] px-5 py-5 sm:px-7">
+        <SectionHeader icon={<PackageCheck className="h-5 w-5" />} title="Order Tracking" subtitle="Follow your order from placement to delivery" />
+      </div>
+      <div className="p-5 sm:p-8">
+        <div className="relative">
+          {ORDER_STEPS.map((step, index) => {
+            const isCompleted = index < currentIndex;
+            const isCurrent = index === currentIndex;
+            const Icon = step.icon;
+            
+            const timestamp = step.status === "NEW" ? order.createdAt : step.status === "DELIVERED" && currentStatus === "DELIVERED" ? order.deliveredAt : null;
+            
+            const isLast = index === ORDER_STEPS.length - 1;
+
+            return (
+              <div key={step.status} className="flex gap-4 pb-0">
+                {/* Timeline Column (Icon + Line) */}
+                <div className="flex flex-col items-center">
+                  {/* Icon */}
+                  <div
+                    className={`relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 bg-white ${
+                      isCompleted
+                        ? "border-emerald-500 text-emerald-500"
+                        : isCurrent
+                          ? `${step.colorClass} ring-4 ${step.ringClass}`
+                          : "border-slate-200 text-slate-400"
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <CheckCircle2 className="h-5 w-5" />
+                    ) : (
+                      <Icon className="h-4 w-4" />
+                    )}
+                  </div>
+
+                  {/* Connector Line (Only if not last) */}
+                  {!isLast && (
+                    <div
+                      className={`w-[2px] flex-1 my-1 ${
+                        isCompleted ? "bg-emerald-400" : "bg-slate-200"
+                      }`}
+                    />
+                  )}
+                </div>
+
+                {/* Content Column */}
+                <div className={`min-w-0 flex-1 ${!isLast ? "pb-8" : "pb-1"}`}>
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <h3 className={`text-sm font-semibold ${isCompleted ? "text-emerald-700" : isCurrent ? "text-slate-800" : "text-slate-400"}`}>
+                      {step.label}
+                    </h3>
+                    
+                    {isCurrent && (
+                      <span className={`rounded-full px-2.5 py-1 text-[9px] uppercase tracking-wider ${step.badgeClass}`}>
+                        Current Status
+                      </span>
+                    )}
+                    {isCompleted && (
+                      <span className="rounded-full bg-emerald-50 px-2 py-1 text-[9px] text-emerald-700">
+                        Completed
+                      </span>
+                    )}
+                  </div>
+                  <p className={`mt-0 text-xs leading-relaxed ${isCompleted || isCurrent ? "text-slate-500" : "text-slate-400"}`}>
+                    {step.description}
+                  </p>
+                  {timestamp && (isCompleted || isCurrent) && (
+                    <p className="mt-1.5 text-[10px] text-slate-400">
+                      {formatOrderDate(timestamp)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -366,30 +465,22 @@ function OrderDetailsPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const locationState =
-    location.state as OrderDetailsLocationState | null;
+  const locationState = location.state as OrderDetailsLocationState | null;
 
   const [order, setOrder] = useState<Order | null>(
-    locationState?.order?.id === Number(orderId)
-      ? locationState.order
-      : null
+    locationState?.order?.id === Number(orderId) ? locationState.order : null
   );
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ─── Load Order ─────────────────────────────────────────
   useEffect(() => {
     let isActive = true;
 
     const loadOrder = async () => {
       const id = Number(orderId);
 
-      if (
-        !orderId ||
-        !Number.isSafeInteger(id) ||
-        id <= 0
-      ) {
+      if (!orderId || !Number.isSafeInteger(id) || id <= 0) {
         setOrder(null);
         setError("The order ID is invalid.");
         setIsLoading(false);
@@ -401,7 +492,6 @@ function OrderDetailsPage() {
 
       try {
         const data = await getOrderById(id);
-
         if (!isActive) return;
 
         if (data.id !== id) {
@@ -413,7 +503,6 @@ function OrderDetailsPage() {
         setOrder(data);
       } catch (err) {
         if (!isActive) return;
-
         setOrder(null);
         setError(getOrderErrorMessage(err));
       } finally {
@@ -430,32 +519,20 @@ function OrderDetailsPage() {
     };
   }, [orderId]);
 
-  // ─── Loading ────────────────────────────────────────────
   if (isLoading) {
     return (
       <main className="flex min-h-[60vh] items-center justify-center bg-white px-5 py-16">
-        <div
-          className="text-center"
-          role="status"
-          aria-live="polite"
-        >
+        <div className="text-center" role="status" aria-live="polite">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff1f2] text-[#B5697A]">
             <RefreshCw className="h-6 w-6 animate-spin" />
           </div>
-
-          <h1 className="mt-5 text-xl font-bold text-slate-900">
-            Loading Order Details
-          </h1>
-
-          <p className="mt-2 text-sm text-slate-500">
-            Please wait while we retrieve your order.
-          </p>
+          <h1 className="mt-5 text-xl font-bold text-slate-900">Loading Order Details</h1>
+          <p className="mt-2 text-sm text-slate-500">Please wait while we retrieve your order.</p>
         </div>
       </main>
     );
   }
 
-  // ─── Error ──────────────────────────────────────────────
   if (error || !order) {
     return (
       <main className="flex min-h-[60vh] items-center justify-center bg-white px-5 py-36">
@@ -463,32 +540,14 @@ function OrderDetailsPage() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fff1f2] text-[#B5697A]">
             <ReceiptText className="h-7 w-7" />
           </div>
-
-          <h1 className="mt-3 text-[18px] font-semibold text-slate-700 md:text-[22px]">
-            Order Details Unavailable
-          </h1>
-
-          <p className="mt-2 text-[12px] leading-relaxed text-slate-600 md:text-[13px]">
-            {error || "We couldn't find this order."}
-          </p>
-
+          <h1 className="mt-3 text-[18px] font-semibold text-slate-700 md:text-[22px]">Order Details Unavailable</h1>
+          <p className="mt-2 text-[12px] leading-relaxed text-slate-600 md:text-[13px]">{error || "We couldn't find this order."}</p>
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => navigate("/orders")}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#B5697A] px-6 py-2.5 text-xs text-white transition hover:bg-[#A55F70] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              My Orders
+            <button type="button" onClick={() => navigate("/orders")} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#B5697A] px-6 py-2.5 text-xs text-white transition hover:bg-[#A55F70] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]">
+              <ArrowLeft className="h-4 w-4" /> My Orders
             </button>
-
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-[#eadfd3] bg-white px-6 py-2.5 text-xs font-semibold text-[#8b542f] transition hover:bg-[#fff8f7] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Try Again
+            <button type="button" onClick={() => window.location.reload()} className="inline-flex items-center justify-center gap-2 rounded-full border border-[#eadfd3] bg-white px-6 py-2.5 text-xs font-semibold text-[#8b542f] transition hover:bg-[#fff8f7] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]">
+              <RefreshCw className="h-4 w-4" /> Try Again
             </button>
           </div>
         </section>
@@ -496,14 +555,11 @@ function OrderDetailsPage() {
     );
   }
 
-  const totalItems = order.items.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const orderItems = order.items ?? [];
+  const totalItems = orderItems.reduce((total, item) => total + (Number(item.quantity) || 0), 0);
 
-  // ─── Main ───────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-white px-4 py-28 sm:px-6 sm:py-32 lg:px-8">
+    <main className="min-h-screen bg-white px-4 pb-20 sm:px-6 sm:pb-24 lg:px-8">
       <div className="mx-auto max-w-5xl">
         {/* Order Header */}
         <section className="overflow-hidden rounded-xl border border-[#eadfd3] bg-white shadow-sm">
@@ -511,66 +567,36 @@ function OrderDetailsPage() {
             <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#eadfd3] bg-white/80 px-3 py-1 text-[9px] uppercase tracking-wider text-[#9f6674] md:text-[10px]">
-                  <ReceiptText className="h-3.5 w-3.5" />
                   Order Details
                 </span>
-
-                <p className="mt-3 break-all text-xs text-[#B5697A] md:text-sm">
-                  {order.orderNumber}
-                </p>
-
-                <p className="mt-1 text-[10px] text-slate-500 md:text-[12px]">
-                  Placed on {formatOrderDate(order.createdAt)}
-                </p>
+                <p className="mt-3 break-all text-xs text-[#B5697A] md:text-sm">{order.orderNumber}</p>
+                <p className="mt-1 text-[10px] text-slate-500 md:text-[12px]">Placed on {formatOrderDate(order.createdAt)}</p>
               </div>
-
               <div className="flex flex-wrap gap-5">
-                <StatusBadge
-                  label="Order Status"
-                  status={order.orderStatus}
-                />
-
-                <StatusBadge
-                  label="Payment Status"
-                  status={order.paymentStatus}
-                />
+                <StatusBadge label="Order Status" status={order.orderStatus} />
+                <StatusBadge label="Payment Status" status={order.paymentStatus} />
               </div>
             </div>
           </div>
 
-          {/* Quick Summary */}
           <div className="grid grid-cols-3 border-t border-[#eadfd3]">
             <div className="min-w-0 border-r border-[#eadfd3] p-3 sm:p-6">
-              <p className="text-[9px] uppercase tracking-wider text-[#A39890] sm:text-[10px]">
-                Total Items
-              </p>
-
-              <p className="mt-1 break-words text-[13px] font-semibold text-slate-700 sm:text-[16px]">
-                {totalItems} {totalItems === 1 ? "Item" : "Items"}
-              </p>
+              <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">Total Items</p>
+              <p className="mt-1 break-words text-[13px] font-semibold text-slate-700 sm:text-[16px]">{totalItems} {totalItems === 1 ? "Item" : "Items"}</p>
             </div>
-
             <div className="min-w-0 border-r border-[#eadfd3] p-3 sm:p-6">
-              <p className="text-[9px] uppercase tracking-wider text-[#A39890] sm:text-[10px]">
-                Customer
-              </p>
-
-              <p className="mt-1 break-words text-[13px] font-semibold text-slate-700 sm:text-[16px]">
-                {order.customerName || "Not provided"}
-              </p>
+              <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">Customer</p>
+              <p className="mt-1 break-words text-[13px] font-semibold text-slate-700 sm:text-[16px]">{order.customerName || "Not provided"}</p>
             </div>
-
             <div className="min-w-0 p-3 sm:p-6">
-              <p className="text-[9px] uppercase tracking-wider text-[#A39890] sm:text-[10px]">
-                Total Amount
-              </p>
-
-              <p className="mt-1 break-words text-[13px] font-semibold text-[#B5697A] sm:text-[16px]">
-                {formatCurrency(order.totalAmount)}
-              </p>
+              <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">Total Amount</p>
+              <p className="mt-1 break-words text-[13px] font-semibold text-[#B5697A] sm:text-[16px]">{formatCurrency(order.totalAmount)}</p>
             </div>
           </div>
         </section>
+
+        {/* Order Status Timeline */}
+        <OrderTrackingTimeline order={order} />
 
         {/* Delivery Tracking */}
         <div className="mt-6">
@@ -580,195 +606,120 @@ function OrderDetailsPage() {
         {/* Order Items */}
         <section className="mt-6 overflow-hidden rounded-xl border border-[#eadfd3] bg-white shadow-sm">
           <div className="border-b border-[#eadfd3] bg-white px-6 py-5 sm:px-8">
-            <SectionHeader
-              icon={<Package className="h-5 w-5" />}
-              title="Items in Your Order"
-              subtitle="Product, variant and quantity details"
-            />
+            <SectionHeader icon={<Package className="h-5 w-5" />} title="Items in Your Order" subtitle="Product, variant and quantity details" />
           </div>
-
           <div className="divide-y divide-[#f0e7df] px-6 sm:px-8">
-            {order.items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-start justify-between gap-4 py-5"
-              >
-                <div className="min-w-0 flex-1">
-                  <h3 className="break-words text-[12px] text-slate-700 sm:text-[14px]">
-                    {item.productName}
-                  </h3>
+            {orderItems.map((item) => {
+              const subtotal = Number(item.subtotal) || 0;
+              const discount = Math.min(subtotal, Math.max(0, Number(item.discountAmount) || 0));
+              const finalPrice = Math.max(0, subtotal - discount);
+              const quantity = Number(item.quantity) || 0;
+              const discountedUnitPrice = quantity > 0 ? finalPrice / quantity : 0;
+              const hasDiscount = discount > 0;
 
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                    <span className="text-[#8b542f]">
-                      {item.variantQuantity}
-                      {item.variantUnit}
-                    </span>
-
-                    <span className="text-[#d8c8bb]">•</span>
-
-                    <span className="capitalize">
-                      {formatStatus(item.packaging)}
-                    </span>
-
-                    <span className="text-[#d8c8bb]">•</span>
-
-                    <span>Qty: {item.quantity}</span>
+              return (
+                <div key={item.id} className="flex items-start justify-between gap-4 py-5">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="break-words text-[12px] font-semibold text-slate-700 sm:text-[14px]">{item.productName}</h3>
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                      <span className="text-[#8b542f]">{item.variantQuantity}{item.variantUnit}</span>
+                      <span className="text-[#d8c8bb]">•</span>
+                      <span className="capitalize">{formatStatus(item.packaging)}</span>
+                      <span className="text-[#d8c8bb]">•</span>
+                      <span>Qty: {item.quantity}</span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      {hasDiscount ? (
+                        <>
+                          <span className="text-[11px] text-slate-400 line-through">{formatCurrency(item.unitPrice)}</span>
+                          <span className="text-[11px] text-emerald-700">{formatCurrency(discountedUnitPrice)} per item</span>
+                        </>
+                      ) : (
+                        <span className="text-[11px] text-slate-500">{formatCurrency(item.unitPrice)} per item</span>
+                      )}
+                    </div>
+                    {hasDiscount && (
+                      <p className="mt-2 inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-[10px] text-emerald-700">
+                        <CheckCircle2 className="mr-1 h-3 w-3" aria-hidden="true" /> OFFER APPLIED · Saved {formatCurrency(discount)}
+                      </p>
+                    )}
+                  </div>
+                  <div className="shrink-0 text-right">
+                    {hasDiscount && <p className="text-[11px] text-slate-400 line-through">{formatCurrency(subtotal)}</p>}
+                    <p className="text-[13px] font-bold tabular-nums text-[#B5697A] sm:text-[14px]">{formatCurrency(finalPrice)}</p>
+                    <p className="mt-1 text-[10px] text-slate-400">{hasDiscount ? "Discounted total" : "Item total"}</p>
                   </div>
                 </div>
-
-                <p className="shrink-0 pt-0.5 text-[12px] tabular-nums text-slate-700 sm:text-[14px]">
-                  {formatCurrency(item.subtotal)}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
         {/* Price Summary */}
         <section className="mt-5 rounded-xl border border-[#eadfd3] bg-white p-6 shadow-sm sm:p-7">
-          <SectionHeader
-            icon={<CreditCard className="h-5 w-5" />}
-            title="Price Summary"
-          />
-
+          <SectionHeader icon={<CreditCard className="h-5 w-5" />} title="Price Summary" />
           <div className="mt-4 flex items-center justify-between gap-4 text-[11px] md:text-[13px]">
             <span className="text-slate-500">Subtotal</span>
-            <span className="tabular-nums text-slate-700">
-              {formatCurrency(order.subtotal)}
-            </span>
+            <span className="tabular-nums text-slate-700">{formatCurrency(order.subtotal)}</span>
           </div>
-
           {(order.discountAmount ?? 0) > 0 && (
             <div className="mt-2 flex items-center justify-between gap-4 text-[11px] md:text-[13px]">
-              <span className="text-slate-500">
-                Discount
-                {order.offerCode ? ` (${order.offerCode})` : ""}
-              </span>
-
-              <span className="font-semibold tabular-nums text-emerald-700">
-                −{formatCurrency(order.discountAmount)}
-              </span>
+              <span className="text-slate-500">Discount {order.offerCode ? `(${order.offerCode})` : ""}</span>
+              <span className="font-semibold tabular-nums text-emerald-700">−{formatCurrency(order.discountAmount)}</span>
             </div>
           )}
-
           <div className="mt-2 flex items-center justify-between gap-4 text-[11px] md:text-[13px]">
             <span className="text-slate-500">Delivery Charge</span>
-
-            <span className="tabular-nums text-slate-700">
-              {Number(order.deliveryCharge) === 0
-                ? "Free"
-                : formatCurrency(order.deliveryCharge)}
-            </span>
+            <span className="tabular-nums text-slate-700">{Number(order.deliveryCharge) === 0 ? "Free" : formatCurrency(order.deliveryCharge)}</span>
           </div>
-
           <div className="my-4 border-t border-dashed border-[#eadfd3]" />
-
           <div className="flex items-center justify-between gap-4 rounded-2xl bg-[#fff8f7] p-4">
             <div>
-              <p className="text-[12px] font-semibold text-slate-700 md:text-[14px]">
-                Total Amount
-              </p>
-
-              <p className="mt-1 text-xs text-slate-500">
-                Final amount recorded for this order
-              </p>
+              <p className="text-[12px] font-semibold text-slate-700 md:text-[14px]">Total Amount</p>
+              <p className="mt-1 text-xs text-slate-500">Final amount recorded for this order</p>
             </div>
-
-            <p className="shrink-0 text-[12px] font-semibold tabular-nums text-[#8b542f] md:text-[14px]">
-              {formatCurrency(order.totalAmount)}
-            </p>
+            <p className="shrink-0 text-[12px] font-semibold tabular-nums text-[#8b542f] md:text-[14px]">{formatCurrency(order.totalAmount)}</p>
           </div>
         </section>
 
         {/* Customer Information */}
         <section className="mt-5 rounded-xl border border-[#eadfd3] bg-white p-6 shadow-sm sm:p-8">
-          <SectionHeader
-            icon={<UserRound className="h-5 w-5" />}
-            title="Customer Information"
-            subtitle="Details associated with this order"
-          />
-
+          <SectionHeader icon={<UserRound className="h-5 w-5" />} title="Customer Information" subtitle="Details associated with this order" />
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-[#eadfd3] bg-white p-4">
-              <p className="text-[10px] uppercase tracking-wider text-[#A39890]">
-                Name
-              </p>
-
-              <p className="mt-1 break-words text-xs text-slate-700 md:text-sm">
-                {order.customerName || "Not provided"}
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-slate-500">Name</p>
+              <p className="mt-1 break-words text-xs text-slate-700 md:text-sm">{order.customerName || "Not provided"}</p>
             </div>
-
             <div className="rounded-xl border border-[#eadfd3] bg-white p-4">
-              <p className="text-[10px] uppercase tracking-wider text-[#A39890]">
-                Mobile Number
-              </p>
-
-              <p className="mt-1 break-words text-xs text-slate-700 md:text-sm">
-                {order.customerPhone
-                  ? `+91 ${order.customerPhone}`
-                  : "Not provided"}
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-slate-500">Mobile Number</p>
+              <p className="mt-1 break-words text-xs text-slate-700 md:text-sm">{order.customerPhone ? `+91 ${order.customerPhone}` : "Not provided"}</p>
             </div>
-
             <div className="rounded-xl border border-[#eadfd3] bg-white p-4 sm:col-span-2">
-              <p className="text-[10px] uppercase tracking-wider text-[#A39890]">
-                Email Address
-              </p>
-
-              <p className="mt-1 break-all text-sm text-slate-700">
-                {order.customerEmail || "Not provided"}
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-slate-500">Email Address</p>
+              <p className="mt-1 break-all text-sm text-slate-700">{order.customerEmail || "Not provided"}</p>
             </div>
           </div>
         </section>
 
         {/* Delivery Address */}
         <section className="mt-5 rounded-xl border border-[#eadfd3] bg-white p-6 shadow-sm sm:p-8">
-          <SectionHeader
-            icon={<MapPin className="h-5 w-5" />}
-            title="Delivery Address"
-            subtitle="Your order's delivery destination"
-          />
-
+          <SectionHeader icon={<MapPin className="h-5 w-5" />} title="Delivery Address" subtitle="Your order's delivery destination" />
           {order.addressLine1 ? (
             <div className="mt-5 rounded-xl border border-[#eadfd3] bg-[#fffbfc] p-4 text-[12px] leading-6 text-slate-600 md:text-sm">
               <p>{order.addressLine1}</p>
-
-              {order.addressLine2 && (
-                <p>{order.addressLine2}</p>
-              )}
-
-              <p>
-                {[order.area, order.city, order.state]
-                  .filter(Boolean)
-                  .join(", ")}
-              </p>
-
-              {order.pincode && (
-                <p>PIN: {order.pincode}</p>
-              )}
+              {order.addressLine2 && <p>{order.addressLine2}</p>}
+              <p>{[order.area, order.city, order.state].filter(Boolean).join(", ")}</p>
+              {order.pincode && <p>PIN: {order.pincode}</p>}
             </div>
           ) : (
-            <p className="mt-4 text-sm text-slate-500">
-              Delivery address is not available for this order.
-            </p>
+            <p className="mt-4 text-sm text-slate-500">Delivery address is not available for this order.</p>
           )}
-
           {order.deliveryZone && (
             <div className="mt-4 flex items-start gap-3 rounded-xl bg-[#fffbfc] p-4">
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#B5697A]" />
-
               <div>
-                <p className="text-xs font-semibold text-slate-700">
-                  Delivery Zone
-                </p>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  {order.deliveryZone === "WITHIN_DWARKA"
-                    ? "Within Dwarka"
-                    : "Outside Dwarka"}
-                </p>
+                <p className="text-xs font-semibold text-slate-700">Delivery Zone</p>
+                <p className="mt-1 text-xs text-slate-500">{order.deliveryZone === "WITHIN_DWARKA" ? "Within Dwarka" : "Outside Dwarka"}</p>
               </div>
             </div>
           )}
@@ -779,36 +730,13 @@ function OrderDetailsPage() {
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff1f2] text-[#B5697A]">
             <ReceiptText className="h-5 w-5" />
           </div>
-
           <div>
-            <h2 className="text-sm font-semibold text-slate-700">
-              Order Status Information
-            </h2>
-
-            <p className="mt-2 text-[10px] leading-relaxed text-slate-500 md:text-[12px]">
-              Your order is currently{" "}
-              <span className="font-medium text-slate-700">
-                {formatStatus(order.orderStatus)}
-              </span>
-              , and your payment status is{" "}
-              <span className="font-medium text-slate-700">
-                {formatStatus(order.paymentStatus)}
-              </span>
-              . Delivery progress is shown separately in the Delivery Tracking section above.
+            <h2 className="text-sm font-semibold text-slate-700">Order Status Information</h2>
+            <p className="mt-2 text-[9px] leading-relaxed text-slate-500 md:text-[11px]">
+              Your order is currently <span className="font-medium text-slate-700">{formatStatus(order.orderStatus)}</span>, and your payment status is <span className="font-medium text-slate-700">{formatStatus(order.paymentStatus)}</span>. Delivery progress is shown separately in the Delivery Tracking section above.
             </p>
           </div>
         </section>
-
-        {/* Back to Orders */}
-        <div className="mt-6 flex justify-center pb-4">
-          <Link
-            to="/orders"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#eadfd3] bg-white px-6 py-3 text-[10px] text-[#B5697A] transition hover:border-[#B5697A] hover:bg-[#fff8f7] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A] sm:w-auto sm:text-[12px]"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to My Orders
-          </Link>
-        </div>
       </div>
     </main>
   );

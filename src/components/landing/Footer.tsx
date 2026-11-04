@@ -1,5 +1,4 @@
 import logo from "../../assets/logo.jpg";
-import fssaiLogo from "../../assets/fssai-logo.png";
 import { Link } from "react-router-dom";
 import type { MouseEvent } from "react";
 
@@ -58,25 +57,6 @@ const LocationIcon = () => (
     <circle cx="12" cy="10" r="2.5" />
   </svg>
 );
-
-// ─── FSSAI Badge ──────────────────────────────────────────
-function FssaiBadge() {
-  return (
-    <div className="inline-flex max-w-full items-center gap-3 rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5">
-      <div className="flex h-10 w-[64px] shrink-0 items-center justify-center overflow-hidden rounded-md bg-white px-1.5">
-        <img src={fssaiLogo} alt="FSSAI" className="max-h-full max-w-full object-contain" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-[9px] uppercase tracking-[0.12em] text-white/80">
-          FSSAI Registration No
-        </p>
-        <p className="mt-0.5 whitespace-nowrap font-[350] text-[10px] text-white sm:text-[11px]">
-          FSSAI Reg :- #23326006003247
-        </p>
-      </div>
-    </div>
-  );
-}
 
 // ─── Contact Item ─────────────────────────────────────────
 function ContactItem({
@@ -142,6 +122,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-6 sm:px-8 sm:py-14 lg:px-10 lg:py-14">
         {/* Main footer grid */}
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.35fr_0.9fr_0.9fr_1.25fr] lg:gap-10 xl:gap-14">
+          
           {/* Brand */}
           <div>
             <a
@@ -168,6 +149,7 @@ function Footer() {
 
           {/* Quick Links + Customer Care */}
           <div className="grid grid-cols-2 gap-4 md:contents">
+            
             {/* Quick Links */}
             <div>
               <h3 className="text-[11px] uppercase tracking-[0.18em] text-white">Quick Links</h3>
@@ -184,30 +166,6 @@ function Footer() {
                   </li>
                 ))}
               </ul>
-
-              {/* Social icons */}
-              <div className="mt-6 flex items-center gap-3">
-                <a
-                  href="https://www.facebook.com/profile.php?id=61595572672465"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Follow us on Facebook"
-                  className="group flex h-9 w-9 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md sm:h-10 sm:w-10"
-                >
-                  <FacebookIcon />
-                </a>
-
-                <a
-                  href="https://instagram.com/guilt.free_cravings?srtk=Ym5yOGxqb3JxYm9k&utm_source=qr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Follow us on Instagram"
-                  className="group flex h-9 w-9 items-center justify-center rounded-full text-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md sm:h-10 sm:w-10"
-                  style={{ background: "linear-gradient(45deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%)" }}
-                >
-                  <InstagramIcon />
-                </a>
-              </div>
             </div>
 
             {/* Customer Care */}
@@ -237,16 +195,31 @@ function Footer() {
                 </li>
               </ul>
 
-              {/* FSSAI - desktop/tablet */}
-              <div className="mt-7 hidden md:block">
-                <FssaiBadge />
+              {/* ✅ Social Icons - Shifted Here (jahan pehle FSSAI tha) */}
+              <div className="mt-6 flex items-center gap-3">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61595572672465"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Facebook"
+                  className="group flex h-9 w-9 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-sm transition-all duration-300 hover:scale-105 sm:h-10 sm:w-10"
+                >
+                  <FacebookIcon />
+                </a>
+
+                <a
+                  href="https://instagram.com/guilt.free_cravings?srtk=Ym5yOGxqb3JxYm9k&utm_source=qr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Instagram"
+                  className="group flex h-9 w-9 items-center justify-center rounded-full text-white shadow-sm transition-all duration-300 hover:scale-105 sm:h-10 sm:w-10"
+                  style={{ background: "linear-gradient(45deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%)" }}
+                >
+                  <InstagramIcon />
+                </a>
               </div>
             </div>
 
-            {/* FSSAI - mobile */}
-            <div className="col-span-2 md:hidden">
-              <FssaiBadge />
-            </div>
           </div>
 
           {/* Get in Touch */}

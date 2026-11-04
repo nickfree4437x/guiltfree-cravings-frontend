@@ -91,7 +91,7 @@ function OrderIssueForm() {
       {/* Header */}
       <div className="relative mb-7">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E5C5CC] bg-transparent">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#E5C5CC] bg-[#FBEEF1]">
             <AlertCircle className="h-[18px] w-[18px] text-[#B5697A]" strokeWidth={1.8} />
           </span>
           <div>

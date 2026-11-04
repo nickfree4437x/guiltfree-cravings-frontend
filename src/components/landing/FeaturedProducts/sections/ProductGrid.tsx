@@ -1,14 +1,26 @@
+
 import ProductCard from "../../../product/ProductCard";
 import type { Product } from "../../../../api/productApi";
 
 // ─── Types ────────────────────────────────────────────────
+
 interface ProductGridProps {
   products: Product[];
   packaging: "Plastic Box" | "Glass Jar" | "Cardboard Box";
+
+  // Active public offer details
+  discountedVariantIds?: number[];
+  discountPercentage?: number;
 }
 
 // ─── Component ────────────────────────────────────────────
-function ProductGrid({ products, packaging }: ProductGridProps) {
+
+function ProductGrid({
+  products,
+  packaging,
+  discountedVariantIds = [],
+  discountPercentage = 20,
+}: ProductGridProps) {
   const count = products.length;
 
   // Dynamic grid based on number of products
@@ -39,7 +51,12 @@ function ProductGrid({ products, packaging }: ProductGridProps) {
             key={`${keyPrefix}-${product.id}`}
             className="min-w-0 transition-transform duration-300"
           >
-            <ProductCard product={product} packaging={packaging} />
+            <ProductCard
+              product={product}
+              packaging={packaging}
+              discountedVariantIds={discountedVariantIds}
+              discountPercentage={discountPercentage}
+            />
           </div>
         ))}
       </div>

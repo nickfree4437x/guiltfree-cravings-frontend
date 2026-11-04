@@ -5,7 +5,6 @@ import AppRoutes from "./routes/AppRoutes";
 import AdminRoutes from "./routes/AdminRoutes";
 
 import CartDrawer from "./components/cart/drawer/CartDrawer";
-import WhatsAppButton from "./components/common/WhatsAppButton";
 
 // ─── Toast Config ─────────────────────────────────────────
 const TOAST_OPTIONS = {
@@ -43,9 +42,6 @@ function App() {
 
       {/* Global cart drawer */}
       <CartDrawer />
-
-      {/* Floating WhatsApp button */}
-      <WhatsAppButton />
     </BrowserRouter>
   );
 }

@@ -1,13 +1,19 @@
+
 import { Mail, MessageCircle, Phone, ArrowUpRight } from "lucide-react";
 
 // ─── Contact Info ─────────────────────────────────────────
 const CONTACT_PHONE = "+91-9667760119";
 const CONTACT_EMAIL = "guiltfreecravings24@gmail.com";
 
-// wa.me needs digits only (no +, -, spaces) → 919667760119 ✅
+// WhatsApp Configuration
 const WHATSAPP_NUMBER = "919667760119";
-const WHATSAPP_MESSAGE = encodeURIComponent("Hi, I want to place an order");
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`;
+
+const WHATSAPP_MESSAGE =
+  "Hi! I’m visiting your website and have a few questions. Could you please help me?";
+
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+  WHATSAPP_MESSAGE
+)}`;
 
 // ─── Methods Config ───────────────────────────────────────
 const METHODS = [
@@ -68,13 +74,16 @@ function ContactMethods() {
                 target={method.external ? "_blank" : undefined}
                 rel={method.external ? "noopener noreferrer" : undefined}
                 aria-label={method.ariaLabel}
-                className="group relative flex items-center gap-4 rounded-xl px-4 py-5 border border-gray-200 transition-all duration-300 bg-white/70 sm:gap-4 sm:px-6 sm:py-6"
+                className="group relative flex items-center gap-4 rounded-xl border border-gray-200 bg-white/70 px-4 py-5 transition-all duration-300 sm:gap-4 sm:px-6 sm:py-6"
               >
                 {/* Icon */}
                 <span
                   className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${method.iconBg} ${method.iconColor} transition-all duration-500 sm:h-14 sm:w-14`}
                 >
-                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.9} />
+                  <Icon
+                    className="h-5 w-5 sm:h-6 sm:w-6"
+                    strokeWidth={1.9}
+                  />
                 </span>
 
                 {/* Content */}
@@ -83,16 +92,18 @@ function ContactMethods() {
                     <h3 className="text-[14px] font-semibold leading-tight text-gray-600 sm:text-[16px]">
                       {method.label}
                     </h3>
+
                     <span
                       className="hidden h-1 w-1 rounded-full sm:block"
                       style={{ backgroundColor: method.accentColor }}
                     />
+
                     <span className="hidden text-[11px] tracking-[0.05em] text-slate-500 sm:inline">
                       {method.cta}
                     </span>
                   </div>
 
-                  <p className="mt-1.5 break-all text-[12px] leading-[1.5] font-[350] text-[#B5697A] sm:text-[13px]">
+                  <p className="mt-1.5 break-all text-[12px] font-[350] leading-[1.5] text-[#B5697A] sm:text-[13px]">
                     {method.value}
                   </p>
                 </div>

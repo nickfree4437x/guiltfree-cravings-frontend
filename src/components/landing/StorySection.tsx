@@ -3,7 +3,7 @@ export default function OurStory() {
     <section
       id="our-story"
       aria-labelledby="our-story-heading"
-      className="relative isolate overflow-hidden scroll-mt-12 bg-white/80 px-5 py-2 sm:px-8 md:py-16"
+      className="relative isolate overflow-hidden md:scroll-mt-12 scroll-mt-20 bg-white/80 px-5 py-2 sm:px-8 md:py-16"
     >
       <div className="mx-auto max-w-6xl">
         {/* Main story panel */}

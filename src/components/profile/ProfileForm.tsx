@@ -38,22 +38,6 @@ function ProfileForm({
     <section className="rounded-xl border border-[#EFE3D2] bg-white p-6 shadow-sm sm:p-8">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FBEEF1]">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            className="h-4 w-4 text-[#B5697A]"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 19a6 6 0 0 0-12 0m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm9 8v-1a4 4 0 0 0-3-3.87M17 3.13a4 4 0 0 1 0 7.75"
-            />
-          </svg>
-        </div>
         <div>
           <h2 className="text-[16px] font-semibold tracking-tight text-[#1F4A2E] sm:text-[18px]">
             Personal Information
@@ -66,7 +50,7 @@ function ProfileForm({
 
       {/* Page error */}
       {pageError && (
-        <div className="mt-6 flex items-start gap-3 rounded-xl border border-[#F0D9D9] bg-[#FFF7F7] p-4">
+        <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#F0D9D9] bg-[#FFF7F7] p-4">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FCEAEA] text-sm font-semibold text-[#C86B6B]">
             !
           </div>
@@ -80,7 +64,7 @@ function ProfileForm({
       )}
 
       {/* Form */}
-      <form onSubmit={onSubmit} className="mt-6 space-y-6">
+      <form onSubmit={onSubmit} className="mt-2 space-y-6">
         {/* Full name */}
         <div>
           <input

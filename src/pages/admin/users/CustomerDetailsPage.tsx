@@ -119,9 +119,9 @@ function CustomerStat({
         </div>
 
         <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}
         >
-          <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+          <Icon className="h-[16px] w-[16px]" strokeWidth={1.8} />
         </div>
       </div>
     </div>
@@ -137,7 +137,7 @@ function DeliveryStatusBadge({
 
   return (
     <span
-      className={`inline-flex w-fit items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-medium sm:text-[11px] ${getDeliveryStatusClass(
+      className={`inline-flex w-fit items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] ${getDeliveryStatusClass(
         normalizedStatus
       )}`}
     >
@@ -212,11 +212,22 @@ function CustomerDetailsPage() {
     totalOrders: 0,
     totalSpent: 0,
     paidOrders: 0,
-    pendingOrders: 0,
-    processingOrders: 0,
-    completedOrders: 0,
+
+    newOrders: 0,
+    confirmedOrders: 0,
+    packedOrders: 0,
+    shippedOrders: 0,
+    deliveredOrders: 0,
     cancelledOrders: 0,
+    returnedOrders: 0,
+
+    legacyPendingOrders: 0,
+    legacyProcessingOrders: 0,
+    legacyCompletedOrders: 0,
+    legacyOrders: 0,
+
     totalReviews: 0,
+    totalOfferUsages: 0,
   };
 
   const orders = useMemo<CustomerOrderWithDelivery[]>(
@@ -289,7 +300,7 @@ function CustomerDetailsPage() {
     }
   };
 
-  // ─── Loading State ──────────────────────────────────────
+  // ─── Loading State ───────────────────────────────────────
 
   if (isLoading) {
     return (
@@ -406,16 +417,21 @@ function CustomerDetailsPage() {
               label="Full Name"
               value={customer.name || "Unnamed Customer"}
             />
+
             <InfoItem label="Phone" value={customer.phone || "Not provided"} />
+
             <InfoItem label="Email" value={customer.email || "Not provided"} />
+
             <InfoItem
               label="Verification"
               value={customer.isVerified ? "Verified" : "Unverified"}
             />
+
             <InfoItem
               label="Joined"
               value={formatCustomerDate(customer.createdAt)}
             />
+
             <InfoItem
               label="Last Updated"
               value={formatCustomerDate(customer.updatedAt)}
@@ -451,31 +467,47 @@ function CustomerDetailsPage() {
 
           <CustomerStat
             icon={Clock3}
-            label="Pending Orders"
-            value={stats.pendingOrders}
+            label="New Orders"
+            value={stats.newOrders}
             iconBg="bg-[#FFF3E8]"
             iconColor="text-[#C4773B]"
           />
 
           <CustomerStat
+            icon={CheckCircle2}
+            label="Confirmed Orders"
+            value={stats.confirmedOrders}
+            iconBg="bg-[#EEF5FF]"
+            iconColor="text-[#4D7FEA]"
+          />
+
+          <CustomerStat
             icon={Package}
-            label="Processing"
-            value={stats.processingOrders}
+            label="Packed Orders"
+            value={stats.packedOrders}
             iconBg="bg-[#F4F0FF]"
             iconColor="text-[#8062C7]"
           />
 
           <CustomerStat
+            icon={Truck}
+            label="Shipped Orders"
+            value={stats.shippedOrders}
+            iconBg="bg-[#EAF8FB]"
+            iconColor="text-[#31899A]"
+          />
+
+          <CustomerStat
             icon={CheckCircle2}
-            label="Completed"
-            value={stats.completedOrders}
+            label="Delivered Orders"
+            value={stats.deliveredOrders}
             iconBg="bg-[#EEF8F2]"
             iconColor="text-[#3F8A58]"
           />
 
           <CustomerStat
             icon={XCircle}
-            label="Cancelled"
+            label="Cancelled Orders"
             value={stats.cancelledOrders}
             iconBg="bg-[#FBECEF]"
             iconColor="text-[#A85F70]"
@@ -483,6 +515,22 @@ function CustomerDetailsPage() {
 
           <CustomerStat
             icon={Package}
+            label="Returned Orders"
+            value={stats.returnedOrders}
+            iconBg="bg-[#FFF0F2]"
+            iconColor="text-[#B45D70]"
+          />
+
+          <CustomerStat
+            icon={Clock3}
+            label="Legacy Orders"
+            value={stats.legacyOrders}
+            iconBg="bg-[#F5F1EB]"
+            iconColor="text-[#8B7A6C]"
+          />
+
+          <CustomerStat
+            icon={ShoppingBag}
             label="Reviews"
             value={stats.totalReviews}
             iconBg="bg-[#FFF7E8]"
@@ -499,7 +547,7 @@ function CustomerDetailsPage() {
                   Latest Order
                 </h2>
 
-                <p className="mt-0.5 text-[11px] text-gray-500 md:text-[12px]">
+                <p className="mt-0 text-[11px] text-gray-500 md:text-[12px]">
                   Most recent order placed by this customer.
                 </p>
               </div>
@@ -515,56 +563,49 @@ function CustomerDetailsPage() {
               </button>
             </div>
 
-            <div className="mt-4 grid gap-3 sm:mt-5 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#F0E7DF] bg-[#fffbfc] p-3.5 sm:p-4">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
-                  Amount
-                </p>
+            <div className="mt-2 grid grid-cols-1 gap-3 sm:mt-3 sm:grid-cols-2 lg:grid-cols-4">
+  {/* Amount */}
+  <div className="flex flex-col justify-center gap-1.5 rounded-xl border border-[#F0E7DF] bg-[#fffbfc] p-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-4">
+    <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
+      Amount
+    </p>
+    <p className="text-[15px] font-semibold text-[#1F4A2E] sm:text-[16px]">
+      {formatCurrency(latestOrder.totalAmount)}
+    </p>
+  </div>
 
-                <p className="text-[15px] font-semibold text-[#1F4A2E] sm:text-[16px]">
-                  {formatCurrency(latestOrder.totalAmount)}
-                </p>
-              </div>
+  {/* Payment */}
+  <div className="flex flex-col justify-center gap-1.5 rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-4">
+    <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
+      Payment
+    </p>
+    <div className="shrink-0">
+      <StatusBadge status={latestOrder.paymentStatus} />
+    </div>
+  </div>
 
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-3.5 sm:p-4">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
-                  Payment
-                </p>
+  {/* Order Status */}
+  <div className="flex flex-col justify-center gap-1.5 rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-4">
+    <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
+      Order Status
+    </p>
+    <div className="shrink-0">
+      <StatusBadge status={latestOrder.orderStatus} />
+    </div>
+  </div>
 
-                <StatusBadge status={latestOrder.paymentStatus} />
-              </div>
-
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-3.5 sm:p-4">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
-                  Order Status
-                </p>
-
-                <StatusBadge status={latestOrder.orderStatus} />
-              </div>
-
-              <div className="flex flex-col items-start justify-center gap-2 rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-3.5 sm:p-4">
-                <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
-                  Delivery Status
-                </p>
-
-                <DeliveryStatusBadge status={latestOrder.deliveryStatus} />
-
-                {latestOrder.deliveredAt && (
-                  <p className="text-[10px] text-slate-500">
-                    Delivered: {formatOrderDate(latestOrder.deliveredAt)}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => openOrderDetails(latestOrder.id)}
-              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#B5697A] px-4 py-2.5 text-[12px] font-medium text-white transition hover:bg-[#A45D6F]"
-            >
-              View Order Details
-              <ExternalLink className="h-3.5 w-3.5" />
-            </button>
+  {/* Delivery Status */}
+  <div className="flex flex-col justify-center gap-1.5 rounded-xl border border-[#F0E7DF] bg-[#FFFCF8] p-3.5 sm:p-4">
+    <div className="flex items-center justify-between gap-3 sm:flex-row">
+      <p className="text-[10px] uppercase tracking-[0.08em] text-slate-500">
+        Delivery Status
+      </p>
+      <div className="shrink-0">
+        <DeliveryStatusBadge status={latestOrder.deliveryStatus} />
+      </div>
+    </div>
+  </div>
+</div>
           </section>
         )}
 
@@ -636,15 +677,15 @@ function CustomerDetailsPage() {
                         }
                         className="cursor-pointer border-b border-[#F1E9E1] transition-colors last:border-0 hover:bg-[#FFFBF8] focus:bg-[#FFFBF8] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#B5697A]"
                       >
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3.5">
                           <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[10px] text-[#A85F70]">
                             {order.orderNumber}
                             <ExternalLink className="h-3 w-3" />
                           </span>
                         </td>
 
-                        <td className="px-5 py-4">
-                          <p className="text-[12px] text-gray-600 md:text-[13px]">
+                        <td className="px-5 py-3.5">
+                          <p className="text-[12px] font-semibold text-gray-600 md:text-[13px]">
                             {order.items.length}{" "}
                             {order.items.length === 1 ? "item" : "items"}
                           </p>
@@ -656,19 +697,19 @@ function CustomerDetailsPage() {
                           </p>
                         </td>
 
-                        <td className="whitespace-nowrap px-5 py-4 text-[12px] text-gray-600 md:text-[13px]">
+                        <td className="whitespace-nowrap px-5 py-3.5 text-[12px] text-gray-600 md:text-[13px]">
                           {formatCurrency(order.totalAmount)}
                         </td>
 
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3.5">
                           <StatusBadge status={order.paymentStatus} />
                         </td>
 
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3.5">
                           <StatusBadge status={order.orderStatus} />
                         </td>
 
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3.5">
                           <div className="flex flex-col items-start gap-1.5">
                             <DeliveryStatusBadge status={order.deliveryStatus} />
 
@@ -680,7 +721,7 @@ function CustomerDetailsPage() {
                           </div>
                         </td>
 
-                        <td className="whitespace-nowrap px-5 py-4 text-[12px] text-gray-500">
+                        <td className="whitespace-nowrap px-5 py-3.5 text-[12px] text-gray-500">
                           {formatOrderDate(order.createdAt)}
                         </td>
                       </tr>
@@ -748,7 +789,7 @@ function CustomerDetailsPage() {
                       </p>
                     )}
 
-                    <p className="flex items-center gap-1 text-[11px] font-medium text-[#A85F70]">
+                    <p className="flex items-center gap-1 text-[11px] text-[#A85F70]">
                       View order details
                       <ExternalLink className="h-3 w-3" />
                     </p>

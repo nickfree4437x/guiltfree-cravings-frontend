@@ -1,8 +1,5 @@
-// src/components/admin/orders/OrderStatusBadge.tsx
 
-import type {
-  OrderStatus,
-} from "./types";
+import type { OrderStatus } from "./types";
 
 import {
   getOrderStatusClass,
@@ -11,6 +8,21 @@ import {
 interface OrderStatusBadgeProps {
   status: OrderStatus;
 }
+
+const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  NEW: "New",
+  CONFIRMED: "Confirmed",
+  PACKED: "Packed",
+  SHIPPED: "Shipped",
+  DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
+  RETURNED: "Returned",
+
+  // Legacy statuses
+  PENDING: "Pending",
+  PROCESSING: "Processing",
+  COMPLETED: "Completed",
+};
 
 function OrderStatusBadge({
   status,
@@ -21,7 +33,7 @@ function OrderStatusBadge({
         status
       )}`}
     >
-      {status}
+      {ORDER_STATUS_LABELS[status] ?? status}
     </span>
   );
 }

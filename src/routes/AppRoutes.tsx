@@ -1,3 +1,4 @@
+
 import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layout/MainLayout";
@@ -9,6 +10,7 @@ import OrderSuccessPage from "../pages/order-success/OrderSuccessPage";
 import MyOrdersPage from "../pages/my-orders/MyOrdersPage";
 import OrderDetailsPage from "../pages/orders/OrderDetailsPage";
 import OrderHistoryPage from "../pages/order-history/OrderHistoryPage";
+import TransactionsPage from "../pages/transactions/TransactionsPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import LoginPage from "../pages/login/LoginPage";
 import WishlistPage from "../pages/wishlist/WishlistPage";
@@ -29,7 +31,8 @@ const APP_ROUTES = [
   { path: "/orders/:orderId", element: <OrderDetailsPage /> },
   { path: "/orders", element: <MyOrdersPage /> },
   { path: "/order-history", element: <OrderHistoryPage /> },
-  { path: "/my-issues", element: <MyIssuesPage/>},
+  { path: "/transactions", element: <TransactionsPage /> },
+  { path: "/my-issues", element: <MyIssuesPage /> },
   { path: "/account", element: <AccountPage /> },
   { path: "/profile", element: <ProfilePage /> },
   { path: "/login", element: <LoginPage /> },

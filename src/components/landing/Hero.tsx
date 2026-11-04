@@ -18,7 +18,7 @@ function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-[100svh] w-full overflow-hidden bg-[#2f2f2f] sm:min-h-screen md:py-10"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-[#2f2f2f] sm:min-h-screen -mt-12"
     >
       {/* Fonts + Animations */}
       <style>{`
@@ -56,7 +56,7 @@ function Hero() {
       <div className="absolute inset-0 z-10 bg-black/10 sm:bg-transparent" />
 
       {/* Content */}
-      <div className="relative z-20 mx-auto flex min-h-[100svh] w-full max-w-[1300px] flex-col justify-center px-4 py-16 sm:min-h-screen sm:px-6 sm:py-20 md:px-10 lg:px-12">
+      <div className="relative z-20 mx-auto flex min-h-[100svh] w-full max-w-[1300px] flex-col justify-center px-4 sm:min-h-screen sm:px-6 md:px-10 lg:px-12">
         <div className="w-full max-w-2xl text-center sm:max-w-xl sm:text-left md:max-w-2xl">
           {/* Eyebrow */}
           <div className="anim-fadeUp delay-1 mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-3.5 py-1.5 backdrop-blur-md sm:mb-6">

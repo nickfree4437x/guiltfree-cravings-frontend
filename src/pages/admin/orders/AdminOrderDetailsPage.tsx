@@ -10,36 +10,57 @@ import {
   CreditCard,
   CalendarDays,
   Tag,
-  Mail,
   Clock,
   ShoppingBag,
   Truck,
-  RefreshCw,
   LoaderCircle,
-  CheckCircle2,
-  AlertCircle,
   ChevronDown,
-  Phone,
 } from "lucide-react";
 
 import {
   getAdminOrderById,
+  updateAdminOrderStatus,
   updateAdminOrderDeliveryStatus,
 } from "../../../api/adminOrderApi";
 
 import type {
   AdminOrder,
+  OrderStatus,
   DeliveryStatus,
 } from "../../../components/admin/orders/types";
 
 import {
   formatAmount,
   formatDate,
+  getOrderStatusClass,
   getDeliveryStatusClass,
 } from "../../../components/admin/orders/orderUtils";
 
 import OrderStatusBadge from "../../../components/admin/orders/OrderStatusBadge";
 import PaymentStatusBadge from "../../../components/admin/orders/PaymentStatusBadge";
+
+/* =========================================================
+ * ORDER STATUS OPTIONS
+ * ========================================================= */
+
+const ORDER_STATUS_OPTIONS: {
+  value: OrderStatus;
+  label: string;
+}[] = [
+  { value: "NEW", label: "New" },
+  { value: "CONFIRMED", label: "Confirmed" },
+  { value: "PACKED", label: "Packed" },
+  { value: "SHIPPED", label: "Shipped" },
+  { value: "DELIVERED", label: "Delivered" },
+  { value: "CANCELLED", label: "Cancelled" },
+  { value: "RETURNED", label: "Returned" },
+];
+
+const LEGACY_ORDER_STATUSES: OrderStatus[] = [
+  "PENDING",
+  "PROCESSING",
+  "COMPLETED",
+];
 
 const DELIVERY_STATUS_OPTIONS: {
   value: DeliveryStatus;
@@ -53,9 +74,12 @@ const DELIVERY_STATUS_OPTIONS: {
   { value: "CANCELLED", label: "Cancelled" },
 ];
 
+/* =========================================================
+ * HELPERS
+ * ========================================================= */
+
 function formatLabel(value?: string | null): string {
   if (!value) return "Not available";
-
   return value
     .toLowerCase()
     .split("_")
@@ -65,13 +89,8 @@ function formatLabel(value?: string | null): string {
 
 function formatDateTime(value?: string | null): string {
   if (!value) return "Not available";
-
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Not available";
-  }
-
+  if (Number.isNaN(date.getTime())) return "Not available";
   return date.toLocaleString("en-IN", {
     day: "2-digit",
     month: "short",
@@ -81,31 +100,43 @@ function formatDateTime(value?: string | null): string {
   });
 }
 
+function isLegacyOrderStatus(status: OrderStatus): boolean {
+  return LEGACY_ORDER_STATUSES.includes(status);
+}
+
+/* =========================================================
+ * DETAIL SECTION WRAPPER
+ * ========================================================= */
+
 function DetailSection({
   title,
   icon,
   children,
 }: {
   title: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-[#F1E9E1] bg-white shadow-sm">
-      <div className="flex items-center gap-3 border-b border-[#F1E9E1] bg-[#FFFBFC] px-4 py-4 sm:px-5">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBECEF] text-[#B5697A]">
-          {icon}
-        </span>
-
-        <h2 className="text-sm font-semibold text-[#4B403B] sm:text-base">
+    <section className="overflow-hidden rounded-xl border border-[#EADFD3] bg-white shadow-sm">
+      <div className="flex items-center gap-2.5 border-b border-[#F1E9E1] bg-[#FFFBFC] px-5 py-4">
+        {icon && (
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FBECEF] text-[#B5697A]">
+            {icon}
+          </span>
+        )}
+        <h2 className="text-[15px] font-semibold text-gray-700">
           {title}
         </h2>
       </div>
-
-      <div className="p-4 sm:p-5">{children}</div>
+      <div className="p-5">{children}</div>
     </section>
   );
 }
+
+/* =========================================================
+ * DETAIL ITEM ROW
+ * ========================================================= */
 
 function DetailItem({
   label,
@@ -121,23 +152,26 @@ function DetailItem({
 
   return (
     <div className="min-w-0">
-      <p className="text-[11px] text-slate-500 sm:text-xs">
+      <p className="text-[10px] uppercase tracking-wider text-slate-500 md:text-[11px]">
         {label}
       </p>
-
-      <p className="mt-1 break-words text-sm font-medium leading-relaxed text-[#5F554E]">
+      <p className="mt-1 break-words text-[13px] leading-relaxed text-[#3D3834]">
         {displayValue}
       </p>
     </div>
   );
 }
 
+/* =========================================================
+ * SUMMARY CARD
+ * ========================================================= */
+
 function SummaryCard({
   title,
   value,
   icon,
   iconClass,
-  valueClass = "text-[#4B403B]",
+  valueClass = "text-[#3D3834]",
 }: {
   title: string;
   value: string;
@@ -146,26 +180,31 @@ function SummaryCard({
   valueClass?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-[#F1E9E1] bg-white p-4 sm:p-5">
-      <div className="flex min-w-0 items-center gap-3">
-        <span
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconClass}`}
-        >
-          {icon}
-        </span>
-
+    <div className="rounded-xl border border-[#EADFD3] bg-white p-4 shadow-sm sm:p-5">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs text-slate-500">{title}</p>
+          <p className="text-[11px] tracking-wider text-slate-500">
+            {title}
+          </p>
           <p
-            className={`mt-1 break-words text-base font-semibold sm:text-lg ${valueClass}`}
+            className={`mt-2 break-words text-base font-semibold sm:text-lg ${valueClass}`}
           >
             {value}
           </p>
         </div>
+        <span
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconClass}`}
+        >
+          {icon}
+        </span>
       </div>
     </div>
   );
 }
+
+/* =========================================================
+ * MAIN PAGE
+ * ========================================================= */
 
 function AdminOrderDetailsPage() {
   const navigate = useNavigate();
@@ -174,6 +213,11 @@ function AdminOrderDetailsPage() {
   const [order, setOrder] = useState<AdminOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [updatingOrderStatus, setUpdatingOrderStatus] = useState(false);
+  const [orderStatusError, setOrderStatusError] = useState("");
+  const [orderStatusSuccess, setOrderStatusSuccess] = useState("");
+
   const [deliveryError, setDeliveryError] = useState("");
   const [deliverySuccess, setDeliverySuccess] = useState("");
   const [updatingDelivery, setUpdatingDelivery] = useState(false);
@@ -197,9 +241,7 @@ function AdminOrderDetailsPage() {
     } catch (err: unknown) {
       setOrder(null);
       setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to load order details."
+        err instanceof Error ? err.message : "Unable to load order details."
       );
     } finally {
       setLoading(false);
@@ -207,60 +249,48 @@ function AdminOrderDetailsPage() {
   }, [id]);
 
   useEffect(() => {
-    let active = true;
+    void loadOrder();
+  }, [loadOrder]);
 
-    async function fetchOrder() {
-      const orderId = Number(id);
+  const handleOrderStatusChange = async (newStatus: OrderStatus) => {
+    if (!order || updatingOrderStatus) return;
+    if (isLegacyOrderStatus(order.orderStatus)) return;
+    if (newStatus === order.orderStatus) return;
 
-      if (!id || !Number.isSafeInteger(orderId) || orderId <= 0) {
-        if (active) {
-          setError("Invalid order ID.");
-          setOrder(null);
-          setLoading(false);
-        }
-        return;
-      }
+    setUpdatingOrderStatus(true);
+    setOrderStatusError("");
+    setOrderStatusSuccess("");
 
-      setLoading(true);
-      setError("");
+    try {
+      const updatedOrder = await updateAdminOrderStatus(order.id, newStatus);
 
-      try {
-        const data = await getAdminOrderById(orderId);
+      setOrder((current) =>
+        current
+          ? {
+              ...current,
+              orderStatus: updatedOrder.orderStatus,
+              paymentStatus: updatedOrder.paymentStatus,
+              deliveryStatus: updatedOrder.deliveryStatus,
+              updatedAt: updatedOrder.updatedAt,
+            }
+          : current
+      );
 
-        if (active) {
-          setOrder(data);
-        }
-      } catch (err: unknown) {
-        if (active) {
-          setOrder(null);
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Unable to load order details."
-          );
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
+      setOrderStatusSuccess(
+        `Order status updated to ${formatLabel(updatedOrder.orderStatus)}.`
+      );
+    } catch (err: unknown) {
+      setOrderStatusError(
+        err instanceof Error ? err.message : "Unable to update order status."
+      );
+    } finally {
+      setUpdatingOrderStatus(false);
     }
+  };
 
-    void fetchOrder();
-
-    return () => {
-      active = false;
-    };
-  }, [id]);
-
-  const handleDeliveryStatusChange = async (
-    newStatus: DeliveryStatus
-  ) => {
+  const handleDeliveryStatusChange = async (newStatus: DeliveryStatus) => {
     if (!order || updatingDelivery) return;
-
-    const previousStatus = order.deliveryStatus ?? "PENDING";
-
-    if (newStatus === previousStatus) return;
+    if (newStatus === (order.deliveryStatus ?? "PENDING")) return;
 
     setUpdatingDelivery(true);
     setDeliveryError("");
@@ -272,87 +302,84 @@ function AdminOrderDetailsPage() {
         newStatus
       );
 
-      setOrder((currentOrder) => {
-        if (!currentOrder) return currentOrder;
-
-        return {
-          ...currentOrder,
-          deliveryStatus: updatedOrder.deliveryStatus,
-          deliveredAt: updatedOrder.deliveredAt,
-          updatedAt: updatedOrder.updatedAt,
-        };
-      });
+      setOrder((current) =>
+        current
+          ? {
+              ...current,
+              deliveryStatus: updatedOrder.deliveryStatus,
+              deliveredAt: updatedOrder.deliveredAt,
+              updatedAt: updatedOrder.updatedAt,
+            }
+          : current
+      );
 
       setDeliverySuccess(
         `Delivery status updated to ${formatLabel(newStatus)}.`
       );
     } catch (err: unknown) {
       setDeliveryError(
-        err instanceof Error
-          ? err.message
-          : "Unable to update delivery status. Please try again."
+        err instanceof Error ? err.message : "Unable to update delivery status."
       );
     } finally {
       setUpdatingDelivery(false);
     }
   };
 
+  /* =======================================================
+   * LOADING STATE
+   * ======================================================= */
+
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center bg-white px-4">
-        <div className="flex items-center gap-3 text-sm text-gray-600">
-          <RefreshCw className="h-5 w-5 animate-spin text-[#B5697A]" />
-          Loading order details...
+      <div className="flex min-h-screen items-center justify-center bg-[#FFFEFD] px-4">
+        <div className="flex items-center gap-3 rounded-2xl bg-white px-6 py-4 shadow-sm">
+          <LoaderCircle className="h-5 w-5 animate-spin text-[#B5697A]" />
+          <span className="text-sm font-medium text-gray-700">
+            Loading order details...
+          </span>
         </div>
       </div>
     );
   }
 
+  /* =======================================================
+   * ERROR STATE
+   * ======================================================= */
+
   if (error || !order) {
     return (
-      <div className="mx-auto max-w-3xl bg-white p-5 sm:p-8">
+      <div className="mx-auto max-w-3xl bg-[#FFFEFD] p-6 sm:p-10">
         <button
-          type="button"
           onClick={() => navigate("/admin/orders")}
-          className="mb-6 inline-flex items-center gap-2 text-sm text-[#B5697A] transition hover:text-[#8E4658] hover:underline"
+          className="mb-6 inline-flex items-center gap-2 text-[11px] text-[#B5697A] hover:underline"
         >
-          <ArrowLeft size={17} />
-          Back to Orders
+          <ArrowLeft size={16} /> Back to Orders
         </button>
 
-        <div className="rounded-2xl border border-red-100 bg-white p-6 text-center sm:p-8">
+        <div className="rounded-2xl border border-red-100 bg-white p-8 text-center shadow-sm">
           <Package className="mx-auto mb-3 h-10 w-10 text-[#B5697A]" />
-
           <h1 className="text-lg font-semibold text-[#3D3834]">
             Unable to load order
           </h1>
-
-          <p className="mt-2 break-words text-sm text-gray-600">
-            {error || "Order details were not found."}
+          <p className="mt-2 text-sm text-gray-500">
+            {error || "Order not found."}
           </p>
-
-          <div className="mt-5 flex flex-wrap justify-center gap-3">
+          <div className="mt-6 flex justify-center gap-3">
             <button
-              type="button"
               onClick={() => void loadOrder()}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#EADFD3] px-4 py-2.5 text-sm text-[#6F6259] transition hover:bg-[#FFFBFC]"
+              className="rounded-xl border border-[#EADFD3] px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              <RefreshCw size={15} />
               Try Again
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/admin/orders")}
-              className="rounded-xl bg-[#B5697A] px-5 py-2.5 text-sm text-white transition hover:bg-[#A65B6D]"
-            >
-              Return to Orders
             </button>
           </div>
         </div>
       </div>
     );
   }
+
+  /* =======================================================
+   * DERIVED DATA
+   * ======================================================= */
 
   const address = [
     order.addressLine1,
@@ -364,60 +391,99 @@ function AdminOrderDetailsPage() {
   ].filter((part) => Boolean(part?.trim()));
 
   const items = Array.isArray(order.items) ? order.items : [];
-
   const totalItems = items.reduce(
     (total, item) => total + Number(item.quantity || 0),
     0
   );
+  const deliveryStatus: DeliveryStatus = order.deliveryStatus ?? "PENDING";
+  const isLegacyStatus = isLegacyOrderStatus(order.orderStatus);
 
-  const deliveryStatus: DeliveryStatus =
-    order.deliveryStatus ?? "PENDING";
+  /* =======================================================
+   * RENDER
+   * ======================================================= */
 
   return (
-    <div className="min-h-screen bg-[#FFFEFD] p-4 sm:p-6 lg:p-8">
-      <div className="mx-auto max-w-7xl space-y-6">
-        {/* HEADER */}
-        <header>
+    <div className="min-h-screen bg-[#FFFEFD] pb-16">
+      <div className="mx-auto max-w-7xl space-y-6 px-4 pt-6 sm:px-6 sm:pt-8 lg:px-8">
+        {/* =====================================================
+            HEADER
+        ===================================================== */}
+        <header className="rounded-xl border border-[#EADFD3] bg-white p-5 shadow-sm sm:p-6">
           <button
-            type="button"
             onClick={() => navigate("/admin/orders")}
-            className="mb-5 inline-flex items-center gap-2 text-xs text-[#B5697A] transition hover:text-[#8E4658] hover:underline sm:text-sm"
+            className="mb-4 inline-flex items-center gap-2 text-[11px] text-[#B5697A] transition hover:text-[#8E4658] hover:underline md:text-[12px]"
           >
-            <ArrowLeft size={17} />
-            Back to Orders
+            <ArrowLeft size={15} /> Back to Orders
           </button>
 
-          <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-start">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#A85F70]">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-md bg-[#FBECEF] px-2.5 py-1 text-[10px] uppercase tracking-wider text-[#A85F70]">
                   Order Details
                 </span>
-
-                <span className="text-xs text-slate-400">
-                  ID: {order.id}
-                </span>
+                <span className="text-xs text-slate-400">#{order.id}</span>
               </div>
-
-              <h1 className="mt-3 break-words text-xl font-semibold text-[#3D3834] sm:text-2xl lg:text-3xl">
+              <h1 className="mt-2 text-lg font-semibold tracking-tight text-gray-700 md:text-xl">
                 {order.orderNumber}
               </h1>
-
-              <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+              <p className="mt-1 text-[11px] text-slate-500 md:text-[12px]">
                 Placed on {formatDateTime(order.createdAt)}
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:min-w-[400px]">
-              <div className="rounded-xl border border-[#F1E9E1] bg-white p-3">
-                <p className="mb-2 text-xs text-slate-500">
+            <div className="grid gap-4 sm:grid-cols-2 lg:w-[450px]">
+              {/* ─── ORDER STATUS BOX ─── */}
+              <div className="rounded-xl border border-[#F1E9E1] bg-[#FFFBFC] p-3.5">
+                <p className="mb-2 text-[10px] uppercase tracking-wider text-slate-500">
                   Order Status
                 </p>
-                <OrderStatusBadge status={order.orderStatus} />
+                {isLegacyStatus ? (
+                  <OrderStatusBadge status={order.orderStatus} />
+                ) : (
+                  <div className="relative">
+                    <select
+                      value={order.orderStatus}
+                      disabled={updatingOrderStatus}
+                      onChange={(e) =>
+                        void handleOrderStatusChange(
+                          e.target.value as OrderStatus
+                        )
+                      }
+                      className={`w-full appearance-none rounded-lg border py-2 pl-3 pr-8 text-xs outline-none disabled:opacity-60 ${getOrderStatusClass(
+                        order.orderStatus
+                      )}`}
+                    >
+                      {ORDER_STATUS_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    {updatingOrderStatus ? (
+                      <LoaderCircle className="absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin" />
+                    ) : (
+                      <ChevronDown className="absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2" />
+                    )}
+                  </div>
+                )}
+
+                {/* ✅ inline success / error for order status */}
+                {orderStatusSuccess && (
+                  <p className="mt-2 text-[11px] text-emerald-600">
+                    ✓ {orderStatusSuccess}
+                  </p>
+                )}
+                {orderStatusError && (
+                  <p className="mt-2 text-[11px] text-red-500">
+                    ✗ {orderStatusError}
+                  </p>
+                )}
               </div>
 
-              <div className="rounded-xl border border-[#F1E9E1] bg-white p-3">
-                <p className="mb-2 text-xs text-slate-500">
+              {/* ─── PAYMENT STATUS BOX ─── */}
+              <div className="rounded-xl border border-[#F1E9E1] bg-[#FFFBFC] p-3.5">
+                <p className="mb-2 text-[10px] uppercase tracking-wider text-slate-500">
                   Payment Status
                 </p>
                 <PaymentStatusBadge status={order.paymentStatus} />
@@ -426,93 +492,84 @@ function AdminOrderDetailsPage() {
           </div>
         </header>
 
-        {/* SUMMARY CARDS */}
+        {/* =====================================================
+            SUMMARY CARDS
+        ===================================================== */}
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <SummaryCard
             title="Total Items"
             value={String(totalItems)}
-            icon={<ShoppingBag size={20} />}
+            icon={<ShoppingBag size={16} />}
             iconClass="bg-[#FBECEF] text-[#B5697A]"
           />
-
           <SummaryCard
             title="Order Total"
             value={formatAmount(order.totalAmount)}
-            icon={<CreditCard size={20} />}
-            iconClass="bg-green-50 text-[#36764A]"
-            valueClass="text-[#36764A]"
+            icon={<CreditCard size={16} />}
+            iconClass="bg-emerald-50 text-emerald-600"
+            valueClass="text-emerald-700"
           />
-
           <SummaryCard
             title="Delivery Zone"
             value={formatLabel(order.deliveryZone)}
-            icon={<Truck size={20} />}
+            icon={<Truck size={16} />}
             iconClass="bg-blue-50 text-blue-600"
           />
-
           <SummaryCard
             title="Last Updated"
             value={formatDate(order.updatedAt)}
-            icon={<CalendarDays size={20} />}
+            icon={<CalendarDays size={16} />}
             iconClass="bg-amber-50 text-amber-600"
           />
         </section>
 
-        {/* CUSTOMER + DELIVERY */}
+        {/* =====================================================
+            CUSTOMER & DELIVERY GRID
+        ===================================================== */}
         <section className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+          {/* CUSTOMER */}
           <DetailSection
             title="Customer Information"
-            icon={<UserRound size={19} />}
+            icon={<UserRound size={14} />}
           >
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <DetailItem
-                label="Customer Name"
-                value={order.customerName}
-              />
-
+              <DetailItem label="Full Name" value={order.customerName} />
               <DetailItem
                 label="Customer ID"
-                value={order.userId ?? "Guest / Not available"}
+                value={order.userId ?? "Guest"}
               />
 
-              <div className="min-w-0">
-                <p className="text-xs text-slate-500">
-                  Phone Number
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-slate-500">
+                  Phone
                 </p>
-
                 {order.customerPhone ? (
                   <a
                     href={`tel:${order.customerPhone}`}
-                    className="mt-1 inline-flex items-center gap-2 break-all text-sm text-[#B5697A] hover:underline"
+                    className="mt-1 flex items-center gap-2 text-[11px] text-[#B5697A] hover:underline md:text-[12px]"
                   >
-                    <Phone size={14} className="shrink-0" />
                     {order.customerPhone}
                   </a>
                 ) : (
-                  <p className="mt-1 text-sm text-gray-500">
-                    Not available
+                  <p className="mt-1 text-[13px] text-gray-500">
+                    Not provided
                   </p>
                 )}
               </div>
 
-              <div className="min-w-0">
-                <p className="text-xs text-slate-500">
-                  Email Address
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-slate-500">
+                  Email
                 </p>
-
                 {order.customerEmail ? (
                   <a
                     href={`mailto:${order.customerEmail}`}
-                    className="mt-1 inline-flex items-start gap-2 break-all text-sm text-[#B5697A] hover:underline"
+                    className="mt-1 flex items-center gap-2 break-all text-[11px] text-[#B5697A] hover:underline md:text-[12px]"
                   >
-                    <Mail
-                      className="mt-0.5 shrink-0"
-                      size={14}
-                    />
                     {order.customerEmail}
                   </a>
                 ) : (
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-[13px] text-gray-500">
                     Not provided
                   </p>
                 )}
@@ -520,128 +577,66 @@ function AdminOrderDetailsPage() {
             </div>
           </DetailSection>
 
+          {/* DELIVERY */}
           <DetailSection
             title="Delivery Information"
-            icon={<MapPin size={19} />}
+            icon={<MapPin size={14} />}
           >
             <div>
-              <p className="text-xs text-slate-500">
-                Delivery Address
+              <p className="text-[11px] uppercase tracking-wider text-slate-500">
+                Address
               </p>
-
-              {address.length > 0 ? (
-                <p className="mt-1 break-words text-sm leading-relaxed text-[#3D3834]">
-                  {address.join(", ")}
-                </p>
-              ) : (
-                <p className="mt-2 text-sm text-[#9A8D82]">
-                  Address not available
-                </p>
-              )}
+              <p className="mt-1 text-[11px] leading-relaxed text-[#3D3834] md:text-[12px]">
+                {address.length > 0
+                  ? address.join(", ")
+                  : "Address not available"}
+              </p>
             </div>
 
             <div className="mt-5 grid grid-cols-1 gap-5 border-t border-[#F1E9E1] pt-5 sm:grid-cols-2">
               <DetailItem
-                label="Delivery Zone"
+                label="Zone"
                 value={formatLabel(order.deliveryZone)}
               />
+              <DetailItem label="PIN Code" value={order.pincode} />
 
-              <DetailItem
-                label="PIN Code"
-                value={order.pincode}
-              />
-
-              <div className="min-w-0 sm:col-span-2">
-                <label
-                  htmlFor="delivery-status"
-                  className="mb-2 block text-xs font-medium text-slate-500"
-                >
+              <div className="sm:col-span-2">
+                <p className="mb-2 text-[11px] uppercase tracking-wider text-slate-500">
                   Update Delivery Status
-                </label>
-
-                <div className="relative max-w-md">
-                  <Truck
-                    size={16}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#B5697A]"
-                    aria-hidden="true"
-                  />
-
+                </p>
+                <div className="relative">
                   <select
-                    id="delivery-status"
                     value={deliveryStatus}
                     disabled={updatingDelivery}
-                    onChange={(event) =>
+                    onChange={(e) =>
                       void handleDeliveryStatusChange(
-                        event.target.value as DeliveryStatus
+                        e.target.value as DeliveryStatus
                       )
                     }
-                    className={`
-                      w-full appearance-none rounded-xl border
-                      py-3 pl-10 pr-10 text-sm font-medium
-                      outline-none transition
-                      focus:ring-2 focus:ring-[#B5697A]/20
-                      disabled:cursor-wait disabled:opacity-60
-                      ${getDeliveryStatusClass(deliveryStatus)}
-                    `}
+                    className={`w-full appearance-none rounded-lg border py-2.5 pl-3 pr-10 text-xs outline-none disabled:opacity-60 ${getDeliveryStatusClass(
+                      deliveryStatus
+                    )}`}
                   >
-                    {DELIVERY_STATUS_OPTIONS.map((option) => (
-                      <option
-                        key={option.value}
-                        value={option.value}
-                      >
-                        {option.label}
+                    {DELIVERY_STATUS_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
                       </option>
                     ))}
                   </select>
-
                   {updatingDelivery ? (
-                    <LoaderCircle
-                      size={16}
-                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-[#B5697A]"
-                      aria-label="Updating delivery status"
-                    />
+                    <LoaderCircle className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin" />
                   ) : (
-                    <ChevronDown
-                      size={16}
-                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-current"
-                      aria-hidden="true"
-                    />
+                    <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
                   )}
                 </div>
-
-                {updatingDelivery && (
-                  <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-                    <LoaderCircle
-                      size={13}
-                      className="animate-spin"
-                    />
-                    Saving delivery status...
-                  </p>
-                )}
-
                 {deliverySuccess && (
-                  <p
-                    role="status"
-                    className="mt-2 flex items-start gap-2 text-xs text-green-700"
-                  >
-                    <CheckCircle2
-                      size={14}
-                      className="mt-0.5 shrink-0"
-                    />
-                    {deliverySuccess}
+                  <p className="mt-2 text-[11px] text-emerald-600">
+                    ✓ {deliverySuccess}
                   </p>
                 )}
-
                 {deliveryError && (
-                  <p
-                    role="alert"
-                    className="mt-2 flex items-start gap-2 text-xs text-red-600"
-                  >
-                    <AlertCircle
-                      size={14}
-                      className="mt-0.5 shrink-0"
-                    />
-                    {deliveryError}
+                  <p className="mt-2 text-[11px] text-red-500">
+                    ✗ {deliveryError}
                   </p>
                 )}
               </div>
@@ -651,102 +646,77 @@ function AdminOrderDetailsPage() {
                 value={
                   deliveryStatus === "DELIVERED"
                     ? formatDateTime(order.deliveredAt)
-                    : "Not delivered yet"
+                    : "Pending"
                 }
               />
-
               <DetailItem
                 label="Delivery Charge"
                 value={formatAmount(order.deliveryCharge ?? 0)}
-              />
-
-              <DetailItem
-                label="Delivery Charge Confirmed"
-                value={
-                  order.deliveryChargeConfirmed == null
-                    ? "Not available"
-                    : order.deliveryChargeConfirmed
-                      ? "Yes"
-                      : "No"
-                }
               />
             </div>
           </DetailSection>
         </section>
 
-        {/* ORDER ITEMS */}
+        {/* =====================================================
+            ORDER ITEMS TABLE
+        ===================================================== */}
         <DetailSection
           title={`Ordered Products (${items.length})`}
-          icon={<Package size={19} />}
+          icon={<Package size={14} />}
         >
           {items.length === 0 ? (
-            <p className="py-5 text-center text-sm text-slate-500">
-              No product details available for this order.
+            <p className="py-5 text-center text-sm text-gray-500">
+              No items found.
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[760px]">
+              <table className="w-full min-w-[700px]">
                 <thead>
                   <tr className="border-b border-[#F1E9E1] text-left">
-                    <th className="pb-3 pr-4 text-xs font-medium uppercase tracking-wide text-gray-500">
+                    <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                       Product
                     </th>
-
-                    <th className="px-4 pb-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+                    <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                       Variant
                     </th>
-
-                    <th className="px-4 pb-3 text-xs font-medium uppercase tracking-wide text-gray-500">
+                    <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                       Packaging
                     </th>
-
-                    <th className="px-4 pb-3 text-center text-xs font-medium uppercase tracking-wide text-gray-500">
+                    <th className="pb-3 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                       Qty
                     </th>
-
-                    <th className="px-4 pb-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500">
-                      Unit Price
+                    <th className="pb-3 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                      Price
                     </th>
-
-                    <th className="pb-3 pl-4 text-right text-xs font-medium uppercase tracking-wide text-gray-500">
-                      Subtotal
+                    <th className="pb-3 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                      Total
                     </th>
                   </tr>
                 </thead>
-
-                <tbody>
+                <tbody className="divide-y divide-[#F1E9E1]">
                   {items.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="border-b border-[#F7F0E9] last:border-0"
-                    >
-                      <td className="py-4 pr-4">
-                        <p className="text-sm font-semibold text-[#3D3834]">
+                    <tr key={item.id} className="hover:bg-[#FFFBFC]">
+                      <td className="py-3 pr-4">
+                        <p className="text-[13px] font-semibold text-[#3D3834]">
                           {item.productName}
                         </p>
-
-                        <p className="mt-1 text-xs text-[#9A8D82]">
-                          Product ID: {item.productId}
+                        <p className="mt-0.5 text-[11px] text-slate-500">
+                          ID: {item.productId}
                         </p>
                       </td>
-
-                      <td className="px-4 py-4 text-sm text-[#5F554E]">
+                      <td className="py-3 text-[13px] text-gray-600">
                         {item.variantQuantity} {item.variantUnit}
                       </td>
-
-                      <td className="px-4 py-4 text-sm text-[#5F554E]">
-                        {item.packaging || "Not specified"}
+                      <td className="py-3 text-[13px] text-gray-600">
+                        {item.packaging || "N/A"}
                       </td>
-
-                      <td className="px-4 py-4 text-center text-sm font-medium text-[#3D3834]">
+                      <td className="py-3 text-center text-[13px] font-medium text-gray-700">
                         {item.quantity}
                       </td>
-
-                      <td className="px-4 py-4 text-right text-sm text-[#5F554E]">
+                      <td className="py-3 text-right text-[13px] text-gray-600">
                         {formatAmount(item.unitPrice)}
                       </td>
-
-                      <td className="py-4 pl-4 text-right text-sm font-semibold text-[#3D3834]">
+                      <td className="py-3 text-right text-[13px] font-bold text-[#3D3834]">
                         {formatAmount(item.subtotal)}
                       </td>
                     </tr>
@@ -757,40 +727,29 @@ function AdminOrderDetailsPage() {
           )}
         </DetailSection>
 
-        {/* ORDER INFORMATION + PRICE BREAKDOWN */}
+        {/* =====================================================
+            INFO & PRICE BREAKDOWN
+        ===================================================== */}
         <section className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
           <DetailSection
-            title="Order & Payment Information"
-            icon={<Clock size={19} />}
+            title="Order Information"
+            icon={<Clock size={14} />}
           >
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <DetailItem
-                label="Internal Order ID"
-                value={order.id}
-              />
-
-              <DetailItem
-                label="Order Number"
-                value={order.orderNumber}
-              />
-
               <DetailItem
                 label="Order Status"
                 value={formatLabel(order.orderStatus)}
               />
-
               <DetailItem
                 label="Payment Status"
                 value={formatLabel(order.paymentStatus)}
               />
-
               <DetailItem
                 label="Created At"
                 value={formatDateTime(order.createdAt)}
               />
-
               <DetailItem
-                label="Last Updated At"
+                label="Updated At"
                 value={formatDateTime(order.updatedAt)}
               />
             </div>
@@ -798,55 +757,45 @@ function AdminOrderDetailsPage() {
 
           <DetailSection
             title="Price Breakdown"
-            icon={<CreditCard size={19} />}
+            icon={<CreditCard size={14} />}
           >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-4 text-sm">
+            <div className="space-y-3">
+              <div className="flex justify-between text-[13px]">
                 <span className="text-gray-600">Subtotal</span>
-
                 <span className="font-medium text-[#3D3834]">
                   {formatAmount(order.subtotal)}
                 </span>
               </div>
-
-              <div className="flex items-center justify-between gap-4 text-sm">
+              <div className="flex justify-between text-[13px]">
                 <span className="text-gray-600">Discount</span>
-
-                <span className="font-medium text-green-700">
+                <span className="font-medium text-emerald-600">
                   − {formatAmount(order.discountAmount)}
                 </span>
               </div>
-
-              <div className="flex items-center justify-between gap-4 text-sm">
-                <span className="text-gray-600">
-                  Delivery Charge
-                </span>
-
+              <div className="flex justify-between text-[13px]">
+                <span className="text-gray-600">Delivery Charge</span>
                 <span className="font-medium text-[#3D3834]">
                   {formatAmount(order.deliveryCharge ?? 0)}
                 </span>
               </div>
 
-              {(order.offerCode || order.offerId != null) && (
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="inline-flex items-center gap-2 text-gray-600">
-                    <Tag size={15} />
-                    Applied Offer
+              {order.offerCode && (
+                <div className="flex justify-between text-[13px]">
+                  <span className="flex items-center gap-1.5 text-gray-600">
+                    <Tag size={14} /> Applied Offer
                   </span>
-
-                  <span className="break-all text-right font-semibold text-[#B5697A]">
-                    {order.offerCode || `Offer #${order.offerId}`}
+                  <span className="font-semibold text-[#B5697A]">
+                    {order.offerCode}
                   </span>
                 </div>
               )}
 
-              <div className="border-t border-dashed border-[#EADFD3] pt-4">
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-sm font-semibold text-[#3D3834]">
+              <div className="mt-2 border-t border-dashed border-[#EADFD3] pt-3">
+                <div className="flex justify-between">
+                  <span className="text-sm font-bold text-[#3D3834]">
                     Final Total
                   </span>
-
-                  <span className="text-xl font-bold text-[#1F4A2E]">
+                  <span className="text-lg font-bold text-emerald-700">
                     {formatAmount(order.totalAmount)}
                   </span>
                 </div>

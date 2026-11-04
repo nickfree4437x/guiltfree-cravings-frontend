@@ -1,9 +1,11 @@
+
 import { PackageX } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { Product, ProductVariant } from "../../../api/productApi";
 
 // ─── Types ────────────────────────────────────────────────
+
 interface ProductCardImageProps {
   product: Product;
   packaging?: "Plastic Box" | "Glass Jar" | "Cardboard Box";
@@ -11,72 +13,127 @@ interface ProductCardImageProps {
   compact?: boolean;
 }
 
-// ─── Glass jar variant images ─────────────────────────────
-const GLASS_JAR_IMAGES: Record<string, { 350: string; 500: string }> = {
-  "dry fruit sattu laddoo": {
-    350: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518318/WhatsApp_Image_2026-10-19_at_11.25.07_PM.jpg",
-    500: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518221/WhatsApp_Image_2026-10-19_at_11.25.03_PM.jpg",
-  },
-  "sattu dry fruit laddoo": {
-    350: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518318/WhatsApp_Image_2026-10-19_at_11.25.07_PM.jpg",
-    500: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518221/WhatsApp_Image_2026-10-19_at_11.25.03_PM.jpg",
-  },
-  "dates delight laddoo": {
-    350: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518272/WhatsApp_Image_2026-10-19_at_11.25.06_PM.jpg",
-    500: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518159/WhatsApp_Image_2026-10-19_at_11.25.02_PM.jpg",
-  },
-};
+type PackagingType = "Plastic Box" | "Glass Jar" | "Cardboard Box";
 
 // ─── Helpers ──────────────────────────────────────────────
-function normalizeProductName(name: string): string {
-  return name.trim().replace(/\s+/g, " ").toLowerCase();
-}
 
 const getContainerSize = (compact: boolean) =>
-  compact ? "h-full w-full" : "h-[140px] w-full sm:h-[220px] md:h-[260px]";
+  compact
+    ? "h-full w-full"
+    : "h-[140px] w-full sm:h-[220px] md:h-[260px]";
+
+function getValidImage(image?: string | null): string | null {
+  if (typeof image !== "string") return null;
+
+  const trimmedImage = image.trim();
+
+  return trimmedImage.length > 0 ? trimmedImage : null;
+}
+
+function getFirstValidImage(
+  images?: (string | null | undefined)[]
+): string | null {
+  if (!Array.isArray(images)) return null;
+
+  for (const image of images) {
+    const validImage = getValidImage(image);
+
+    if (validImage) return validImage;
+  }
+
+  return null;
+}
+
+// ─── Packaging Image Selection ────────────────────────────
+
+function getProductImage(
+  product: Product,
+  packaging: PackagingType
+): string | null {
+  if (packaging === "Glass Jar") {
+    return (
+      getFirstValidImage(product.glassJarImages) ??
+      getValidImage(product.glassJarImage) ??
+      getFirstValidImage(product.images) ??
+      getValidImage(product.image)
+    );
+  }
+
+  if (packaging === "Cardboard Box") {
+    return (
+      getFirstValidImage(product.cardboardBoxImages) ??
+      getValidImage(product.cardboardBoxImage) ??
+      getFirstValidImage(product.images) ??
+      getValidImage(product.image)
+    );
+  }
+
+  return (
+    getFirstValidImage(product.regularImages) ??
+    getValidImage(product.image) ??
+    getFirstValidImage(product.images)
+  );
+}
 
 // ─── Component ────────────────────────────────────────────
+
 function ProductCardImage({
   product,
   packaging = "Plastic Box",
   variant = null,
   compact = false,
 }: ProductCardImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [imageState, setImageState] = useState<{
+    src: string;
+    loaded: boolean;
+    error: boolean;
+  }>({
+    src: "",
+    loaded: false,
+    error: false,
+  });
 
-  const normalizedName = normalizeProductName(product.name);
-  const glassJarImageMap = GLASS_JAR_IMAGES[normalizedName];
+  const image = getProductImage(product, packaging);
 
-  const isValidGlassJarVariant =
-    packaging === "Glass Jar" &&
-    variant?.packaging === "Glass Jar" &&
-    variant.unit.toLowerCase() === "g" &&
-    (variant.quantity === 350 || variant.quantity === 500);
+  // Only use image state belonging to the current image.
+  const isLoaded = imageState.src === image && imageState.loaded;
+  const hasError = imageState.src === image && imageState.error;
 
-  const variantGlassJarImage = isValidGlassJarVariant
-    ? glassJarImageMap?.[variant!.quantity as 350 | 500] ?? null
-    : null;
+  const handleImageLoad = () => {
+    if (!image) return;
 
-  const image =
-    variantGlassJarImage ??
-    (packaging === "Glass Jar"
-      ? product.glassJarImage
-      : packaging === "Cardboard Box"
-        ? product.cardboardBoxImage
-        : product.image);
+    setImageState({
+      src: image,
+      loaded: true,
+      error: false,
+    });
+  };
 
-  // Reset loading and error state whenever the image changes.
-  useEffect(() => {
-    setIsLoaded(false);
-    setHasError(false);
-  }, [image]);
+  const handleImageError = () => {
+    if (!image) return;
 
-  // ─── No image or failed image fallback ───────────────────
+    console.error("Product image failed to load:", {
+      productId: product.id,
+      productName: product.name,
+      packaging,
+      image,
+    });
+
+    setImageState({
+      src: image,
+      loaded: true,
+      error: true,
+    });
+  };
+
+  // ─── Image Fallback ─────────────────────────────────────
+
   if (!image || hasError) {
     return (
       <div
-        className={`relative flex items-center justify-center overflow-hidden bg-[#fffbfc] ${getContainerSize(compact)} ${
+        className={`relative flex items-center justify-center overflow-hidden bg-[#fffbfc] ${getContainerSize(
+          compact
+        )} ${
           compact ? "rounded-lg p-2" : "rounded-lg p-3 sm:p-5 md:p-6"
         }`}
       >
@@ -105,14 +162,17 @@ function ProductCardImage({
     );
   }
 
-  // ─── Image display ──────────────────────────────────────
+  // ─── Image Display ──────────────────────────────────────
+
   return (
     <div
-      className={`group/image relative flex items-center justify-center overflow-hidden bg-white ${getContainerSize(compact)} ${
+      className={`group/image relative flex items-center justify-center overflow-hidden bg-white ${getContainerSize(
+        compact
+      )} ${
         compact ? "rounded-xl p-1.5" : "rounded-xl p-3 sm:p-5 md:p-6"
       }`}
     >
-      {/* Shimmer placeholder while loading */}
+      {/* Shimmer Placeholder */}
       {!isLoaded && (
         <div
           aria-hidden="true"
@@ -123,20 +183,16 @@ function ProductCardImage({
       )}
 
       <img
-        key={image}
+        key={`${product.id}-${packaging}-${image}`}
         src={image}
-        alt={`${product.name} ${packaging}${variant ? ` ${variant.quantity}${variant.unit}` : ""}`}
+        alt={`${product.name} ${packaging}${
+          variant ? ` ${variant.quantity}${variant.unit}` : ""
+        }`}
         loading="eager"
         decoding="async"
-        onLoad={() => {
-          setIsLoaded(true);
-          setHasError(false);
-        }}
-        onError={() => {
-          setIsLoaded(true);
-          setHasError(true);
-        }}
-        className={`relative z-[2] h-full w-full object-contain object-center transition-all duration-700 ease-out ${
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        className={`relative z-[2] h-full w-full object-contain object-center transition-opacity duration-500 ${
           isLoaded ? "opacity-100" : "opacity-0"
         }`}
       />

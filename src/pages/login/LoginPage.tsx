@@ -857,10 +857,8 @@ function LoginPage() {
         min-h-screen
         bg-white
         px-4
-        py-2
         sm:px-6
-        sm:py-4
-        lg:px-8
+        lg:px-8 -mt-10
       "
     >
       <div
@@ -882,9 +880,9 @@ function LoginPage() {
             to="/"
             className="
               inline-flex items-center gap-1.5
-              text-[12px] text-[#824958]
+              text-[11px] text-[#824958]
               transition-colors hover:text-[#B5697A] hover:underline
-              sm:text-[13px]
+              sm:text-[12.5px]
             "
           >
             <ArrowLeft size={15} />
@@ -1169,13 +1167,13 @@ function LoginPage() {
                           bg-transparent
                           px-3.5
                           text-[12px]
-                          text-[#2C2C2C]
+                          text-slate-500
                           outline-none
                           placeholder:font-slate-500
                           placeholder:text-slate-500 font-[350]
                           disabled:cursor-not-allowed
                           sm:px-4
-                          sm:text-[13px]
+                          sm:text-[12.5px]
                         "
                         aria-label="Phone Number"
                       />

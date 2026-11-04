@@ -16,7 +16,7 @@ function ProductQuantitySelector({ quantity, onChange }: ProductQuantitySelector
         onClick={() => onChange(Math.max(1, quantity - 1))}
         disabled={quantity <= 1}
         aria-label="Decrease quantity"
-        className="flex h-full w-8 items-center justify-center text-[#8B7A6C] transition-colors hover:bg-[#FBEEF1] hover:text-[#B5697A] disabled:cursor-not-allowed disabled:opacity-30"
+        className="flex h-full w-8 items-center justify-center text-slate-500 transition-colors hover:bg-[#FBEEF1] hover:text-[#B5697A] disabled:cursor-not-allowed disabled:opacity-30"
       >
         <Minus className="h-3 w-3" strokeWidth={2.2} />
       </button>

@@ -318,7 +318,7 @@ export default function AdminOrderIssueDetailsPage() {
                 <button
                   onClick={() => void handleUpdateStatus()}
                   disabled={saving || selectedStatus === issue.status}
-                  className="w-full inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#B5697A] px-5 text-sm text-white transition hover:bg-[#a65a6b] disabled:opacity-50"
+                  className="w-full inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#B5697A] px-5 text-[11px] md:text-[12px] text-white transition hover:bg-[#a65a6b] disabled:opacity-50"
                 >
                   {saving ? <LoaderCircle size={17} className="animate-spin" /> : <Check size={17} />}
                   {saving ? "Updating..." : "Update Status"}

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { ShoppingBag, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,7 @@ import OtpAuthModal from "../../../components/auth/OtpAuthModal";
 
 import { useAuthStore } from "../../../store/authStore";
 import { useCartStore } from "../../../store/cartStore";
+import { getPublicOffers, type Offer } from "../../../api/offerApi";
 
 // ─── Constants ────────────────────────────────────────────
 export type DeliveryZone = "within-dwarka" | "outside-dwarka";
@@ -25,6 +27,8 @@ function CartDrawer() {
   const [deliveryZone, setDeliveryZone] =
     useState<DeliveryZone>("within-dwarka");
 
+  const [publicOffer, setPublicOffer] = useState<Offer | null>(null);
+
   // Cart store
   const items = useCartStore((s) => s.items);
   const isCartDrawerOpen = useCartStore((s) => s.isCartDrawerOpen);
@@ -33,15 +37,124 @@ function CartDrawer() {
   const removeFromCart = useCartStore((s) => s.removeFromCart);
   const getCartTotal = useCartStore((s) => s.getCartTotal);
 
-  // Derived values
+  // Original cart subtotal
   const cartTotal = getCartTotal();
 
+  // ─── Fetch Public Offer ──────────────────────────────────
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchPublicOffer = async () => {
+      try {
+        const offers = await getPublicOffers();
+
+        const eligibleOffer = offers.find((offer) => {
+          return (
+            offer.audience === "PUBLIC" &&
+            offer.isActive &&
+            offer.discountType === "PERCENTAGE" &&
+            Number(offer.discountValue) > 0 &&
+            Number(offer.discountValue) <= 100
+          );
+        });
+
+        if (isMounted) {
+          setPublicOffer(eligibleOffer ?? null);
+        }
+      } catch (error) {
+        console.error("CART PUBLIC OFFER ERROR:", error);
+
+        if (isMounted) {
+          setPublicOffer(null);
+        }
+      }
+    };
+
+    fetchPublicOffer();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // ─── Offer Eligibility ───────────────────────────────────
+  const appliesToAllVariants =
+    !publicOffer?.variantIds ||
+    publicOffer.variantIds.length === 0;
+
+  const meetsMinimumOrder =
+    !publicOffer?.minOrderValue ||
+    cartTotal >= Number(publicOffer.minOrderValue);
+
+  const eligibleItems =
+    publicOffer && meetsMinimumOrder
+      ? items.filter((item) => {
+          return (
+            appliesToAllVariants ||
+            publicOffer.variantIds?.includes(item.variant.id)
+          );
+        })
+      : [];
+
+  const eligibleSubtotal = eligibleItems.reduce(
+    (total, item) =>
+      total + Number(item.variant.price) * item.quantity,
+    0
+  );
+
+  // ─── Calculate Total Discount ────────────────────────────
+  const calculatedDiscount =
+    publicOffer && eligibleSubtotal > 0
+      ? Math.floor(
+          (eligibleSubtotal * Number(publicOffer.discountValue)) / 100
+        )
+      : 0;
+
+  const discountAmount =
+    publicOffer?.maxDiscount != null
+      ? Math.min(
+          calculatedDiscount,
+          Number(publicOffer.maxDiscount)
+        )
+      : calculatedDiscount;
+
+  const finalCartTotal = Math.max(
+    0,
+    cartTotal - discountAmount
+  );
+
+  // ─── Distribute Discount Across Eligible Items ──────────
+  const itemDiscounts = new Map<number, number>();
+
+  if (discountAmount > 0 && eligibleSubtotal > 0) {
+    let distributedDiscount = 0;
+
+    eligibleItems.forEach((item, index) => {
+      const itemKey = item.variant.id;
+      const itemSubtotal =
+        Number(item.variant.price) * item.quantity;
+
+      const isLastItem = index === eligibleItems.length - 1;
+
+      const itemDiscount = isLastItem
+        ? discountAmount - distributedDiscount
+        : Math.floor(
+            (discountAmount * itemSubtotal) / eligibleSubtotal
+          );
+
+      itemDiscounts.set(itemKey, itemDiscount);
+      distributedDiscount += itemDiscount;
+    });
+  }
+
+  // ─── Delivery Calculation ────────────────────────────────
   const amountRemainingForFreeDelivery = Math.max(
     0,
     FREE_DWARKA_THRESHOLD - cartTotal
   );
 
-  const hasFreeDwarkaDelivery = cartTotal >= FREE_DWARKA_THRESHOLD;
+  const hasFreeDwarkaDelivery =
+    cartTotal >= FREE_DWARKA_THRESHOLD;
 
   const cartItemCount = items.reduce(
     (total, item) => total + item.quantity,
@@ -75,7 +188,6 @@ function CartDrawer() {
   }, [isCartDrawerOpen, closeCartDrawer]);
 
   // ─── Handlers ───────────────────────────────────────────
-
   const handleContinueShopping = () => {
     closeCartDrawer();
 
@@ -103,35 +215,27 @@ function CartDrawer() {
     }, 150);
   };
 
-  // ─── Checkout: Require OTP for guests ───────────────────
-
+  // ─── Checkout: Require OTP for Guests ───────────────────
   const handleCheckout = () => {
     if (items.length === 0) return;
 
-    // Already authenticated: proceed directly.
     if (isAuthenticated) {
       closeCartDrawer();
       navigate("/checkout");
       return;
     }
 
-    // Guest: keep the cart drawer open and request OTP verification.
     setIsAuthModalOpen(true);
   };
 
   // ─── OTP Success ────────────────────────────────────────
-
   const handleAuthSuccess = () => {
     setIsAuthModalOpen(false);
-
-    // OTP hook calls authStore.login() before onSuccess().
-    // Navigate only after successful verification.
     closeCartDrawer();
     navigate("/checkout");
   };
 
   // ─── Render ─────────────────────────────────────────────
-
   return (
     <>
       <AnimatePresence>
@@ -172,7 +276,7 @@ function CartDrawer() {
                 <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
                   <div className="min-w-0">
                     <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
-                      <h2 className="truncate text-[15px] font-semibold tracking-[-0.02em] text-[#28583B] sm:text-[17px]">
+                      <h2 className="truncate text-[15px] font-semibold tracking-[-0.02em] text-gray-700 sm:text-[17px]">
                         Your Laddoo Bag
                       </h2>
 
@@ -222,7 +326,7 @@ function CartDrawer() {
                   {/* Delivery Zone */}
                   <section className="shrink-0 border-b border-[#F1E4C8] bg-white px-4 py-3 sm:px-5 sm:py-4 md:px-6">
                     <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-                      <span className="text-[12px] font-semibold text-[#28583B] sm:text-[14px]">
+                      <span className="text-[12px] font-semibold text-gray-700 sm:text-[14px]">
                         Delivery Zone:
                       </span>
 
@@ -256,7 +360,7 @@ function CartDrawer() {
                     {deliveryZone === "within-dwarka" ? (
                       <p className="mt-2.5 text-[11px] leading-5 text-[#6F6259] sm:mt-3 sm:text-[12px]">
                         {hasFreeDwarkaDelivery ? (
-                          <span className="text-[#28583B]">
+                          <span className="text-gray-700">
                             🎉 Free Dwarka delivery!
                           </span>
                         ) : (
@@ -274,7 +378,7 @@ function CartDrawer() {
                       </p>
                     ) : (
                       <p className="mt-2.5 max-w-[500px] text-[11px] leading-5 text-[#6F6259] sm:mt-2 sm:text-[12px]">
-                        Dispatched via Porter. Customer pays{" "}
+                        Order will be dispatched via Porter. Customer pays{" "}
                         <span className="font-semibold text-[#2C2C2C]">
                           actual Porter delivery cost
                         </span>{" "}
@@ -287,7 +391,7 @@ function CartDrawer() {
                         Expected Delivery:
                       </span>
 
-                      <span className="shrink-0 text-[12px] text-[#28583B] sm:text-[13px]">
+                      <span className="shrink-0 text-[12px] text-gray-700 sm:text-[13px]">
                         24–48 hrs
                       </span>
                     </div>
@@ -300,6 +404,9 @@ function CartDrawer() {
                         <CartDrawerItem
                           key={`${item.product.id}-${item.variant.id}`}
                           item={item}
+                          discountAmount={
+                            itemDiscounts.get(item.variant.id) ?? 0
+                          }
                           onUpdateQuantity={updateQuantity}
                           onRemove={removeFromCart}
                           onProductClick={handleProductClick}
@@ -322,6 +429,8 @@ function CartDrawer() {
                   {/* Summary */}
                   <CartDrawerSummary
                     cartTotal={cartTotal}
+                    discountAmount={discountAmount}
+                    finalTotal={finalCartTotal}
                     deliveryZone={deliveryZone}
                     onCheckout={handleCheckout}
                   />
@@ -332,7 +441,7 @@ function CartDrawer() {
         )}
       </AnimatePresence>
 
-      {/* OTP modal: shown only when a guest clicks Checkout */}
+      {/* OTP Modal */}
       {isAuthModalOpen && (
         <OtpAuthModal
           onClose={() => setIsAuthModalOpen(false)}

@@ -154,23 +154,6 @@ function DeliveryAddressForm({ value, errors, disabled = false, onChange }: Deli
       {/* Header */}
       <div className="border-b border-[#F1E5E7] px-5 py-5 sm:px-7">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FBF0F2] text-[#B5697A]">
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="h-5 w-5"
-              stroke="currentColor"
-              strokeWidth="1.7"
-            >
-              <path
-                d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="12" cy="10" r="2.5" />
-            </svg>
-          </div>
           <div>
             <h2 id="delivery-address-heading" className="text-lg font-semibold text-[#2C2C2C]">
               Delivery Address
@@ -283,13 +266,19 @@ function DeliveryAddressForm({ value, errors, disabled = false, onChange }: Deli
 
         {/* Delivery info */}
         <div className="rounded-lg border border-[#EEDFE2] bg-white p-4">
-          <p className="text-sm font-semibold text-[#2C2C2C]">Delivery Information</p>
-          <ul className="mt-2 space-y-1 text-[10px] leading-relaxed text-slate-500 md:text-[12px]">
-            <li>• Within verified Dwarka delivery areas, orders above ₹500 qualify for free delivery.</li>
-            <li>• For other orders, the delivery charge will be confirmed separately.</li>
-            <li>• Orders outside Dwarka require manual delivery-charge confirmation.</li>
-          </ul>
-        </div>
+  <p className="text-sm font-semibold text-[#2C2C2C]">
+    Delivery Information
+  </p>
+
+  <ul className="mt-2 space-y-1 text-[10px] leading-relaxed text-slate-500 md:text-[12px]">
+    <li>
+      • Free home delivery within Dwarka, New Delhi.
+    </li>
+    <li>
+      • For deliveries outside Dwarka, standard Porter charges will apply and be borne by the customer.
+    </li>
+  </ul>
+</div>
       </div>
     </section>
   );

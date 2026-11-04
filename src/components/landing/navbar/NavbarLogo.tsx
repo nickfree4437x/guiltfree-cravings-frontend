@@ -31,7 +31,7 @@ function NavbarLogo({ onClick, variant = "dark" }: NavbarLogoProps) {
       <div className="flex flex-col justify-center leading-none">
         <span
           className={`text-[15px] font-bold tracking-[-0.04em] sm:text-[18px] ${
-            isLight ? "text-white" : "text-slate-700"
+            isLight ? "text-white" : "text-[#2f2f2f]"
           }`}
         >
           Guilt<span className="text-amber-600">Free</span> Cravings

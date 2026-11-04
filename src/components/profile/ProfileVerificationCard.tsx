@@ -32,9 +32,9 @@ function ProfileVerificationCard({ phone }: ProfileVerificationCardProps) {
       </div>
 
       {/* Phone */}
-      <div className="mt-3 rounded-xl border border-[#F1E7DC] bg-white p-2">
+      <div className="mt-3 rounded-xl border border-[#F1E7DC] bg-white p-1.5">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[13px] text-[#5E5148]">+91 {phone}</p>
+          <p className="text-[12px] text-[#5E5148]">+91 {phone}</p>
           <span className="rounded-full bg-[#FBEEF1] px-2.5 py-1.5 text-[9px] md:text-[10px] text-[#B5697A]">
             Verified
           </span>

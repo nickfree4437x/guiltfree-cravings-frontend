@@ -1,10 +1,8 @@
-// src/components/admin/dashboard/RecentOrders.tsx
 
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ShoppingBag,
-  UserRound,
   CalendarDays,
   ArrowUpRight,
   Truck,
@@ -117,20 +115,16 @@ function RecentOrders({ orders }: RecentOrdersProps) {
   };
 
   return (
-    <section className="mt-4 overflow-hidden rounded-2xl border border-[#F1E9E1] bg-white shadow-sm md:mt-6">
+    <section className="mt-4 overflow-hidden rounded-xl border border-[#F1E9E1] bg-white shadow-sm md:mt-6">
       {/* SECTION HEADER */}
       <div className="flex flex-col gap-3 border-b border-[#F1E9E1] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBECEF] text-[#B5697A]">
-            <ShoppingBag size={19} />
-          </span>
-
           <div>
             <h2 className="text-base font-semibold tracking-tight text-[#3D3834] md:text-lg">
               Recent Orders
             </h2>
 
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0 text-xs text-slate-500">
               Latest customer orders
             </p>
           </div>
@@ -140,7 +134,7 @@ function RecentOrders({ orders }: RecentOrdersProps) {
           <button
             type="button"
             onClick={() => navigate("/admin/orders")}
-            className="inline-flex items-center gap-1.5 self-start text-xs font-medium text-[#B5697A] transition hover:text-[#8E4658] sm:self-auto"
+            className="inline-flex items-center gap-1.5 self-start text-xs hover:underline text-[#B5697A] transition hover:text-[#8E4658] sm:self-auto"
           >
             View all orders
             <ArrowUpRight size={15} />
@@ -204,7 +198,7 @@ function RecentOrders({ orders }: RecentOrdersProps) {
                   >
                     {/* ORDER */}
                     <td className={TD_CLASS}>
-                      <span className="inline-flex whitespace-nowrap rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[10px] tracking-wide text-[#A85F70] md:text-[11px]">
+                      <span className="inline-flex whitespace-nowrap rounded-lg bg-[#FBECEF] px-2.5 py-1 text-[9px] tracking-wide text-[#A85F70] md:text-[10px]">
                         {order.orderNumber}
                       </span>
                     </td>
@@ -212,9 +206,6 @@ function RecentOrders({ orders }: RecentOrdersProps) {
                     {/* CUSTOMER */}
                     <td className={TD_CLASS}>
                       <div className="flex min-w-[150px] items-start gap-2.5">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F7F0E9] text-[#8E7566]">
-                          <UserRound size={15} />
-                        </span>
 
                         <div className="min-w-0">
                           <p className="max-w-[190px] truncate text-xs font-medium text-[#3D3834] md:text-sm">
@@ -248,7 +239,7 @@ function RecentOrders({ orders }: RecentOrdersProps) {
                     {/* DELIVERY STATUS */}
                     <td className={TD_CLASS}>
                       <span
-                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1.5 text-[10px] font-medium md:text-[11px] ${getDeliveryStatusClasses(
+                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1.5 text-[10px] md:text-[11px] ${getDeliveryStatusClasses(
                           deliveryStatus
                         )}`}
                       >

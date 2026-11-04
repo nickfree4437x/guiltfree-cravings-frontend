@@ -1,3 +1,4 @@
+
 import type { DeliveryStatus } from "../orders/types";
 
 // ─── Customer Types ───────────────────────────────────────
@@ -10,6 +11,20 @@ export interface AdminCustomer {
   totalOrders: number;
   createdAt: string;
 }
+
+// ─── Order Status ────────────────────────────────────────
+export type AdminCustomerOrderStatus =
+  | "NEW"
+  | "CONFIRMED"
+  | "PACKED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "RETURNED"
+  // Legacy statuses
+  | "PENDING"
+  | "PROCESSING"
+  | "COMPLETED";
 
 // ─── Customer Order Item ──────────────────────────────────
 export interface AdminCustomerOrderItem {
@@ -32,11 +47,9 @@ export interface AdminCustomerOrder {
   totalAmount: number;
   offerCode: string | null;
 
-  // Order and payment statuses
-  orderStatus: string;
-  paymentStatus: string;
+  orderStatus: AdminCustomerOrderStatus;
+  paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
 
-  // Delivery status
   deliveryStatus?: DeliveryStatus | null;
   deliveredAt?: string | null;
 
@@ -48,13 +61,23 @@ export interface AdminCustomerOrder {
 // ─── Customer Stats ───────────────────────────────────────
 export interface AdminCustomerStats {
   totalOrders: number;
-  paidOrders: number;
-  pendingOrders: number;
-  processingOrders: number;
-  confirmedOrders: number;
-  completedOrders: number;
-  cancelledOrders: number;
   totalSpent: number;
+  paidOrders: number;
+
+  newOrders: number;
+  confirmedOrders: number;
+  packedOrders: number;
+  shippedOrders: number;
+  deliveredOrders: number;
+  cancelledOrders: number;
+  returnedOrders: number;
+
+  // Legacy order counts
+  legacyPendingOrders: number;
+  legacyProcessingOrders: number;
+  legacyCompletedOrders: number;
+  legacyOrders: number;
+
   totalReviews: number;
   totalOfferUsages: number;
 }

@@ -2,19 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowDownUp,
-  ArrowLeft,
   CalendarDays,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Clock3,
   LoaderCircle,
   PackageCheck,
   RefreshCw,
   Search,
   ShoppingBag,
   Wallet,
-  XCircle,
 } from "lucide-react";
 
 import {
@@ -52,7 +49,7 @@ const DATETIME_FORMATTER = new Intl.DateTimeFormat("en-IN", {
 });
 
 // ─── Helpers ─────────────────────────────────────────────
-function formatCurrency(amount: number) {
+function formatCurrency(amount: number | null | undefined) {
   const value = Number(amount);
 
   return CURRENCY_FORMATTER.format(
@@ -119,18 +116,10 @@ function HistoryStatusBadge({
     REFUNDED: "border-violet-200 bg-violet-50 text-violet-700",
   };
 
-  const icons: Record<Order["paymentStatus"], React.ReactNode> = {
-    PAID: <CheckCircle2 className="h-3.5 w-3.5" />,
-    PENDING: <Clock3 className="h-3.5 w-3.5" />,
-    FAILED: <XCircle className="h-3.5 w-3.5" />,
-    REFUNDED: <RefreshCw className="h-3.5 w-3.5" />,
-  };
-
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-medium ${styles[status]}`}
     >
-      {icons[status]}
       {formatLabel(status)}
     </span>
   );
@@ -149,18 +138,18 @@ function SummaryCard({
   icon: React.ReactNode;
 }) {
   return (
-    <article className="rounded-2xl border border-[#EFE3D2] bg-white p-4 shadow-sm transition-all hover:border-[#DDB0BB] sm:p-5">
+    <article className="rounded-xl border border-[#EFE3D2] bg-white p-4 shadow-sm transition-all sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#A39890] sm:text-[11px]">
+          <p className="text-[9px] uppercase tracking-[0.10em] text-slate-500 sm:text-[10px]">
             {title}
           </p>
 
-          <p className="mt-2 break-words text-xl font-semibold text-[#3E3430] sm:text-2xl">
+          <p className="mt-2 break-words text-lg font-semibold text-gray-700 sm:text-xl">
             {value}
           </p>
 
-          <p className="mt-1 text-[10px] leading-relaxed text-[#8B7A6C] sm:text-xs">
+          <p className="mt-1 text-[9px] leading-relaxed text-slate-500 sm:text-[10px]">
             {description}
           </p>
         </div>
@@ -201,7 +190,7 @@ function HistoryLoadingState() {
         </div>
       ))}
 
-      <p className="text-center text-xs text-[#8B7A6C]">
+      <p className="text-center text-xs text-slate-700">
         Retrieving your completed orders...
       </p>
     </section>
@@ -215,28 +204,16 @@ function HistoryEmptyState({
   hasSearch: boolean;
 }) {
   return (
-    <section className="mt-8 rounded-3xl border border-dashed border-[#EADFD3] bg-white px-5 py-12 text-center sm:px-10 sm:py-16">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FFF1F2] text-[#B5697A]">
-        <PackageCheck className="h-8 w-8" />
-      </div>
-
-      <h2 className="mt-5 text-xl font-semibold text-[#3E3430] sm:text-2xl">
+    <section className="mt-8 rounded-xl border border-dashed border-[#EADFD3] bg-white px-5 py-12 text-center sm:px-10 sm:py-16">
+      <h2 className="mt-5 text-base font-semibold text-[#3E3430] sm:text-lg">
         {hasSearch ? "No Matching Orders" : "Your Order History Is Empty"}
       </h2>
 
-      <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#8B7A6C]">
+      <p className="mx-auto mt-1 max-w-md text-[11px] leading-relaxed text-slate-500 md:text-[12px]">
         {hasSearch
           ? "No delivered orders match your search or selected filters. Try changing your search."
           : "Your successfully delivered orders will appear here. Once an order reaches you, you can revisit its details and order the same products again."}
       </p>
-
-      <Link
-        to="/"
-        className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-[#B5697A] px-7 py-3 text-sm font-medium text-white transition hover:bg-[#A55F70]"
-      >
-        <ShoppingBag className="h-4 w-4" />
-        Explore Products
-      </Link>
     </section>
   );
 }
@@ -259,14 +236,14 @@ function HistoryErrorState({
         Unable to Load Order History
       </h2>
 
-      <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#8B7A6C]">
+      <p className="mx-auto mt-1 max-w-md text-[12px] leading-relaxed text-slate-700 md:text-[13px]">
         {message}
       </p>
 
       <button
         type="button"
         onClick={onRetry}
-        className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#B5697A] px-7 py-3 text-sm font-medium text-white transition hover:bg-[#A55F70]"
+        className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#B5697A] px-7 py-3 text-[12px] text-white transition hover:bg-[#A55F70] md:text-[13px]"
       >
         <RefreshCw className="h-4 w-4" />
         Try Again
@@ -393,13 +370,14 @@ function CompletedOrderCard({
       // Navigate directly to checkout. The optional notice can be displayed
       // there if the checkout page chooses to read location.state.
       navigate("/checkout", {
-        state: unavailableCount > 0
-          ? {
-              reorderNotice: `${addedCount} item(s) are ready for checkout. ${unavailableCount} item(s) were unavailable and could not be reordered.`,
-            }
-          : {
-              reorderNotice: "Your previous order is ready for checkout.",
-            },
+        state:
+          unavailableCount > 0
+            ? {
+                reorderNotice: `${addedCount} item(s) are ready for checkout. ${unavailableCount} item(s) were unavailable and could not be reordered.`,
+              }
+            : {
+                reorderNotice: "Your previous order is ready for checkout.",
+              },
       });
     } catch (error) {
       console.error("Failed to reorder:", error);
@@ -421,20 +399,20 @@ function CompletedOrderCard({
   };
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-[#EFE3D2] bg-white shadow-sm transition-all duration-300 hover:border-[#DDB0BB] hover:shadow-md">
+    <article className="overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
       {/* Order Header */}
       <div className="p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#A39890]">
+            <p className="text-[10px] uppercase tracking-[0.10em] text-slate-500">
               Order Number
             </p>
 
-            <h3 className="mt-1 break-all text-base font-semibold text-[#3E3430] sm:text-lg">
+            <h3 className="mt-1 break-all text-[14px] font-semibold text-[#3E3430] sm:text-[16px]">
               {order.orderNumber}
             </h3>
 
-            <p className="mt-2 flex items-center gap-2 text-[11px] text-[#8B7A6C] sm:text-xs">
+            <p className="mt-2 flex items-center gap-2 text-[10px] text-slate-700 sm:text-xs">
               <CalendarDays className="h-3.5 w-3.5 shrink-0" />
               Ordered on {formatDate(order.createdAt)}
             </p>
@@ -442,7 +420,6 @@ function CompletedOrderCard({
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-medium text-emerald-700">
-              <PackageCheck className="h-3.5 w-3.5" />
               Delivered
             </span>
 
@@ -455,17 +432,17 @@ function CompletedOrderCard({
       <div className="border-y border-[#EFE3D2] bg-[#FFFBFA] px-5 py-4 sm:px-6">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-0">
           <div className="border-r border-[#EFE3D2] pr-3 sm:pr-5">
-            <p className="text-[10px] uppercase tracking-wider text-[#A39890]">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500">
               Total Items
             </p>
 
-            <p className="mt-1.5 text-sm font-semibold text-[#5E5148]">
+            <p className="mt-1.5 text-sm font-semibold text-slate-700">
               {totalItems} {totalItems === 1 ? "Item" : "Items"}
             </p>
           </div>
 
           <div className="sm:border-r sm:border-[#EFE3D2] sm:px-5">
-            <p className="text-[10px] uppercase tracking-wider text-[#A39890]">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500">
               Order Total
             </p>
 
@@ -475,16 +452,38 @@ function CompletedOrderCard({
           </div>
 
           <div className="col-span-2 mt-1 border-t border-[#EFE3D2] pt-3 sm:col-span-1 sm:mt-0 sm:border-0 sm:pl-5 sm:pt-0">
-            <p className="text-[10px] uppercase tracking-wider text-[#A39890]">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500">
               Delivery Location
             </p>
 
-            <p className="mt-1.5 break-words text-xs font-medium text-[#5E5148]">
+            <p className="mt-1.5 break-words text-xs font-medium text-slate-700">
               {[order.area, order.city].filter(Boolean).join(", ") ||
                 "Address unavailable"}
             </p>
           </div>
         </div>
+
+        {(Number(order.discountAmount) || 0) > 0 && (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2.5">
+            <div className="flex min-w-0 items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-700" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-emerald-800 md:text-[11px]">
+                  Offer
+                  {order.offerCode
+                    ? ` applied · ${order.offerCode}`
+                    : " discount"}
+                </p>
+                <p className="text-[10px] text-emerald-700">
+                  You saved on this order
+                </p>
+              </div>
+            </div>
+            <p className="shrink-0 text-sm font-semibold tabular-nums text-emerald-700">
+              −{formatCurrency(order.discountAmount)}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Products */}
@@ -494,7 +493,7 @@ function CompletedOrderCard({
             Items in this order
           </h4>
 
-          <span className="text-[10px] text-[#8B7A6C]">
+          <span className="text-[10px] text-slate-700">
             {order.items.length}{" "}
             {order.items.length === 1 ? "product" : "products"}
           </span>
@@ -502,49 +501,93 @@ function CompletedOrderCard({
 
         {order.items.length > 0 ? (
           <div className="divide-y divide-[#F0E7DF]">
-            {order.items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0"
-              >
-                <div className="flex min-w-0 flex-1 items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF1F2] text-[#B5697A]">
-                    <ShoppingBag className="h-4 w-4" />
+            {order.items.map((item) => {
+              const subtotal = Number(item.subtotal) || 0;
+              const discount = Math.min(
+                subtotal,
+                Math.max(0, Number(item.discountAmount) || 0)
+              );
+              const finalPrice = Math.max(0, subtotal - discount);
+              const quantity = Number(item.quantity) || 0;
+              const discountedUnitPrice =
+                quantity > 0 ? finalPrice / quantity : 0;
+              const hasDiscount = discount > 0;
+
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0"
+                >
+                  <div className="flex min-w-0 flex-1 items-start gap-3">
+                    <div className="min-w-0">
+                      <p className="break-words text-xs font-medium text-[#3E3430] sm:text-sm">
+                        {item.productName}
+                      </p>
+
+                      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] leading-5 text-slate-700 sm:text-xs">
+                        <span>
+                          {item.variantQuantity} {item.variantUnit}
+                        </span>
+
+                        <span aria-hidden="true">•</span>
+
+                        <span>{formatLabel(item.packaging)}</span>
+
+                        <span aria-hidden="true">•</span>
+
+                        <span>Qty: {item.quantity}</span>
+                      </div>
+
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                        {hasDiscount ? (
+                          <>
+                            <span className="text-[10px] text-slate-500 line-through">
+                              {formatCurrency(item.unitPrice)}
+                            </span>
+                            <span className="text-[10px] text-emerald-700 sm:text-xs">
+                              {formatCurrency(discountedUnitPrice)} per unit
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-slate-500 sm:text-xs">
+                            {formatCurrency(item.unitPrice)} per unit
+                          </span>
+                        )}
+                      </div>
+
+                      {hasDiscount && (
+                        <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] text-emerald-700 sm:text-[10px]">
+                          <CheckCircle2
+                            className="h-3 w-3"
+                            aria-hidden="true"
+                          />
+                          OFFER APPLIED · Saved {formatCurrency(discount)}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="min-w-0">
-                    <p className="break-words text-xs font-medium text-[#3E3430] sm:text-sm">
-                      {item.productName}
+                  <div className="shrink-0 text-right">
+                    {hasDiscount && (
+                      <p className="text-[10px] text-slate-500 line-through">
+                        {formatCurrency(subtotal)}
+                      </p>
+                    )}
+
+                    <p className="text-xs font-semibold tabular-nums text-slate-700 sm:text-sm">
+                      {formatCurrency(finalPrice)}
                     </p>
 
-                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] leading-5 text-[#8B7A6C] sm:text-xs">
-                      <span>
-                        {item.variantQuantity} {item.variantUnit}
-                      </span>
-
-                      <span aria-hidden="true">•</span>
-
-                      <span>{formatLabel(item.packaging)}</span>
-
-                      <span aria-hidden="true">•</span>
-
-                      <span>Qty: {item.quantity}</span>
-                    </div>
-
-                    <p className="mt-1 text-[10px] text-[#A39890]">
-                      {formatCurrency(item.unitPrice)} per unit
+                    <p className="mt-1 text-[9px] text-slate-500 sm:text-[10px]">
+                      {hasDiscount ? "Discounted total" : "Item total"}
                     </p>
                   </div>
                 </div>
-
-                <p className="shrink-0 text-xs font-semibold tabular-nums text-[#5E5148] sm:text-sm">
-                  {formatCurrency(item.subtotal)}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
-          <p className="text-xs text-[#8B7A6C]">
+          <p className="text-xs text-slate-700">
             Product details are unavailable for this order.
           </p>
         )}
@@ -552,11 +595,11 @@ function CompletedOrderCard({
 
       {/* Delivery Address */}
       <div className="mx-5 border-t border-[#F0E7DF] py-4 sm:mx-6">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-[#A39890]">
+        <p className="text-[10px] uppercase tracking-wider text-slate-500">
           Delivered To
         </p>
 
-        <p className="mt-1.5 break-words text-xs leading-5 text-[#5E5148]">
+        <p className="mt-1.5 break-words text-xs leading-relaxed text-slate-700">
           {[
             order.addressLine1,
             order.addressLine2,
@@ -592,7 +635,7 @@ function CompletedOrderCard({
 
       {/* Footer Actions */}
       <div className="flex flex-col gap-3 border-t border-[#EFE3D2] bg-white px-5 py-4 sm:px-6">
-        <p className="text-[11px] text-[#8B7A6C]">
+        <p className="text-[11px] text-slate-700">
           Order placed on {formatDateTime(order.createdAt)}
         </p>
 
@@ -601,7 +644,7 @@ function CompletedOrderCard({
             type="button"
             onClick={handleOrderAgain}
             disabled={isReordering || order.items.length === 0}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#B5697A] px-5 py-3 text-xs font-medium text-white shadow-sm transition hover:bg-[#A55F70] focus:outline-none focus:ring-2 focus:ring-[#B5697A] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#B5697A] px-5 py-3 text-xs text-white shadow-sm transition hover:bg-[#A55F70] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             {isReordering ? (
               <>
@@ -619,7 +662,7 @@ function CompletedOrderCard({
           <button
             type="button"
             onClick={() => navigate(`/orders/${order.id}`)}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#EADFD3] bg-white px-5 py-3 text-xs font-medium text-[#8B542F] transition hover:border-[#B5697A] hover:text-[#B5697A] focus:outline-none focus:ring-2 focus:ring-[#B5697A] focus:ring-offset-2 sm:w-auto"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#EADFD3] bg-white px-5 py-3 text-xs text-[#8B542F] transition hover:border-[#B5697A] hover:text-[#B5697A] focus:outline-none sm:w-auto"
           >
             View Order Details
             <ChevronRight className="h-4 w-4" />
@@ -773,73 +816,40 @@ function OrderHistoryPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const resetFilters = () => {
-    setSearch("");
-    setPaymentFilter("ALL");
-    setSortBy("newest");
-    setCurrentPage(1);
-  };
-
   const hasActiveFilters =
     search.trim().length > 0 || paymentFilter !== "ALL";
 
   // ─── Render ─────────────────────────────────────────────
   return (
-    <main className="min-h-[calc(100vh-76px)] bg-[#FFFBFC] px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-28 lg:px-8 lg:pt-32">
-      <div className="mx-auto w-full max-w-6xl">
-        {/* Breadcrumb */}
-        <nav
-          aria-label="Breadcrumb"
-          className="mb-6 flex items-center gap-2 text-xs text-[#8B7A6C]"
-        >
-          <Link to="/" className="transition hover:text-[#B5697A]">
-            Home
-          </Link>
-
-          <ChevronRight className="h-3.5 w-3.5" />
-
-          <span className="font-medium text-[#B5697A]">
-            Order History
-          </span>
-        </nav>
-
+    <main className="min-h-[calc(100vh-76px)] bg-white px-4 pb-16 sm:px-6 sm:pb-20 lg:px-8">
+      <div className="mx-auto w-full max-w-5xl">
         {/* Page Header */}
-        <header className="rounded-3xl border border-[#EFE3D2] bg-gradient-to-r from-[#FFF1F2] via-[#FFF8F7] to-[#FFFAF5] p-5 sm:p-8 lg:p-10">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#EADFD3] bg-white/80 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-[#9F6674]">
-                <PackageCheck className="h-3.5 w-3.5" />
-                Your completed deliveries
-              </span>
+        <header className="w-full">
+          {/* PREMIUM BANNER */}
+          <section className="relative overflow-hidden rounded-xl bg-[#B5697A] p-5 shadow-sm sm:p-7">
+            <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-white/[0.08]" />
+            <div className="pointer-events-none absolute -bottom-20 right-28 h-36 w-36 rounded-full bg-white/[0.06]" />
 
-              <h1 className="mt-4 text-2xl font-semibold tracking-tight text-[#3E3430] sm:text-3xl lg:text-4xl">
-                Order History
-              </h1>
+            <div className="relative flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white">
+                <PackageCheck className="h-6 w-6" strokeWidth={1.7} />
+              </div>
 
-              <p className="mt-3 max-w-xl text-xs leading-6 text-[#8B7A6C] sm:text-sm">
-                Revisit delivered orders, check your previous purchases
-                and reorder your favourite products in just a few clicks.
-              </p>
+              <div className="min-w-0">
+                <p className="text-[10px] uppercase tracking-[0.10em] text-white/90">
+                  Your completed deliveries
+                </p>
+
+                <h1 className="mt-1 text-[18px] font-semibold text-white sm:text-[22px]">
+                  Order History
+                </h1>
+
+                <p className="mt-0 text-[10px] leading-relaxed text-white/75">
+                  Reorder your favourite products in just a few clicks.
+                </p>
+              </div>
             </div>
-
-            <div className="flex shrink-0 flex-col gap-3 sm:items-end">
-              <Link
-                to="/orders"
-                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#EADFD3] bg-white px-5 py-2.5 text-xs font-medium text-[#8B542F] transition hover:border-[#B5697A] hover:text-[#B5697A]"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                My Orders
-              </Link>
-
-              <Link
-                to="/"
-                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full bg-[#B5697A] px-5 py-2.5 text-xs font-medium text-white transition hover:bg-[#A55F70]"
-              >
-                <ShoppingBag className="h-4 w-4" />
-                Continue Shopping
-              </Link>
-            </div>
-          </div>
+          </section>
         </header>
 
         {isLoading && <HistoryLoadingState />}
@@ -881,26 +891,15 @@ function OrderHistoryPage() {
             </section>
 
             {/* Search and Filters */}
-            <section className="mt-8 rounded-2xl border border-[#EFE3D2] bg-white p-4 shadow-sm sm:p-5">
+            <section className="mt-4 rounded-xl">
               <div className="flex flex-col gap-4">
-                <div>
-                  <h2 className="text-base font-semibold text-[#3E3430]">
-                    Your Delivered Orders
-                  </h2>
-
-                  <p className="mt-1 text-[11px] text-[#8B7A6C] sm:text-xs">
-                    {filteredOrders.length}{" "}
-                    {filteredOrders.length === 1 ? "order" : "orders"} found
-                  </p>
-                </div>
-
                 <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_190px_190px]">
                   <label className="relative block">
                     <span className="sr-only">
                       Search by order number or product
                     </span>
 
-                    <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A39890]" />
+                    <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                     <input
                       type="search"
@@ -910,7 +909,7 @@ function OrderHistoryPage() {
                         setCurrentPage(1);
                       }}
                       placeholder="Search order number or product..."
-                      className="h-11 w-full rounded-xl border border-[#EADFD3] bg-white pl-10 pr-4 text-xs text-[#3E3430] outline-none transition placeholder:text-[#B3A69C] focus:border-[#B5697A] focus:ring-2 focus:ring-[#B5697A]/10"
+                      className="h-11 w-full rounded-xl border border-[#EADFD3] bg-white pl-10 pr-4 text-xs text-[#3E3430] outline-none transition placeholder:text-slate-500 focus:border-[#B5697A]"
                     />
                   </label>
 
@@ -919,7 +918,7 @@ function OrderHistoryPage() {
                       Filter by payment status
                     </span>
 
-                    <Wallet className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A39890]" />
+                    <Wallet className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                     <select
                       value={paymentFilter}
@@ -929,7 +928,7 @@ function OrderHistoryPage() {
                         );
                         setCurrentPage(1);
                       }}
-                      className="h-11 w-full appearance-none rounded-xl border border-[#EADFD3] bg-white pl-10 pr-4 text-xs text-[#5E5148] outline-none transition focus:border-[#B5697A] focus:ring-2 focus:ring-[#B5697A]/10"
+                      className="h-11 w-full appearance-none rounded-xl border border-[#EADFD3] bg-white pl-10 pr-4 text-xs text-slate-700 outline-none transition focus:border-[#B5697A]"
                     >
                       <option value="ALL">All payment statuses</option>
                       <option value="PAID">Paid orders</option>
@@ -940,7 +939,7 @@ function OrderHistoryPage() {
                   <label className="relative block">
                     <span className="sr-only">Sort orders</span>
 
-                    <ArrowDownUp className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A39890]" />
+                    <ArrowDownUp className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                     <select
                       value={sortBy}
@@ -948,23 +947,13 @@ function OrderHistoryPage() {
                         setSortBy(event.target.value as SortOption);
                         setCurrentPage(1);
                       }}
-                      className="h-11 w-full appearance-none rounded-xl border border-[#EADFD3] bg-white pl-10 pr-4 text-xs text-[#5E5148] outline-none transition focus:border-[#B5697A] focus:ring-2 focus:ring-[#B5697A]/10"
+                      className="h-11 w-full appearance-none rounded-xl border border-[#EADFD3] bg-white pl-10 pr-4 text-xs text-slate-700 outline-none transition focus:border-[#B5697A]"
                     >
                       <option value="newest">Newest first</option>
                       <option value="oldest">Oldest first</option>
                     </select>
                   </label>
                 </div>
-
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={resetFilters}
-                    className="self-start text-xs font-medium text-[#B5697A] underline underline-offset-4 transition hover:text-[#8B542F]"
-                  >
-                    Clear search and filters
-                  </button>
-                )}
               </div>
             </section>
 
@@ -1028,7 +1017,7 @@ function OrderHistoryPage() {
                           className={`flex h-10 w-10 items-center justify-center rounded-xl border text-xs font-medium transition ${
                             currentPage === page
                               ? "border-[#B5697A] bg-[#B5697A] text-white shadow-sm"
-                              : "border-[#EADFD3] bg-white text-[#5E5148] hover:border-[#B5697A] hover:text-[#B5697A]"
+                              : "border-[#EADFD3] bg-white text-slate-700 hover:border-[#B5697A] hover:text-[#B5697A]"
                           }`}
                         >
                           {page}
@@ -1048,7 +1037,7 @@ function OrderHistoryPage() {
                   </nav>
                 )}
 
-                <p className="mt-5 text-center text-[10px] text-[#A39890] sm:text-xs">
+                <p className="mt-5 text-center text-[10px] text-slate-500 sm:text-xs">
                   Showing {(currentPage - 1) * ORDERS_PER_PAGE + 1}–
                   {Math.min(
                     currentPage * ORDERS_PER_PAGE,

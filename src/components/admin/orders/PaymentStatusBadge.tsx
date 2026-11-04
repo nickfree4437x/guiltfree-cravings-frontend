@@ -1,8 +1,5 @@
-// src/components/admin/orders/PaymentStatusBadge.tsx
 
-import type {
-  PaymentStatus,
-} from "./types";
+import type { PaymentStatus } from "./types";
 
 import {
   getPaymentStatusClass,
@@ -11,6 +8,13 @@ import {
 interface PaymentStatusBadgeProps {
   status: PaymentStatus;
 }
+
+const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  PENDING: "Pending",
+  PAID: "Paid",
+  FAILED: "Failed",
+  REFUNDED: "Refunded",
+};
 
 function PaymentStatusBadge({
   status,
@@ -21,7 +25,7 @@ function PaymentStatusBadge({
         status
       )}`}
     >
-      {status}
+      {PAYMENT_STATUS_LABELS[status] ?? status}
     </span>
   );
 }

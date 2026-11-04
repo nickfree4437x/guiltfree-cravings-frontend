@@ -1,5 +1,10 @@
+
 import { Search, X, ChevronDown } from "lucide-react";
-import type { OrderStatus, PaymentStatus } from "./types";
+
+import type {
+  OrderStatus,
+  PaymentStatus,
+} from "./types";
 
 interface OrdersToolbarProps {
   search: string;
@@ -8,6 +13,7 @@ interface OrdersToolbarProps {
   orderStatus: OrderStatus | "";
   paymentStatus: PaymentStatus | "";
   hasActiveFilters: boolean;
+
   onSearchChange: (value: string) => void;
   onOrderStatusChange: (value: OrderStatus | "") => void;
   onPaymentStatusChange: (value: PaymentStatus | "") => void;
@@ -27,6 +33,7 @@ function OrdersToolbar({
   return (
     <div className="pt-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+
         {/* Search */}
         <div className="relative min-w-0 flex-1">
           <Search
@@ -38,9 +45,11 @@ function OrdersToolbar({
           <input
             type="text"
             value={search}
-            onChange={(event) => onSearchChange(event.target.value)}
+            onChange={(event) =>
+              onSearchChange(event.target.value)
+            }
             placeholder="Search order, customer or phone..."
-            className="h-[42px] w-full rounded-xl border border-[#EADFD4] bg-white pl-11 pr-11 text-[11px] md:text-[12px] text-slate-500 outline-none transition placeholder:text-slate-500 focus:border-[#B5697A]"
+            className="h-[42px] w-full rounded-xl border border-[#EADFD4] bg-white pl-11 pr-11 text-[11px] text-slate-500 outline-none transition placeholder:text-slate-500 focus:border-[#B5697A] md:text-[12px]"
           />
 
           {search && (
@@ -48,7 +57,7 @@ function OrdersToolbar({
               type="button"
               onClick={() => onSearchChange("")}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-[#FBECEF] hover:text-slate-500"
+              className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 transition hover:bg-[#FBECEF]"
             >
               <X size={15} />
             </button>
@@ -64,14 +73,25 @@ function OrdersToolbar({
                 event.target.value as OrderStatus | ""
               )
             }
-            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] md:text-[12px] text-slate-500 outline-none transition focus:border-[#B5697A]"
+            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] text-slate-500 outline-none transition focus:border-[#B5697A] md:text-[12px]"
           >
-            <option value="">All Status</option>
-            <option value="PENDING">Pending</option>
+            <option value="">All Order Status</option>
+
+            {/* Current Order Lifecycle */}
+            <option value="NEW">New</option>
             <option value="CONFIRMED">Confirmed</option>
-            <option value="PROCESSING">Processing</option>
-            <option value="COMPLETED">Completed</option>
+            <option value="PACKED">Packed</option>
+            <option value="SHIPPED">Shipped</option>
+            <option value="DELIVERED">Delivered</option>
             <option value="CANCELLED">Cancelled</option>
+            <option value="RETURNED">Returned</option>
+
+            {/* Legacy Order Statuses */}
+            <optgroup label="Legacy Statuses">
+              <option value="PENDING">Pending (Legacy)</option>
+              <option value="PROCESSING">Processing (Legacy)</option>
+              <option value="COMPLETED">Completed (Legacy)</option>
+            </optgroup>
           </select>
 
           <ChevronDown
@@ -90,7 +110,7 @@ function OrdersToolbar({
                 event.target.value as PaymentStatus | ""
               )
             }
-            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] md:text-[12px] text-slate-500 outline-none transition focus:border-[#B5697A]"
+            className="h-[42px] w-full appearance-none rounded-xl border border-[#EADFD4] bg-white px-4 pr-10 text-[11px] text-slate-500 outline-none transition focus:border-[#B5697A] md:text-[12px]"
           >
             <option value="">All Payments</option>
             <option value="PENDING">Pending</option>

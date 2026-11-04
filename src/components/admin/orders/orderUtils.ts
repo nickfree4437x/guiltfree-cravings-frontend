@@ -1,4 +1,3 @@
-// src/components/admin/orders/orderUtils.ts
 
 import type {
   OrderStatus,
@@ -50,20 +49,36 @@ export const getOrderStatusClass = (
   status: OrderStatus
 ): string => {
   switch (status) {
+    // NEW ORDER
+    case "NEW":
     case "PENDING":
       return "border border-[#EFD5BD] bg-[#FFF3E8] text-[#C4773B]";
 
+    // CONFIRMED
     case "CONFIRMED":
       return "border border-[#D7E2F8] bg-[#F2F6FF] text-[#4D7FEA]";
 
+    // PACKED
+    case "PACKED":
     case "PROCESSING":
       return "border border-[#D9D0EE] bg-[#F4F0FF] text-[#8062C7]";
 
+    // SHIPPED
+    case "SHIPPED":
+      return "border border-[#BFE3F5] bg-[#EDF9FF] text-[#2581A8]";
+
+    // DELIVERED
+    case "DELIVERED":
     case "COMPLETED":
       return "border border-[#CFE4D4] bg-[#EEF8F2] text-[#3F8A58]";
 
+    // CANCELLED
     case "CANCELLED":
       return "border border-[#F0D1D5] bg-[#FFF3F5] text-[#C45D6D]";
+
+    // RETURNED
+    case "RETURNED":
+      return "border border-[#E8CDD3] bg-[#FFF0F3] text-[#AD536B]";
 
     default:
       return "border border-[#E8E1D9] bg-[#F7F4F1] text-[#6F6259]";

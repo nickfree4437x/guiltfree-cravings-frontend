@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product, ProductVariant } from "../../api/productApi";
 
 // ─── Types ────────────────────────────────────────────────
+
 type PackagingOption = "Plastic Box" | "Cardboard Box" | "Glass Jar";
 
 interface ProductDetailsImageProps {
@@ -12,23 +13,46 @@ interface ProductDetailsImageProps {
   variant?: ProductVariant | null;
 }
 
-// ─── Config ───────────────────────────────────────────────
-const GLASS_JAR_IMAGES: Record<string, { 350: string; 500: string }> = {
-  "Dry Fruit Sattu Laddoo": {
-    350: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518318/WhatsApp_Image_2026-10-19_at_11.25.07_PM.jpg",
-    500: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518221/WhatsApp_Image_2026-10-19_at_11.25.03_PM.jpg",
-  },
-  "Sattu Dry Fruit Laddoo": {
-    350: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518318/WhatsApp_Image_2026-10-19_at_11.25.07_PM.jpg",
-    500: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518221/WhatsApp_Image_2026-10-19_at_11.25.03_PM.jpg",
-  },
-  "Dates Delight Laddoo": {
-    350: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518272/WhatsApp_Image_2026-10-19_at_11.25.06_PM.jpg",
-    500: "https://res.cloudinary.com/zhwlhmt4/image/upload/v1792518159/WhatsApp_Image_2026-10-19_at_11.25.02_PM.jpg",
-  },
-};
+// ─── Helpers ──────────────────────────────────────────────
 
-// ─── Nav Button ───────────────────────────────────────────
+function normalizeImageUrl(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+
+  const url = value.trim();
+
+  return url.length > 0 ? url : null;
+}
+
+function getPackagingImages(
+  product: Product,
+  packaging: PackagingOption
+): string[] {
+  const packagingImages =
+    packaging === "Glass Jar"
+      ? product.glassJarImages
+      : packaging === "Cardboard Box"
+        ? product.cardboardBoxImages
+        : product.regularImages;
+
+  const legacyImage =
+    packaging === "Glass Jar"
+      ? product.glassJarImage
+      : packaging === "Cardboard Box"
+        ? product.cardboardBoxImage
+        : product.image;
+
+  const images = [
+    ...(Array.isArray(packagingImages) ? packagingImages : []),
+    legacyImage,
+  ]
+    .map(normalizeImageUrl)
+    .filter((image): image is string => image !== null);
+
+  return Array.from(new Set(images));
+}
+
+// ─── Navigation Button ────────────────────────────────────
+
 function NavButton({
   direction,
   onClick,
@@ -37,11 +61,14 @@ function NavButton({
   onClick: () => void;
 }) {
   const Icon = direction === "prev" ? ChevronLeft : ChevronRight;
+
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={`View ${direction === "prev" ? "previous" : "next"} product image`}
+      aria-label={`View ${
+        direction === "prev" ? "previous" : "next"
+      } product image`}
       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#EFE3D2] bg-white text-[#B5697A] shadow-sm transition-colors hover:bg-[#B5697A] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]"
     >
       <Icon size={18} />
@@ -49,11 +76,15 @@ function NavButton({
   );
 }
 
-// ─── Component ────────────────────────────────────────────
-function ProductDetailsImage({ product, packaging, variant = null }: ProductDetailsImageProps) {
+// ─── Product Details Image ────────────────────────────────
+
+function ProductDetailsImage({
+  product,
+  packaging,
+  variant = null,
+}: ProductDetailsImageProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Normalize packaging
   const selectedPackaging: PackagingOption =
     packaging === "Glass Jar"
       ? "Glass Jar"
@@ -61,90 +92,97 @@ function ProductDetailsImage({ product, packaging, variant = null }: ProductDeta
         ? "Cardboard Box"
         : "Plastic Box";
 
-  // Glass jar weight-specific image
-  const isGlassJarVariant =
-    selectedPackaging === "Glass Jar" &&
-    variant?.unit === "g" &&
-    (variant.quantity === 350 || variant.quantity === 500);
-
-  const glassJarImageMap = GLASS_JAR_IMAGES[product.name];
-  const selectedGlassJarImage =
-    isGlassJarVariant && glassJarImageMap
-      ? glassJarImageMap[variant.quantity as 350 | 500]
+  // The selected Glass Jar variant's uploaded image.
+  // Other packaging types do not use variant-specific images.
+  const variantImage =
+    selectedPackaging === "Glass Jar"
+      ? normalizeImageUrl(variant?.image)
       : null;
 
-  // Build unique image gallery
+  // Existing packaging gallery is used as a fallback.
+  const packagingImages = useMemo(
+    () => getPackagingImages(product, selectedPackaging),
+    [
+      product,
+      selectedPackaging,
+    ]
+  );
+
+  // Variant image comes first so it is displayed by default.
+  // Existing gallery images remain available through navigation.
   const images = useMemo(() => {
-    const packagingImages =
-      selectedPackaging === "Glass Jar"
-        ? product.glassJarImages
-        : selectedPackaging === "Cardboard Box"
-          ? product.cardboardBoxImages
-          : product.regularImages;
+    const combined = [
+      ...(variantImage ? [variantImage] : []),
+      ...packagingImages,
+    ];
 
-    const legacyImage =
-      selectedPackaging === "Glass Jar"
-        ? product.glassJarImage
-        : selectedPackaging === "Cardboard Box"
-          ? product.cardboardBoxImage
-          : product.image;
+    return Array.from(new Set(combined));
+  }, [variantImage, packagingImages]);
 
-    const gallery = [
-      ...(selectedGlassJarImage ? [selectedGlassJarImage] : []),
-      ...(Array.isArray(packagingImages) ? packagingImages : []),
-      legacyImage,
-    ].filter((image): image is string => typeof image === "string" && image.trim().length > 0);
-
-    return Array.from(new Set(gallery));
-  }, [
-    product.image,
-    product.glassJarImage,
-    product.cardboardBoxImage,
-    product.regularImages,
-    product.glassJarImages,
-    product.cardboardBoxImages,
-    selectedPackaging,
-    selectedGlassJarImage,
-  ]);
-
-  // Reset index when product/packaging/variant changes
+  // Reset gallery when the product, packaging, or selected variant changes.
   useEffect(() => {
     setActiveIndex(0);
-  }, [product.id, selectedPackaging, variant?.id, variant?.quantity, variant?.unit]);
+  }, [
+    product.id,
+    selectedPackaging,
+    variant?.id,
+    variant?.quantity,
+    variant?.unit,
+    variant?.image,
+  ]);
 
-  // Clamp index if images shrink
+  // Keep the active index valid when the gallery changes.
   useEffect(() => {
     setActiveIndex((current) => {
       if (images.length === 0) return 0;
+
       return Math.min(current, images.length - 1);
     });
   }, [images.length]);
 
   const goToPrevious = () => {
     if (images.length <= 1) return;
-    setActiveIndex((current) => (current <= 0 ? images.length - 1 : current - 1));
+
+    setActiveIndex((current) =>
+      current <= 0 ? images.length - 1 : current - 1
+    );
   };
 
   const goToNext = () => {
     if (images.length <= 1) return;
-    setActiveIndex((current) => (current >= images.length - 1 ? 0 : current + 1));
+
+    setActiveIndex((current) =>
+      current >= images.length - 1 ? 0 : current + 1
+    );
   };
 
   const currentImage = images[activeIndex];
   const hasMultipleImages = images.length > 1;
-  const variantLabel = variant ? `${variant.quantity}${variant.unit}` : "";
+
+  const variantLabel = variant
+    ? `${variant.quantity}${variant.unit}`
+    : "";
 
   // ─── Render ─────────────────────────────────────────────
+
   return (
     <div className="relative flex min-h-[300px] flex-col items-center overflow-hidden rounded-xl bg-white p-6 sm:min-h-[400px] sm:p-12 lg:sticky lg:top-[80px] lg:min-h-[600px] lg:self-start lg:p-12">
       {currentImage ? (
         <img
           key={`${currentImage}-${selectedPackaging}-${variant?.id ?? "default"}`}
           src={currentImage}
-          alt={`${product.name} - ${selectedPackaging}${variantLabel ? ` - ${variantLabel}` : ""} - Image ${activeIndex + 1}`}
+          alt={`${product.name} - ${selectedPackaging}${
+            variantLabel ? ` - ${variantLabel}` : ""
+          } - Image ${activeIndex + 1}`}
           className="relative z-[1] block max-h-[330px] w-full object-contain sm:max-h-[430px] lg:max-h-[500px]"
           loading="eager"
           decoding="async"
+          onError={(event) => {
+            console.error(
+              "Failed to load product image:",
+              event.currentTarget.src
+            );
+          }}
         />
       ) : (
         <div className="flex flex-1 items-center justify-center text-center text-sm text-[#8B7A6C]">
@@ -154,7 +192,10 @@ function ProductDetailsImage({ product, packaging, variant = null }: ProductDeta
 
       {hasMultipleImages && (
         <div className="relative z-[2] mt-4 flex w-full shrink-0 items-center justify-center gap-4">
-          <NavButton direction="prev" onClick={goToPrevious} />
+          <NavButton
+            direction="prev"
+            onClick={goToPrevious}
+          />
 
           <span
             className="min-w-[64px] rounded-full border border-[#EFE3D2] bg-white px-3 py-2 text-center text-xs text-[#8B7A6C] shadow-sm"
@@ -164,7 +205,10 @@ function ProductDetailsImage({ product, packaging, variant = null }: ProductDeta
             {activeIndex + 1} / {images.length}
           </span>
 
-          <NavButton direction="next" onClick={goToNext} />
+          <NavButton
+            direction="next"
+            onClick={goToNext}
+          />
         </div>
       )}
     </div>

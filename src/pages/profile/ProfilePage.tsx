@@ -41,12 +41,15 @@ function validate(formData: ProfileFormData): ProfileFormErrors {
 
   const name = formData.name.trim();
   if (!name) errors.name = "Please enter your full name.";
-  else if (name.length < 2) errors.name = "Name must be at least 2 characters long.";
-  else if (name.length > 100) errors.name = "Name cannot exceed 100 characters.";
+  else if (name.length < 2)
+    errors.name = "Name must be at least 2 characters long.";
+  else if (name.length > 100)
+    errors.name = "Name cannot exceed 100 characters.";
 
   const email = formData.email.trim().toLowerCase();
   if (!email) errors.email = "Please enter your email address.";
-  else if (!EMAIL_REGEX.test(email)) errors.email = "Please enter a valid email address.";
+  else if (!EMAIL_REGEX.test(email))
+    errors.email = "Please enter a valid email address.";
 
   return errors;
 }
@@ -86,7 +89,10 @@ function ProfilePage() {
         if (!isMounted) return;
 
         setProfile(data);
-        setFormData({ name: data.name ?? "", email: data.email ?? "" });
+        setFormData({
+          name: data.name ?? "",
+          email: data.email ?? "",
+        });
 
         // Sync Zustand with latest DB profile
         const token = useAuthStore.getState().token;
@@ -102,14 +108,20 @@ function ProfilePage() {
       } catch (error) {
         console.error("Failed to load profile:", error);
         if (!isMounted) return;
-        setPageError("Unable to load your profile right now. Please try again.");
+
+        setPageError(
+          "Unable to load your profile right now. Please try again."
+        );
       } finally {
         if (isMounted) setIsLoading(false);
       }
     };
 
     void loadProfile();
-    return () => { isMounted = false; };
+
+    return () => {
+      isMounted = false;
+    };
   }, [isAuthenticated, login]);
 
   // ─── Handlers ───────────────────────────────────────────
@@ -138,7 +150,10 @@ function ProfilePage() {
       });
 
       setProfile(updatedUser);
-      setFormData({ name: updatedUser.name ?? "", email: updatedUser.email ?? "" });
+      setFormData({
+        name: updatedUser.name ?? "",
+        email: updatedUser.email ?? "",
+      });
 
       // Sync Zustand
       const token = useAuthStore.getState().token;
@@ -152,9 +167,12 @@ function ProfilePage() {
         });
       }
 
-      toast.success("Profile updated successfully.", { duration: 3000 });
+      toast.success("Profile updated successfully.", {
+        duration: 3000,
+      });
     } catch (error: any) {
       console.error("Failed to update profile:", error);
+
       setPageError(
         error?.response?.data?.message ||
           "Unable to update your profile. Please try again."
@@ -167,22 +185,43 @@ function ProfilePage() {
   // ─── Early returns ──────────────────────────────────────
   if (!isAuthenticated) return null;
   if (isLoading) return <ProfileLoading />;
-  if (pageError && !profile) return <ProfileLoadError message={pageError} />;
+  if (pageError && !profile)
+    return <ProfileLoadError message={pageError} />;
 
   const phone = profile?.phone || user?.phone || "";
 
   // ─── Render ─────────────────────────────────────────────
   return (
     <main className="min-h-screen bg-white">
-      <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-20 sm:px-6 sm:pb-28 sm:pt-24 lg:px-8 lg:pt-24">
+      {/* 
+        FIX: Mobile pe pt-24 kar diya taaki Navbar ke neeche se proper gap mile 
+        aur content upar na chhupe.
+      */}
+      <div className="mx-auto w-full max-w-6xl px-4 pb-12 md:mb-14 sm:px-6 sm:pb-28 lg:px-8">
 
-        {/* Header */}
-        <div className="mb-8 sm:mb-10">
-          <ProfileHeader />
-        </div>
+        {/* =====================================================
+            HEADER
+        ===================================================== */}
+        <header className="bg-white mb-4">
+          <div className="mx-auto max-w-7xl">
+            
+            <div className="relative flex flex-col items-start gap-4 sm:items-center sm:justify-center">
+            
 
-        {/* Main layout */}
+              {/* Profile Heading */}
+              <div className="w-full text-center sm:text-left">
+                <ProfileHeader />
+              </div>
+
+            </div>
+          </div>
+        </header>
+
+        {/* =====================================================
+            MAIN LAYOUT
+        ===================================================== */}
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_290px] lg:gap-7">
+          
           <section aria-label="Profile information" className="min-w-0">
             <ProfileForm
               formData={formData}
@@ -202,6 +241,7 @@ function ProfilePage() {
             <ProfileVerificationCard phone={phone} />
             <ProfileQuickLinks />
           </aside>
+
         </div>
       </div>
     </main>

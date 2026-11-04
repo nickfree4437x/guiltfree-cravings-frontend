@@ -1,4 +1,3 @@
-// src/components/admin/orders/OrderSummaryCards.tsx
 
 import {
   CheckCircle2,
@@ -27,7 +26,7 @@ const cards = [
   },
   {
     key: "pending",
-    label: "Pending",
+    label: "New Orders",
     description: "Awaiting confirmation",
     icon: Clock3,
     iconBg: "bg-[#FFF3E8]",
@@ -47,8 +46,8 @@ const cards = [
   },
   {
     key: "completed",
-    label: "Completed",
-    description: "Successfully completed",
+    label: "Delivered Orders",
+    description: "Successfully delivered",
     icon: ClipboardList,
     iconBg: "bg-[#F2F6FF]",
     iconColor: "text-[#4D7FEA]",
@@ -80,19 +79,16 @@ function OrderSummaryCards({
             key={card.key}
             className="group relative overflow-hidden rounded-xl border border-[#EFE3D2] bg-white p-5 shadow-sm sm:p-6"
           >
-
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] md:text-[12px] tracking-[0.05em] text-gray-600">
+                <p className="text-[11px] tracking-[0.05em] text-gray-600 md:text-[12px]">
                   {card.label}
                 </p>
 
                 <p
-                  className={`mt-3 text-[20px] md:text-[24px] font-semibold leading-none tracking-[-0.02em] ${card.valueColor}`}
+                  className={`mt-3 text-[20px] font-semibold leading-none tracking-[-0.02em] md:text-[24px] ${card.valueColor}`}
                 >
-                  {values[card.key].toLocaleString(
-                    "en-IN"
-                  )}
+                  {values[card.key].toLocaleString("en-IN")}
                 </p>
               </div>
 

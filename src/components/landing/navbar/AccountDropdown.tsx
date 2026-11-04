@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 
 // ─── Types ────────────────────────────────────────────────
@@ -34,6 +35,11 @@ const MENU_ITEMS = [
     label: "Order History",
     to: "/order-history",
     path: "M3 12a9 9 0 1 0 2.64-6.36M3 4v5h5M12 7v5l3 2",
+  },
+  {
+    label: "My Transactions",
+    to: "/transactions",
+    path: "M3 7h18M5 7V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2M5 7v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7M8 12h8M8 16h5",
   },
   {
     label: "Coupons",

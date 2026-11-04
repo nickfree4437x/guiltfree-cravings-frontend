@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import {
   ArrowRight,
   BadgePercent,
-  ChevronLeft,
   ClipboardList,
+  History,
   LogOut,
   Mail,
   Phone,
   UserRound,
+  ReceiptText,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -26,6 +27,18 @@ const ACCOUNT_ITEMS = [
     description: "View and track your orders",
     icon: ClipboardList,
     to: "/orders",
+  },
+  {
+    title: "Order History",
+    description: "View your previous orders",
+    icon: History,
+    to: "/order-history",
+  },
+  {
+    title: "My Transactions",
+    description: "View your payment transactions",
+    icon: ReceiptText,
+    to: "/transactions",
   },
   {
     title: "Coupons",
@@ -60,35 +73,13 @@ function AccountPage() {
 
   if (!isAuthenticated) return null;
 
-  // ─── Render ─────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-white pb-24 lg:pb-10">
-      {/* Header */}
-      <header className="border-b border-[#F1E1E5] bg-white">
-        <div className="mx-auto flex h-[64px] w-full max-w-2xl items-center gap-3 px-4 sm:px-6">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FBEEF1] text-[#B5697A] transition-all duration-200 hover:bg-[#B5697A] hover:text-white active:scale-95"
-          >
-            <ChevronLeft className="h-4 w-4" strokeWidth={2} />
-          </button>
-
-          <div>
-            <h1 className="text-[17px] font-semibold text-[#594D47]">My Account</h1>
-            <p className="mt-0.5 text-[10px] text-[#9A8D84]">
-              Welcome to GuiltFree Cravings
-            </p>
-          </div>
-        </div>
-      </header>
+    <main className="min-h-screen bg-white pb-12 lg:pb-14">
 
       {/* Content */}
-      <div className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mx-auto w-full max-w-2xl px-4 sm:px-6">
         {/* Profile hero */}
-        <section className="relative mt-2 overflow-hidden rounded-2xl bg-[#B5697A] shadow-sm">
-          {/* Decorative circles */}
+        <section className="relative mt-2 overflow-hidden rounded-xl bg-[#B5697A] shadow-sm">
           <div className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full bg-white/10" />
           <div className="pointer-events-none absolute -bottom-14 -left-8 h-28 w-28 rounded-full bg-white/5" />
 
@@ -100,9 +91,10 @@ function AccountPage() {
 
             {/* User info */}
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] uppercase tracking-[0.08em] text-white/70">
+              <p className="text-[10px] uppercase tracking-[0.08em] text-white/90">
                 Welcome back
               </p>
+
               <h2 className="mt-0.5 truncate text-[20px] font-semibold text-white">
                 {displayName}
               </h2>
@@ -141,6 +133,7 @@ function AccountPage() {
                   <span className="block text-[13px] font-semibold text-gray-600 transition-colors duration-200">
                     {title}
                   </span>
+
                   <span className="mt-0 block truncate text-[10px] text-gray-500">
                     {description}
                   </span>
@@ -169,6 +162,7 @@ function AccountPage() {
               <span className="block text-[13px] font-semibold text-gray-600 transition-colors duration-200 group-hover:text-[#B5697A]">
                 Logout
               </span>
+
               <span className="mt-1 block text-[10px] text-gray-500">
                 Sign out of your account
               </span>

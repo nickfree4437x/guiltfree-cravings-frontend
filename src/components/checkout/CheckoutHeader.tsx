@@ -1,20 +1,37 @@
+import {  CreditCard } from "lucide-react";
+
 function CheckoutHeader() {
   return (
-    <div>
+    <div className="w-full">
+    
+
       {/* =====================================================
-          PAGE HEADER
+          PREMIUM BANNER
       ===================================================== */}
+      <section className="relative overflow-hidden rounded-xl bg-[#B5697A] p-5 shadow-sm sm:p-7">
+        <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-white/[0.08]" />
+        <div className="pointer-events-none absolute -bottom-20 right-28 h-36 w-36 rounded-full bg-white/[0.06]" />
 
-      <div className="mt-16 text-center sm:mt-20">
-        <h1 className="text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide text-[#C9788B] mb-2 leading-snug md:whitespace-nowrap">
-          Checkout
-        </h1>
+        <div className="relative flex items-center gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white">
+            <CreditCard className="h-6 w-6" strokeWidth={1.7} />
+          </div>
 
-        <p className="mx-auto mt-2 max-w-2xl text-[12px] md:sm:text-[14px] leading-relaxed text-slate-600">
-          Enter your details and review your selected
-          cravings before placing your order.
-        </p>
-      </div>
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.10em] text-white/90">
+              Secure Checkout
+            </p>
+
+            <h1 className="mt-1 text-[18px] font-semibold text-white sm:text-[22px]">
+              Checkout
+            </h1>
+
+            <p className="mt-0 text-[10px] leading-relaxed text-white/75">
+              Enter your details and review your selected cravings before placing your order.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

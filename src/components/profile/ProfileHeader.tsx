@@ -1,24 +1,35 @@
+import { UserRound } from "lucide-react";
+
 function ProfileHeader() {
   return (
-    <div className="mx-auto mt-4 max-w-2xl text-center sm:mt-5">
+    <div className="w-full">
+      {/* =====================================================
+          PREMIUM BANNER
+      ===================================================== */}
+      <section className="relative overflow-hidden rounded-xl bg-[#B5697A] p-5 shadow-sm sm:p-7">
+        <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-white/[0.08]" />
+        <div className="pointer-events-none absolute -bottom-20 right-28 h-36 w-36 rounded-full bg-white/[0.06]" />
 
-      {/* Heading */}
-      <h1
-        className="
-          text-[20px] sm:text-[24px] md:text-[28px] font-semibold tracking-wide text-[#C9788B] mb-2 leading-snug md:whitespace-nowrap
-        "
-      >
-        My Account
-      </h1>
+        <div className="relative flex items-center gap-4 text-left">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white">
+            <UserRound className="h-6 w-6" strokeWidth={1.7} />
+          </div>
 
-      {/* Description */}
-      <p
-        className="
-          text-[12.5px] sm:text-[13.5px] md:text-[14px] font-[350] leading-relaxed tracking-wide max-w-[580px] mx-auto text-gray-600
-        "
-      >
-        Manage your details for a smoother and easier shopping experience.
-      </p>
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.10em] text-white/90">
+              Account Details
+            </p>
+
+            <h1 className="mt-1 text-[18px] font-semibold text-white sm:text-[22px]">
+              My Profile
+            </h1>
+
+            <p className="mt-0 text-[10px] leading-relaxed text-white/75">
+              Manage your details for a smoother and easier shopping experience.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

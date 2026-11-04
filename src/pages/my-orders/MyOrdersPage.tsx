@@ -1,7 +1,12 @@
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-import { getMyOrders, type Order } from "../../api/orderApi";
+import {
+  getMyOrders,
+  isActiveOrder,
+  type Order,
+} from "../../api/orderApi";
 
 import MyOrdersHeader from "../../components/orders/MyOrdersHeader";
 import OrdersLoadingState from "../../components/orders/OrdersLoadingState";
@@ -44,7 +49,7 @@ function MyOrdersPage() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ─── Load Orders ────────────────────────────────────────
+  // ─── Load Active Orders ──────────────────────────────────
   const loadOrders = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -52,7 +57,10 @@ function MyOrdersPage() {
 
       const data = await getMyOrders();
 
-      setOrders(data);
+      // Exclude delivered, cancelled and returned orders.
+      const activeOrders = data.filter(isActiveOrder);
+
+      setOrders(activeOrders);
       setCurrentPage(1);
     } catch (err) {
       console.error("Failed to load orders:", err);
@@ -129,8 +137,9 @@ function MyOrdersPage() {
 
   // ─── Render ─────────────────────────────────────────────
   return (
-    <main className="min-h-[calc(100vh-76px)] bg-[#fffbfc] px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-24 lg:px-8 lg:pt-32">
-      <div className="mx-auto w-full max-w-6xl">
+    <main className="min-h-[calc(100vh-76px)] bg-white px-4 pb-16 sm:px-6 sm:pb-20 lg:px-8">
+      <div className="mx-auto w-full max-w-5xl">
+
         <MyOrdersHeader />
 
         {/* Loading */}
@@ -144,16 +153,16 @@ function MyOrdersPage() {
           />
         )}
 
-        {/* Empty Orders */}
+        {/* Empty Active Orders */}
         {!isLoading && !error && orders.length === 0 && (
           <OrdersEmptyState />
         )}
 
-        {/* Orders + Pagination */}
+        {/* Active Orders + Pagination */}
         {!isLoading && !error && orders.length > 0 && (
           <>
             <section
-              aria-label="Your orders"
+              aria-label="Your active orders"
               className="mx-auto mt-5 max-w-5xl space-y-5"
             >
               {paginatedOrders.map((order) => (

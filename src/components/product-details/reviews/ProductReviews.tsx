@@ -15,6 +15,7 @@ import { useAuthStore } from "../../../store/authStore";
 import ReviewItem from "./ReviewItem";
 import ReviewModal from "./ReviewModal";
 import ReviewSummaryComponent from "./ReviewSummary";
+import DeleteReviewModal from "../reviews/DeleteReviewModal"; // ✅ Import
 
 // ─── Types ────────────────────────────────────────────────
 interface ProductReviewsProps {
@@ -32,7 +33,7 @@ const EMPTY_SUMMARY: ReviewSummary = {
   breakdown: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
 };
 
-// Status → visual mapping (badge color, label, description)
+// Status → visual mapping
 const STATUS_MAP = {
   VERIFIED: {
     badge: "bg-[#FBEEF1] text-[#A55D6F]",
@@ -91,6 +92,9 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // ✅ State for Delete Modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // ─── Load public reviews ────────────────────────────────
   const loadReviews = useCallback(async () => {
@@ -149,7 +153,7 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
     document.getElementById("reviews-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Smart Page Numbers (with Ellipsis for Mobile)
+  // Smart Page Numbers
   const getPageNumbers = () => {
     const pages: (number | "...")[] = [];
     if (totalPages <= 5) {
@@ -177,19 +181,26 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
 
   const handleReviewSuccess = (review: Review) => {
     setMyReview(review);
-    void loadReviews(); // refresh public list (new review is PENDING)
+    void loadReviews();
     setIsModalOpen(false);
   };
 
-  const handleDeleteReview = async () => {
+  // ✅ Open Delete Modal
+  const handleOpenDeleteModal = () => {
     if (!token || !myReview) return;
-    if (!window.confirm("Are you sure you want to delete your review?")) return;
+    setIsDeleteModalOpen(true);
+  };
+
+  // ✅ Confirm Delete (API Call)
+  const handleConfirmDelete = async () => {
+    if (!token || !myReview) return;
 
     try {
       setIsDeleting(true);
       await deleteProductReview(productId, token);
       setMyReview(null);
       await loadReviews();
+      setIsDeleteModalOpen(false); // Close modal on success
     } catch (deleteError: any) {
       console.error("Failed to delete review:", deleteError);
       setError(
@@ -209,7 +220,7 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
   return (
     <section className="w-full">
       {/* =====================================================
-          HEADER - RESPONSIVE
+          HEADER
       ===================================================== */}
       <div className="mb-6 flex flex-row items-center justify-between gap-3 sm:items-end">
         <div className="min-w-0">
@@ -268,7 +279,7 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
               <button
                 type="button"
                 disabled={isDeleting}
-                onClick={() => void handleDeleteReview()}
+                onClick={handleOpenDeleteModal}
                 className="flex h-8 w-8 items-center justify-center rounded-md bg-red-50 text-red-600 transition hover:bg-red-100 disabled:opacity-50 sm:h-9 sm:w-9"
                 aria-label="Delete review"
               >
@@ -322,9 +333,7 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
               ))}
             </div>
 
-            {/* =====================================================
-                PAGINATION - FULLY RESPONSIVE
-            ===================================================== */}
+            {/* Pagination */}
             {totalPages > 1 && (
               <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-[#F5EBEF] pt-5 sm:flex-row">
                 <p className="text-[11px] text-slate-500 sm:text-[12px]">
@@ -399,6 +408,14 @@ function ProductReviews({ productId, productName, onLoginRequired }: ProductRevi
           onSuccess={handleReviewSuccess}
         />
       )}
+
+      {/* ✅ Delete Confirmation Modal */}
+      <DeleteReviewModal
+        isOpen={isDeleteModalOpen}
+        isDeleting={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onClose={() => !isDeleting && setIsDeleteModalOpen(false)}
+      />
 
       {/* A11y loading state */}
       {isLoadingMyReview && <span className="sr-only">Loading your review...</span>}

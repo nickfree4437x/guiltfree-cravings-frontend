@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, BookOpen, ShieldCheck, Clock } from "lucide-react";
+import { BookOpen, ShieldCheck, Clock } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -180,38 +180,6 @@ function ProductDetailSection({
   );
 }
 
-// ─── Back Button ──────────────────────────────────────────
-
-function BackToHomeButton({
-  onClick,
-  size = 18,
-  large = false,
-}: {
-  onClick: () => void;
-  size?: number;
-  large?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="Back to Home"
-      className={
-        large
-          ? "group mb-6 inline-flex min-h-10 items-center gap-2 rounded-lg pr-3 text-sm font-medium text-[#28583B] transition-colors hover:text-[#B5697A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]/40 focus-visible:ring-offset-2"
-          : "group inline-flex min-h-10 items-center gap-1 rounded-lg pr-3 text-[11px] text-[#B5697A] transition-colors duration-200 hover:underline focus:outline-none md:text-[12px]"
-      }
-    >
-      <ArrowLeft
-        size={size}
-        strokeWidth={1.8}
-        className="transition-transform duration-200 group-hover:-translate-x-1"
-      />
-
-      <span>Back to Home</span>
-    </button>
-  );
-}
 
 // ─── Product Details Page ──────────────────────────────────
 
@@ -448,7 +416,6 @@ function ProductDetailsPage() {
     return (
       <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-20">
         <div className="mx-auto max-w-6xl">
-          <BackToHomeButton onClick={handleBackToHome} large />
 
           <div className="grid animate-pulse gap-8 lg:grid-cols-2 lg:gap-14">
             <div className="min-h-[420px] rounded-2xl bg-[#F5EFE6]" />
@@ -472,7 +439,6 @@ function ProductDetailsPage() {
     return (
       <main className="min-h-[70vh] bg-[#FFFCF7] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
         <div className="mx-auto max-w-6xl">
-          <BackToHomeButton onClick={handleBackToHome} large />
 
           <div className="mx-auto mt-10 flex max-w-xl flex-col items-center text-center">
             <h1 className="text-2xl font-semibold text-[#1F4A2E]">
@@ -515,18 +481,11 @@ function ProductDetailsPage() {
 
   return (
     <>
-      <main className="bg-white px-5 pb-10 pt-[85px] sm:px-8 sm:pb-12 sm:pt-24 lg:px-12 lg:pb-14 lg:pt-28">
+      <main className="bg-white px-5 pb-10 sm:px-8 sm:pb-12 lg:px-12 lg:pb-14">
         <div className="mx-auto w-full max-w-6xl">
-          {/* Back to Home */}
-          <div className="mb-2 sm:mb-4">
-            <BackToHomeButton
-              onClick={handleBackToHome}
-              size={16}
-            />
-          </div>
 
           {/* Main Product Section */}
-          <div className="overflow-hidden rounded-2xl border border-[#EFE3D2] bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-[#EFE3D2] bg-white shadow-sm">
             <div className="grid lg:grid-cols-[1fr_1fr]">
               <ProductDetailsImage
                 product={product}
@@ -535,31 +494,31 @@ function ProductDetailsPage() {
               />
 
               <ProductDetailsInfo
-                product={product}
-                availablePackagings={availablePackagings}
-                selectedPackaging={selectedPackaging}
-                variants={packagingVariants}
-                selectedVariant={selectedVariant}
-                quantity={quantity}
-                onPackagingChange={handlePackagingChange}
-                onVariantChange={handleVariantChange}
-                onQuantityChange={handleQuantityChange}
-                onAddToCart={handleAddToCart}
-                onViewCart={openCartDrawer}
-              />
+                  product={product}
+                  availablePackagings={availablePackagings}
+                  selectedPackaging={selectedPackaging}
+                  variants={packagingVariants}
+                  selectedVariant={selectedVariant}
+                  quantity={quantity}
+                  onPackagingChange={handlePackagingChange}
+                  onVariantChange={handleVariantChange}
+                  onQuantityChange={handleQuantityChange}
+                  onAddToCart={handleAddToCart}
+                  onViewCart={openCartDrawer}
+                />
             </div>
           </div>
 
           {/* Product Information */}
           {hasProductDetails && (
             <section
-              className="mt-8 sm:mt-10"
+              className="mt-6 sm:mt-8"
               aria-labelledby="product-details-heading"
             >
-              <div className="mb-3 sm:mb-4">
+              <div className="mb-2 sm:mb-3">
                 <h2
                   id="product-details-heading"
-                  className="mt-2 text-[20px] font-semibold tracking-tight text-gray-700 sm:text-[26px]"
+                  className="mt-2 text-[20px] font-semibold tracking-tight text-gray-700 sm:text-[24px]"
                 >
                   Product Details
                 </h2>

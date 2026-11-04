@@ -38,11 +38,11 @@ function ProfileQuickLinks() {
       </div>
 
       {/* LINKS */}
-      <div className="mt-5 space-y-2">
+      <div className="mt-5 space-y-1">
         {/* MY ORDERS */}
         <Link
           to="/orders"
-          className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2 transition-all duration-200 hover:border-[#F1DDE2] hover:bg-[#FBEEF1]"
+          className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-1.5 transition-all duration-200 hover:border-[#F1DDE2] hover:bg-[#FBEEF1]"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FBEEF1]">
@@ -78,7 +78,7 @@ function ProfileQuickLinks() {
         {/* MY ISSUES */}
         <Link
           to="/my-issues"
-          className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2 transition-all duration-200 hover:border-[#F1DDE2] hover:bg-[#FBEEF1]"
+          className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-1.5 transition-all duration-200 hover:border-[#F1DDE2] hover:bg-[#FBEEF1]"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FBEEF1]">
@@ -103,9 +103,6 @@ function ProfileQuickLinks() {
               <span className="block text-[12px] text-[#5E5148] transition-colors group-hover:text-[#B5697A]">
                 My Issues
               </span>
-              <span className="block text-[10px] text-gray-500">
-                Track your reported issues
-              </span>
             </div>
           </div>
 
@@ -115,7 +112,7 @@ function ProfileQuickLinks() {
         {/* CONTINUE SHOPPING */}
         <Link
           to="/#products"
-          className="group flex items-center justify-between rounded-xl border border-transparent px-3.5 py-2 transition-all duration-200 hover:border-[#F1DDE2] hover:bg-[#FBEEF1]"
+          className="group flex items-center justify-between rounded-xl border border-transparent px-3.5 py-1.5 transition-all duration-200 hover:border-[#F1DDE2] hover:bg-[#FBEEF1]"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FBEEF1]">

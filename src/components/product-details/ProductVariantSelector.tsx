@@ -25,7 +25,7 @@ function ProductVariantSelector({
 
   return (
     <div className="mt-5">
-      <h2 className="text-[11px] tracking-[0.12em] text-[#8B7A6C]">
+      <h2 className="text-[11px] tracking-[0.05em] text-slate-500">
         Select Size
       </h2>
 

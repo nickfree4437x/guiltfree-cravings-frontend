@@ -1,4 +1,3 @@
-// src/components/admin/products/productUtils.ts
 
 import type { ProductVariant } from "./types";
 
@@ -8,9 +7,7 @@ import type { ProductVariant } from "./types";
  * =========================================================
  */
 
-export const formatPrice = (
-  price: number
-) => {
+export const formatPrice = (price: number) => {
   return `₹${price.toLocaleString("en-IN")}`;
 };
 
@@ -21,15 +18,21 @@ export const formatPrice = (
  */
 
 export const getStartingPrice = (
-  variants: ProductVariant[]
-) => {
-  if (!variants.length) {
+  variants?: ProductVariant[] | null
+): number | null => {
+  // Handle undefined, null and empty variants
+  if (!Array.isArray(variants) || variants.length === 0) {
     return null;
   }
 
-  return Math.min(
-    ...variants.map(
-      (variant) => variant.price
-    )
-  );
+  // Get only valid variant prices
+  const prices = variants
+    .map((variant) => Number(variant?.price))
+    .filter((price) => Number.isFinite(price) && price >= 0);
+
+  if (prices.length === 0) {
+    return null;
+  }
+
+  return Math.min(...prices);
 };

@@ -37,17 +37,11 @@ function CheckoutCustomerForm({
   onChange,
 }: CheckoutCustomerFormProps) {
   return (
-    <section className="w-full">
+    <section className="w-full md:-mt-2">
       {/* Header */}
       <div className="flex items-start gap-3">
-        <div
-          aria-hidden="true"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F8E8EC] text-[#B5697A]"
-        >
-          <span className="text-sm font-semibold">1</span>
-        </div>
         <div>
-          <h2 className="text-[17px] font-semibold tracking-[-0.01em] text-[#2C2C2C] sm:text-[18px]">
+          <h2 className="text-[16px] font-semibold tracking-[-0.01em] text-[#2C2C2C] sm:text-[18px]">
             Customer Information
           </h2>
           <p className="text-[11px] leading-relaxed text-slate-600 sm:text-xs">

@@ -14,6 +14,7 @@ import ReviewSummaryCards from "../../../components/admin/reviews/ReviewSummaryC
 import ReviewFilters from "../../../components/admin/reviews/ReviewFilters";
 import ReviewRow from "../../../components/admin/reviews/ReviewRow";
 import ReviewDetailModal from "../../../components/admin/reviews/ReviewDetailModal";
+import ConfirmReviewActionModal from "../../../components/admin/reviews/ConfirmReviewActionModal"; // ✅ Import
 
 import type {
   RatingFilter,
@@ -38,6 +39,12 @@ function AdminReviewsPage() {
   const [ratingFilter, setRatingFilter] = useState<RatingFilter>("ALL");
   const [selectedReview, setSelectedReview] = useState<AdminReview | null>(null);
   const [actionId, setActionId] = useState<number | null>(null);
+
+  // ✅ State for confirmation modal
+  const [confirmAction, setConfirmAction] = useState<{
+    review: AdminReview;
+    action: "verify" | "reject";
+  } | null>(null);
 
   // ─── Load reviews ───────────────────────────────────────
   const loadReviews = useCallback(
@@ -112,15 +119,16 @@ function AdminReviewsPage() {
     });
   }, [reviews, search, statusFilter, ratingFilter]);
 
-  // ─── Handle Action (Verify / Reject) ────────────────────
-  const handleAction = async (review: AdminReview, action: "verify" | "reject") => {
-    if (!token) {
-      setError("Admin authentication token not found.");
-      return;
-    }
+  // ─── Initiate Action (Opens Modal) ──────────────────────
+  const openConfirmModal = (review: AdminReview, action: "verify" | "reject") => {
+    setConfirmAction({ review, action });
+  };
 
-    const confirmMsg = `Are you sure you want to ${action} this review?`;
-    if (!window.confirm(confirmMsg)) return;
+  // ─── Execute Action (API Call) ──────────────────────────
+  const handleConfirmAction = async () => {
+    if (!confirmAction || !token) return;
+
+    const { review, action } = confirmAction;
 
     try {
       setActionId(review.id);
@@ -132,7 +140,8 @@ function AdminReviewsPage() {
         await rejectAdminReview(review.id, token);
       }
 
-      setSelectedReview(null);
+      setSelectedReview(null); // Close detail modal if open
+      setConfirmAction(null);  // Close confirmation modal
       await loadReviews(true);
     } catch (actionError: any) {
       console.error(`Failed to ${action} review:`, actionError);
@@ -232,8 +241,8 @@ function AdminReviewsPage() {
                   review={review}
                   actionId={actionId}
                   onView={() => setSelectedReview(review)}
-                  onVerify={() => void handleAction(review, "verify")}
-                  onReject={() => void handleAction(review, "reject")}
+                  onVerify={() => openConfirmModal(review, "verify")} // ✅ Open Modal
+                  onReject={() => openConfirmModal(review, "reject")} // ✅ Open Modal
                 />
               ))}
             </div>
@@ -247,10 +256,19 @@ function AdminReviewsPage() {
           review={selectedReview}
           actionId={actionId}
           onClose={() => setSelectedReview(null)}
-          onVerify={() => void handleAction(selectedReview, "verify")}
-          onReject={() => void handleAction(selectedReview, "reject")}
+          onVerify={() => openConfirmModal(selectedReview, "verify")} // ✅ Open Modal from Detail Modal
+          onReject={() => openConfirmModal(selectedReview, "reject")} // ✅ Open Modal from Detail Modal
         />
       )}
+
+      {/* ✅ Confirmation Modal */}
+      <ConfirmReviewActionModal
+        isOpen={!!confirmAction}
+        action={confirmAction?.action || "verify"}
+        isProcessing={actionId === confirmAction?.review.id}
+        onConfirm={handleConfirmAction}
+        onClose={() => !actionId && setConfirmAction(null)}
+      />
     </div>
   );
 }

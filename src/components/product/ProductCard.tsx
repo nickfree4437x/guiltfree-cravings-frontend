@@ -9,15 +9,21 @@ import ProductCardImage from "./card/ProductCardImage";
 import ProductCardContent from "./card/ProductCardContent";
 
 // ─── Types ────────────────────────────────────────────────
+
 interface ProductCardProps {
   product: Product;
   packaging?: "Plastic Box" | "Glass Jar" | "Cardboard Box";
+  discountedVariantIds?: number[];
+  discountPercentage?: number;
 }
 
 // ─── Component ────────────────────────────────────────────
+
 function ProductCard({
   product,
   packaging = "Plastic Box",
+  discountedVariantIds = [],
+  discountPercentage = 20,
 }: ProductCardProps) {
   const [selectedVariant, setSelectedVariant] =
     useState<ProductVariant | null>(null);
@@ -26,7 +32,25 @@ function ProductCard({
   const addToCart = useCartStore((s) => s.addToCart);
   const openCartDrawer = useCartStore((s) => s.openCartDrawer);
 
+  // ─── Offer Validation ───────────────────────────────────
+
+  const eligibleVariantIds = new Set(
+    discountedVariantIds.map(Number)
+  );
+
+  const hasValidDiscount =
+    Number.isFinite(discountPercentage) &&
+    discountPercentage > 0 &&
+    discountPercentage <= 100;
+
+  const showDiscountBadge =
+    selectedVariant !== null &&
+    selectedVariant.packaging === packaging &&
+    eligibleVariantIds.has(Number(selectedVariant.id)) &&
+    hasValidDiscount;
+
   // ─── Variant Selection ──────────────────────────────────
+
   const handleVariantChange = useCallback(
     (variant: ProductVariant | null) => {
       setSelectedVariant((current) => {
@@ -44,20 +68,22 @@ function ProductCard({
   );
 
   // ─── Add to Cart ────────────────────────────────────────
+
   const handleAddToCart = (
     variant: ProductVariant,
     quantity: number
   ) => {
     if (quantity <= 0) return;
 
-    // Allow guests and authenticated users to add products.
+    // Keep original variant price in cart.
+    // Discount calculation remains separate.
     addToCart(product, variant, quantity);
 
-    // Open the cart drawer without showing the login modal.
     openCartDrawer();
   };
 
-  // Variant-aware image
+  // ─── Variant-aware Image ────────────────────────────────
+
   const imageVariant =
     selectedVariant?.productId === product.id &&
     selectedVariant.packaging === packaging
@@ -65,9 +91,12 @@ function ProductCard({
       : null;
 
   // ─── Render ─────────────────────────────────────────────
+
   return (
     <article className="group relative flex h-full flex-col rounded-lg border border-[#C9788B]/20 bg-white">
+
       {/* Product Image */}
+
       <Link
         to={`/products/${product.id}`}
         state={{
@@ -86,13 +115,23 @@ function ProductCard({
           />
         </div>
 
-        {/* Decorative fade */}
+        {/* Discount Badge - Top Right */}
+
+        {showDiscountBadge && (
+          <span className="absolute right-2.5 top-2.5 z-40 inline-flex items-center rounded-full bg-[#FCECEF] px-2.5 py-0.5 text-[8px] tracking-wide text-[#B5697A] sm:right-3 sm:top-3 sm:px-3 sm:py-1 sm:text-[9px]">
+            {discountPercentage}% OFF
+          </span>
+        )}
+
+        {/* Decorative Fade */}
+
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-20 opacity-70"
         />
 
-        {/* Hover overlay */}
+        {/* Hover Overlay */}
+
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-t from-[#B5697A]/[0.08] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover/image:opacity-100"
@@ -100,14 +139,18 @@ function ProductCard({
       </Link>
 
       {/* Product Content */}
+
       <div className="relative flex flex-1 flex-col bg-white">
         <ProductCardContent
           product={product}
           packaging={packaging}
           onAddToCart={handleAddToCart}
           onVariantChange={handleVariantChange}
+          discountedVariantIds={discountedVariantIds}
+          discountPercentage={discountPercentage}
         />
       </div>
+
     </article>
   );
 }

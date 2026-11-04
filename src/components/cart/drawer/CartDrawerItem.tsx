@@ -1,3 +1,4 @@
+
 import { Minus, Plus } from "lucide-react";
 import { FaTrash } from "react-icons/fa";
 
@@ -7,7 +8,12 @@ import ProductCardImage from "../../product/card/ProductCardImage";
 // ─── Types ────────────────────────────────────────────────
 interface CartDrawerItemProps {
   item: CartItemType;
-  onUpdateQuantity: (productId: number, variantId: number, quantity: number) => void;
+  discountAmount?: number;
+  onUpdateQuantity: (
+    productId: number,
+    variantId: number,
+    quantity: number
+  ) => void;
   onRemove: (productId: number, variantId: number) => void;
   onProductClick: (productId: number) => void;
 }
@@ -15,6 +21,7 @@ interface CartDrawerItemProps {
 // ─── Component ────────────────────────────────────────────
 function CartDrawerItem({
   item,
+  discountAmount = 0,
   onUpdateQuantity,
   onRemove,
   onProductClick,
@@ -22,12 +29,24 @@ function CartDrawerItem({
   const { product, variant, quantity } = item;
 
   const itemTotal = Number(variant.price) * quantity;
+  const safeDiscount = Math.min(
+    Math.max(0, discountAmount),
+    itemTotal
+  );
+  const discountedTotal = itemTotal - safeDiscount;
+
+  const hasDiscount = safeDiscount > 0;
   const variantLabel = `${variant.quantity}${variant.unit}`;
 
   const decrease = () => {
-    if (quantity > 1) onUpdateQuantity(product.id, variant.id, quantity - 1);
+    if (quantity > 1) {
+      onUpdateQuantity(product.id, variant.id, quantity - 1);
+    }
   };
-  const increase = () => onUpdateQuantity(product.id, variant.id, quantity + 1);
+
+  const increase = () =>
+    onUpdateQuantity(product.id, variant.id, quantity + 1);
+
   const remove = () => onRemove(product.id, variant.id);
   const openProduct = () => onProductClick(product.id);
 
@@ -35,26 +54,30 @@ function CartDrawerItem({
   return (
     <article className="rounded-lg border border-[#F0E1E5] bg-[#FFFCFC] p-3">
       <div className="flex gap-3">
-        {/* Clickable product image */}
+        {/* Clickable Product Image */}
         <button
           type="button"
           onClick={openProduct}
           aria-label={`View ${product.name} details`}
-          className="h-[80px] w-[80px] shrink-0 overflow-hidden rounded-lg cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]"
+          className="h-[80px] w-[80px] shrink-0 cursor-pointer overflow-hidden rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B5697A]"
         >
           <ProductCardImage
             product={product}
-            packaging={variant.packaging as "Plastic Box" | "Glass Jar" | "Cardboard Box"}
+            packaging={
+              variant.packaging as
+                | "Plastic Box"
+                | "Glass Jar"
+                | "Cardboard Box"
+            }
             variant={variant}
             compact
           />
         </button>
 
-        {/* Product content */}
+        {/* Product Content */}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              {/* Clickable product name */}
               <button
                 type="button"
                 onClick={openProduct}
@@ -62,20 +85,21 @@ function CartDrawerItem({
               >
                 {product.name}
               </button>
+
               <p className="text-[10px] text-slate-400">
                 {variantLabel}
                 {variant.packaging ? ` • ${variant.packaging}` : ""}
               </p>
             </div>
 
-            {/* Remove item */}
+            {/* Remove Item */}
             <button
               type="button"
               onClick={remove}
               aria-label={`Remove ${product.name} from cart`}
               className="flex h-6 w-6 items-center justify-center rounded-md bg-red-50 text-red-600 transition hover:bg-red-100 disabled:opacity-50 sm:h-7 sm:w-7"
             >
-              <FaTrash size={12} strokeWidth={1.8} />
+              <FaTrash size={12} />
             </button>
           </div>
 
@@ -106,9 +130,29 @@ function CartDrawerItem({
               </button>
             </div>
 
-            <p className="text-[13px] font-semibold text-[#2C2C2C]">
-              ₹{itemTotal.toFixed(2)}
-            </p>
+            <div className="text-right">
+              {hasDiscount ? (
+                <>
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className="text-[13px] font-semibold text-[#28583B]">
+                      ₹{discountedTotal.toFixed(0)}
+                    </span>
+
+                    <span className="text-[10px] text-slate-400 line-through">
+                      ₹{itemTotal.toFixed(0)}
+                    </span>
+                  </div>
+
+                  <p className="text-[10px] text-[#16845F]">
+                    You save ₹{safeDiscount.toFixed(0)}
+                  </p>
+                </>
+              ) : (
+                <p className="text-[13px] font-semibold text-[#2C2C2C]">
+                  ₹{itemTotal.toFixed(0)}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
