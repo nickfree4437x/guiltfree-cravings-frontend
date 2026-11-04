@@ -48,16 +48,32 @@ function getFirstValidImage(
 
 function getProductImage(
   product: Product,
-  packaging: PackagingType
+  packaging: PackagingType,
+  variant?: ProductVariant | null
 ): string | null {
+
+  // Glass Jar:
+  // First priority: selected variant's individual image.
+  // Fallback: legacy product-level Glass Jar images.
+
   if (packaging === "Glass Jar") {
     return (
+      (variant?.packaging === "Glass Jar"
+        ? getValidImage(variant.image)
+        : null) ??
+      getFirstValidImage(
+        product.variants
+          ?.filter((item) => item.packaging === "Glass Jar")
+          .map((item) => item.image)
+      ) ??
       getFirstValidImage(product.glassJarImages) ??
       getValidImage(product.glassJarImage) ??
       getFirstValidImage(product.images) ??
       getValidImage(product.image)
     );
   }
+
+  // Cardboard Box: Preserve existing image selection.
 
   if (packaging === "Cardboard Box") {
     return (
@@ -67,6 +83,8 @@ function getProductImage(
       getValidImage(product.image)
     );
   }
+
+  // Regular / Plastic Box: Preserve existing image selection.
 
   return (
     getFirstValidImage(product.regularImages) ??
@@ -93,11 +111,18 @@ function ProductCardImage({
     error: false,
   });
 
-  const image = getProductImage(product, packaging);
+  const image = getProductImage(
+    product,
+    packaging,
+    variant
+  );
 
   // Only use image state belonging to the current image.
-  const isLoaded = imageState.src === image && imageState.loaded;
-  const hasError = imageState.src === image && imageState.error;
+  const isLoaded =
+    imageState.src === image && imageState.loaded;
+
+  const hasError =
+    imageState.src === image && imageState.error;
 
   const handleImageLoad = () => {
     if (!image) return;
@@ -116,6 +141,7 @@ function ProductCardImage({
       productId: product.id,
       productName: product.name,
       packaging,
+      variantId: variant?.id,
       image,
     });
 
@@ -134,7 +160,9 @@ function ProductCardImage({
         className={`relative flex items-center justify-center overflow-hidden bg-[#fffbfc] ${getContainerSize(
           compact
         )} ${
-          compact ? "rounded-lg p-2" : "rounded-lg p-3 sm:p-5 md:p-6"
+          compact
+            ? "rounded-lg p-2"
+            : "rounded-lg p-3 sm:p-5 md:p-6"
         }`}
       >
         <div className="flex flex-col items-center gap-2 text-center">
@@ -145,7 +173,9 @@ function ProductCardImage({
           >
             <PackageX
               className={`text-[#B5697A]/60 ${
-                compact ? "h-4 w-4" : "h-4 w-4 sm:h-5 sm:w-5"
+                compact
+                  ? "h-4 w-4"
+                  : "h-4 w-4 sm:h-5 sm:w-5"
               }`}
               strokeWidth={1.6}
               aria-hidden="true"
@@ -169,10 +199,13 @@ function ProductCardImage({
       className={`group/image relative flex items-center justify-center overflow-hidden bg-white ${getContainerSize(
         compact
       )} ${
-        compact ? "rounded-xl p-1.5" : "rounded-xl p-3 sm:p-5 md:p-6"
+        compact
+          ? "rounded-xl p-1.5"
+          : "rounded-xl p-3 sm:p-5 md:p-6"
       }`}
     >
       {/* Shimmer Placeholder */}
+
       {!isLoaded && (
         <div
           aria-hidden="true"
@@ -183,7 +216,7 @@ function ProductCardImage({
       )}
 
       <img
-        key={`${product.id}-${packaging}-${image}`}
+        key={`${product.id}-${packaging}-${variant?.id ?? "default"}-${image}`}
         src={image}
         alt={`${product.name} ${packaging}${
           variant ? ` ${variant.quantity}${variant.unit}` : ""

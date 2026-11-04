@@ -811,7 +811,7 @@ export default function MyIssuesPage() {
             </p>
             <Link
               to="/orders"
-              className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#B5697A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#965264]"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#B5697A] px-4 py-2.5 text-[11px] md:text-[12px] text-white transition hover:bg-[#965264]"
             >
               View Orders
             </Link>

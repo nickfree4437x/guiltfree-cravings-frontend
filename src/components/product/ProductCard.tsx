@@ -1,5 +1,5 @@
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import type { Product, ProductVariant } from "../../api/productApi";
@@ -17,6 +17,19 @@ interface ProductCardProps {
   discountPercentage?: number;
 }
 
+// ─── Helpers ──────────────────────────────────────────────
+
+const getInitialVariant = (
+  product: Product,
+  packaging: ProductCardProps["packaging"]
+): ProductVariant | null => {
+  return (
+    product.variants?.find(
+      (variant) => variant.packaging === packaging
+    ) ?? null
+  );
+};
+
 // ─── Component ────────────────────────────────────────────
 
 function ProductCard({
@@ -26,7 +39,14 @@ function ProductCard({
   discountPercentage = 20,
 }: ProductCardProps) {
   const [selectedVariant, setSelectedVariant] =
-    useState<ProductVariant | null>(null);
+    useState<ProductVariant | null>(() =>
+      getInitialVariant(product, packaging)
+    );
+
+  // Keep selected variant synchronized with product and packaging.
+  useEffect(() => {
+    setSelectedVariant(getInitialVariant(product, packaging));
+  }, [product, packaging]);
 
   // Cart actions
   const addToCart = useCartStore((s) => s.addToCart);
@@ -84,11 +104,15 @@ function ProductCard({
 
   // ─── Variant-aware Image ────────────────────────────────
 
+  // Use the selected variant image for Glass Jar packaging.
+  // ProductId is intentionally not required because some API
+  // responses do not include productId inside variant objects.
+
   const imageVariant =
-    selectedVariant?.productId === product.id &&
+    selectedVariant &&
     selectedVariant.packaging === packaging
       ? selectedVariant
-      : null;
+      : getInitialVariant(product, packaging);
 
   // ─── Render ─────────────────────────────────────────────
 

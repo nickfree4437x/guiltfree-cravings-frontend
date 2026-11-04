@@ -45,9 +45,14 @@ function hasPackagingImage(
   }
 
   if (packaging === "Glass Jar") {
+    // Glass Jar images are now stored on individual variants.
     return Boolean(
-      product.glassJarImage ||
-        product.glassJarImages?.some(Boolean)
+      product.variants?.some(
+        (variant) =>
+          variant.packaging === "Glass Jar" &&
+          typeof variant.image === "string" &&
+          variant.image.trim().length > 0
+      )
     );
   }
 
@@ -194,7 +199,7 @@ function FeaturedProducts() {
         return false;
       }
 
-      // Require a matching variant and an available packaging image.
+      // Require a matching variant and its packaging image.
       const matchesPackaging =
         hasPackagingVariant(product, activePackaging) &&
         hasPackagingImage(product, activePackaging);

@@ -1,3 +1,4 @@
+
 import {
   useCallback,
   useEffect,
@@ -29,8 +30,6 @@ import type {
 // HELPERS
 // ======================================================
 
-// API URL can contain /api, but uploaded images are served
-// from the backend origin, not from the /api endpoint.
 const getBackendOrigin = (): string => {
   const apiUrl = import.meta.env.VITE_API_URL?.trim();
 
@@ -73,22 +72,18 @@ const normalizeImageUrl = (
     return "";
   }
 
-  // Preserve Cloudinary and other absolute URLs.
   if (/^https?:\/\//i.test(image)) {
     return image;
   }
 
-  // Protocol-relative URLs.
   if (image.startsWith("//")) {
     return `${window.location.protocol}${image}`;
   }
 
-  // Data URLs, if ever used.
   if (/^data:image\//i.test(image)) {
     return image;
   }
 
-  // Legacy backend uploads and relative paths.
   if (image.startsWith("/")) {
     return `${BACKEND_ORIGIN}${image}`;
   }
@@ -173,15 +168,39 @@ const getQuantityLabel = (
   variant: ProductVariant,
 ): string => `${variant.quantity} ${variant.unit}`;
 
+// ======================================================
+// PRODUCT GALLERY IMAGES
+// Includes individual Glass Jar variant images.
+// ======================================================
+
 const getImageList = (
   product: AdminProduct,
 ): string[] => {
   return uniqueImages([
+    // Main product image
     product.image,
+
+    // General product gallery
     ...(product.images ?? []),
+
+    // Regular packaging gallery
     ...(product.regularImages ?? []),
+
+    // Legacy Glass Jar images
     product.glassJarImage,
     ...(product.glassJarImages ?? []),
+
+    // Individual Glass Jar variant images
+    ...(product.variants ?? [])
+      .filter(
+        (variant) =>
+          variant.packaging === "Glass Jar" &&
+          typeof variant.image === "string" &&
+          variant.image.trim().length > 0,
+      )
+      .map((variant) => variant.image),
+
+    // Cardboard Box images
     product.cardboardBoxImage,
     ...(product.cardboardBoxImages ?? []),
   ]);
@@ -432,7 +451,15 @@ export default function AdminProductDetailsPage() {
 
   // --------------------------------------------------
   // PACKAGING IMAGE GROUPS
-  // Keep each packaging type independent.
+  //
+  // Regular Packaging:
+  // Uses existing product-level gallery.
+  //
+  // Glass Jar:
+  // Uses individual variant.image URLs.
+  //
+  // Cardboard Box:
+  // Uses existing product-level gallery.
   // --------------------------------------------------
 
   const packagingImages = useMemo(() => {
@@ -440,32 +467,54 @@ export default function AdminProductDetailsPage() {
       return [];
     }
 
+    const regularImages = uniqueImages([
+      ...(product.regularImages ?? []),
+    ]);
+
+    const glassJarImages = sortedVariants
+      .filter(
+        (variant) =>
+          variant.packaging === "Glass Jar" &&
+          typeof variant.image === "string" &&
+          variant.image.trim().length > 0,
+      )
+      .map((variant) => ({
+        image: normalizeImageUrl(variant.image),
+        label: getQuantityLabel(variant),
+        variantId: variant.id,
+      }))
+      .filter((item) => Boolean(item.image));
+
+    const cardboardImages = uniqueImages([
+      ...(product.cardboardBoxImages ?? []),
+    ]);
+
     return [
       {
         title: "Regular Packaging",
-        images: uniqueImages([
-          ...(product.regularImages ?? []),
-        ]),
+        images: regularImages.map((image, index) => ({
+          image,
+          label: `Image ${index + 1}`,
+          variantId: undefined as number | undefined,
+        })),
         fallbackImage: normalizeImageUrl(product.image),
       },
       {
         title: "Glass Jar",
-        images: uniqueImages([
-          product.glassJarImage,
-          ...(product.glassJarImages ?? []),
-        ]),
+        images: glassJarImages,
         fallbackImage: "",
       },
       {
         title: "Cardboard Box",
-        images: uniqueImages([
-          product.cardboardBoxImage,
-          ...(product.cardboardBoxImages ?? []),
-        ]),
+        images: cardboardImages.map((image, index) => ({
+          image,
+          label: `Image ${index + 1}`,
+          variantId: undefined as number | undefined,
+        })),
         fallbackImage: "",
       },
     ];
-  }, [product]);
+  }, [product, sortedVariants]);
 
   // --------------------------------------------------
   // LOADING STATE
@@ -532,6 +581,7 @@ export default function AdminProductDetailsPage() {
   return (
     <main className="min-h-screen bg-white px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
+
         {/* BACK BUTTON */}
 
         <button
@@ -546,6 +596,7 @@ export default function AdminProductDetailsPage() {
         {/* PRODUCT OVERVIEW */}
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+
           {/* PRODUCT GALLERY */}
 
           <section className="overflow-hidden rounded-xl border border-[#F0DDE1] bg-white shadow-sm lg:col-span-2">
@@ -590,13 +641,9 @@ export default function AdminProductDetailsPage() {
                     <button
                       type="button"
                       key={image}
-                      onClick={() =>
-                        setSelectedImage(image)
-                      }
+                      onClick={() => setSelectedImage(image)}
                       aria-label={`View product image ${index + 1}`}
-                      aria-pressed={
-                        selectedImage === image
-                      }
+                      aria-pressed={selectedImage === image}
                       className={`flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-white p-1 transition-all duration-200 sm:h-[72px] sm:w-[72px] ${
                         selectedImage === image
                           ? "border-[#B5697A]"
@@ -746,8 +793,7 @@ export default function AdminProductDetailsPage() {
               </p>
 
               <p className="mt-1 text-sm text-[#967D84]">
-                No pricing variants are available for this
-                product.
+                No pricing variants are available for this product.
               </p>
             </div>
           )}
@@ -764,7 +810,7 @@ export default function AdminProductDetailsPage() {
               const packageImageList = group.images;
 
               const preview =
-                packageImageList[0] ||
+                packageImageList[0]?.image ||
                 group.fallbackImage;
 
               return (
@@ -811,33 +857,40 @@ export default function AdminProductDetailsPage() {
                     {/* Individual Packaging Thumbnails */}
 
                     {packageImageList.length > 0 && (
-                      <div className="mt-4 flex flex-wrap gap-2.5">
-                        {packageImageList.map(
-                          (image, index) => (
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        {packageImageList.map((item, index) => (
+                          <div
+                            key={`${item.variantId ?? item.image}-${item.label}-${index}`}
+                            className="flex flex-col items-center gap-1.5"
+                          >
                             <button
-                              key={image}
                               type="button"
                               onClick={() =>
-                                setSelectedImage(image)
+                                setSelectedImage(item.image)
                               }
-                              aria-label={`View ${group.title} image ${index + 1}`}
+                              aria-label={`View ${group.title} ${item.label}`}
                               aria-pressed={
-                                selectedImage === image
+                                selectedImage === item.image
                               }
+                              title={item.label}
                               className={`flex h-[66px] w-[66px] items-center justify-center overflow-hidden rounded-xl border bg-white p-1 transition-all duration-200 ${
-                                selectedImage === image
+                                selectedImage === item.image
                                   ? "border-[#B5697A]"
                                   : "border-[#F0DDE1] hover:border-[#D9A7B3]"
                               }`}
                             >
                               <ProductImage
-                                src={image}
-                                alt={`${group.title} ${index + 1}`}
+                                src={item.image}
+                                alt={`${group.title} ${item.label}`}
                                 className="h-full w-full rounded-lg object-contain"
                               />
                             </button>
-                          ),
-                        )}
+
+                            <span className="text-[10px] font-medium text-slate-500">
+                              {item.label}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

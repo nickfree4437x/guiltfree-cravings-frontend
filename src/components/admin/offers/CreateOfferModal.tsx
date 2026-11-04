@@ -641,7 +641,7 @@ function CreateOfferModal({
               {isEditMode ? "Edit Offer" : "Create Offer"}
             </h2>
 
-            <p className="mt-1 text-[11px] leading-relaxed text-gray-500 md:text-[12px]">
+            <p className="mt-0 text-[11px] leading-relaxed text-gray-500 md:text-[12px]">
               {isEditMode
                 ? "Update offer details, product selection and settings."
                 : "Create a public or customer-specific offer."}
@@ -1129,12 +1129,11 @@ function CreateOfferModal({
             <div>
               <SectionLabel>Offer Conditions</SectionLabel>
 
-              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              <div className="mt-1 grid gap-4 sm:grid-cols-2">
                 <Field
-                  label="Minimum Order Value"
                   value={minOrderValue}
                   onChange={setMinOrderValue}
-                  placeholder="500"
+                  placeholder="Minimum order value"
                   type="number"
                   min="0"
                   disabled={loading}
@@ -1142,10 +1141,9 @@ function CreateOfferModal({
 
                 {discountType === "PERCENTAGE" && (
                   <Field
-                    label="Maximum Discount"
                     value={maxDiscount}
                     onChange={setMaxDiscount}
-                    placeholder="300"
+                    placeholder="Maximum Discount"
                     type="number"
                     min="1"
                     disabled={loading}

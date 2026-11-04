@@ -1,4 +1,3 @@
-
 import {
   Plus,
   Search,
@@ -7,6 +6,7 @@ import {
   CheckCircle2,
   XCircle,
   Loader2,
+  AlertTriangle,
 } from "lucide-react";
 
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -61,6 +61,136 @@ const STATUS_OPTIONS: {
 ];
 
 // ============================================================
+// DELETE CONFIRMATION MODAL
+// ============================================================
+
+interface DeleteConfirmModalProps {
+  open: boolean;
+  offerCode: string | null;
+  loading: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}
+
+function DeleteConfirmModal({
+  open,
+  offerCode,
+  loading,
+  onCancel,
+  onConfirm,
+}: DeleteConfirmModalProps) {
+  // Close on Escape (only when not loading)
+  useEffect(() => {
+    if (!open) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !loading) {
+        onCancel();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [open, loading, onCancel]);
+
+  // Body scroll lock while modal is open
+  useEffect(() => {
+    if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      role="presentation"
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-slate-950/50 px-4 backdrop-blur-[3px]"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !loading) {
+          onCancel();
+        }
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-offer-title"
+        aria-describedby="delete-offer-description"
+        className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+      >
+        {/* Header */}
+        <div className="flex items-start gap-4 px-6 pt-6">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500">
+            <AlertTriangle className="h-6 w-6" strokeWidth={1.9} />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <h2
+              id="delete-offer-title"
+              className="text-[16px] font-semibold text-slate-800 md:text-[17px]"
+            >
+              Delete this offer?
+            </h2>
+
+            <p
+              id="delete-offer-description"
+              className="mt-1.5 text-[12px] leading-relaxed text-slate-500 md:text-[12px]"
+            >
+              This action cannot be undone. The offer{" "}
+              {offerCode && (
+                <span className="font-semibold text-[#A85F70]">
+                  &ldquo;{offerCode}&rdquo;
+                </span>
+              )}{" "}
+              will be permanently removed and can no longer be used by customers.
+            </p>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="mt-5 border-t border-[#F1E9E1]" />
+
+        {/* Footer Actions */}
+        <div className="flex flex-col-reverse gap-2 px-6 py-4 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
+            className="w-full rounded-xl border border-[#E8DED3] bg-white px-4 py-2.5 text-[12px] text-slate-600 transition hover:bg-slate-50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={loading}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-[12px] text-white shadow-sm transition hover:bg-red-700 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              <>
+                Delete Offer
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // COMPONENT
 // ============================================================
 
@@ -93,8 +223,8 @@ function AdminOffersPage() {
   // DELETE
   // ----------------------------------------------------------
 
-  const [deleteId, setDeleteId] =
-    useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] =
+    useState<Offer | null>(null);
 
   const [deleteLoading, setDeleteLoading] =
     useState(false);
@@ -192,22 +322,25 @@ function AdminOffersPage() {
   // DELETE OFFER
   // ==========================================================
 
-  const handleDelete = async (offerId: number) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this offer?"
-      )
-    ) {
-      return;
-    }
+  const openDeleteModal = (offer: Offer) => {
+    setDeleteTarget(offer);
+  };
+
+  const closeDeleteModal = () => {
+    if (deleteLoading) return;
+    setDeleteTarget(null);
+  };
+
+  const confirmDeleteOffer = async () => {
+    if (!deleteTarget) return;
 
     try {
       setDeleteLoading(true);
-      setDeleteId(offerId);
 
-      await deleteOffer(offerId);
+      await deleteOffer(deleteTarget.id);
 
       toast.success("Offer deleted successfully.");
+      setDeleteTarget(null);
 
       await fetchOffers();
     } catch (err: any) {
@@ -220,7 +353,6 @@ function AdminOffersPage() {
       );
     } finally {
       setDeleteLoading(false);
-      setDeleteId(null);
     }
   };
 
@@ -576,19 +708,14 @@ function AdminOffersPage() {
                           <button
                             type="button"
                             onClick={() =>
-                              handleDelete(offer.id)
+                              openDeleteModal(offer)
                             }
                             disabled={deleteLoading || editLoading}
                             aria-label={`Delete ${offer.name}`}
                             title="Delete offer"
                             className="rounded-md bg-red-50 p-2 text-sm text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            {deleteLoading &&
-                            deleteId === offer.id ? (
-                              <Loader2 className="h-[16px] w-[16px] animate-spin" />
-                            ) : (
-                              <FaTrash className="h-[14px] w-[14px]" />
-                            )}
+                            <FaTrash className="h-[14px] w-[14px]" />
                           </button>
 
                         </div>
@@ -609,6 +736,16 @@ function AdminOffersPage() {
         offer={editingOffer}
         onClose={handleCloseOfferModal}
         onCreated={fetchOffers}
+      />
+
+      {/* DELETE CONFIRMATION MODAL */}
+
+      <DeleteConfirmModal
+        open={deleteTarget !== null}
+        offerCode={deleteTarget?.code ?? null}
+        loading={deleteLoading}
+        onCancel={closeDeleteModal}
+        onConfirm={() => void confirmDeleteOffer()}
       />
     </div>
   );
