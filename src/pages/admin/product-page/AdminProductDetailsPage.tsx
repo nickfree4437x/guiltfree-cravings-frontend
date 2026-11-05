@@ -1,4 +1,3 @@
-
 import {
   useCallback,
   useEffect,
@@ -25,6 +24,15 @@ import type {
   AdminProduct,
   ProductVariant,
 } from "../../../components/admin/products/types";
+
+// ======================================================
+// TYPES
+// ======================================================
+
+type ProductVariantWithImages = ProductVariant & {
+  images?: string[];
+  image?: string | null;
+};
 
 // ======================================================
 // HELPERS
@@ -111,6 +119,23 @@ const uniqueImages = (
   return result;
 };
 
+/**
+ * Supports both:
+ * - New multiple images: variant.images[]
+ * - Legacy single image: variant.image
+ */
+const getVariantImages = (
+  variant: ProductVariant,
+): string[] => {
+  const variantWithImages =
+    variant as ProductVariantWithImages;
+
+  return uniqueImages([
+    ...(variantWithImages.images ?? []),
+    variantWithImages.image,
+  ]);
+};
+
 const formatPrice = (price: number): string =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -170,12 +195,20 @@ const getQuantityLabel = (
 
 // ======================================================
 // PRODUCT GALLERY IMAGES
-// Includes individual Glass Jar variant images.
+// Includes all individual Glass Jar variant images.
 // ======================================================
 
 const getImageList = (
   product: AdminProduct,
 ): string[] => {
+  const glassJarVariantImages = (
+    product.variants ?? []
+  )
+    .filter(
+      (variant) => variant.packaging === "Glass Jar",
+    )
+    .flatMap((variant) => getVariantImages(variant));
+
   return uniqueImages([
     // Main product image
     product.image,
@@ -190,15 +223,8 @@ const getImageList = (
     product.glassJarImage,
     ...(product.glassJarImages ?? []),
 
-    // Individual Glass Jar variant images
-    ...(product.variants ?? [])
-      .filter(
-        (variant) =>
-          variant.packaging === "Glass Jar" &&
-          typeof variant.image === "string" &&
-          variant.image.trim().length > 0,
-      )
-      .map((variant) => variant.image),
+    // All individual Glass Jar variant images
+    ...glassJarVariantImages,
 
     // Cardboard Box images
     product.cardboardBoxImage,
@@ -272,13 +298,11 @@ function ProductImage({
   alt,
   className = "",
   loading = "lazy",
-  onClick,
 }: {
   src: string;
   alt: string;
   className?: string;
   loading?: "eager" | "lazy";
-  onClick?: () => void;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -300,7 +324,6 @@ function ProductImage({
       src={src}
       alt={alt}
       loading={loading}
-      onClick={onClick}
       onError={() => setFailed(true)}
       className={className}
     />
@@ -453,13 +476,14 @@ export default function AdminProductDetailsPage() {
   // PACKAGING IMAGE GROUPS
   //
   // Regular Packaging:
-  // Uses existing product-level gallery.
+  // Uses product-level gallery.
   //
   // Glass Jar:
-  // Uses individual variant.image URLs.
+  // Uses all individual variant.images[].
+  // Each image retains its variant/weight label.
   //
   // Cardboard Box:
-  // Uses existing product-level gallery.
+  // Uses product-level gallery.
   // --------------------------------------------------
 
   const packagingImages = useMemo(() => {
@@ -471,19 +495,23 @@ export default function AdminProductDetailsPage() {
       ...(product.regularImages ?? []),
     ]);
 
+    // Each Glass Jar variant can have multiple images.
     const glassJarImages = sortedVariants
       .filter(
-        (variant) =>
-          variant.packaging === "Glass Jar" &&
-          typeof variant.image === "string" &&
-          variant.image.trim().length > 0,
+        (variant) => variant.packaging === "Glass Jar",
       )
-      .map((variant) => ({
-        image: normalizeImageUrl(variant.image),
-        label: getQuantityLabel(variant),
-        variantId: variant.id,
-      }))
-      .filter((item) => Boolean(item.image));
+      .flatMap((variant) => {
+        const variantImages = getVariantImages(variant);
+
+        return variantImages.map((image, index) => ({
+          image,
+          label:
+            variantImages.length > 1
+              ? `${getQuantityLabel(variant)} - ${index + 1}`
+              : getQuantityLabel(variant),
+          variantId: variant.id,
+        }));
+      });
 
     const cardboardImages = uniqueImages([
       ...(product.cardboardBoxImages ?? []),
@@ -587,7 +615,7 @@ export default function AdminProductDetailsPage() {
         <button
           type="button"
           onClick={() => navigate("/admin/products")}
-          className="inline-flex items-center gap-1 text-[12px] md:text-[13px] text-[#A85F70] transition hover:text-[#8F4E60] hover:underline"
+          className="inline-flex items-center gap-1 text-[12px] text-[#A85F70] transition hover:text-[#8F4E60] hover:underline md:text-[13px]"
         >
           <ArrowLeft size={14} />
           Back to Products
@@ -625,7 +653,7 @@ export default function AdminProductDetailsPage() {
 
             <div className="border-t border-[#F5E7EA] p-4">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <p className="text-[12px] md:text-[13px] font-semibold text-gray-700">
+                <p className="text-[12px] font-semibold text-gray-700 md:text-[13px]">
                   Product Gallery
                 </p>
 
@@ -674,7 +702,7 @@ export default function AdminProductDetailsPage() {
                 {product.name}
               </h2>
 
-              <span className="rounded-lg border border-[#F0DDE1] bg-[#FFFAFB] px-3 py-1.5 text-[11px] md:text-[12px] text-[#9A6271]">
+              <span className="rounded-lg border border-[#F0DDE1] bg-[#FFFAFB] px-3 py-1.5 text-[11px] text-[#9A6271] md:text-[12px]">
                 #{product.id}
               </span>
             </div>
@@ -734,7 +762,7 @@ export default function AdminProductDetailsPage() {
               </div>
 
               <div>
-                <p className="text-[12px] md:text-[13px] font-semibold text-gray-700">
+                <p className="text-[12px] font-semibold text-gray-700 md:text-[13px]">
                   Product visibility
                 </p>
 
@@ -756,30 +784,49 @@ export default function AdminProductDetailsPage() {
         >
           {sortedVariants.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {sortedVariants.map((variant) => (
-                <article
-                  key={variant.id}
-                  className="rounded-xl border border-[#F0DDE1] bg-white p-4"
-                >
-                  <h3 className="text-md font-semibold text-gray-700 md:text-lg">
-                    {getQuantityLabel(variant)}
-                  </h3>
+              {sortedVariants.map((variant) => {
+                const variantImages =
+                  getVariantImages(variant);
 
-                  <p className="mt-1 text-[12px] text-slate-500 md:text-[13px]">
-                    {variant.packaging}
-                  </p>
+                return (
+                  <article
+                    key={variant.id}
+                    className="rounded-xl border border-[#F0DDE1] bg-white p-4"
+                  >
+                    <h3 className="text-md font-semibold text-gray-700 md:text-lg">
+                      {getQuantityLabel(variant)}
+                    </h3>
 
-                  <div className="mt-2 flex items-end justify-between gap-3 border-t border-[#F5E7EA] pt-4">
-                    <span className="text-xs text-slate-600">
-                      Variant Price
-                    </span>
+                    <p className="mt-1 text-[12px] text-slate-500 md:text-[13px]">
+                      {variant.packaging}
+                    </p>
 
-                    <span className="text-lg font-semibold text-[#B5697A] md:text-xl">
-                      {formatPrice(Number(variant.price))}
-                    </span>
-                  </div>
-                </article>
-              ))}
+                    <div className="mt-2 flex items-end justify-between gap-3 border-t border-[#F5E7EA] pt-4">
+                      <span className="text-xs text-slate-600">
+                        Variant Price
+                      </span>
+
+                      <span className="text-lg font-semibold text-[#B5697A] md:text-xl">
+                        {formatPrice(Number(variant.price))}
+                      </span>
+                    </div>
+
+                    {/* Variant Image Count */}
+
+                    {variant.packaging === "Glass Jar" && (
+                      <div className="mt-3 flex items-center justify-between rounded-lg bg-[#FFFAFB] px-3 py-2">
+                        <span className="text-[11px] text-slate-500">
+                          Variant Images
+                        </span>
+
+                        <span className="text-[11px] font-semibold text-[#A45C70]">
+                          {variantImages.length} / 5
+                        </span>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
             </div>
           ) : (
             <div className="rounded-xl border border-dashed border-[#E4C6CE] bg-[#FFFAFB] px-5 py-10 text-center">
@@ -803,7 +850,7 @@ export default function AdminProductDetailsPage() {
 
         <SectionCard
           title="Packaging Options"
-          description="Images configured for each packaging type."
+          description="Images configured for each packaging type and individual Glass Jar variant."
         >
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {packagingImages.map((group) => {
@@ -886,7 +933,7 @@ export default function AdminProductDetailsPage() {
                               />
                             </button>
 
-                            <span className="text-[10px] font-medium text-slate-500">
+                            <span className="max-w-[90px] text-center text-[10px] font-medium text-slate-500">
                               {item.label}
                             </span>
                           </div>

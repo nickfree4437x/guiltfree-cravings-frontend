@@ -63,11 +63,21 @@ type GalleryField =
   | "regularImages"
   | "cardboardBoxImages";
 
-type VariantWithImage = ProductVariant & {
+type VariantWithImages = ProductVariant & {
   image?: string | null;
+  images?: string[];
 };
 
 // ─── Constants ─────────────────────────────────────────────
+
+const MAX_VARIANT_IMAGES = 5;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
 
 const EMPTY_FORM: ProductFormState = {
   name: "",
@@ -92,6 +102,7 @@ const EMPTY_FORM: ProductFormState = {
       packaging: "Plastic Box",
       price: 0,
       image: null,
+      images: [],
     },
   ],
   isActive: true,
@@ -108,18 +119,11 @@ const UNIT_OPTIONS = ["g", "kg", "ml", "l"];
 const inputClass =
   "mt-1.5 w-full rounded-lg border border-[#EADDE0] bg-white px-3.5 py-2.5 text-[12px] md:text-[13px] text-slate-600 outline-none transition placeholder:text-slate-500 focus:border-[#B5697A] disabled:cursor-not-allowed disabled:bg-slate-50";
 
-const labelClass = "block text-[12px] md:text-[13px] text-slate-700";
+const labelClass =
+  "block text-[12px] md:text-[13px] text-slate-700";
 
 const sectionClass =
   "rounded-xl border border-[#F0DDE1] bg-white p-4 sm:p-5";
-
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-
-const ALLOWED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-];
 
 // ─── Helpers ──────────────────────────────────────────────
 
@@ -128,10 +132,13 @@ const textValue = (value?: string | null) => value ?? "";
 const uniqueImages = (values: string[]) =>
   Array.from(
     new Set(
-      values.filter(
-        (value) =>
-          typeof value === "string" && value.trim().length > 0
-      )
+      values
+        .filter(
+          (value) =>
+            typeof value === "string" &&
+            value.trim().length > 0
+        )
+        .map((value) => value.trim())
     )
   );
 
@@ -139,6 +146,32 @@ const getVariantImageKey = (
   variant: AdminProductVariantInput,
   index: number
 ) => String(variant.id ?? index);
+
+const getVariantImages = (
+  variant: AdminProductVariantInput
+) => {
+  const images = Array.isArray(variant.images)
+    ? variant.images
+    : [];
+
+  const legacyImage =
+    typeof variant.image === "string"
+      ? variant.image
+      : "";
+
+  return uniqueImages([
+    ...images,
+    legacyImage,
+  ]);
+};
+
+const getFileSignature = (file: File) =>
+  [
+    file.name.toLowerCase(),
+    file.size,
+    file.lastModified,
+    file.type,
+  ].join("|");
 
 // ─── Create Form State ────────────────────────────────────
 
@@ -150,6 +183,7 @@ function createFormFromProduct(
       ...EMPTY_FORM,
       variants: EMPTY_FORM.variants.map((variant) => ({
         ...variant,
+        images: [],
       })),
     };
   }
@@ -178,9 +212,7 @@ function createFormFromProduct(
           : []
     ),
 
-    glassJarImage:
-      product.glassJarImage ?? null,
-
+    glassJarImage: product.glassJarImage ?? null,
     glassJarImages: [],
 
     cardboardBoxImage:
@@ -198,7 +230,13 @@ function createFormFromProduct(
 
     variants: (product.variants ?? []).map(
       (variant: ProductVariant) => {
-        const variantWithImage = variant as VariantWithImage;
+        const variantWithImages =
+          variant as VariantWithImages;
+
+        const images = uniqueImages([
+          ...(variantWithImages.images ?? []),
+          variantWithImages.image ?? "",
+        ]);
 
         return {
           id: variant.id,
@@ -206,7 +244,8 @@ function createFormFromProduct(
           unit: variant.unit,
           packaging: variant.packaging,
           price: variant.price,
-          image: variantWithImage.image ?? null,
+          images,
+          image: images[0] ?? null,
         };
       }
     ),
@@ -215,16 +254,54 @@ function createFormFromProduct(
   };
 }
 
+// ─── Image Preview ────────────────────────────────────────
+
+function LocalImagePreview({
+  file,
+  alt,
+}: {
+  file: File;
+  alt: string;
+}) {
+  const [preview, setPreview] = useState("");
+
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(file);
+
+    setPreview(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [file]);
+
+  if (!preview) {
+    return (
+      <div className="h-24 w-full animate-pulse rounded-lg bg-slate-100" />
+    );
+  }
+
+  return (
+    <img
+      src={preview}
+      alt={alt}
+      className="h-24 w-full rounded-lg object-contain p-1"
+    />
+  );
+}
+
 // ─── Saved Image Gallery ──────────────────────────────────
 
 function ImageUrlList({
   title,
   images,
   onRemove,
+  disabled = false,
 }: {
   title: string;
   images: string[];
   onRemove: (image: string) => void;
+  disabled?: boolean;
 }) {
   if (images.length === 0) return null;
 
@@ -246,14 +323,16 @@ function ImageUrlList({
               className="h-24 w-full object-contain p-2"
               loading="lazy"
               onError={(event) => {
-                event.currentTarget.style.visibility = "hidden";
+                event.currentTarget.style.visibility =
+                  "hidden";
               }}
             />
 
             <button
               type="button"
+              disabled={disabled}
               onClick={() => onRemove(image)}
-              className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-white text-red-600 shadow-sm transition hover:bg-red-50"
+              className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-white text-red-600 shadow-sm transition hover:bg-red-50 disabled:opacity-50"
               aria-label={`Remove image ${index + 1}`}
               title="Remove image"
             >
@@ -285,8 +364,12 @@ function FilePicker({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(event.target.files ?? []);
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedFiles = Array.from(
+      event.target.files ?? []
+    );
 
     onChange(selectedFiles);
 
@@ -334,11 +417,12 @@ function ProductFormModal({
 }: ProductFormModalProps) {
   const isEditMode = product !== null;
 
-  const [form, setForm] = useState<ProductFormState>(() =>
-    createFormFromProduct(product)
+  const [form, setForm] = useState<ProductFormState>(
+    () => createFormFromProduct(product)
   );
 
-  const [files, setFiles] = useState<AdminProductImageFiles>({});
+  const [files, setFiles] =
+    useState<AdminProductImageFiles>({});
 
   const [saving, setSaving] = useState(false);
 
@@ -362,7 +446,11 @@ function ProductFormModal({
 
     window.addEventListener("keydown", handleEscape);
 
-    return () => window.removeEventListener("keydown", handleEscape);
+    return () =>
+      window.removeEventListener(
+        "keydown",
+        handleEscape
+      );
   }, [isOpen, saving, onClose]);
 
   if (!isOpen) return null;
@@ -386,21 +474,27 @@ function ProductFormModal({
   ) => {
     setForm((current) => ({
       ...current,
-      variants: current.variants.map((variant, variantIndex) => {
-        if (variantIndex !== index) return variant;
+      variants: current.variants.map(
+        (variant, variantIndex) => {
+          if (variantIndex !== index) return variant;
 
-        if (field === "quantity" || field === "price") {
+          if (
+            field === "quantity" ||
+            field === "price"
+          ) {
+            return {
+              ...variant,
+              [field]:
+                value === "" ? 0 : Number(value),
+            };
+          }
+
           return {
             ...variant,
-            [field]: value === "" ? 0 : Number(value),
+            [field]: value,
           };
         }
-
-        return {
-          ...variant,
-          [field]: value,
-        };
-      }),
+      ),
     }));
   };
 
@@ -415,6 +509,7 @@ function ProductFormModal({
           packaging: "Plastic Box",
           price: 0,
           image: null,
+          images: [],
         },
       ],
     }));
@@ -425,18 +520,37 @@ function ProductFormModal({
 
     if (!variant) return;
 
-    const key = getVariantImageKey(variant, index);
-
+    // Re-key temporary image uploads when new variant indexes shift.
     setFiles((current) => {
-      const nextVariantImages = {
-        ...current.variantImages,
-      };
+      const previous = current.variantImages ?? {};
+      const next: Record<string, File[]> = {};
 
-      delete nextVariantImages[key];
+      form.variants.forEach((item, oldIndex) => {
+        if (oldIndex === index) return;
+
+        const oldKey = getVariantImageKey(
+          item,
+          oldIndex
+        );
+
+        const newIndex =
+          oldIndex > index ? oldIndex - 1 : oldIndex;
+
+        const newKey = getVariantImageKey(
+          item,
+          newIndex
+        );
+
+        const uploadedFiles = previous[oldKey];
+
+        if (uploadedFiles?.length) {
+          next[newKey] = uploadedFiles;
+        }
+      });
 
       return {
         ...current,
-        variantImages: nextVariantImages,
+        variantImages: next,
       };
     });
 
@@ -455,11 +569,14 @@ function ProductFormModal({
     selectedFiles: File[]
   ) => {
     const invalidType = selectedFiles.find(
-      (file) => !ALLOWED_IMAGE_TYPES.includes(file.type)
+      (file) =>
+        !ALLOWED_IMAGE_TYPES.includes(file.type)
     );
 
     if (invalidType) {
-      toast.error("Images must be JPEG, PNG or WebP files.");
+      toast.error(
+        "Images must be JPEG, PNG or WebP files."
+      );
       return;
     }
 
@@ -468,30 +585,36 @@ function ProductFormModal({
     );
 
     if (tooBig) {
-      toast.error("Each image must be 5 MB or smaller.");
+      toast.error(
+        "Each image must be 5 MB or smaller."
+      );
       return;
     }
 
     setFiles((current) => {
       const existing = current[field] ?? [];
 
-      const signature = (file: File) =>
-        `${file.name.toLowerCase()}|${file.size}|${file.lastModified}|${file.type}`;
+      const seen = new Set(
+        existing.map(getFileSignature)
+      );
 
-      const seen = new Set(existing.map(signature));
+      const uniqueNewFiles = selectedFiles.filter(
+        (file) => {
+          const key = getFileSignature(file);
 
-      const uniqueNewFiles = selectedFiles.filter((file) => {
-        const key = signature(file);
+          if (seen.has(key)) return false;
 
-        if (seen.has(key)) return false;
-
-        seen.add(key);
-        return true;
-      });
+          seen.add(key);
+          return true;
+        }
+      );
 
       return {
         ...current,
-        [field]: [...existing, ...uniqueNewFiles],
+        [field]: [
+          ...existing,
+          ...uniqueNewFiles,
+        ],
       };
     });
   };
@@ -510,52 +633,145 @@ function ProductFormModal({
 
   // ─── Variant Image Handling ───────────────────────────
 
-  const addVariantImage = (
+  const addVariantImages = (
     variant: AdminProductVariantInput,
     index: number,
     selectedFiles: File[]
   ) => {
-    const file = selectedFiles[0];
-
-    if (!file) return;
-
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      toast.error("Variant image must be JPEG, PNG or WebP.");
+    if (variant.packaging !== "Glass Jar") {
       return;
     }
 
-    if (file.size > MAX_IMAGE_SIZE) {
-      toast.error("Variant image must be 5 MB or smaller.");
+    if (selectedFiles.length === 0) return;
+
+    const invalidType = selectedFiles.find(
+      (file) =>
+        !ALLOWED_IMAGE_TYPES.includes(file.type)
+    );
+
+    if (invalidType) {
+      toast.error(
+        "Variant images must be JPEG, PNG or WebP."
+      );
       return;
     }
 
-    const key = getVariantImageKey(variant, index);
+    const tooBig = selectedFiles.find(
+      (file) => file.size > MAX_IMAGE_SIZE
+    );
+
+    if (tooBig) {
+      toast.error(
+        "Each variant image must be 5 MB or smaller."
+      );
+      return;
+    }
+
+    const key = getVariantImageKey(
+      variant,
+      index
+    );
+
+    const savedImages = getVariantImages(variant);
+    const currentFiles =
+      files.variantImages?.[key] ?? [];
+
+    const existingSignatures = new Set(
+      currentFiles.map(getFileSignature)
+    );
+
+    const uniqueNewFiles = selectedFiles.filter(
+      (file) => {
+        const signature = getFileSignature(file);
+
+        if (existingSignatures.has(signature)) {
+          return false;
+        }
+
+        existingSignatures.add(signature);
+        return true;
+      }
+    );
+
+    const totalCount =
+      savedImages.length +
+      currentFiles.length +
+      uniqueNewFiles.length;
+
+    if (totalCount > MAX_VARIANT_IMAGES) {
+      toast.error(
+        `This variant can have only ${MAX_VARIANT_IMAGES} images. You can add ${Math.max(
+          0,
+          MAX_VARIANT_IMAGES -
+            savedImages.length -
+            currentFiles.length
+        )} more.`
+      );
+      return;
+    }
 
     setFiles((current) => ({
       ...current,
       variantImages: {
         ...current.variantImages,
-        [key]: file,
+        [key]: [
+          ...(current.variantImages?.[key] ?? []),
+          ...uniqueNewFiles,
+        ],
       },
     }));
   };
 
-  const removeVariantImage = (
-    variant: AdminProductVariantInput,
-    index: number
+  const removeSavedVariantImage = (
+    variantIndex: number,
+    imageToRemove: string
   ) => {
-    const key = getVariantImageKey(variant, index);
+    setForm((current) => ({
+      ...current,
+      variants: current.variants.map(
+        (variant, index) => {
+          if (index !== variantIndex) {
+            return variant;
+          }
+
+          const remainingImages =
+            getVariantImages(variant).filter(
+              (image) => image !== imageToRemove
+            );
+
+          return {
+            ...variant,
+            images: remainingImages,
+            image: remainingImages[0] ?? null,
+          };
+        }
+      ),
+    }));
+  };
+
+  const removeNewVariantImage = (
+    variant: AdminProductVariantInput,
+    index: number,
+    fileIndex: number
+  ) => {
+    const key = getVariantImageKey(
+      variant,
+      index
+    );
 
     setFiles((current) => {
-      const nextVariantImages = {
-        ...current.variantImages,
-      };
+      const nextFiles = [
+        ...(current.variantImages?.[key] ?? []),
+      ];
 
-      delete nextVariantImages[key];
+      nextFiles.splice(fileIndex, 1);
 
       return {
         ...current,
-        variantImages: nextVariantImages,
+        variantImages: {
+          ...current.variantImages,
+          [key]: nextFiles,
+        },
       };
     });
   };
@@ -576,7 +792,9 @@ function ProductFormModal({
       form.regularImages.length === 0 &&
       (files.regularImages ?? []).length === 0
     ) {
-      return "Please add at least one image to the Regular Packaging gallery.";
+      return (
+        "Please add at least one image to the Regular Packaging gallery."
+      );
     }
 
     if (form.variants.length === 0) {
@@ -585,10 +803,17 @@ function ProductFormModal({
 
     const combinations = new Set<string>();
 
-    for (let index = 0; index < form.variants.length; index += 1) {
+    for (
+      let index = 0;
+      index < form.variants.length;
+      index += 1
+    ) {
       const variant = form.variants[index];
 
-      if (!Number.isFinite(variant.quantity) || variant.quantity <= 0) {
+      if (
+        !Number.isFinite(variant.quantity) ||
+        variant.quantity <= 0
+      ) {
         return `Variant ${index + 1}: quantity must be greater than zero.`;
       }
 
@@ -600,21 +825,34 @@ function ProductFormModal({
         return `Variant ${index + 1}: please select packaging.`;
       }
 
-      if (!Number.isFinite(variant.price) || variant.price < 0) {
+      if (
+        !Number.isFinite(variant.price) ||
+        variant.price < 0
+      ) {
         return `Variant ${index + 1}: price cannot be negative.`;
       }
 
       if (variant.packaging === "Glass Jar") {
-        const key = getVariantImageKey(variant, index);
-        const hasExistingImage =
-          typeof variant.image === "string" &&
-          variant.image.trim().length > 0;
+        const savedImages =
+          getVariantImages(variant);
 
-        const hasNewImage =
-          files.variantImages?.[key] instanceof File;
+        const key = getVariantImageKey(
+          variant,
+          index
+        );
 
-        if (!hasExistingImage && !hasNewImage) {
-          return `Variant ${index + 1}: please upload a Glass Jar image.`;
+        const newImages =
+          files.variantImages?.[key] ?? [];
+
+        const totalImages =
+          savedImages.length + newImages.length;
+
+        if (totalImages === 0) {
+          return `Variant ${index + 1}: please upload at least one Glass Jar image.`;
+        }
+
+        if (totalImages > MAX_VARIANT_IMAGES) {
+          return `Variant ${index + 1}: maximum ${MAX_VARIANT_IMAGES} images are allowed.`;
         }
       }
 
@@ -636,34 +874,27 @@ function ProductFormModal({
       ...(files.cardboardBoxImages ?? []),
     ];
 
-    if (galleryFiles.some((file) => file.size > MAX_IMAGE_SIZE)) {
+    if (
+      galleryFiles.some(
+        (file) => file.size > MAX_IMAGE_SIZE
+      )
+    ) {
       return "Each image must be 5 MB or smaller.";
     }
 
     if (
       galleryFiles.some(
-        (file) => !ALLOWED_IMAGE_TYPES.includes(file.type)
+        (file) =>
+          !ALLOWED_IMAGE_TYPES.includes(file.type)
       )
     ) {
       return "Images must be JPEG, PNG or WebP files.";
     }
 
     if (galleryFiles.length > 15) {
-      return "You can upload a maximum of 15 gallery images per request.";
-    }
-
-    const variantImageFiles = Object.values(
-      files.variantImages ?? {}
-    );
-
-    if (
-      variantImageFiles.some(
-        (file) =>
-          file.size > MAX_IMAGE_SIZE ||
-          !ALLOWED_IMAGE_TYPES.includes(file.type)
-      )
-    ) {
-      return "Each variant image must be JPEG, PNG or WebP and 5 MB or smaller.";
+      return (
+        "You can upload a maximum of 15 gallery images per request."
+      );
     }
 
     return null;
@@ -671,7 +902,9 @@ function ProductFormModal({
 
   // ─── Submit ────────────────────────────────────────────
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
     const validationError = validateForm();
@@ -684,7 +917,9 @@ function ProductFormModal({
     setSaving(true);
 
     const loadingToast = toast.loading(
-      isEditMode ? "Saving changes..." : "Creating product..."
+      isEditMode
+        ? "Saving changes..."
+        : "Creating product..."
     );
 
     try {
@@ -693,17 +928,25 @@ function ProductFormModal({
         description: form.description.trim(),
         ingredients: form.ingredients.trim(),
         allergenInfo: form.allergenInfo.trim(),
-        medicalDisclaimer: form.medicalDisclaimer.trim(),
+        medicalDisclaimer:
+          form.medicalDisclaimer.trim(),
         benefits: form.benefits.trim(),
-        usageSuggestions: form.usageSuggestions.trim(),
-        storageInstructions: form.storageInstructions.trim(),
+        usageSuggestions:
+          form.usageSuggestions.trim(),
+        storageInstructions:
+          form.storageInstructions.trim(),
         shelfLife: form.shelfLife.trim(),
 
-        image: form.regularImages[0] ?? form.image,
-        regularImages: uniqueImages(form.regularImages),
+        image:
+          form.regularImages[0] ??
+          form.image,
 
-        // Glass Jar images are now stored per variant.
-        // Do not submit or modify the legacy gallery here.
+        regularImages: uniqueImages(
+          form.regularImages
+        ),
+
+        // Glass Jar images are stored per variant.
+        // Do not overwrite the legacy product gallery.
         glassJarImage: undefined,
         glassJarImages: undefined,
 
@@ -715,28 +958,49 @@ function ProductFormModal({
           form.cardboardBoxImages
         ),
 
-        variants: form.variants.map((variant) => ({
-          ...variant,
-          quantity: Number(variant.quantity),
-          price: Number(variant.price),
-          unit: variant.unit.trim(),
-          packaging: variant.packaging.trim(),
-          image: variant.image ?? null,
-        })),
+        variants: form.variants.map(
+          (variant) => {
+            const images =
+              variant.packaging === "Glass Jar"
+                ? getVariantImages(variant)
+                : [];
+
+            return {
+              ...variant,
+              quantity: Number(variant.quantity),
+              price: Number(variant.price),
+              unit: variant.unit.trim(),
+              packaging: variant.packaging.trim(),
+              images,
+              image: images[0] ?? null,
+            };
+          }
+        ),
 
         isActive: form.isActive,
       };
 
-      const variantImageUploads: Record<string, File> = {};
+      const variantImageUploads: Record<
+        string,
+        File[]
+      > = {};
 
       form.variants.forEach((variant, index) => {
-        if (variant.packaging !== "Glass Jar") return;
+        if (variant.packaging !== "Glass Jar") {
+          return;
+        }
 
-        const key = getVariantImageKey(variant, index);
-        const file = files.variantImages?.[key];
+        const key = getVariantImageKey(
+          variant,
+          index
+        );
 
-        if (file instanceof File) {
-          variantImageUploads[key] = file;
+        const selectedFiles =
+          files.variantImages?.[key] ?? [];
+
+        if (selectedFiles.length > 0) {
+          variantImageUploads[key] =
+            selectedFiles;
         }
       });
 
@@ -746,25 +1010,44 @@ function ProductFormModal({
           : {}),
 
         ...(files.regularImages?.length
-          ? { regularImages: files.regularImages }
+          ? {
+              regularImages:
+                files.regularImages,
+            }
           : {}),
 
         ...(files.cardboardBoxImages?.[0]
-          ? { cardboardBoxImage: files.cardboardBoxImages[0] }
+          ? {
+              cardboardBoxImage:
+                files.cardboardBoxImages[0],
+            }
           : {}),
 
         ...(files.cardboardBoxImages?.length
-          ? { cardboardBoxImages: files.cardboardBoxImages }
+          ? {
+              cardboardBoxImages:
+                files.cardboardBoxImages,
+            }
           : {}),
 
         ...(Object.keys(variantImageUploads).length
-          ? { variantImages: variantImageUploads }
+          ? {
+              variantImages:
+                variantImageUploads,
+            }
           : {}),
       };
 
       const savedProduct = isEditMode
-        ? await updateAdminProduct(product.id, payload, uploadFiles)
-        : await createAdminProduct(payload, uploadFiles);
+        ? await updateAdminProduct(
+            product.id,
+            payload,
+            uploadFiles
+          )
+        : await createAdminProduct(
+            payload,
+            uploadFiles
+          );
 
       toast.success(
         isEditMode
@@ -806,11 +1089,13 @@ function ProductFormModal({
       <ImageUrlList
         title="Saved images"
         images={images}
+        disabled={saving}
         onRemove={(image) =>
           updateField(
             field,
             form[field].filter(
-              (currentImage) => currentImage !== image
+              (currentImage) =>
+                currentImage !== image
             )
           )
         }
@@ -827,12 +1112,16 @@ function ProductFormModal({
               key={`${file.name}-${index}`}
               className="flex items-center justify-between gap-2 rounded-lg bg-[#FFFAFB] px-3 py-2 text-xs text-slate-600"
             >
-              <span className="min-w-0 truncate">{file.name}</span>
+              <span className="min-w-0 truncate">
+                {file.name}
+              </span>
 
               <button
                 type="button"
                 disabled={saving}
-                onClick={() => removeNewImageFile(field, index)}
+                onClick={() =>
+                  removeNewImageFile(field, index)
+                }
                 className="shrink-0 text-red-600 hover:text-red-800"
                 aria-label={`Remove ${file.name}`}
               >
@@ -863,7 +1152,10 @@ function ProductFormModal({
     <div
       className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-950/50 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !saving) {
+        if (
+          event.target === event.currentTarget &&
+          !saving
+        ) {
           onClose();
         }
       }}
@@ -876,21 +1168,21 @@ function ProductFormModal({
       >
         {/* Modal Header */}
         <header className="flex shrink-0 items-center justify-between gap-4 border-b border-[#F0DDE1] bg-white px-4 py-4 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="min-w-0">
-              <h2
-                id="product-form-title"
-                className="truncate text-lg font-semibold text-slate-800"
-              >
-                {isEditMode ? "Edit Product" : "Add New Product"}
-              </h2>
+          <div className="min-w-0">
+            <h2
+              id="product-form-title"
+              className="truncate text-lg font-semibold text-slate-800"
+            >
+              {isEditMode
+                ? "Edit Product"
+                : "Add New Product"}
+            </h2>
 
-              <p className="mt-0.5 text-xs text-slate-500">
-                {isEditMode
-                  ? `Update product #${product.id} and its details`
-                  : "Add product details, images and pricing"}
-              </p>
-            </div>
+            <p className="mt-0.5 text-xs text-slate-500">
+              {isEditMode
+                ? `Update product #${product.id} and its details`
+                : "Add product details, images and pricing"}
+            </p>
           </div>
 
           <button
@@ -918,11 +1210,16 @@ function ProductFormModal({
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label className={labelClass}>
+                  Product Name
+
                   <input
                     className={inputClass}
                     value={form.name}
                     onChange={(event) =>
-                      updateField("name", event.target.value)
+                      updateField(
+                        "name",
+                        event.target.value
+                      )
                     }
                     placeholder="e.g. Dry Fruit Sattu Laddoo"
                     maxLength={150}
@@ -932,9 +1229,15 @@ function ProductFormModal({
                 </label>
 
                 <label className={labelClass}>
+                  Product Status
+
                   <select
                     className={inputClass}
-                    value={form.isActive ? "active" : "inactive"}
+                    value={
+                      form.isActive
+                        ? "active"
+                        : "inactive"
+                    }
                     onChange={(event) =>
                       updateField(
                         "isActive",
@@ -949,12 +1252,17 @@ function ProductFormModal({
                 </label>
 
                 <label className={`${labelClass} sm:col-span-2`}>
+                  Description
+
                   <textarea
                     className={inputClass}
                     rows={4}
                     value={form.description}
                     onChange={(event) =>
-                      updateField("description", event.target.value)
+                      updateField(
+                        "description",
+                        event.target.value
+                      )
                     }
                     placeholder="Describe the product..."
                     required
@@ -1000,7 +1308,7 @@ function ProductFormModal({
                   </h3>
 
                   <p className="mt-0 text-xs text-slate-500">
-                    Set quantity, packaging, price and individual Glass Jar images.
+                    Set quantity, packaging, price and individual Glass Jar image galleries.
                   </p>
                 </div>
 
@@ -1032,220 +1340,320 @@ function ProductFormModal({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {form.variants.map((variant, index) => {
-                    const imageKey = getVariantImageKey(variant, index);
-                    const selectedImage = files.variantImages?.[imageKey];
+                  {form.variants.map(
+                    (variant, index) => {
+                      const imageKey =
+                        getVariantImageKey(
+                          variant,
+                          index
+                        );
 
-                    const imagePreview = selectedImage
-                      ? URL.createObjectURL(selectedImage)
-                      : variant.image ?? null;
+                      const savedImages =
+                        getVariantImages(variant);
 
-                    return (
-                      <div
-                        key={variant.id ?? `new-variant-${index}`}
-                        className="rounded-xl border border-[#F0DDE1] bg-[#FFFCFC] p-3 sm:p-4"
-                      >
-                        <div className="mb-3 flex items-center justify-between">
-                          <p className="text-[12px] md:text-[13px] font-semibold text-slate-700">
-                            Variant {index + 1}
-                          </p>
+                      const newImages =
+                        files.variantImages?.[imageKey] ??
+                        [];
 
-                          <button
-                            type="button"
-                            onClick={() => removeVariant(index)}
-                            disabled={saving}
-                            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
-                            aria-label={`Remove variant ${index + 1}`}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
+                      const totalImages =
+                        savedImages.length +
+                        newImages.length;
 
-                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                          <label className={labelClass}>
-                            Quantity
+                      const remainingImages =
+                        MAX_VARIANT_IMAGES -
+                        totalImages;
 
-                            <input
-                              className={inputClass}
-                              type="text"
-                              inputMode="decimal"
-                              placeholder="e.g. 250"
-                              value={variant.quantity}
-                              onChange={(event) =>
-                                updateVariant(
-                                  index,
-                                  "quantity",
-                                  event.target.value
-                                )
-                              }
-                              required
-                              disabled={saving}
-                            />
-                          </label>
+                      return (
+                        <div
+                          key={
+                            variant.id ??
+                            `new-variant-${index}`
+                          }
+                          className="rounded-xl border border-[#F0DDE1] bg-[#FFFCFC] p-3 sm:p-4"
+                        >
+                          <div className="mb-3 flex items-center justify-between">
+                            <p className="text-[12px] md:text-[13px] font-semibold text-slate-700">
+                              Variant {index + 1}
+                            </p>
 
-                          <label className={labelClass}>
-                            Unit
-
-                            <select
-                              className={inputClass}
-                              value={variant.unit}
-                              onChange={(event) =>
-                                updateVariant(
-                                  index,
-                                  "unit",
-                                  event.target.value
-                                )
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeVariant(index)
                               }
                               disabled={saving}
+                              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                              aria-label={`Remove variant ${index + 1}`}
                             >
-                              {!UNIT_OPTIONS.includes(variant.unit) && (
-                                <option value={variant.unit}>
-                                  {variant.unit}
-                                </option>
-                              )}
+                              <Trash2 size={14} />
+                              Remove
+                            </button>
+                          </div>
 
-                              {UNIT_OPTIONS.map((unit) => (
-                                <option key={unit} value={unit}>
-                                  {unit}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
+                          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                            <label className={labelClass}>
+                              Quantity
 
-                          <label className={labelClass}>
-                            Packaging
+                              <input
+                                className={inputClass}
+                                type="text"
+                                inputMode="decimal"
+                                placeholder="e.g. 250"
+                                value={variant.quantity}
+                                onChange={(event) =>
+                                  updateVariant(
+                                    index,
+                                    "quantity",
+                                    event.target.value
+                                  )
+                                }
+                                required
+                                disabled={saving}
+                              />
+                            </label>
 
-                            <select
-                              className={inputClass}
-                              value={variant.packaging}
-                              onChange={(event) =>
-                                updateVariant(
-                                  index,
-                                  "packaging",
-                                  event.target.value
-                                )
-                              }
-                              disabled={saving}
-                            >
-                              {!PACKAGING_OPTIONS.includes(
-                                variant.packaging
-                              ) && (
-                                <option value={variant.packaging}>
-                                  {variant.packaging}
-                                </option>
-                              )}
+                            <label className={labelClass}>
+                              Unit
 
-                              {PACKAGING_OPTIONS.map((packaging) => (
-                                <option key={packaging} value={packaging}>
-                                  {packaging}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
+                              <select
+                                className={inputClass}
+                                value={variant.unit}
+                                onChange={(event) =>
+                                  updateVariant(
+                                    index,
+                                    "unit",
+                                    event.target.value
+                                  )
+                                }
+                                disabled={saving}
+                              >
+                                {!UNIT_OPTIONS.includes(
+                                  variant.unit
+                                ) && (
+                                  <option
+                                    value={variant.unit}
+                                  >
+                                    {variant.unit}
+                                  </option>
+                                )}
 
-                          <label className={labelClass}>
-                            Price (₹)
+                                {UNIT_OPTIONS.map(
+                                  (unit) => (
+                                    <option
+                                      key={unit}
+                                      value={unit}
+                                    >
+                                      {unit}
+                                    </option>
+                                  )
+                                )}
+                              </select>
+                            </label>
 
-                            <input
-                              className={inputClass}
-                              type="text"
-                              inputMode="decimal"
-                              placeholder="e.g. 499"
-                              value={variant.price}
-                              onChange={(event) =>
-                                updateVariant(
-                                  index,
-                                  "price",
-                                  event.target.value
-                                )
-                              }
-                              required
-                              disabled={saving}
-                            />
-                          </label>
-                        </div>
+                            <label className={labelClass}>
+                              Packaging
 
-                        {/* Glass Jar Variant Image */}
-                        {variant.packaging === "Glass Jar" && (
-                          <div className="mt-4 rounded-xl border border-[#EADDE0] bg-white p-3 sm:p-4">
-                            <div className="mb-3">
-                              <p className="text-sm font-semibold text-slate-700">
-                                Glass Jar Variant Image
-                              </p>
+                              <select
+                                className={inputClass}
+                                value={variant.packaging}
+                                onChange={(event) =>
+                                  updateVariant(
+                                    index,
+                                    "packaging",
+                                    event.target.value
+                                  )
+                                }
+                                disabled={saving}
+                              >
+                                {!PACKAGING_OPTIONS.includes(
+                                  variant.packaging
+                                ) && (
+                                  <option
+                                    value={variant.packaging}
+                                  >
+                                    {variant.packaging}
+                                  </option>
+                                )}
 
-                              <p className="mt-1 text-xs text-slate-500">
-                                Upload a separate image for this{" "}
-                                {variant.quantity}
-                                {variant.unit} Glass Jar variant.
-                              </p>
-                            </div>
+                                {PACKAGING_OPTIONS.map(
+                                  (packaging) => (
+                                    <option
+                                      key={packaging}
+                                      value={packaging}
+                                    >
+                                      {packaging}
+                                    </option>
+                                  )
+                                )}
+                              </select>
+                            </label>
 
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                              {imagePreview ? (
-                                <img
-                                  src={imagePreview}
-                                  alt={`${variant.quantity}${variant.unit} Glass Jar`}
-                                  className="h-28 w-28 shrink-0 rounded-xl border border-[#EADDE0] bg-white object-contain p-2"
-                                />
-                              ) : (
-                                <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-xl border border-dashed border-[#DDBDC5] bg-[#FFFAFB]">
-                                  <Package
-                                    size={30}
-                                    className="text-[#C69AA5]"
-                                  />
+                            <label className={labelClass}>
+                              Price (₹)
+
+                              <input
+                                className={inputClass}
+                                type="text"
+                                inputMode="decimal"
+                                placeholder="e.g. 499"
+                                value={variant.price}
+                                onChange={(event) =>
+                                  updateVariant(
+                                    index,
+                                    "price",
+                                    event.target.value
+                                  )
+                                }
+                                required
+                                disabled={saving}
+                              />
+                            </label>
+                          </div>
+
+                          {/* Glass Jar Variant Image Gallery */}
+                          {variant.packaging ===
+                            "Glass Jar" && (
+                            <div className="mt-4 rounded-xl border border-[#EADDE0] bg-white p-3 sm:p-4">
+                              <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                                <div>
+                                  <p className="text-sm font-semibold text-slate-700">
+                                    Glass Jar Image Gallery
+                                  </p>
+
+                                  <p className="mt-1 text-xs text-slate-500">
+                                    Separate images for{" "}
+                                    {variant.quantity}
+                                    {variant.unit} Glass Jar.
+                                  </p>
+                                </div>
+
+                                <span className="rounded-full bg-[#FFF1F4] px-3 py-1 text-xs font-semibold text-[#9B596B]">
+                                  {totalImages}/
+                                  {MAX_VARIANT_IMAGES} images
+                                </span>
+                              </div>
+
+                              {/* Saved images */}
+                              {savedImages.length > 0 && (
+                                <div className="mb-4">
+                                  <p className="mb-2 text-xs font-medium text-slate-500">
+                                    Saved images
+                                  </p>
+
+                                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+                                    {savedImages.map(
+                                      (image, imageIndex) => (
+                                        <div
+                                          key={`${image}-${imageIndex}`}
+                                          className="relative overflow-hidden rounded-xl border border-[#EADDE0] bg-[#FFFCFC] p-1"
+                                        >
+                                          <img
+                                            src={image}
+                                            alt={`${variant.quantity}${variant.unit} Glass Jar image ${imageIndex + 1}`}
+                                            className="h-24 w-full rounded-lg object-contain"
+                                            loading="lazy"
+                                          />
+
+                                          <button
+                                            type="button"
+                                            disabled={saving}
+                                            onClick={() =>
+                                              removeSavedVariantImage(
+                                                index,
+                                                image
+                                              )
+                                            }
+                                            className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white text-red-600 shadow-sm transition hover:bg-red-50 disabled:opacity-50"
+                                            aria-label={`Remove saved image ${imageIndex + 1}`}
+                                            title="Remove image"
+                                          >
+                                            <X size={14} />
+                                          </button>
+
+                                          <p className="py-1 text-center text-[10px] text-slate-500">
+                                            Image{" "}
+                                            {imageIndex + 1}
+                                          </p>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
                                 </div>
                               )}
 
-                              <div className="min-w-0 flex-1">
+                              {/* Newly selected images */}
+                              {newImages.length > 0 && (
+                                <div className="mb-4">
+                                  <p className="mb-2 text-xs font-medium text-slate-500">
+                                    New images ·{" "}
+                                    {newImages.length}
+                                  </p>
+
+                                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+                                    {newImages.map(
+                                      (file, fileIndex) => (
+                                        <div
+                                          key={`${getFileSignature(file)}-${fileIndex}`}
+                                          className="relative overflow-hidden rounded-xl border border-[#EADDE0] bg-[#FFFCFC] p-1"
+                                        >
+                                          <LocalImagePreview
+                                            file={file}
+                                            alt={`${variant.quantity}${variant.unit} new image ${fileIndex + 1}`}
+                                          />
+
+                                          <button
+                                            type="button"
+                                            disabled={saving}
+                                            onClick={() =>
+                                              removeNewVariantImage(
+                                                variant,
+                                                index,
+                                                fileIndex
+                                              )
+                                            }
+                                            className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white text-red-600 shadow-sm transition hover:bg-red-50 disabled:opacity-50"
+                                            aria-label={`Remove new image ${fileIndex + 1}`}
+                                            title="Remove selected image"
+                                          >
+                                            <X size={14} />
+                                          </button>
+
+                                          <p className="truncate px-1 py-1 text-center text-[10px] text-slate-500">
+                                            {file.name}
+                                          </p>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Upload control */}
+                              {remainingImages > 0 ? (
                                 <FilePicker
-                                  label={
-                                    selectedImage
-                                      ? "Replace variant image"
-                                      : "Upload variant image"
-                                  }
+                                  label={`Add images (${remainingImages} remaining)`}
+                                  multiple
                                   disabled={saving}
                                   onChange={(selectedFiles) =>
-                                    addVariantImage(
+                                    addVariantImages(
                                       variant,
                                       index,
                                       selectedFiles
                                     )
                                   }
-                                  hint="JPEG, PNG or WebP. Maximum 5 MB."
+                                  hint="Select multiple images at once. JPEG, PNG or WebP · Maximum 5 MB per image."
                                 />
-
-                                {selectedImage && (
-                                  <p className="mt-2 truncate text-xs text-green-700">
-                                    Selected: {selectedImage.name}
-                                  </p>
-                                )}
-
-                                {!selectedImage && variant.image && (
-                                  <p className="mt-2 text-xs text-green-700">
-                                    Existing variant image will be preserved.
-                                  </p>
-                                )}
-
-                                {selectedImage && (
-                                  <button
-                                    type="button"
-                                    disabled={saving}
-                                    onClick={() =>
-                                      removeVariantImage(variant, index)
-                                    }
-                                    className="mt-2 inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 disabled:opacity-50"
-                                  >
-                                    <X size={13} />
-                                    Keep existing image
-                                  </button>
-                                )}
-                              </div>
+                              ) : (
+                                <p className="rounded-lg bg-[#FFF1F4] px-3 py-2 text-xs font-medium text-[#9B596B]">
+                                  Maximum 5 images reached. Remove an image to add another.
+                                </p>
+                              )}
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                          )}
+                        </div>
+                      );
+                    }
+                  )}
                 </div>
               )}
             </section>
@@ -1265,7 +1673,10 @@ function ProductFormModal({
                     rows={3}
                     value={form.ingredients}
                     onChange={(event) =>
-                      updateField("ingredients", event.target.value)
+                      updateField(
+                        "ingredients",
+                        event.target.value
+                      )
                     }
                     placeholder="List the ingredients..."
                     disabled={saving}
@@ -1280,7 +1691,10 @@ function ProductFormModal({
                     rows={3}
                     value={form.allergenInfo}
                     onChange={(event) =>
-                      updateField("allergenInfo", event.target.value)
+                      updateField(
+                        "allergenInfo",
+                        event.target.value
+                      )
                     }
                     placeholder="Allergen details..."
                     disabled={saving}
@@ -1295,7 +1709,10 @@ function ProductFormModal({
                     rows={3}
                     value={form.benefits}
                     onChange={(event) =>
-                      updateField("benefits", event.target.value)
+                      updateField(
+                        "benefits",
+                        event.target.value
+                      )
                     }
                     placeholder="Product benefits..."
                     disabled={saving}
@@ -1373,7 +1790,10 @@ function ProductFormModal({
                     rows={3}
                     value={form.shelfLife}
                     onChange={(event) =>
-                      updateField("shelfLife", event.target.value)
+                      updateField(
+                        "shelfLife",
+                        event.target.value
+                      )
                     }
                     placeholder="e.g. Best consumed within 30 days"
                     disabled={saving}
@@ -1401,7 +1821,10 @@ function ProductFormModal({
             >
               {saving ? (
                 <>
-                  <LoaderCircle size={17} className="animate-spin" />
+                  <LoaderCircle
+                    size={17}
+                    className="animate-spin"
+                  />
                   Saving...
                 </>
               ) : isEditMode ? (

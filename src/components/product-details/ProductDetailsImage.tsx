@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -13,6 +14,11 @@ interface ProductDetailsImageProps {
   variant?: ProductVariant | null;
 }
 
+type VariantWithImages = ProductVariant & {
+  images?: string[];
+  image?: string | null;
+};
+
 // ─── Helpers ──────────────────────────────────────────────
 
 function normalizeImageUrl(value: unknown): string | null {
@@ -21,6 +27,34 @@ function normalizeImageUrl(value: unknown): string | null {
   const url = value.trim();
 
   return url.length > 0 ? url : null;
+}
+
+function uniqueImages(values: unknown[]): string[] {
+  const images = values
+    .map(normalizeImageUrl)
+    .filter((image): image is string => image !== null);
+
+  return Array.from(new Set(images));
+}
+
+/**
+ * Supports:
+ * - New variant.images[] gallery
+ * - Legacy variant.image
+ */
+function getVariantImages(
+  variant?: ProductVariant | null
+): string[] {
+  if (!variant) return [];
+
+  const variantWithImages = variant as VariantWithImages;
+
+  return uniqueImages([
+    ...(Array.isArray(variantWithImages.images)
+      ? variantWithImages.images
+      : []),
+    variantWithImages.image,
+  ]);
 }
 
 function getPackagingImages(
@@ -41,14 +75,10 @@ function getPackagingImages(
         ? product.cardboardBoxImage
         : product.image;
 
-  const images = [
+  return uniqueImages([
     ...(Array.isArray(packagingImages) ? packagingImages : []),
     legacyImage,
-  ]
-    .map(normalizeImageUrl)
-    .filter((image): image is string => image !== null);
-
-  return Array.from(new Set(images));
+  ]);
 }
 
 // ─── Navigation Button ────────────────────────────────────
@@ -92,34 +122,64 @@ function ProductDetailsImage({
         ? "Cardboard Box"
         : "Plastic Box";
 
-  // The selected Glass Jar variant's uploaded image.
-  // Other packaging types do not use variant-specific images.
-  const variantImage =
-    selectedPackaging === "Glass Jar"
-      ? normalizeImageUrl(variant?.image)
-      : null;
+  // --------------------------------------------------
+  // SELECTED VARIANT IMAGES
+  // Only Glass Jar uses individual variant galleries.
+  // --------------------------------------------------
 
-  // Existing packaging gallery is used as a fallback.
-  const packagingImages = useMemo(
-    () => getPackagingImages(product, selectedPackaging),
+  const variantImages = useMemo(
+    () =>
+      selectedPackaging === "Glass Jar"
+        ? getVariantImages(variant)
+        : [],
     [
-      product,
       selectedPackaging,
+      variant?.id,
+      variant?.image,
+      (variant as VariantWithImages | null)?.images,
     ]
   );
 
-  // Variant image comes first so it is displayed by default.
-  // Existing gallery images remain available through navigation.
+  // --------------------------------------------------
+  // PACKAGING GALLERY
+  // Existing product-level images remain supported.
+  // --------------------------------------------------
+
+  const packagingImages = useMemo(
+    () => getPackagingImages(product, selectedPackaging),
+    [product, selectedPackaging]
+  );
+
+  // --------------------------------------------------
+  // FINAL GALLERY
+  //
+  // Glass Jar:
+  // Selected variant images first.
+  // Existing packaging gallery is fallback.
+  //
+  // Other packaging:
+  // Existing packaging gallery only.
+  // --------------------------------------------------
+
   const images = useMemo(() => {
-    const combined = [
-      ...(variantImage ? [variantImage] : []),
-      ...packagingImages,
-    ];
+    if (
+      selectedPackaging === "Glass Jar" &&
+      variantImages.length > 0
+    ) {
+      return variantImages;
+    }
 
-    return Array.from(new Set(combined));
-  }, [variantImage, packagingImages]);
+    return packagingImages;
+  }, [
+    selectedPackaging,
+    variantImages,
+    packagingImages,
+  ]);
 
-  // Reset gallery when the product, packaging, or selected variant changes.
+  // --------------------------------------------------
+  // RESET GALLERY WHEN SELECTION CHANGES
+  // --------------------------------------------------
+
   useEffect(() => {
     setActiveIndex(0);
   }, [
@@ -128,10 +188,12 @@ function ProductDetailsImage({
     variant?.id,
     variant?.quantity,
     variant?.unit,
-    variant?.image,
   ]);
 
-  // Keep the active index valid when the gallery changes.
+  // --------------------------------------------------
+  // KEEP ACTIVE INDEX VALID
+  // --------------------------------------------------
+
   useEffect(() => {
     setActiveIndex((current) => {
       if (images.length === 0) return 0;
@@ -139,6 +201,10 @@ function ProductDetailsImage({
       return Math.min(current, images.length - 1);
     });
   }, [images.length]);
+
+  // --------------------------------------------------
+  // GALLERY NAVIGATION
+  // --------------------------------------------------
 
   const goToPrevious = () => {
     if (images.length <= 1) return;
@@ -156,12 +222,23 @@ function ProductDetailsImage({
     );
   };
 
+  // --------------------------------------------------
+  // CURRENT IMAGE
+  // --------------------------------------------------
+
   const currentImage = images[activeIndex];
+
   const hasMultipleImages = images.length > 1;
 
   const variantLabel = variant
     ? `${variant.quantity}${variant.unit}`
     : "";
+
+  const imageSourceLabel =
+    selectedPackaging === "Glass Jar" &&
+    variantImages.length > 0
+      ? variantLabel
+      : selectedPackaging;
 
   // ─── Render ─────────────────────────────────────────────
 
@@ -171,10 +248,13 @@ function ProductDetailsImage({
         <img
           key={`${currentImage}-${selectedPackaging}-${variant?.id ?? "default"}`}
           src={currentImage}
-          alt={`${product.name} - ${selectedPackaging}${
-            variantLabel ? ` - ${variantLabel}` : ""
+          alt={`${product.name} - ${imageSourceLabel}${
+            variantLabel &&
+            selectedPackaging === "Glass Jar"
+              ? ` - ${variantLabel}`
+              : ""
           } - Image ${activeIndex + 1}`}
-          className="relative z-[1] block max-h-[330px] w-full object-contain sm:max-h-[430px] lg:max-h-[500px]"
+          className="relative z-[1] block max-h-[330px] rounded-lg w-full object-contain sm:max-h-[430px] lg:max-h-[500px]"
           loading="eager"
           decoding="async"
           onError={(event) => {
@@ -186,9 +266,28 @@ function ProductDetailsImage({
         />
       ) : (
         <div className="flex flex-1 items-center justify-center text-center text-sm text-[#8B7A6C]">
-          Image unavailable for {selectedPackaging}
+          Image unavailable for{" "}
+          {selectedPackaging}
+          {variantLabel &&
+            selectedPackaging === "Glass Jar" &&
+            ` (${variantLabel})`}
         </div>
       )}
+
+      {/* VARIANT / PACKAGING LABEL */}
+
+      {currentImage && (
+        <div className="relative z-[2] mt-3">
+          <span className="rounded-full border border-[#EFE3D2] bg-white px-3 py-1.5 text-[11px] text-slate-500">
+            {selectedPackaging === "Glass Jar" &&
+            variantImages.length > 0
+              ? `Glass Jar - ${variantLabel}`
+              : selectedPackaging}
+          </span>
+        </div>
+      )}
+
+      {/* IMAGE NAVIGATION */}
 
       {hasMultipleImages && (
         <div className="relative z-[2] mt-4 flex w-full shrink-0 items-center justify-center gap-4">

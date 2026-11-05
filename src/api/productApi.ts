@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 // ─── Types ────────────────────────────────────────────────
@@ -10,7 +11,12 @@ export interface ProductVariant {
   packaging: string;
   price: number;
 
-  // Variant-specific image, primarily for Glass Jar variants.
+  // Multiple variant-specific images (up to 5).
+  // Primarily used for individual Glass Jar variants.
+  images?: string[];
+
+  // Legacy single image support.
+  // Retained for existing products and backward compatibility.
   image?: string | null;
 
   createdAt: string;

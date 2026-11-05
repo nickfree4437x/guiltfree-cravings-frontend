@@ -17,16 +17,28 @@ interface ProductCardProps {
   discountPercentage?: number;
 }
 
+type PackagingType = NonNullable<ProductCardProps["packaging"]>;
+
 // ─── Helpers ──────────────────────────────────────────────
 
 const getInitialVariant = (
   product: Product,
-  packaging: ProductCardProps["packaging"]
+  packaging: PackagingType
 ): ProductVariant | null => {
   return (
     product.variants?.find(
       (variant) => variant.packaging === packaging
     ) ?? null
+  );
+};
+
+const isValidPackagingVariant = (
+  variant: ProductVariant | null,
+  packaging: PackagingType
+): variant is ProductVariant => {
+  return (
+    variant !== null &&
+    variant.packaging === packaging
   );
 };
 
@@ -43,16 +55,26 @@ function ProductCard({
       getInitialVariant(product, packaging)
     );
 
-  // Keep selected variant synchronized with product and packaging.
+  // --------------------------------------------------
+  // SYNCHRONIZE SELECTED VARIANT
+  // --------------------------------------------------
+
   useEffect(() => {
-    setSelectedVariant(getInitialVariant(product, packaging));
+    setSelectedVariant(
+      getInitialVariant(product, packaging)
+    );
   }, [product, packaging]);
 
-  // Cart actions
+  // --------------------------------------------------
+  // CART ACTIONS
+  // --------------------------------------------------
+
   const addToCart = useCartStore((s) => s.addToCart);
   const openCartDrawer = useCartStore((s) => s.openCartDrawer);
 
-  // ─── Offer Validation ───────────────────────────────────
+  // --------------------------------------------------
+  // OFFER VALIDATION
+  // --------------------------------------------------
 
   const eligibleVariantIds = new Set(
     discountedVariantIds.map(Number)
@@ -64,16 +86,29 @@ function ProductCard({
     discountPercentage <= 100;
 
   const showDiscountBadge =
-    selectedVariant !== null &&
-    selectedVariant.packaging === packaging &&
+    isValidPackagingVariant(selectedVariant, packaging) &&
     eligibleVariantIds.has(Number(selectedVariant.id)) &&
     hasValidDiscount;
 
-  // ─── Variant Selection ──────────────────────────────────
+  // --------------------------------------------------
+  // VARIANT SELECTION
+  // --------------------------------------------------
 
   const handleVariantChange = useCallback(
     (variant: ProductVariant | null) => {
       setSelectedVariant((current) => {
+        // Prevent a variant from another packaging
+        // from becoming the selected card variant.
+
+        if (
+          variant &&
+          variant.packaging !== packaging
+        ) {
+          return current;
+        }
+
+        // Avoid unnecessary state updates.
+
         if (
           current?.id === variant?.id &&
           current?.productId === variant?.productId
@@ -84,49 +119,63 @@ function ProductCard({
         return variant;
       });
     },
-    []
+    [packaging]
   );
 
-  // ─── Add to Cart ────────────────────────────────────────
+  // --------------------------------------------------
+  // ADD TO CART
+  // --------------------------------------------------
 
   const handleAddToCart = (
     variant: ProductVariant,
     quantity: number
   ) => {
-    if (quantity <= 0) return;
+    if (
+      !Number.isFinite(quantity) ||
+      quantity <= 0 ||
+      variant.packaging !== packaging
+    ) {
+      return;
+    }
 
-    // Keep original variant price in cart.
-    // Discount calculation remains separate.
+    // Original variant price remains unchanged.
+    // Discount calculation stays separate.
+
     addToCart(product, variant, quantity);
 
     openCartDrawer();
   };
 
-  // ─── Variant-aware Image ────────────────────────────────
+  // --------------------------------------------------
+  // VARIANT-AWARE IMAGE
+  // --------------------------------------------------
 
-  // Use the selected variant image for Glass Jar packaging.
-  // ProductId is intentionally not required because some API
-  // responses do not include productId inside variant objects.
+  // Selected variant gets priority.
+  // If no valid selection exists, use the first
+  // available variant for the current packaging.
 
-  const imageVariant =
-    selectedVariant &&
-    selectedVariant.packaging === packaging
-      ? selectedVariant
-      : getInitialVariant(product, packaging);
+  const imageVariant = isValidPackagingVariant(
+    selectedVariant,
+    packaging
+  )
+    ? selectedVariant
+    : getInitialVariant(product, packaging);
 
-  // ─── Render ─────────────────────────────────────────────
+  // --------------------------------------------------
+  // RENDER
+  // --------------------------------------------------
 
   return (
     <article className="group relative flex h-full flex-col rounded-lg border border-[#C9788B]/20 bg-white">
 
-      {/* Product Image */}
+      {/* PRODUCT IMAGE */}
 
       <Link
         to={`/products/${product.id}`}
         state={{
           packaging,
-          selectedVariantId: selectedVariant?.id ?? null,
-          selectedVariantQuantity: selectedVariant?.quantity ?? null,
+          selectedVariantId: imageVariant?.id ?? null,
+          selectedVariantQuantity: imageVariant?.quantity ?? null,
         }}
         aria-label={`View details for ${product.name}`}
         className="group/image relative block cursor-pointer overflow-hidden focus:outline-none"
@@ -139,7 +188,7 @@ function ProductCard({
           />
         </div>
 
-        {/* Discount Badge - Top Right */}
+        {/* DISCOUNT BADGE */}
 
         {showDiscountBadge && (
           <span className="absolute right-2.5 top-2.5 z-40 inline-flex items-center rounded-full bg-[#FCECEF] px-2.5 py-0.5 text-[8px] tracking-wide text-[#B5697A] sm:right-3 sm:top-3 sm:px-3 sm:py-1 sm:text-[9px]">
@@ -147,14 +196,14 @@ function ProductCard({
           </span>
         )}
 
-        {/* Decorative Fade */}
+        {/* DECORATIVE FADE */}
 
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-20 opacity-70"
         />
 
-        {/* Hover Overlay */}
+        {/* HOVER OVERLAY */}
 
         <div
           aria-hidden="true"
@@ -162,7 +211,7 @@ function ProductCard({
         />
       </Link>
 
-      {/* Product Content */}
+      {/* PRODUCT CONTENT */}
 
       <div className="relative flex flex-1 flex-col bg-white">
         <ProductCardContent

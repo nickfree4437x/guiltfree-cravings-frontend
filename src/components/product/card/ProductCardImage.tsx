@@ -15,6 +15,11 @@ interface ProductCardImageProps {
 
 type PackagingType = "Plastic Box" | "Glass Jar" | "Cardboard Box";
 
+type VariantWithImages = ProductVariant & {
+  images?: string[];
+  image?: string | null;
+};
+
 // ─── Helpers ──────────────────────────────────────────────
 
 const getContainerSize = (compact: boolean) =>
@@ -44,6 +49,22 @@ function getFirstValidImage(
   return null;
 }
 
+/**
+ * Supports multiple variant images and legacy single image.
+ */
+function getVariantFirstImage(
+  variant?: ProductVariant | null
+): string | null {
+  if (!variant) return null;
+
+  const variantWithImages = variant as VariantWithImages;
+
+  return (
+    getFirstValidImage(variantWithImages.images) ??
+    getValidImage(variantWithImages.image)
+  );
+}
+
 // ─── Packaging Image Selection ────────────────────────────
 
 function getProductImage(
@@ -53,19 +74,34 @@ function getProductImage(
 ): string | null {
 
   // Glass Jar:
-  // First priority: selected variant's individual image.
-  // Fallback: legacy product-level Glass Jar images.
+  // First priority: selected variant's first image.
+  // Fallback: other Glass Jar variant images.
+  // Then: legacy product-level Glass Jar images.
 
   if (packaging === "Glass Jar") {
     return (
       (variant?.packaging === "Glass Jar"
-        ? getValidImage(variant.image)
+        ? getVariantFirstImage(variant)
         : null) ??
+
       getFirstValidImage(
         product.variants
-          ?.filter((item) => item.packaging === "Glass Jar")
-          .map((item) => item.image)
+          ?.filter(
+            (item) =>
+              item.packaging === "Glass Jar" &&
+              item.id !== variant?.id
+          )
+          .flatMap((item) => {
+            const variantWithImages =
+              item as VariantWithImages;
+
+            return [
+              ...(variantWithImages.images ?? []),
+              variantWithImages.image,
+            ];
+          })
       ) ??
+
       getFirstValidImage(product.glassJarImages) ??
       getValidImage(product.glassJarImage) ??
       getFirstValidImage(product.images) ??
@@ -73,7 +109,8 @@ function getProductImage(
     );
   }
 
-  // Cardboard Box: Preserve existing image selection.
+  // Cardboard Box:
+  // Preserve existing image selection.
 
   if (packaging === "Cardboard Box") {
     return (
@@ -84,7 +121,8 @@ function getProductImage(
     );
   }
 
-  // Regular / Plastic Box: Preserve existing image selection.
+  // Regular / Plastic Box:
+  // Preserve existing image selection.
 
   return (
     getFirstValidImage(product.regularImages) ??

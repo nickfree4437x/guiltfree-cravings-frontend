@@ -10,6 +10,8 @@ const API_BASE_URL = (
 
 const ADMIN_TOKEN_KEY = "guiltfree_admin_token";
 
+const MAX_VARIANT_IMAGES = 5;
+
 // ─── Types ─────────────────────────────────────────────────
 
 export interface AdminProductVariantInput {
@@ -18,7 +20,12 @@ export interface AdminProductVariantInput {
   unit: string;
   packaging: string;
   price: number;
+
+  // Legacy single image compatibility
   image?: string | null;
+
+  // Multiple images for individual Glass Jar variants
+  images?: string[];
 }
 
 export interface AdminProductInput {
@@ -45,7 +52,8 @@ export interface AdminProductInput {
   isActive?: boolean;
 }
 
-export type AdminProductUpdateInput = Partial<AdminProductInput>;
+export type AdminProductUpdateInput =
+  Partial<AdminProductInput>;
 
 export interface AdminProductImageFiles {
   image?: File;
@@ -57,7 +65,8 @@ export interface AdminProductImageFiles {
   glassJarImage?: File;
   cardboardBoxImage?: File;
 
-  variantImages?: Record<string, File>;
+  // Multiple files per variant ID or new variant index
+  variantImages?: Record<string, File[]>;
 }
 
 interface AdminProductsResponse {
@@ -92,7 +101,9 @@ const getAdminHeaders = () => {
   const token = localStorage.getItem(ADMIN_TOKEN_KEY);
 
   if (!token) {
-    throw new Error("Admin session expired. Please log in again.");
+    throw new Error(
+      "Admin session expired. Please log in again."
+    );
   }
 
   return {
@@ -132,7 +143,9 @@ const getErrorMessage = (
     }
 
     if (!error.response) {
-      return "Unable to connect to the server. Please check your API URL and connection.";
+      return (
+        "Unable to connect to the server. Please check your API URL and connection."
+      );
     }
   }
 
@@ -149,6 +162,60 @@ const validateProductId = (id: number) => {
   if (!Number.isSafeInteger(id) || id <= 0) {
     throw new Error("Invalid product ID.");
   }
+};
+
+const validateVariantImageFiles = (
+  variantImages?: Record<string, File[]>
+) => {
+  if (!variantImages) {
+    return;
+  }
+
+  Object.entries(variantImages).forEach(([key, files]) => {
+    if (!/^\d+$/.test(key)) {
+      throw new Error(
+        `Invalid variant image key "${key}". Use a numeric variant ID or index.`
+      );
+    }
+
+    if (!Array.isArray(files)) {
+      throw new Error(
+        `Variant image uploads for "${key}" must be an array.`
+      );
+    }
+
+    if (files.length > MAX_VARIANT_IMAGES) {
+      throw new Error(
+        `A maximum of ${MAX_VARIANT_IMAGES} images is allowed per Glass Jar variant.`
+      );
+    }
+
+    files.forEach((file) => {
+      if (!(file instanceof File)) {
+        throw new Error(
+          `Invalid image file supplied for variant "${key}".`
+        );
+      }
+
+      if (
+        ![
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+        ].includes(file.type)
+      ) {
+        throw new Error(
+          "Only JPG, PNG and WebP images are allowed."
+        );
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error(
+          "Each variant image must be smaller than 5 MB."
+        );
+      }
+    });
+  });
 };
 
 // ─── Multipart Form Data Helpers ──────────────────────────
@@ -201,6 +268,8 @@ const buildProductFormData = (
   product: AdminProductUpdateInput,
   files?: AdminProductImageFiles
 ): FormData => {
+  validateVariantImageFiles(files?.variantImages);
+
   const formData = new FormData();
 
   // Basic product fields
@@ -232,12 +301,18 @@ const buildProductFormData = (
 
   // Variant data
   if (product.variants !== undefined) {
-    formData.append("variants", JSON.stringify(product.variants));
+    formData.append(
+      "variants",
+      JSON.stringify(product.variants)
+    );
   }
 
   // Active status
   if (product.isActive !== undefined) {
-    formData.append("isActive", String(product.isActive));
+    formData.append(
+      "isActive",
+      String(product.isActive)
+    );
   }
 
   // Main product image file
@@ -247,8 +322,16 @@ const buildProductFormData = (
 
   // Product gallery image files
   appendImageFiles(formData, "images", files?.images);
-  appendImageFiles(formData, "regularImages", files?.regularImages);
-  appendImageFiles(formData, "glassJarImages", files?.glassJarImages);
+  appendImageFiles(
+    formData,
+    "regularImages",
+    files?.regularImages
+  );
+  appendImageFiles(
+    formData,
+    "glassJarImages",
+    files?.glassJarImages
+  );
   appendImageFiles(
     formData,
     "cardboardBoxImages",
@@ -257,28 +340,31 @@ const buildProductFormData = (
 
   // Packaging-specific image files
   if (files?.glassJarImage instanceof File) {
-    formData.append("glassJarImage", files.glassJarImage);
+    formData.append(
+      "glassJarImage",
+      files.glassJarImage
+    );
   }
 
   if (files?.cardboardBoxImage instanceof File) {
-    formData.append("cardboardBoxImage", files.cardboardBoxImage);
+    formData.append(
+      "cardboardBoxImage",
+      files.cardboardBoxImage
+    );
   }
 
-  // Variant-specific image files
+  // Variant-specific multiple image files
   if (files?.variantImages) {
-    Object.entries(files.variantImages).forEach(([key, file]) => {
-      if (!(file instanceof File)) {
-        return;
+    Object.entries(files.variantImages).forEach(
+      ([key, variantFiles]) => {
+        variantFiles.forEach((file) => {
+          formData.append(
+            `variantImage_${key}`,
+            file
+          );
+        });
       }
-
-      if (!/^\d+$/.test(key)) {
-        throw new Error(
-          `Invalid variant image key "${key}". Use a numeric variant ID or index.`
-        );
-      }
-
-      formData.append(`variantImage_${key}`, file);
-    });
+    );
   }
 
   return formData;
@@ -286,10 +372,9 @@ const buildProductFormData = (
 
 // ─── Get All Admin Products ───────────────────────────────
 
-
-// ─── Get All Admin Products ───────────────────────────────
-
-export const getAdminProducts = async (): Promise<AdminProduct[]> => {
+export const getAdminProducts = async (): Promise<
+  AdminProduct[]
+> => {
   try {
     const response = await axios.get<AdminProductsResponse>(
       `${API_BASE_URL}/admin/products`,
@@ -335,7 +420,6 @@ export const getAdminProducts = async (): Promise<AdminProduct[]> => {
   }
 };
 
-
 // ─── Get Product By ID ────────────────────────────────────
 
 export const getAdminProductById = async (
@@ -351,16 +435,23 @@ export const getAdminProductById = async (
       }
     );
 
-    if (!response.data.success || !response.data.data?.product) {
+    if (
+      !response.data.success ||
+      !response.data.data?.product
+    ) {
       throw new Error(
-        response.data.message || "Unable to load product details."
+        response.data.message ||
+          "Unable to load product details."
       );
     }
 
     return response.data.data.product;
   } catch (error) {
     throw new Error(
-      getErrorMessage(error, "Unable to load product details.")
+      getErrorMessage(
+        error,
+        "Unable to load product details."
+      )
     );
   }
 };
@@ -372,7 +463,10 @@ export const createAdminProduct = async (
   files?: AdminProductImageFiles
 ): Promise<AdminProduct> => {
   try {
-    const formData = buildProductFormData(product, files);
+    const formData = buildProductFormData(
+      product,
+      files
+    );
 
     const response = await axios.post<AdminProductResponse>(
       `${API_BASE_URL}/admin/products`,
@@ -382,9 +476,13 @@ export const createAdminProduct = async (
       }
     );
 
-    if (!response.data.success || !response.data.data?.product) {
+    if (
+      !response.data.success ||
+      !response.data.data?.product
+    ) {
       throw new Error(
-        response.data.message || "Unable to create product."
+        response.data.message ||
+          "Unable to create product."
       );
     }
 
@@ -406,7 +504,10 @@ export const updateAdminProduct = async (
   validateProductId(id);
 
   try {
-    const formData = buildProductFormData(product, files);
+    const formData = buildProductFormData(
+      product,
+      files
+    );
 
     const response = await axios.put<AdminProductResponse>(
       `${API_BASE_URL}/admin/products/${id}`,
@@ -416,9 +517,13 @@ export const updateAdminProduct = async (
       }
     );
 
-    if (!response.data.success || !response.data.data?.product) {
+    if (
+      !response.data.success ||
+      !response.data.data?.product
+    ) {
       throw new Error(
-        response.data.message || "Unable to update product."
+        response.data.message ||
+          "Unable to update product."
       );
     }
 
@@ -447,16 +552,23 @@ export const updateAdminProductStatus = async (
       }
     );
 
-    if (!response.data.success || !response.data.data?.product) {
+    if (
+      !response.data.success ||
+      !response.data.data?.product
+    ) {
       throw new Error(
-        response.data.message || "Unable to update product status."
+        response.data.message ||
+          "Unable to update product status."
       );
     }
 
     return response.data.data.product;
   } catch (error) {
     throw new Error(
-      getErrorMessage(error, "Unable to update product status.")
+      getErrorMessage(
+        error,
+        "Unable to update product status."
+      )
     );
   }
 };
@@ -478,12 +590,16 @@ export const deleteAdminProduct = async (
 
     if (!response.data.success) {
       throw new Error(
-        response.data.message || "Unable to delete product."
+        response.data.message ||
+          "Unable to delete product."
       );
     }
   } catch (error) {
     throw new Error(
-      getErrorMessage(error, "Unable to delete product.")
+      getErrorMessage(
+        error,
+        "Unable to delete product."
+      )
     );
   }
 };
